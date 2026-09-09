@@ -334,6 +334,24 @@ la referencia de API, y son de terceros o empaquetados: `DataKit`, `Store`, `Pro
 `Lease`, `Mutex`, `Health`, `BaseStore`, `Signal`, `Inbox`, `Adapters`, `Promise`, `Sift`,
 `Trove`, `Observers`, `Kinetic`, `Icon`.
 
+:::caution `DataKit` no es nuestro para documentar
+
+`DataKit` es un paquete externo instalado con wally y **trae su propia documentación
+Moonwave completa**, en español, escrita por sus autores. Su `init.luau` declara
+explícitamente qué es superficie pública (`Profile`, `Store`, `transfer`) y qué es interno
+(`BaseStore`, `Health`, `Mutex`, `Signal`, `Lease`, `Adapters`, `Util`).
+
+**No añadas ni modifiques anotaciones dentro de `DataKit`, y no reescribas sus contratos en
+la documentación conceptual.** Lo que sí corresponde a este proyecto es documentar *cómo
+Voz Hispana lo usa*: qué identidades declara `Profiles.luau`, con qué `onConflict`, quién
+escribe cada una, y qué ocurre cuando falla. Para el contrato de cada función, enlaza a
+`/api/<Clase>`.
+
+Está anotado así en `docs/architecture/persistence.md` y en `docs/intro.md` para que quede
+claro para quien lea el sitio, no solo para quien lo escriba.
+
+:::
+
 ---
 
 ## Assets binarios

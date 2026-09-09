@@ -15,6 +15,22 @@ explica qué hace el juego con él, y la referencia de API lleva los detalles.
 adaptadores de `DataKit`. Los dos de fuera son `GlobalDataStore/init.luau` y
 `WorldSystem/GiftInbox.luau`.
 
+:::info DataKit se documenta solo — este proyecto no lo documenta
+
+`DataKit` es un paquete externo instalado con wally y **trae su propia documentación
+Moonwave**, escrita por sus autores: `@class` en `DataKit`, `Store`, `Profile`, `Lease`,
+`Health`, `Mutex`, `Signal`, `Inbox`, `BaseStore` y `Adapters`. Su `init.luau` declara
+además cuál es su superficie pública y qué es interno.
+
+Esa documentación se publica tal cual en la [Referencia de API](/api/DataKit) de este
+sitio, sin que este proyecto la haya escrito ni la modifique. **No se duplica aquí.**
+
+Lo que sí es responsabilidad de esta documentación, y es lo que encontrarás en esta
+página: qué identidades declara Voz Hispana, con qué políticas, quién escribe cada una y
+qué pasa cuando falla. Para el contrato de cada función, sigue los enlaces `/api/`.
+
+:::
+
 ## Las cuatro identidades
 
 **HECHO.** `Core/ServerStorage/WorldSystem/Profiles.luau` declara todos los perfiles que

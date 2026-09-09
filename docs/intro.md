@@ -35,6 +35,12 @@ Está acotada a `ReplicatedStorage` y a
 `ServerStorage/TemplatesTesting/Core/ServerStorage` — las rutas que hoy tienen clases
 anotadas: `PlayerInit`, `ServerPresence` y el paquete `DataKit`.
 
+`DataKit` es un caso aparte: es un paquete externo instalado con wally que **ya viene
+documentado por sus autores**. Sus once clases aparecen en la referencia sin que este
+proyecto haya escrito ni tocado una línea de ellas, y la documentación conceptual no las
+duplica — solo describe cómo las usa Voz Hispana. Ver
+[Persistencia](./architecture/persistence.md).
+
 Buena parte de `Core/ReplicatedStorage` es anterior a este proyecto y usa líneas `---`
 como separadores visuales, que el extractor de Moonwave lee como comentarios de
 documentación mal formados y se niega a compilar. Meter esos archivos supondría editar
