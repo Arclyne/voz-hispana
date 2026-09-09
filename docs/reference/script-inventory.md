@@ -27,8 +27,8 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
 | Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 35 |
-| Pendiente | Aún sin leer | 448 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 37 |
+| Pendiente | Aún sin leer | 446 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 93 leídos.
+530 archivos, 76,305 líneas, 95 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 3/6 leídos</summary>
@@ -1347,7 +1347,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 15/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 17/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -1356,8 +1356,8 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `FavoriteService.server.luau` | Script | Server | yes | 55 | `ServerScriptService.ServerScripts.FavoriteService.server` | Analizado (en parte) |
 | `GiftHandler.server.luau` | Script | Server | yes | 355 | `ServerScriptService.ServerScripts.GiftHandler.server` | Analizado (en parte) |
 | `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Analizado (en parte) |
-| `MicManagerServer.server.luau` | Script | Server | yes | 197 | `ServerScriptService.ServerScripts.MicManagerServer.server` | Pendiente |
-| `NametagServer.server.luau` | Script | Server | yes | 513 | `ServerScriptService.ServerScripts.NametagServer.server` | Pendiente |
+| `MicManagerServer.server.luau` | Script | Server | yes | 197 | `ServerScriptService.ServerScripts.MicManagerServer.server` | Analizado (en parte) |
+| `NametagServer.server.luau` | Script | Server | yes | 513 | `ServerScriptService.ServerScripts.NametagServer.server` | Analizado (en parte) |
 | `PlayerDataInit.server.luau` | Script | Server | yes | 42 | `ServerScriptService.ServerScripts.PlayerDataInit.server` | Analizado |
 | `PlayerDataReplicator.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.PlayerDataReplicator.server` | Analizado |
 | `PlaytimeRewardSystem.server.luau` | Script | — | yes | 107 | `ServerScriptService.ServerScripts.PlaytimeRewardSystem.server` | Analizado (en parte) |

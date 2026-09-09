@@ -90,6 +90,7 @@ o en un place de pruebas.
 | [035](#bug-candidate-035) | El limitador de ritmo de la búsqueda de canciones está invertido | Karaoke / Persistencia | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
 | [036](#bug-candidate-036) | La lista de favoritos crece sin tope, con cadenas que elige el cliente | Casas / Persistencia | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [037](#bug-candidate-037) | La caja de botín es estrictamente mejor que la tienda de bailes | Economía | Observación / Pregunta de diseño | Media | Alta |
+| [038](#bug-candidate-038) | El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado | Chat de voz | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
 
 ### Entradas de seguridad
 
@@ -147,6 +148,8 @@ engañosa:
 | Despacho de métodos por nombre en Trabajos | **Correcto, y es el mejor patrón del repositorio para esto.** El cliente manda el nombre del método, pero hay una lista blanca **por instancia** —cuatro o cinco nombres declarados junto al objeto— y quien la burla recibe `Player:Kick("Exploiter detected.")`. `LimpiarPiso` incluso deja la lista vacía para las instancias que no deben aceptar nada. |
 | Acumular trabajos | **Correcto.** `UsosPlayer` es uno por jugador y empezar otro renuncia al anterior; la limpieza compara `== getMetatable` antes de borrar, para que una señal tardía no pise el trabajo nuevo. |
 | Pago del botón VIP | **Correcto.** Solo se paga si `state == "Success"`, y `Proccess[Player]` más `MarkPrompt` impiden compras solapadas. |
+| Peticiones solapadas de permisos de micrófono | **Correcto, y es un patrón de coalescencia bien hecho.** Cada petición incrementa una versión y los resultados viejos se descartan; una bandera impide dos trabajadores; y si llega otra petición durante la espera, el bucle repite. |
+| Superficie de red del micrófono y del nametag | **Correcto.** `UpdateMicEvent` es solo servidor → cliente, y cada jugador recibe únicamente su fila de la matriz. `NametagServer` no declara ningún remote. |
 | Precio de una caja de botín | **Correcto.** El cliente elige moneda, no importe, y `LOOTBOX_PRICES` actúa como lista blanca; se cobra antes de conceder y se rechaza antes de cobrar si no queda nada por dar. |
 | Reconectar para cobrar el sueldo antes de tiempo | **Correcto.** `PlaytimeRewardSystem` compara `GetJoinData().SourceGameId` con `game.GameId`: un teleport interno respeta el temporizador, un inicio de sesión nuevo lo reinicia. |
 | Reclamar una misión | **Correcto, y de lo más completo del repositorio.** Lista blanca de grupos, tipo del hueco, la misión existe, no está reclamada, el progreso llega al objetivo, y la recompensa sale de la configuración del servidor. |
@@ -4508,6 +4511,135 @@ en la tienda. Si la segunda cifra es cerca de cero, la pregunta está respondida
 necesidad de discutir el balance.
 
 
+## BUG-CANDIDATE-038
+
+### El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado
+
+**Sistema:** Chat de voz · **Clasificación:** Bug probable / Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/ServerScripts/MicManagerServer.server.luau`, dentro de
+`requestMicUpdate`
+**Documentación relacionada:** [Nametags y micrófono](../systems/nametags.md#lo-que-sí-falla)
+
+#### Comportamiento observado — HECHO
+
+```lua
+local success, result = pcall(function()
+	return (VoiceChatService :: any):GetChatGroupsAsync(allPlayers)
+end)
+
+if not success then
+	if not RunService:IsStudio() and tostring(result):find("disabled") then
+		warn("[MicServer] ❌ Error en GetChatGroupsAsync. Detalles:", result)
+	end
+elseif myVersion ~= requestVersion then
+	...
+```
+
+La condición para avisar es que el mensaje de error **contenga** `"disabled"`.
+
+#### Por qué esto es un problema — HECHO
+
+`"disabled"` es el mensaje del caso **esperado y benigno**: el chat de voz no está activado
+en ese universo o para ese jugador. Es justo el que no interesa registrar, y es el único que
+se registra.
+
+Cualquier otro fallo —throttling, un error transitorio de Roblox, un cambio en la API, un
+`allPlayers` inesperado— **no imprime nada**. El `pcall` lo traga y el código sigue.
+
+| Tipo de fallo | ¿Se avisa? | ¿Debería? |
+|---|---|---|
+| Chat de voz desactivado | **Sí** | No — es el caso normal cuando está apagado |
+| Throttling o error transitorio | **No** | Sí |
+| Cambio o retirada de la API | **No** | Sí |
+| Cualquier otra excepción | **No** | Sí |
+
+La forma que tendría sentido es la contraria: `not tostring(result):find("disabled")`.
+
+#### Lo que agrava la consecuencia — HECHO
+
+Un fallo no solo es silencioso: **no se reintenta**. Tras el `pcall` fallido el flujo cae al
+final del bucle:
+
+```lua
+if myVersion == requestVersion then
+	break
+end
+```
+
+Como el fallo no incrementa `requestVersion`, la condición se cumple y el trabajador
+termina. No hay reintento, no hay retroceso, no hay nada hasta que alguien entre o salga del
+servidor y dispare otra pasada.
+
+Y mientras tanto, `sendMicPermissions` no llega a llamarse, así que **`UpdateMicEvent` no se
+dispara**. Los clientes conservan la matriz anterior; un jugador recién entrado no tiene
+ninguna.
+
+#### Teoría — TEORÍA
+
+Si `GetChatGroupsAsync` empieza a fallar por un motivo que no sea «desactivado», el sistema
+de permisos de micrófono se queda congelado **sin dejar rastro en el registro**. Los
+jugadores nuevos no aparecen en la matriz de nadie, y los que ya estaban mantienen una foto
+vieja: gente que debería poder hablar no puede, o al revés.
+
+Desde fuera se ve como «el chat de voz va raro», que es de las incidencias más difíciles de
+diagnosticar, y en el registro del servidor no hay absolutamente nada que apunte a la causa.
+
+Es la misma familia que [BUG-CANDIDATE-001](#bug-candidate-001) —el control de chat de voz
+del arranque, que falla abierto— y refuerza lo que ya señala
+[Dependencias](../systems/../architecture/dependencies.md): en este repositorio los fallos
+relacionados con `VoiceChatService` tienden a pasar desapercibidos.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La condición es `tostring(result):find("disabled")` sin negar |
+| 2 | `"disabled"` corresponde al caso esperado, no al excepcional |
+| 3 | No hay ninguna rama `else` que registre los demás fallos |
+| 4 | Un fallo no incrementa `requestVersion`, así que el bucle termina sin reintentar |
+| 5 | Sin `sendMicPermissions`, `UpdateMicEvent` no se dispara y las matrices quedan como estaban |
+| 6 | El resto del archivo está cuidadosamente escrito —coalescencia por versión, bandera de trabajador, comprobación de presencia— lo que hace pensar en una condición mal tecleada, no en un descuido general |
+
+#### Incógnitas
+
+- El texto exacto que devuelve Roblox cuando el chat de voz está desactivado. Si no contiene
+  `"disabled"`, entonces **no se avisa de nada nunca**, y el problema es aún más simple de lo
+  descrito.
+- Con qué frecuencia falla `GetChatGroupsAsync` en producción por motivos distintos. Hoy no
+  hay forma de saberlo, que es precisamente el problema.
+- Si el cliente hace algo sensato cuando nunca recibe una matriz. `NametagMicClient` no se
+  ha leído.
+
+#### Escenario de ejemplo
+
+Roblox tiene una incidencia y `GetChatGroupsAsync` empieza a lanzar durante veinte minutos.
+Nadie ve nada en el registro. Los jugadores que entran en ese rato no pueden hablar con
+nadie —o pueden hablar con todos, según lo que hiciera el cliente sin matriz— y cuando pasa
+la incidencia el problema desaparece solo. En el postmortem no hay ni una línea.
+
+**Comportamiento esperado:** se avisa de los fallos inesperados y se calla el esperado.
+**Comportamiento posible:** exactamente lo contrario.
+
+#### Plan de verificación — *Recuperación ante fallos*
+
+1. En un place de pruebas, sustituye la llamada por una que lance un error que **no**
+   contenga `"disabled"`. *(Instrumentación para la prueba.)*
+2. Entra con dos cuentas y comprueba el registro del servidor: no debería aparecer nada.
+3. Comprueba si los clientes reciben alguna matriz.
+4. Repite lanzando un error que **sí** contenga `"disabled"` y confirma que ese sí se avisa.
+5. Comprueba si una tercera entrada al servidor recupera el sistema, o si sigue congelado.
+
+**Pasa:** los fallos inesperados aparecen en el registro.
+**Falla:** solo aparece el de «disabled».
+
+**Instrumentación sugerida:** negar la condición y añadir un contador de fallos consecutivos.
+Es un **cambio de código**, así que queda registrado aquí y no aplicado; se menciona porque
+la corrección es de un carácter y el resto del archivo ya está bien construido para
+aprovecharla.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -4564,7 +4696,10 @@ completa.
 | `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
 | `LootBoxService`, `PlaytimeRewardSystem`, `FavoriteService`, `DancesInfo` | Sí | Sistemas que no estaban ni en la lista |
 | `ServerScripts/stats/` | En parte | Su papel y sus constantes |
-| Sistemas de juego (~416 archivos) | **No** | En cola |
+| `MicManagerServer` | Sí | |
+| `NametagServer` | En parte | Superficie, fuentes de datos y orden de etiquetas |
+| `Shared/Nametag/`, `NametagMicClient` | **No** | En cola |
+| Sistemas de juego (~413 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que

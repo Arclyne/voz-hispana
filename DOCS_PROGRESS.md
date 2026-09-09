@@ -20,12 +20,12 @@ ya lo estaban.
 
 ## Progreso general
 
-**91 %**
+**92 %**
 
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **104 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **106 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
 Eso es un 15 % por número de archivos, pero una porción mucho mayor del código que sostiene
@@ -33,14 +33,14 @@ todo lo demás: el arranque completo, el sistema de mundos/casas entero, las cap
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
 invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
 mobiliario, y toda la ruta de monetización, y la estructura de los interactuables, el inventario, la moderación de karaoke, los cuadros, los trabajos, la persistencia de fuera de DataKit, y un barrido de la superficie de red
-del resto. Los ~448 archivos restantes son sistemas de juego (interactuables, karaoke,
+del resto. Los ~446 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
 del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 13 de sistemas +
-3 de referencia + 37 candidatos a bug con evidencia, frente a un plan que aún necesita
+3 de referencia + 38 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -224,7 +224,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | **Barrido** — `docs/systems/survey.md`; el servidor leído entero |
 | Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | Pendiente |
 | Trabajos | `Shared/JobSystem`, `Events/Jobs` | **Documentado** — `docs/systems/jobs.md`. Faltan los cuatro módulos de trabajo por dentro |
-| Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | Pendiente |
+| Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | **Documentado** — `docs/systems/nametags.md`. Faltan `Shared/Nametag/` y el cliente |
 | Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | **Papel establecido** — `docs/systems/survey.md`: es interfaz de cliente sin remotes propios; conduce a `Stores`. Su lógica de UI sigue sin leer |
 | Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | **Barrido** — `docs/systems/survey.md`; solo los `bind` |
 | Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
@@ -317,9 +317,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 61 |
-| Analizado (en parte) | 35 |
-| Pendiente | 448 |
+| Analizado (leído entero, descrito en el sitio) | 62 |
+| Analizado (en parte) | 36 |
+| Pendiente | 446 |
 
 Las lecturas parciales y por qué:
 
@@ -409,7 +409,7 @@ Los cinco que de verdad bloquean documentación:
 
 ## Problemas encontrados
 
-Treinta y siete entradas, todas redactadas al completo en
+Treinta y ocho entradas, todas redactadas al completo en
 `docs/testing/verification-plan.md`. **Ninguna se afirma como bug confirmado.** Dos están
 clasificadas como *Confirmado por análisis estático*, y aun esas solo afirman lo que el
 código demostrablemente hace: la 011 confirma una inconsistencia, no qué lado de ella está
@@ -462,6 +462,7 @@ proyecto, que no cambia código, pero no debería quedarse en una lista de pendi
 | BUG-CANDIDATE-035 | El limitador de ritmo de la búsqueda de canciones está invertido | Karaoke / Persistencia | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
 | BUG-CANDIDATE-036 | La lista de favoritos crece sin tope, con cadenas que elige el cliente | Casas / Persistencia | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | BUG-CANDIDATE-037 | La caja de botín es estrictamente mejor que la tienda de bailes | Economía | Observación / Pregunta de diseño | Media | Alta |
+| BUG-CANDIDATE-038 | El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado | Chat de voz | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
 
 ### La pasada de seguridad
 
@@ -505,7 +506,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 37 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 38 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -543,8 +544,8 @@ y razonado está en la propia página; el resumen es:
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
 - **Diagramas:** 41 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 37 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 104 de 552
+- **Candidatos a bug:** 38 redactados al completo, incluida una pasada de seguridad
+- **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.
