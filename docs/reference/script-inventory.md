@@ -26,16 +26,16 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 149 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 187 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 158 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 217 |
 | Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** — ver [Librerías de terceros](../architecture/third-party.md) | 169 |
-| Pendiente | Aún sin leer | 39 |
+| Pendiente | Aún sin leer | 0 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
 ## Fuera de las plantillas
 
-8 archivos, 621 líneas, 5 leídos.
+8 archivos, 621 líneas, 8 leídos.
 
 <details>
 <summary><code>src/ReplicatedStorage/</code> — 2 archivo(s) — 2/2 leídos</summary>
@@ -67,31 +67,31 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/Templates/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/Templates/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `SettingsTemplate.luau` | ModuleScript | — | — | 28 | `ServerStorage.Templates.SettingsTemplate` | Pendiente |
-| `TemplateJob.luau` | ModuleScript | — | — | 97 | `ServerStorage.Templates.TemplateJob` | Pendiente |
-| `TemplateUIS.luau` | ModuleScript | — | — | 44 | `ServerStorage.Templates.TemplateUIS` | Pendiente |
+| `SettingsTemplate.luau` | ModuleScript | — | — | 28 | `ServerStorage.Templates.SettingsTemplate` | Analizado |
+| `TemplateJob.luau` | ModuleScript | — | — | 97 | `ServerStorage.Templates.TemplateJob` | Analizado |
+| `TemplateUIS.luau` | ModuleScript | — | — | 44 | `ServerStorage.Templates.TemplateUIS` | Analizado |
 
 </details>
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 494 leídos.
+530 archivos, 76,305 líneas, 530 leídos.
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 6/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BannersConfig.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.BannersConfig` | Pendiente |
+| `BannersConfig.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.BannersConfig` | Analizado (en parte) |
 | `DancesInfo.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.DancesInfo` | Analizado (en parte) |
 | `GeneralConfiguration.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.GeneralConfiguration` | Analizado |
 | `HousesInfo.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.HousesInfo` | Analizado |
 | `ShopInfo.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.ShopInfo` | Analizado |
-| `ShopSettings.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.ShopSettings` | Pendiente |
+| `ShopSettings.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.ShopSettings` | Analizado |
 
 </details>
 
@@ -274,11 +274,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ReferralClient/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ReferralClient/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ReferralClient.server.luau` | Script | Client | yes | 683 | `ReplicatedStorage.Client.ReferralClient.ReferralClient.server` | Pendiente |
+| `ReferralClient.server.luau` | Script | Client | yes | 683 | `ReplicatedStorage.Client.ReferralClient.ReferralClient.server` | Analizado (en parte) |
 
 </details>
 
@@ -463,30 +463,30 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `InventoryWheel.luau` | ModuleScript | — | — | 343 | `ReplicatedStorage.Client.inventory.InventoryWheel` | Pendiente |
-| `init.server.luau` | Script | Client | yes | 334 | `ReplicatedStorage.Client.inventory.init.server` | Pendiente |
+| `InventoryWheel.luau` | ModuleScript | — | — | 343 | `ReplicatedStorage.Client.inventory.InventoryWheel` | Analizado (en parte) |
+| `init.server.luau` | Script | Client | yes | 334 | `ReplicatedStorage.Client.inventory.init.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 65 | `ReplicatedStorage.Client.inventory.InventoryList.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 65 | `ReplicatedStorage.Client.inventory.InventoryList.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/InventoryItem/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/InventoryItem/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 170 | `ReplicatedStorage.Client.inventory.InventoryList.InventoryItem.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 170 | `ReplicatedStorage.Client.inventory.InventoryList.InventoryItem.init` | Analizado (en parte) |
 
 </details>
 
@@ -702,11 +702,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/Instance/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/Instance/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ActionsBartender.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.BartenderSystem.Instance.ActionsBartender` | Pendiente |
+| `ActionsBartender.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.BartenderSystem.Instance.ActionsBartender` | Analizado (en parte) |
 | `init.luau` | ModuleScript | — | — | 549 | `ReplicatedStorage.Shared.BartenderSystem.Instance.init` | Analizado (en parte) |
 
 </details>
@@ -765,13 +765,13 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/</code> — 4 archivo(s) — 3/4 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Disconnects.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.GuideService.Disconnects` | Analizado |
 | `QuitarEspacios.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.GuideService.QuitarEspacios` | Analizado |
-| `READ ME.client.luau` | LocalScript | — | yes | 121 | `ReplicatedStorage.Shared.GuideService.READ ME.client` | Pendiente |
+| `READ ME.client.luau` | LocalScript | — | yes | 121 | `ReplicatedStorage.Shared.GuideService.READ ME.client` | Analizado (en parte) |
 | `init.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Shared.GuideService.init` | Analizado |
 
 </details>
@@ -786,11 +786,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/InterfaceController/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/InterfaceController/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.GuideService.PageController.InterfaceController.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.GuideService.PageController.InterfaceController.init` | Analizado (en parte) |
 
 </details>
 
@@ -915,12 +915,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/</code> — 3 archivo(s) — 1/3 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Attributes.luau` | ModuleScript | — | — | 83 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Attributes` | Pendiente |
-| `Generos.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Generos` | Pendiente |
+| `Attributes.luau` | ModuleScript | — | — | 83 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Attributes` | Analizado (en parte) |
+| `Generos.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Generos` | Analizado |
 | `init.luau` | ModuleScript | — | — | 869 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.init` | Analizado (en parte) |
 
 </details>
@@ -945,12 +945,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/</code> — 3 archivo(s) — 1/3 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `AttributesRequerest.luau` | ModuleScript | — | — | 11 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.AttributesRequerest` | Pendiente |
-| `Script.server.luau` | Script | — | yes | 75 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.Script.server` | Pendiente |
+| `AttributesRequerest.luau` | ModuleScript | — | — | 11 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.AttributesRequerest` | Analizado |
+| `Script.server.luau` | Script | — | yes | 75 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.Script.server` | Analizado (en parte) |
 | `init.luau` | ModuleScript | — | — | 1111 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.init` | Analizado (en parte) |
 
 </details>
@@ -1000,11 +1000,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/GroupRoles/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/GroupRoles/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Nametag.GroupRoles.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Nametag.GroupRoles.init` | Analizado |
 
 </details>
 
@@ -1023,60 +1023,60 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Create/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Create/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Paint.Create.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Paint.Create.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `SplitRespectingBrackets.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.SplitRespectingBrackets` | Pendiente |
+| `SplitRespectingBrackets.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.SplitRespectingBrackets` | Analizado (en parte) |
 | `init.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 101 | `ReplicatedStorage.Shared.Paint.Load.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 101 | `ReplicatedStorage.Shared.Paint.Load.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/LoadFrame/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/LoadFrame/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Frames.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.Frames` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 235 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.init` | Pendiente |
+| `Frames.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.Frames` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 235 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Paint/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Paint/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `PaletteColor.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Shared.Paint.Paint.PaletteColor` | Pendiente |
-| `Save.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Shared.Paint.Paint.Save` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 507 | `ReplicatedStorage.Shared.Paint.Paint.init` | Pendiente |
+| `PaletteColor.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Shared.Paint.Paint.PaletteColor` | Analizado (en parte) |
+| `Save.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Shared.Paint.Paint.Save` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 507 | `ReplicatedStorage.Shared.Paint.Paint.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/ServerClient/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/ServerClient/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Marcos.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Shared.Paint.ServerClient.Marcos.server` | Pendiente |
+| `Marcos.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Shared.Paint.ServerClient.Marcos.server` | Analizado (en parte) |
 | `init.luau` | ModuleScript | — | — | 737 | `ReplicatedStorage.Shared.Paint.ServerClient.init` | Analizado (en parte) |
 
 </details>
@@ -1111,23 +1111,23 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Quests/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Quests/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `QuestConfig.luau` | ModuleScript | — | — | 221 | `ReplicatedStorage.Shared.Quests.QuestConfig` | Pendiente |
-| `QuestShared.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Quests.QuestShared` | Pendiente |
+| `QuestConfig.luau` | ModuleScript | — | — | 221 | `ReplicatedStorage.Shared.Quests.QuestConfig` | Analizado (en parte) |
+| `QuestShared.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Quests.QuestShared` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Referrals/</code> — 3 archivo(s) — 1/3 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Referrals/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ProgressRing.luau` | ModuleScript | — | — | 114 | `ReplicatedStorage.Shared.Referrals.ProgressRing` | Pendiente |
+| `ProgressRing.luau` | ModuleScript | — | — | 114 | `ReplicatedStorage.Shared.Referrals.ProgressRing` | Analizado (en parte) |
 | `ReferralConfig.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.Referrals.ReferralConfig` | Analizado (en parte) |
-| `ReferralShared.luau` | ModuleScript | — | — | 309 | `ReplicatedStorage.Shared.Referrals.ReferralShared` | Pendiente |
+| `ReferralShared.luau` | ModuleScript | — | — | 309 | `ReplicatedStorage.Shared.Referrals.ReferralShared` | Analizado (en parte) |
 
 </details>
 
@@ -1326,14 +1326,14 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/pong/</code> — 4 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/pong/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Ball.luau` | ModuleScript | — | — | 559 | `ReplicatedStorage.Shared.pong.Ball` | Pendiente |
-| `Input.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.pong.Input` | Pendiente |
-| `Paddle.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.pong.Paddle` | Pendiente |
-| `createPongSession.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.pong.createPongSession` | Pendiente |
+| `Ball.luau` | ModuleScript | — | — | 559 | `ReplicatedStorage.Shared.pong.Ball` | Analizado (en parte) |
+| `Input.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.pong.Input` | Analizado (en parte) |
+| `Paddle.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.pong.Paddle` | Analizado (en parte) |
+| `createPongSession.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.pong.createPongSession` | Analizado (en parte) |
 
 </details>
 
@@ -1396,11 +1396,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Quests/Pickables/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Quests/Pickables/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `QuestPickableService.luau` | ModuleScript | — | — | 316 | `ServerScriptService.ServerScripts.Quests.Pickables.QuestPickableService` | Pendiente |
+| `QuestPickableService.luau` | ModuleScript | — | — | 316 | `ServerScriptService.ServerScripts.Quests.Pickables.QuestPickableService` | Analizado |
 
 </details>
 
@@ -1444,12 +1444,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/interactables/</code> — 5 archivo(s) — 4/5 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/interactables/</code> — 5 archivo(s) — 5/5 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Blender.server.luau` | Script | Server | yes | 54 | `ServerScriptService.ServerScripts.cooking.interactables.Blender.server` | Analizado |
-| `CuttingBoard.server.luau` | Script | Server | yes | 113 | `ServerScriptService.ServerScripts.cooking.interactables.CuttingBoard.server` | Pendiente |
+| `CuttingBoard.server.luau` | Script | Server | yes | 113 | `ServerScriptService.ServerScripts.cooking.interactables.CuttingBoard.server` | Analizado (en parte) |
 | `Microwave.server.luau` | Script | Server | yes | 233 | `ServerScriptService.ServerScripts.cooking.interactables.Microwave.server` | Analizado (en parte) |
 | `Oven.server.luau` | Script | Server | yes | 72 | `ServerScriptService.ServerScripts.cooking.interactables.Oven.server` | Analizado |
 | `Stove.server.luau` | Script | Server | yes | 93 | `ServerScriptService.ServerScripts.cooking.interactables.Stove.server` | Analizado |
@@ -1604,22 +1604,22 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/GlobalDataStore/</code> — 3 archivo(s) — 2/3 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/GlobalDataStore/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `ReadMe.server.luau` | Script | Server | — | 60 | `ServerStorage.GlobalDataStore.ReadMe.server` | Analizado |
-| `Testeo_GlobalDataStore.luau` | ModuleScript | — | — | 164 | `ServerStorage.GlobalDataStore.Testeo_GlobalDataStore` | Pendiente |
+| `Testeo_GlobalDataStore.luau` | ModuleScript | — | — | 164 | `ServerStorage.GlobalDataStore.Testeo_GlobalDataStore` | Analizado (en parte) |
 | `init.luau` | ModuleScript | — | — | 335 | `ServerStorage.GlobalDataStore.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/RoleService/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/RoleService/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `RolesGroup.luau` | ModuleScript | — | — | 16 | `ServerStorage.RoleService.RolesGroup` | Pendiente |
+| `RolesGroup.luau` | ModuleScript | — | — | 16 | `ServerStorage.RoleService.RolesGroup` | Analizado |
 | `init.luau` | ModuleScript | — | — | 135 | `ServerStorage.RoleService.init` | **Documentado** |
 
 </details>

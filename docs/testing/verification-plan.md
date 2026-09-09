@@ -99,6 +99,7 @@ o en un place de pruebas.
 | [049](#bug-candidate-049) | Concesión de estadística a petición del cliente; `Weight` ni siquiera recibe modelo | **Explotable hoy**, con techo en 100 |
 | [050](#bug-candidate-050) | Modelo de estación suministrado por el cliente, sin propietario ni distancia | **Explotable hoy**, es robo y no falsificación |
 | [051](#bug-candidate-051) | El nivel del jugador no sube nunca, y el requisito de nivel solo existe en el cliente | Construcción / Progresión | Confirmado por análisis estático | Baja | **Muy alta** |
+| [052](#bug-candidate-052) | La búsqueda de canciones borra las letras acentuadas en vez de normalizarlas | Karaoke / Búsqueda | Confirmado (el orden) / Requiere pruebas (el efecto) | Baja | **Muy alta** / media |
 | [050](#bug-candidate-050) | Cualquiera puede recoger el plato de cualquier cocina del servidor | Cocina / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
@@ -6563,12 +6564,36 @@ son:
 
 | Sitio | Qué hace |
 |---|---|
-| `PlayerSchema.luau` | Lo declara con valor inicial `"0"` |
+| `PlayerSchema.luau` | Lo declara con valor inicial `"0"`, justo al lado de `Xp` |
 | `NametagServer.server.luau` | Lo **lee** para pintarlo en la etiqueta, y escucha sus cambios |
 | `BuildingSystem/…/FurnitureFrame` | Lo **lee** para decidir si pinta un candado |
 
-**Ninguno lo escribe.** No hay concesión de experiencia, ni subida por tiempo jugado, ni por
-misiones, ni por compras. `Level` se queda en `"0"` toda la vida de la cuenta.
+**Ninguno lo escribe.** `Level` se queda en `"0"` toda la vida de la cuenta.
+
+**Y sí hay concesión de experiencia — solo que no llega.** Al leer Misiones apareció la mitad
+que faltaba de esta cadena:
+
+```lua
+-- QuestService:ClaimQuest
+if reward.Xp and reward.Xp > 0 then
+	Collections.Give(player, { Xp = reward.Xp }, true)
+end
+```
+
+`Xp` está declarado en `PlayerSchema` junto a `Level`, se persiste, y las misiones lo
+conceden de verdad, por una ruta validada (ver
+[Misiones](../systems/quests.md#reclamar-una-misión)). Lo que no existe en ningún sitio es
+el paso de `Xp` a `Level`:
+
+| Eslabón | ¿Existe? |
+|---|---|
+| Las misiones dan `Xp` | **Sí** — `QuestService:ClaimQuest` |
+| `Xp` se guarda en el perfil | **Sí** — `PlayerSchema` |
+| Algo lee `Xp` para subir el nivel | **No.** Fuera de `QuestService`, el único sitio que menciona `Xp` es el cliente de misiones, y solo para pintar «120XP» en la ficha |
+| `Level` se muestra | **Sí** — en el nametag y en el catálogo de muebles |
+
+Así que la cadena está construida por los dos extremos y **le falta el eslabón del medio**.
+Los jugadores llevan acumulando `Xp` desde el primer día; ese número no hace nada.
 
 Y `NametagServer` está preparado para reaccionar —`connectLevelValue`, un `ChildAdded` que
 espera a que aparezca— así que el sistema de presentación existe entero, esperando a un
@@ -6617,12 +6642,16 @@ etiqueta de cada jugador y filtra un catálogo — y que **no hace nada**.
 | 5 | Ningún manejador de servidor de `Shared/Stores` lo consulta |
 | 6 | El precio en monedas **sí** se cobra en el servidor, con su propio dato |
 | 7 | El candado es un `Lock.Visible`, es decir, pura presentación |
+| 8 | `QuestService:ClaimQuest` sí concede `Xp`, y `PlayerSchema` lo persiste |
+| 9 | Nada lee `Xp` fuera del cliente de misiones, que solo lo pinta |
 
 #### Incógnitas
 
 - **La principal:** si algún mueble tiene de verdad `Price.Level` puesto. Los `Settings` viven
   dentro de los `.rbxm`, así que hay que abrirlos en Studio. Si ninguno lo usa, el segundo
   hallazgo es teórico y solo queda el primero.
+- Cuánto `Xp` lleva acumulado un jugador veterano. Si son miles, conectar el eslabón que falta
+  subiría a mucha gente de golpe, y eso hay que decidirlo antes de hacerlo.
 - Si la progresión por nivel está planeada y sin conectar, o si se abandonó. El `TODO` de
   `Furniture` en la ruleta ([044](#bug-candidate-044)) y el stub de `Rewards` en los tutoriales
   ([039](#bug-candidate-039)) sugieren que hay varias funciones en ese estado.
@@ -6660,6 +6689,150 @@ distintas —qué hace subir de nivel, y si el requisito debe comprobarse en el 
 dos son **cambios de código** que aquí no se aplican. Conviene decidirlas juntas: comprobar el
 requisito en el servidor sin conectar antes la subida de nivel dejaría esos muebles
 definitivamente fuera del alcance de todos.
+
+
+## BUG-CANDIDATE-052
+
+### La búsqueda de canciones borra las letras acentuadas en vez de normalizarlas
+
+**Sistema:** Karaoke / Búsqueda · **Clasificación:** Confirmado por análisis estático — el orden; Requiere pruebas — el efecto
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta** en el orden, media en el alcance
+
+**Código relacionado:** `Core/…/Shared/Karaoke/RevisarCanciones/Script.server.luau`,
+`BuscarKeysPorJugador`; `Core/ReplicatedStorage/Client/BusquedaSettings.luau`,
+`quitarAcentos` y `VerificarTexto`
+**Documentación relacionada:** [Karaoke](../systems/karaoke.md)
+
+#### Comportamiento observado — HECHO
+
+En el buscador del servidor, cada palabra de la consulta pasa por dos funciones **en este
+orden**:
+
+```lua
+palabra = quitarSimbolos(palabra):lower()
+table.insert(indices, quitarAcentos(palabra))
+```
+
+Y `quitarSimbolos` es:
+
+```lua
+function quitarSimbolos(str)
+	return str:gsub("[^%w%s]", "")
+end
+```
+
+#### Por qué el orden importa — HECHO
+
+`%w` en Lua es alfanumérico **ASCII**. Una vocal acentuada en UTF-8 son dos bytes —`ó` es
+`0xC3 0xB3`— y ninguno de los dos es `%w` ni `%s`. Así que `quitarSimbolos` **no los
+convierte: los borra**.
+
+| Entrada | Tras `quitarSimbolos` | Tras `quitarAcentos` |
+|---|---|---|
+| `canción` | `cancin` | `cancin` — no queda nada que convertir |
+| `corazón` | `corazn` | `corazn` |
+| `mañana` | `maana` | `maana` |
+
+`quitarAcentos` está escrito para hacer justo esto bien —tiene su tabla de `á`→`a`, `ñ`→`n`,
+y un patrón que recorre UTF-8 carácter a carácter— pero cuando le llega el texto ya no hay
+acentos que quitar. **La función correcta se ejecuta después de que su trabajo se haya vuelto
+imposible.**
+
+#### La otra mitad: los dos caminos no coinciden — HECHO
+
+Hay una segunda normalización, en el cliente, y **no hace lo mismo**:
+
+```lua
+-- BusquedaSettings.luau
+function module.VerificarTexto(Text: string, noAcent)
+	local EliminarEspacios = Text:match("^%s*(.-)%s*$")
+	return #EliminarEspacios > 0 and (noAcent and EliminarEspacios or module.quitarAcentos(EliminarEspacios))
+end
+```
+
+Aquí `quitarAcentos` se aplica **sola**, sin `quitarSimbolos` delante, así que funciona:
+`canción` → `cancion`.
+
+| Camino | Qué hace con `canción` |
+|---|---|
+| `BusquedaSettings.VerificarTexto` (cliente) | `cancion` |
+| `BuscarKeysPorJugador` (servidor) | `cancin` |
+
+Dos normalizaciones distintas para el mismo idioma, en el mismo sistema.
+
+#### Teoría — TEORÍA
+
+Si las claves del índice se construyen por el camino del cliente y las consultas por el del
+servidor, **ninguna palabra con acento o con `ñ` encuentra nada**: se busca `cancin` contra
+una clave `cancion`, y `string.match` no las une.
+
+Si los dos lados usan el camino del servidor, la búsqueda funciona —mal, pero
+consistentemente— porque las dos partes degradan igual.
+
+**No se afirma cuál de los dos casos es.** El índice lo construye `BusquedaMusicas`, que está
+leído solo en parte, y la respuesta está ahí. Lo que sí es seguro es que **las dos rutas de
+normalización de este repositorio no dan el mismo resultado**, y eso en un juego en español no
+es un detalle: afecta a una fracción grande de los títulos.
+
+**Registrado como correcto, en el mismo sitio.** `quitarSimbolos` tiene un efecto secundario
+que sí conviene: el texto del jugador se usa después como **patrón de Lua** en
+`string.match(index, coincidencia)`, y quitar todo lo que no sea alfanumérico elimina de paso
+los caracteres mágicos (`%`, `(`, `[`, `-`, `+`, `*`, `?`, `.`). Sin eso, una búsqueda con un
+`%` podría lanzar o casar de forma inesperada. Así que la función hace falta — solo que en el
+otro orden.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `quitarSimbolos` se aplica antes que `quitarAcentos` en `BuscarKeysPorJugador` |
+| 2 | `[^%w%s]` borra los bytes de una vocal acentuada UTF-8 |
+| 3 | `quitarAcentos` está escrito para UTF-8 y funciona si se le da el texto sin tocar |
+| 4 | `BusquedaSettings.VerificarTexto` aplica `quitarAcentos` sola, sin `quitarSimbolos` |
+| 5 | Las dos rutas dan resultados distintos para la misma palabra |
+| 6 | `quitarAcentos`, `quitarSimbolos` y `BuscarKeysPorJugador` están declaradas **globales**, sin `local` |
+| 7 | El texto normalizado se usa como patrón en `string.match`, así que el filtro de símbolos sí hace falta |
+
+#### Incógnitas
+
+- **La principal:** por qué camino se construyen las claves del índice. Está en
+  `BusquedaMusicas`, leído solo en parte. De eso depende que esto sea «la búsqueda con acentos
+  no encuentra nada» o «encuentra, pero por una clave rara».
+- Cuántos títulos del catálogo llevan acento o `ñ`. En español, muchos.
+- Si el `#palabra <= 2` que descarta palabras cortas agrava el efecto: `cancin` sigue teniendo
+  seis caracteres, así que no.
+
+#### Escenario de ejemplo
+
+Alguien busca «corazón» en el karaoke y no le sale nada. Prueba «corazon», sin tilde, y
+tampoco —porque el servidor busca `corazon` y la clave dice otra cosa, o al revés—. Acaba
+buscando «cora» y encontrándola por casualidad. Nadie reporta «la búsqueda no entiende los
+acentos», reportan «el buscador va mal».
+
+**Comportamiento esperado:** `canción` y `cancion` encuentran lo mismo.
+**Comportamiento posible:** `canción` se convierte en `cancin` y no encuentra nada.
+
+#### Plan de verificación — *Corrección funcional*
+
+1. Averigua primero por qué camino se normalizan las claves del índice, en `BusquedaMusicas`.
+2. Publica una canción con acento en el título, por ejemplo «Corazón Partío».
+3. Búscala escribiendo `corazón`. Anota el resultado.
+4. Búscala escribiendo `corazon`. Anota el resultado.
+5. Búscala escribiendo `coraz`. Debería salir en los tres casos si la búsqueda es por
+   subcadena.
+6. Repite con una `ñ`: «Mañana».
+7. Instrumenta `BuscarKeysPorJugador` para registrar `indices` y compáralo con las claves
+   reales del índice. *(Instrumentación para la prueba.)*
+8. Prueba una búsqueda con `%` y con `-` y confirma que no lanza — eso comprueba la parte que
+   sí está bien.
+
+**Pasa:** los pasos 3 y 4 encuentran la canción.
+**Falla:** alguno de los dos no la encuentra.
+
+**Instrumentación sugerida:** solo el registro del paso 7. La corrección —intercambiar las dos
+llamadas, `quitarAcentos` primero y `quitarSimbolos` después— es un **cambio de código** y aquí
+no se aplica. Ojo: hay que cambiar **las dos** rutas a la vez, o se cambia un desajuste por
+otro.
 
 
 ## Cobertura

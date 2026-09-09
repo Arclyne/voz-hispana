@@ -158,6 +158,44 @@ elimina al fabricar la versión colocable de una herramienta. Un walkie en la ma
 `LocalScript`; un walkie colocado en el suelo, no. Es lo correcto, y explica por qué el
 generador existe.
 
+## Las tres plantillas para copiar
+
+**HECHO.** `src/ServerStorage/Templates/` (169 líneas) no es código de juego: son tres
+esqueletos para empezar algo nuevo.
+
+| Plantilla | Líneas | Para qué |
+|---|---|---|
+| `SettingsTemplate.luau` | 28 | Los ajustes de un objeto colocable: nombre, descripción, precio, etiqueta |
+| `TemplateJob.luau` | 97 | Un trabajo nuevo para [`JobSystem`](./jobs.md): `Tag`, `WhiteList`, `finished`, `MarkUse` |
+| `TemplateUIS.luau` | 44 | Un panel de interfaz: `Start`, `OpenFrame`, `Exit`, con su animación y su limpieza |
+
+**Registrado como correcto — la idea.** Que exista una plantilla de trabajo con su
+`WhiteList` ya puesta es lo que hace probable que un trabajo nuevo la traiga. La lista blanca
+de [Trabajos](./jobs.md#un-solo-remote-por-trabajo-y-el-cliente-manda-el-nombre-del-método) no
+es opcional en la práctica porque el punto de partida ya la incluye.
+
+**Y por eso mismo, lo que traen mal se propaga.** Dos cosas:
+
+**OBSERVACIÓN — `SettingsTemplate.luau` es el origen del texto de relleno.** Es de aquí de
+donde salen las 46 descripciones idénticas que registra
+[BUG-CANDIDATE-047](../testing/verification-plan.md#bug-candidate-047). Cada mueble nuevo
+nace con ella.
+
+**OBSERVACIÓN — la rama de servidor de `TemplateJob` no puede ejecutarse.** El archivo define:
+
+```lua
+local Player: Player = IsClient and game:GetService('Players').LocalPlayer or nil
+...
+elseif self.Occupant[Player] then
+```
+
+En el servidor `Player` es `nil`, así que `self.Occupant[nil]` siempre devuelve `nil` —leer
+una tabla con clave nula no lanza en Lua, simplemente no encuentra nada— y la rama nunca se
+toma. En la plantilla no importa, porque no se ejecuta. Importa **si alguien la copia sin
+mirar esa línea**, que es exactamente para lo que sirve una plantilla.
+
+Se anota y no se corrige: este proyecto documenta.
+
 ## Qué queda por leer
 
 | Archivo | Estado |

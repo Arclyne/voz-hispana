@@ -20,28 +20,44 @@ ya lo estaban.
 
 ## Progreso general
 
-**92 %**
+**Cobertura del repositorio: completa. Verificación: pendiente, y hace falta Studio.**
 
-Justificación del número (deliberadamente conservadora): el repositorio tiene
-**552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
-inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **106 de 552 archivos leídos** (estado por archivo en
-`docs/reference/script-inventory.md`).
+El repositorio tiene **552 archivos `.luau`** inspeccionables y 320 binarios `.rbxm` que no
+lo son. Los 552 tienen ya un estado que no es «pendiente» — lo que **no** significa que estén
+todos leídos línea a línea. La distinción importa:
 
-Eso es un 15 % por número de archivos, pero una porción mucho mayor del código que sostiene
-todo lo demás: el arranque completo, el sistema de mundos/casas entero, las capas de
-reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
-invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
-mobiliario, y toda la ruta de monetización, y la estructura de los interactuables, el inventario, la moderación de karaoke, los cuadros, los trabajos, la persistencia de fuera de DataKit, y un barrido de la superficie de red
-del resto. Los ~446 archivos restantes son sistemas de juego (interactuables, karaoke,
-máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
-empaquetadas.
+| Estado | Qué significa de verdad | Archivos |
+|---|---|---|
+| **Documentado** | Leído entero **y** anotado con Moonwave en el propio código | 8 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página | 158 |
+| Analizado (en parte) | Leído en lo que respondía a una pregunta concreta; el resto no | 217 |
+| Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** | 169 |
 
-El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
-lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
-del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 13 de sistemas +
-3 de referencia + 51 candidatos a bug con evidencia, frente a un plan que aún necesita
-~8 sistemas más y la pasada Moonwave por script.
+El estado por archivo, con líneas y ruta en ejecución, está en
+[`docs/reference/script-inventory.md`](docs/reference/script-inventory.md), que **genera un
+script** —no se mantiene a mano— y que un guardián de CI compara contra esta tabla en cada
+commit.
+
+### Lo que este proyecto no puede afirmar
+
+- **Nada está `Verificado`.** Verificar exige ejecutar los planes de
+  `docs/testing/verification-plan.md` en Roblox Studio, y eso no se puede hacer desde aquí.
+  Los 52 candidatos a bug son teorías con evidencia y con criterio de paso y de fallo, no
+  hallazgos confirmados.
+- **Hay 320 archivos `.rbxm` que no se pueden leer.** Son modelos binarios de Roblox y el
+  código de sus `LocalScript` va comprimido dentro. Toda la interfaz que vive ahí queda fuera
+  de alcance, y varias entradas del plan dicen explícitamente que su impacto depende de algo
+  que está ahí dentro.
+- **Los censos de este sitio son suelos, no totales.** El de remotes no incluye los que se
+  crean en ejecución; el de consumidores de cada librería no ve los `require` que haya en los
+  `.rbxm`.
+
+### Lo que sí sostiene
+
+10 páginas de arquitectura + 7 de casas + 21 de sistemas + 3 de referencia + 52 candidatos a
+bug con evidencia + 47 diagramas. Y tres guardianes que corren en cada commit: que ningún
+`.luau` difiera de `main`, que los 443 enlaces internos resuelvan, y que cada número afirmado
+en el sitio siga cuadrando con el repositorio.
 
 ---
 
@@ -220,7 +236,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Falta parte de `Compras.luau` |
 | Recompensas y economía secundaria | `ServerScripts/LootBoxService`, `PlaytimeRewardSystem`, `FavoriteService`, `stats` | **Documentado** — `docs/systems/rewards.md`. **No estaban en esta tabla hasta ahora** |
 | Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService`, `GiftHandler` | **Documentado** — `docs/systems/monetization.md`, 2 diagramas, incluida la ruta de regalos y `ProcessReceipt`. Falta `ShopInfo` |
-| Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | **Barrido** — `docs/systems/survey.md`; leída la ruta de reclamación |
+| Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | **Documentado** — `docs/systems/quests.md`. La comprobación de distancia que falta en 21 de 25 interactuables, aquí sí está |
 | Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | **Barrido** — `docs/systems/survey.md`; el servidor leído entero |
 | Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | **Superficie** — `docs/systems/server-misc.md` y `client-ui.md`; su papel, no su implementación |
 | Trabajos | `Shared/JobSystem`, `Events/Jobs` | **Documentado** — `docs/systems/jobs.md`. Faltan los cuatro módulos de trabajo por dentro |
@@ -323,10 +339,10 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 149 |
-| Analizado (en parte) | 187 |
+| Analizado (leído entero, descrito en el sitio) | 158 |
+| Analizado (en parte) | 217 |
 | Frontera (terceros) — documentada por fuera, sin leer por dentro | 169 |
-| Pendiente | 39 |
+| Pendiente | 0 |
 
 Las lecturas parciales y por qué:
 
@@ -513,7 +529,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 51 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 52 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -551,7 +567,7 @@ y razonado está en la propia página; el resumen es:
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
 - **Diagramas:** 47 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 51 redactados al completo, incluida una pasada de seguridad
+- **Candidatos a bug:** 52 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
