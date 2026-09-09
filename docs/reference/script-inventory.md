@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 105 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 125 |
-| Pendiente | Aún sin leer | 314 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 110 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 163 |
+| Pendiente | Aún sin leer | 271 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 227 leídos.
+530 archivos, 76,305 líneas, 270 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -177,57 +177,57 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/</code> — 19 archivo(s) — 3/19 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/</code> — 19 archivo(s) — 19/19 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Attributes.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.Attributes` | Pendiente |
-| `BusquedaSettings.luau` | ModuleScript | — | — | 210 | `ReplicatedStorage.Client.BusquedaSettings` | Pendiente |
-| `CreatePath.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.CreatePath` | Pendiente |
-| `DesingData.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.DesingData` | Pendiente |
-| `Disconnects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Client.Disconnects` | Pendiente |
-| `Event.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Client.Event` | Pendiente |
-| `InsertService.luau` | ModuleScript | — | — | 120 | `ReplicatedStorage.Client.InsertService` | Pendiente |
+| `Attributes.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.Attributes` | Analizado (en parte) |
+| `BusquedaSettings.luau` | ModuleScript | — | — | 210 | `ReplicatedStorage.Client.BusquedaSettings` | Analizado (en parte) |
+| `CreatePath.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.CreatePath` | Analizado (en parte) |
+| `DesingData.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.DesingData` | Analizado (en parte) |
+| `Disconnects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Client.Disconnects` | Analizado |
+| `Event.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Client.Event` | Analizado |
+| `InsertService.luau` | ModuleScript | — | — | 120 | `ReplicatedStorage.Client.InsertService` | Analizado |
 | `MainPS.server.luau` | Script | Client | yes | 94 | `ReplicatedStorage.Client.MainPS.server` | Analizado |
-| `Math.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.Math` | Pendiente |
-| `NametagMicClient.server.luau` | Script | Client | yes | 259 | `ReplicatedStorage.Client.NametagMicClient.server` | Pendiente |
-| `PaintActives.luau` | ModuleScript | — | — | 3 | `ReplicatedStorage.Client.PaintActives` | Pendiente |
+| `Math.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.Math` | Analizado (en parte) |
+| `NametagMicClient.server.luau` | Script | Client | yes | 259 | `ReplicatedStorage.Client.NametagMicClient.server` | Analizado (en parte) |
+| `PaintActives.luau` | ModuleScript | — | — | 3 | `ReplicatedStorage.Client.PaintActives` | Analizado |
 | `PlayerManager.server.luau` | Script | Client | yes | 59 | `ReplicatedStorage.Client.PlayerManager.server` | Analizado |
 | `Posicionamientos.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Client.Posicionamientos` | Analizado (en parte) |
-| `SettingsInfo.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.SettingsInfo` | Pendiente |
-| `SurfacePlacer.server.luau` | Script | Client | yes | 63 | `ReplicatedStorage.Client.SurfacePlacer.server` | Pendiente |
-| `UiManager.server.luau` | Script | Client | yes | 166 | `ReplicatedStorage.Client.UiManager.server` | Pendiente |
-| `messagesManager.server.luau` | Script | Client | yes | 79 | `ReplicatedStorage.Client.messagesManager.server` | Pendiente |
-| `stats.server.luau` | Script | Client | yes | 69 | `ReplicatedStorage.Client.stats.server` | Pendiente |
-| `topbar.server.luau` | Script | Client | yes | 282 | `ReplicatedStorage.Client.topbar.server` | Pendiente |
+| `SettingsInfo.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.SettingsInfo` | Analizado (en parte) |
+| `SurfacePlacer.server.luau` | Script | Client | yes | 63 | `ReplicatedStorage.Client.SurfacePlacer.server` | Analizado (en parte) |
+| `UiManager.server.luau` | Script | Client | yes | 166 | `ReplicatedStorage.Client.UiManager.server` | Analizado (en parte) |
+| `messagesManager.server.luau` | Script | Client | yes | 79 | `ReplicatedStorage.Client.messagesManager.server` | Analizado (en parte) |
+| `stats.server.luau` | Script | Client | yes | 69 | `ReplicatedStorage.Client.stats.server` | Analizado (en parte) |
+| `topbar.server.luau` | Script | Client | yes | 282 | `ReplicatedStorage.Client.topbar.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Animator/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Animator/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 166 | `ReplicatedStorage.Client.Animator.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 166 | `ReplicatedStorage.Client.Animator.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ClickDetectorHandler/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ClickDetectorHandler/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MouseAction.luau` | ModuleScript | — | — | 9 | `ReplicatedStorage.Client.ClickDetectorHandler.MouseAction` | Pendiente |
-| `init.server.luau` | Script | Client | yes | 176 | `ReplicatedStorage.Client.ClickDetectorHandler.init.server` | Pendiente |
+| `MouseAction.luau` | ModuleScript | — | — | 9 | `ReplicatedStorage.Client.ClickDetectorHandler.MouseAction` | Analizado (en parte) |
+| `init.server.luau` | Script | Client | yes | 176 | `ReplicatedStorage.Client.ClickDetectorHandler.init.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/CodeExamples/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/CodeExamples/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MicStatusExample.server.luau` | Script | Client | yes | 118 | `ReplicatedStorage.Client.CodeExamples.MicStatusExample.server` | Pendiente |
+| `MicStatusExample.server.luau` | Script | Client | yes | 118 | `ReplicatedStorage.Client.CodeExamples.MicStatusExample.server` | Analizado (en parte) |
 
 </details>
 
@@ -241,34 +241,34 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ProgressBarStarter/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ProgressBarStarter/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ProgressBarController.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.ProgressBarStarter.ProgressBarController` | Pendiente |
-| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.ProgressBarStarter.init.server` | Pendiente |
+| `ProgressBarController.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.ProgressBarStarter.ProgressBarController` | Analizado (en parte) |
+| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.ProgressBarStarter.init.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/QuestClient/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/QuestClient/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `QuestClient.server.luau` | Script | Client | yes | 205 | `ReplicatedStorage.Client.QuestClient.QuestClient.server` | Pendiente |
-| `QuestPickableClient.server.luau` | Script | Client | yes | 97 | `ReplicatedStorage.Client.QuestClient.QuestPickableClient.server` | Pendiente |
+| `QuestClient.server.luau` | Script | Client | yes | 205 | `ReplicatedStorage.Client.QuestClient.QuestClient.server` | Analizado (en parte) |
+| `QuestPickableClient.server.luau` | Script | Client | yes | 97 | `ReplicatedStorage.Client.QuestClient.QuestPickableClient.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Ragdoll/</code> — 4 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Ragdoll/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `GettingUpAssist.server.luau` | Script | Client | yes | 32 | `ReplicatedStorage.Client.Ragdoll.GettingUpAssist.server` | Pendiente |
-| `RToRagdoll.server.luau` | Script | Client | yes | 28 | `ReplicatedStorage.Client.Ragdoll.RToRagdoll.server` | Pendiente |
-| `RagdollAtHighSpeeds.server.luau` | Script | Client | yes | 44 | `ReplicatedStorage.Client.Ragdoll.RagdollAtHighSpeeds.server` | Pendiente |
-| `RagdollRemote.server.luau` | Script | Client | yes | 34 | `ReplicatedStorage.Client.Ragdoll.RagdollRemote.server` | Pendiente |
+| `GettingUpAssist.server.luau` | Script | Client | yes | 32 | `ReplicatedStorage.Client.Ragdoll.GettingUpAssist.server` | Analizado (en parte) |
+| `RToRagdoll.server.luau` | Script | Client | yes | 28 | `ReplicatedStorage.Client.Ragdoll.RToRagdoll.server` | Analizado (en parte) |
+| `RagdollAtHighSpeeds.server.luau` | Script | Client | yes | 44 | `ReplicatedStorage.Client.Ragdoll.RagdollAtHighSpeeds.server` | Analizado (en parte) |
+| `RagdollRemote.server.luau` | Script | Client | yes | 34 | `ReplicatedStorage.Client.Ragdoll.RagdollRemote.server` | Analizado (en parte) |
 
 </details>
 
@@ -282,55 +282,55 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/RouletteUIStarter/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/RouletteUIStarter/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `RouletteUIController.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Client.RouletteUIStarter.RouletteUIController` | Pendiente |
-| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.RouletteUIStarter.init.server` | Pendiente |
+| `RouletteUIController.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Client.RouletteUIStarter.RouletteUIController` | Analizado (en parte) |
+| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.RouletteUIStarter.init.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/ClientDataManager/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/ClientDataManager/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Channel.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.Channel` | Pendiente |
-| `init.client.luau` | LocalScript | — | yes | 10 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.init.client` | Pendiente |
+| `Channel.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.Channel` | Analizado (en parte) |
+| `init.client.luau` | LocalScript | — | yes | 10 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.init.client` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/Modules/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/Modules/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `InventoryController.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Client.WorldSystem.Modules.InventoryController` | Pendiente |
+| `InventoryController.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Client.WorldSystem.Modules.InventoryController` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/animation/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/animation/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.server.luau` | Script | Client | yes | 109 | `ReplicatedStorage.Client.animation.init.server` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 109 | `ReplicatedStorage.Client.animation.init.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/cooking/</code> — 7 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/cooking/</code> — 7 archivo(s) — 7/7 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Blender.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Client.cooking.Blender` | Pendiente |
-| `CookingInteractable.luau` | ModuleScript | — | — | 179 | `ReplicatedStorage.Client.cooking.CookingInteractable` | Pendiente |
-| `CuttingBoard.luau` | ModuleScript | — | — | 195 | `ReplicatedStorage.Client.cooking.CuttingBoard` | Pendiente |
-| `Microwave.luau` | ModuleScript | — | — | 124 | `ReplicatedStorage.Client.cooking.Microwave` | Pendiente |
-| `Oven.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Client.cooking.Oven` | Pendiente |
-| `Stove.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.cooking.Stove` | Pendiente |
-| `init.server.luau` | Script | Client | yes | 20 | `ReplicatedStorage.Client.cooking.init.server` | Pendiente |
+| `Blender.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Client.cooking.Blender` | Analizado (en parte) |
+| `CookingInteractable.luau` | ModuleScript | — | — | 179 | `ReplicatedStorage.Client.cooking.CookingInteractable` | Analizado (en parte) |
+| `CuttingBoard.luau` | ModuleScript | — | — | 195 | `ReplicatedStorage.Client.cooking.CuttingBoard` | Analizado (en parte) |
+| `Microwave.luau` | ModuleScript | — | — | 124 | `ReplicatedStorage.Client.cooking.Microwave` | Analizado (en parte) |
+| `Oven.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Client.cooking.Oven` | Analizado (en parte) |
+| `Stove.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.cooking.Stove` | Analizado (en parte) |
+| `init.server.luau` | Script | Client | yes | 20 | `ReplicatedStorage.Client.cooking.init.server` | Analizado (en parte) |
 
 </details>
 
@@ -554,12 +554,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/notificationsManager/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/notificationsManager/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.server.luau` | Script | Client | yes | 223 | `ReplicatedStorage.Client.notificationsManager.init.server` | Pendiente |
-| `statsNotifications.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.notificationsManager.statsNotifications` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 223 | `ReplicatedStorage.Client.notificationsManager.init.server` | Analizado (en parte) |
+| `statsNotifications.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.notificationsManager.statsNotifications` | Analizado (en parte) |
 
 </details>
 

@@ -96,6 +96,7 @@ o en un place de pruebas.
 | [043](#bug-candidate-043) | Condición de victoria suministrada por el cliente, con manejador de premio **puesto** (no stub) | **Explotable hoy**, entrega un objeto de inventario |
 | [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
+| [045](#bug-candidate-045) | El caché de assets pierde el filtro de tipo al reintentar, y puede dejar colgado a quien espera | Karaoke / Assets | Confirmado (el filtro) + Requiere pruebas de concurrencia (el bloqueo) | Baja / Media | **Muy alta** / baja |
 | [040](#bug-candidate-040) | Las dos tablas globales del place de donaciones llaman a un método que no existe | Donaciones / Persistencia | Confirmado por análisis estático | Media | **Muy alta** |
 | [041](#bug-candidate-041) | El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno | Utilidades compartidas | Confirmado por análisis estático | Media | **Muy alta** |
 | [042](#bug-candidate-042) | El comando de administración se comprueba en el chat y no en el remote | Comandos / Seguridad | Posible bug / Requiere pruebas de seguridad | Por determinar | Alta en la forma |
@@ -5583,6 +5584,175 @@ tocarlo: los dos extremos interactúan, y cambiar uno sin el otro desplaza el se
 quitarlo.
 
 
+## BUG-CANDIDATE-045
+
+### El caché de assets pierde el filtro de tipo al reintentar, y puede dejar colgado a quien espera
+
+**Sistema:** Karaoke / Assets · **Clasificación:** Confirmado por análisis estático (el filtro) + Posible bug / Requiere pruebas de concurrencia (el bloqueo)
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja el primero, Media el segundo · **Confianza:** **Muy alta** en el filtro, **baja** en el bloqueo
+
+**Código relacionado:** `Core/ReplicatedStorage/Client/InsertService.luau`, `module.LoadAsset`
+**Documentación relacionada:** [Cliente — interfaz y utilidades](../systems/client-ui.md#insertserviceluau-corre-en-el-servidor)
+
+Dos cosas en la misma función. Van juntas porque quien la toque va a leer las dos.
+
+### Primero: el reintento pierde el `IsA` — HECHO
+
+```lua
+function module.LoadAsset(AssetId, IsA)
+	if typeof(AssetId) ~= "number" then return end
+	local AssetLoaded = Cache[AssetId]
+	if AssetLoaded then
+		if AssetLoaded.Item then
+			AssetLoaded.DateBusqueda = DateTime.now().UnixTimestampMillis
+			return GetIsAModel(AssetLoaded.Item, IsA)
+		elseif GetElapsedTime(AssetLoaded.DateBusqueda) >= HoldToUpdate then
+			Cache[AssetId] = nil
+			return module.LoadAsset(AssetId)   -- ← IsA no se pasa
+		end
+	end
+```
+
+La llamada recursiva **no reenvía `IsA`**. Y `GetIsAModel` es lo único que aplica el filtro:
+
+```lua
+local function GetIsAModel(item : Instance, IsA)
+	return item and (not IsA or item:IsA(IsA)) and item:Clone()
+end
+```
+
+Con `IsA` nulo, `not IsA` es verdadero y **se clona lo que sea**.
+
+#### Por qué importa — HECHO
+
+Los dos consumidores pasan `"Decal"` y **los dos dependen de ello**:
+
+| Consumidor | Qué hace con el resultado | Si no es un `Decal` |
+|---|---|---|
+| `Karaoke/CrearCancion/Attributes.luau` | `NewMiniatura.Parent = Song.Recursos` | Parentea una instancia arbitraria dentro de la canción |
+| `ServerStorage/BusquedaMusicas.luau` | `Data.Miniatura = decal.Texture` | Indexar `.Texture` en algo que no lo tiene lanza, dentro de un `task.spawn` sin `pcall`: el hilo muere y `Data.IsLoaded` no se pone nunca |
+
+Y el `AssetId` **lo elige el jugador**: es la miniatura que pone al crear una canción. Ver
+[Karaoke](../systems/karaoke.md).
+
+#### Cuándo se alcanza — HECHO, y acota mucho
+
+Solo por esta secuencia:
+
+1. El asset **falla** al cargar (`pcall` de `LoadAsset` devuelve falso).
+2. Se cachea el fallo (`Item = nil`) durante `HoldToUpdate` = 10 s.
+3. Pasados esos 10 s, alguien vuelve a pedirlo → rama del reintento, sin `IsA`.
+4. Esta vez **sí** carga, y lo que carga **no** es un `Decal`.
+
+Si el asset sigue fallando, `Item` es `nil` y `GetIsAModel` devuelve falso igual que antes:
+no hay diferencia. El daño necesita un fallo transitorio seguido de un acierto de tipo
+equivocado. Por eso la gravedad es Baja: el mecanismo es seguro, la ocasión es rara y un
+jugador no controla cuándo falla `InsertService`.
+
+Lo que sí es seguro es que **el filtro de tipo no es fiable**, y ese filtro es la única
+comprobación de forma que hay sobre un asset elegido por un jugador. Los scripts ya los quita
+`elimineScrips` —eso está bien hecho—; el tipo, no siempre.
+
+### Segundo: `bin:Destroy()` justo después de `bin:Fire()` — TEORÍA
+
+La deduplicación de peticiones en vuelo:
+
+```lua
+local Process = InProcess[AssetId]
+if Process then
+	Process:Wait()
+	local Cached = Cache[AssetId]
+	return GetIsAModel(Cached and Cached.Item, IsA)
+end
+local bin = Instance.new("BindableEvent")
+InProcess[AssetId] = bin.Event
+...
+bin:Fire()
+bin:Destroy()
+InProcess[AssetId] = nil
+```
+
+**La intención es correcta y buena:** si dos llamadas piden el mismo asset a la vez, la
+segunda espera a la primera en vez de cargarlo dos veces.
+
+**La duda es el `Destroy` inmediato.** `Destroy()` sobre un `BindableEvent` desconecta sus
+conexiones, y `Event:Wait()` es una conexión por debajo. Con el comportamiento de señales
+*Deferred* —el de por defecto en Roblox— `Fire()` **no reanuda al que espera en el acto**:
+lo encola. Queda por saber si una reanudación ya encolada sobrevive al `Destroy` de la línea
+siguiente.
+
+- Si sobrevive, esto funciona y no hay nada que arreglar.
+- Si no, **el que esperaba se queda colgado para siempre**, y con él la corrutina que lo
+  llamó. En `BusquedaMusicas` eso es una entrada de caché que nunca se marca `IsLoaded`.
+
+**No se afirma que falle.** Se afirma que depende de un detalle del motor que no está en este
+repositorio y que el código no documenta. Es la clase de cosa que funciona en las pruebas
+—donde las peticiones no se solapan— y aparece cuando varios jugadores abren el buscador de
+canciones a la vez.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La llamada recursiva es `module.LoadAsset(AssetId)`, sin el segundo argumento |
+| 2 | `GetIsAModel` con `IsA` nulo clona cualquier tipo |
+| 3 | Los dos consumidores pasan `"Decal"` y usan el resultado como tal |
+| 4 | `BusquedaMusicas` lee `.Texture`, que no existe fuera de unos pocos tipos |
+| 5 | `Attributes` parentea el resultado dentro de la canción |
+| 6 | El `AssetId` proviene de la miniatura que elige el jugador |
+| 7 | `bin:Destroy()` está en la línea siguiente a `bin:Fire()` |
+| 8 | `Process:Wait()` no tiene tiempo límite ni salida alternativa |
+
+#### Incógnitas
+
+- **La principal:** si una reanudación encolada por `Fire` sobrevive al `Destroy`. Sin
+  responder esto, el segundo hallazgo no pasa de teoría.
+- Si el place usa `SignalBehavior` *Deferred* o *Immediate*. No está en este repositorio.
+  Con *Immediate* el `Fire` reanuda antes del `Destroy` y el problema no existe.
+- Con qué frecuencia falla `InsertService:LoadAsset` en producción. De eso depende que la
+  primera parte se alcance alguna vez.
+- Qué tipos de asset devuelve Roblox para un id de imagen inválido o moderado. Si siempre es
+  un fallo limpio, la primera parte es inalcanzable en la práctica.
+
+#### Escenario de ejemplo
+
+Diez jugadores abren el buscador de canciones a la vez y varias piden la misma miniatura.
+Nueve entran por `Process:Wait()`. Si el `Destroy` corta la reanudación, esas nueve
+corrutinas no vuelven: sus canciones se quedan sin miniatura y sin `IsLoaded`, y en el
+registro no aparece nada porque nadie ha lanzado un error — simplemente no ha vuelto.
+
+**Comportamiento esperado:** el que espera se reanuda y recibe el asset cacheado, filtrado por tipo.
+**Comportamiento posible:** puede no reanudarse; y si el asset falló y se reintenta, el filtro
+de tipo ya no se aplica.
+
+#### Plan de verificación — *Concurrencia y recuperación ante fallos*
+
+Primero el filtro, que es el determinista:
+
+1. Elige un id de asset que **no** sea un `Decal` —un `Model`, por ejemplo—.
+2. Instrumenta `LoadAsset` para forzar que el primer `pcall` falle. *(Instrumentación para la
+   prueba.)*
+3. Llama a `LoadAsset(id, "Decal")`. Debe devolver `nil`.
+4. Espera más de 10 segundos y vuelve a llamar con `"Decal"`, ya sin forzar el fallo.
+5. Comprueba qué devuelve: si devuelve el `Model`, el filtro se perdió.
+
+Luego el bloqueo:
+
+6. Sin instrumentar nada, lanza veinte corrutinas que pidan el **mismo** id a la vez.
+7. Cuenta cuántas vuelven. Deberían volver las veinte.
+8. Registra el tiempo de cada una: las que esperaron deberían volver justo después de la
+   primera.
+9. Repite con un id que falle al cargar.
+10. Repite con `SignalBehavior` puesto a *Immediate* y compara.
+
+**Pasa:** el paso 5 devuelve `nil` y el paso 7 cuenta veinte.
+**Falla:** el paso 5 devuelve el `Model`, o el paso 7 cuenta menos de veinte.
+
+**Instrumentación sugerida:** solo la del paso 2. Las correcciones —pasar `IsA` en la
+recursión, y mover el `Destroy` a después de que los que esperan hayan vuelto— son **cambios
+de código** y aquí no se aplican.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -5648,6 +5818,9 @@ completa.
 | Máquinas: `Machine`, `MachineFactory`, `init.server`, `Roulette`, `ToyMachine`, `Stacker`, `PopTheLock`, `Basketball` | Sí | Las dos rutas de entrada y los seis manejadores de premio |
 | `machines/Pong.luau`, `Shared/pong/` | En parte | Quién simula y quién cuenta; la física no |
 | `Client/machines/` (16 archivos) | **Superficie** | Animación e interfaz, sin autoridad |
+| `Client/InsertService.luau` | Sí | El caché, la deduplicación y el borrado de scripts |
+| `Client/topbar.server.luau`, `Event`, `Disconnects` | Sí | |
+| `Client/` — los otros 15 archivos sueltos y 13 carpetas pequeñas | **Superficie** | Su papel y a qué sistema pertenecen |
 | `Shared/ComprasTablero/` (2 archivos) | Sí | El teletipo entre servidores y la tabla global |
 | `ReplicatedStorage/ShopInfo.luau` | Sí | Las 18 entradas y sus tres consumidores |
 | `Shared/Nametag/`, `NametagMicClient` | **No** | En cola |

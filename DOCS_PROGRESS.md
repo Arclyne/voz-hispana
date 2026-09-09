@@ -40,7 +40,7 @@ empaquetadas.
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
 del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 13 de sistemas +
-3 de referencia + 44 candidatos a bug con evidencia, frente a un plan que aún necesita
+3 de referencia + 45 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -222,7 +222,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService`, `GiftHandler` | **Documentado** — `docs/systems/monetization.md`, 2 diagramas, incluida la ruta de regalos y `ProcessReceipt`. Falta `ShopInfo` |
 | Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | **Barrido** — `docs/systems/survey.md`; leída la ruta de reclamación |
 | Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | **Barrido** — `docs/systems/survey.md`; el servidor leído entero |
-| Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | Pendiente |
+| Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | **Superficie** — `docs/systems/client-ui.md`; su papel, no su implementación |
 | Trabajos | `Shared/JobSystem`, `Events/Jobs` | **Documentado** — `docs/systems/jobs.md`. Faltan los cuatro módulos de trabajo por dentro |
 | Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | **Documentado** — `docs/systems/nametags.md`. Faltan `Shared/Nametag/` y el cliente |
 | Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | **Papel establecido** — `docs/systems/survey.md`: es interfaz de cliente sin remotes propios; conduce a `Stores`. Su lógica de UI sigue sin leer |
@@ -230,6 +230,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Bar y NPCs | `Shared/BartenderSystem`, `Shared/NPC_Custom`, `Shared/DialogModule` | **Documentado** — `docs/systems/bar-npcs.md`, 1 diagrama. **No estaba en esta tabla hasta ahora** |
 | Tutoriales y guías | `Shared/GuideService`, `Shared/Tutorials` | **Documentado** — `docs/systems/tutorials.md`, 1 diagrama, 1 candidato de seguridad (039). **No estaba en esta tabla hasta ahora** |
 | Utilidades compartidas (44 archivos sueltos) | `ReplicatedStorage/Shared/*.luau` | **Documentado** — `docs/systems/shared-utilities.md`, 2 candidatos (041, 042). Las de interfaz, solo en superficie a propósito |
+| Cliente — interfaz y utilidades | `ReplicatedStorage/Client/*.luau` y sus carpetas pequeñas | **Documentado** — `docs/systems/client-ui.md`, 1 candidato (045). Las carpetas grandes tienen página propia |
 | Place de donaciones (teletipo y tablas) | `Shared/ComprasTablero`, `ReplicatedStorage/ShopInfo` | **Documentado** — `docs/systems/donations-place.md`, 1 diagrama, 1 candidato confirmado (040). **No estaba en esta tabla hasta ahora** |
 | Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
 | Librerías de terceros | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pendiente (marcar como terceros, documentar solo la frontera) |
@@ -321,9 +322,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 105 |
-| Analizado (en parte) | 125 |
-| Pendiente | 314 |
+| Analizado (leído entero, descrito en el sitio) | 110 |
+| Analizado (en parte) | 163 |
+| Pendiente | 271 |
 
 Las lecturas parciales y por qué:
 
@@ -510,7 +511,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 44 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 45 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -548,7 +549,7 @@ y razonado está en la propia página; el resumen es:
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
 - **Diagramas:** 45 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 44 redactados al completo, incluida una pasada de seguridad
+- **Candidatos a bug:** 45 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
