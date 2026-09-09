@@ -77,4 +77,4 @@ remains unknown, and a reproducible plan to confirm or dismiss them. See
 great deal — notably `src/StarterPlayer/StarterPlayerScripts.rbxm` and
 `src/StarterPlayer/StarterCharacterScripts.rbxm`, which may hold the real client entry
 points. Pages that depend on them state the gap instead of filling it. The full list is
-in **Reference → Binary assets**.
+in [Binary assets](./reference/binary-assets.md).
