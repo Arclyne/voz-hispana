@@ -81,6 +81,8 @@ o en un place de pruebas.
 | [026](#bug-candidate-026) | El globo está implementado entero y ningún jugador lo recibe nunca | Inventario | Bug probable / Confirmado por análisis estático | Baja | **Muy alta** |
 | [027](#bug-candidate-027) | `ToolsServer` reparenta y manipula las `Instance` que le diga el cliente | Herramientas / Seguridad | Bug probable / Requiere pruebas de seguridad | Alta | Alta |
 | [028](#bug-candidate-028) | Tres cargadores de moderación comprueban que haya un administrador conectado, no que quien llama lo sea | Karaoke / Seguridad | Posible bug / Requiere pruebas de seguridad | Baja | Alta |
+| [029](#bug-candidate-029) | Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos | Cuadros | Posible bug / Requiere inyección de fallos | Media | Alta |
+| [030](#bug-candidate-030) | El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos | Cuadros / Seguridad | Posible bug / Requiere pruebas de seguridad | Media | Alta |
 
 ### Entradas de seguridad
 
@@ -101,6 +103,7 @@ formato que el resto: teoría con justificación, no acusaciones.
 | [025](#bug-candidate-025) | Reglas de interacción solo en el cliente en 21 de 25 manejadores | **Explotable hoy**, impacto bajo |
 | [027](#bug-candidate-027) | Reparentado arbitrario de `Instance` desde un remote | **Explotable hoy**, control sobre el mundo compartido |
 | [028](#bug-candidate-028) | Guarda de autorización que mira al servidor en vez de al llamante | **Explotable hoy**, pero sin fuga de datos: el llamante acaba expulsado |
+| [030](#bug-candidate-030) | Amplificación de red: una llamada del cliente difunde a todos, sin límite de frecuencia | **Explotable hoy**, sin necesidad de permisos ajenos |
 
 #### Lo que se revisó y salió limpio
 
@@ -124,6 +127,9 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Autorización para editar un cuadro | **Correcto.** `UpdateCuadros` exige que el modelo tenga la etiqueta `Paint`/`CuadrosPaint` y que su atributo `Owner`/`InInUse` —puesto por el servidor— sea el `UserId` del llamante. |
+| Borrado de un cuadro ajeno | **Correcto.** `Remove` comprueba `Format.IsOwner` contra el dato **leído del DataStore**, no contra lo que manda el cliente, y además que no esté colgado en una casa. |
+| Pago de una venta de cuadro con el vendedor desconectado | **Correcto, y es el mejor patrón del juego para esto.** Viaja por el buzón idempotente del perfil de DataKit, con `sellerHere` para no pagar dos veces. |
 | Validación de entrada en el inventario | **Correcto, y es la referencia del proyecto.** Los cinco remotes validan tipo, entereza y rango, y `InventoryManager` **vuelve a validarlo todo** por su cuenta más la propiedad. Es el único sistema leído que valida en las dos capas. |
 | Conceder un objeto que no existe | **Correcto.** `getToolAsset` busca la `Tool` real en `Assets/Tools` antes de `addItem` y `setItemCount`. |
 | Re-conceder objetos que el jugador gastó | **Correcto, y razonado en el propio código.** La bandera `defaultsInitialised` es explícitamente preferida a «¿está vacío el inventario?», con el comentario que lo justifica. |
@@ -3333,6 +3339,242 @@ administrador al principio de los tres métodos. Diría de inmediato si esto se 
 de paso, es donde tendría que ir la comprobación.
 
 
+## BUG-CANDIDATE-029
+
+### Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos
+
+**Sistema:** Cuadros · **Clasificación:** Posible bug / Requiere inyección de fallos
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Paint/ServerClient/init.luau`, `module:Remove` — las
+funciones locales `GetData` y `Delete`
+**Documentación relacionada:** [Cuadros → El borrado y sus reintentos](../systems/paint.md#el-borrado-y-sus-reintentos)
+
+#### Comportamiento observado — HECHO
+
+Dentro de `Remove` hay dos funciones locales que reintentan llamándose a sí mismas:
+
+```lua
+local esperar = task.wait
+local function GetData()
+	local Sucesss, DataPintura = self.DataBase:GetData("DataPinturas", KeyCuadro)
+	local OwnerCuadro = Sucesss and DataPintura and Format.IsOwner(Player, DataPintura)
+	if OwnerCuadro then
+		local function Delete()
+			local success, _ = self.DataBase:DeleteData('DataPinturas', KeyCuadro)
+			if not success then
+				warn('error al eliminar este cuadro, intentando de nuevo.')
+				Delete(esperar(self.ColaLoad.TimeExhauste / self.ColaLoad.MaxLoads))
+			else
+				warn('Cuadro eliminado por completo.')
+			end
+		end
+		Delete()
+	elseif not Sucesss then
+		warn('error al obtener el dato del cuadro, intentando de nuevo.')
+		GetData(esperar(self.ColaLoad.TimeExhauste / self.ColaLoad.MaxLoads))
+	else
+		warn('No eres dueño del cuadro, no puedes eliminarlo.')
+	end
+end
+GetData()
+```
+
+Ni `GetData` ni `Delete` aceptan parámetros: el `esperar(...)` que se les pasa está ahí solo
+para introducir la pausa antes de la llamada. **Ninguna de las dos tiene contador de
+intentos ni condición de parada** distinta del éxito.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Tres cosas se acumulan:
+
+1. **No es un bucle, es recursión.** Una llamada en posición de sentencia no es una llamada
+   de cola en Luau, así que cada reintento **añade un marco de pila**. Un fallo persistente
+   crece la pila hasta agotarla.
+2. **No hay techo de intentos.** Con el DataStore caído, el hilo reintenta indefinidamente,
+   una vez cada 3 segundos (`TimeExhauste / MaxLoads` = 60/20).
+3. **No hay cortacircuitos.** Esto usa `GlobalDataStore`, que llama a `DataStoreService`
+   directamente, **fuera de DataKit**, así que no tiene detrás el `Health` que corta tras
+   cinco fallos y que protege al resto del juego (ver **U-008**).
+
+Además, los efectos visibles ya ocurrieron **antes** del bucle: `table.remove` sobre la lista
+del jugador, `RemoveCache`, y `Load` reenviando la lista al cliente. Para el jugador el
+cuadro ya no existe; lo que puede quedar colgado indefinidamente es el borrado real.
+
+#### Teoría — TEORÍA
+
+Con `DataStoreService` degradado —throttling, incidencia de Roblox— cada intento de borrado
+deja un hilo vivo reintentando cada 3 segundos y creciendo en pila. Varios jugadores
+borrando durante la incidencia dejan varios hilos así. Ninguno se rinde, ninguno avisa a
+nadie más allá de un `warn`, y el consumo de cuota de DataStore sigue durante toda la
+incidencia, que es justo cuando conviene reducirlo.
+
+El desenlace probable es un error de desbordamiento de pila muchos minutos después, no una
+caída inmediata. Eso lo hace difícil de correlacionar con su causa.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `Delete` se llama a sí misma en la rama de fallo, sin contador |
+| 2 | `GetData` hace lo mismo, con la misma forma |
+| 3 | La llamada está en posición de sentencia, no `return`: no es una llamada de cola |
+| 4 | El intervalo es fijo: `TimeExhauste / MaxLoads`, sin retroceso exponencial |
+| 5 | `GlobalDataStore` está fuera de DataKit, así que no hay `Health` que corte |
+| 6 | Los efectos en la lista del jugador y en la caché ya se aplicaron antes de entrar al bucle |
+
+#### Incógnitas
+
+- Si `GlobalDataStore:GetData` y `DeleteData` traen su propio reintento interno. No se ha
+  leído `GlobalDataStore` (ver **U-008**); si lo tienen, hay reintentos anidados y el
+  problema es mayor, no menor.
+- Cuántos marcos de pila aguanta Luau aquí. A un reintento cada 3 segundos, alcanzar el
+  límite lleva horas: la consecuencia realista es el consumo sostenido, no el desbordamiento.
+
+#### Escenario de ejemplo
+
+Roblox tiene una incidencia de DataStore. Diez jugadores borran un cuadro. Diez hilos
+reintentan cada tres segundos durante las dos horas que dura la incidencia, sumando cuota
+justo cuando está limitada. En los registros solo se ve `error al eliminar este cuadro,
+intentando de nuevo` repetido.
+
+**Comportamiento esperado:** unos pocos reintentos con retroceso, y después rendirse
+dejando constancia.
+**Comportamiento posible:** reintentos indefinidos que crecen en pila.
+
+#### Plan de verificación — *Recuperación ante fallos*
+
+1. En un place de pruebas, sustituye temporalmente `DataBase.DeleteData` por una función que
+   devuelva siempre fallo. *(Instrumentación para la prueba, no una corrección.)*
+2. Borra un cuadro.
+3. Cuenta los `warn` durante cinco minutos y confirma el intervalo de 3 segundos.
+4. Comprueba si el hilo se detiene alguna vez por sí solo.
+5. Repite con `GetData` fallando, para la otra rama.
+
+**Pasa:** los reintentos se detienen tras un número acotado.
+**Falla:** siguen indefinidamente.
+
+**Instrumentación sugerida:** un contador de intentos en el `warn`. Convierte «esto falló
+otra vez» en «este es el intento 240», que es la información que hace falta para actuar.
+
+---
+
+## BUG-CANDIDATE-030
+
+### El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos
+
+**Sistema:** Cuadros / Seguridad · **Clasificación:** Posible bug / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Paint/ServerClient/init.luau`, `module:UpdateCuadros`
+y las constantes `timeUpdate` / `MaxUpdateDistance` de `module.init`
+**Documentación relacionada:** [Cuadros → La red](../systems/paint.md#la-red)
+
+#### Comportamiento observado — HECHO
+
+`UpdateCuadros` corre en los dos lados. El límite de ritmo está dentro de la rama de cliente:
+
+```lua
+if IsClient then
+	local now = tick()
+	if not force and (self.DateTimeUpdate and (now - self.DateTimeUpdate) < (self.timeUpdate or 0.5)) then
+		return
+	end
+	self.DateTimeUpdate = now
+end
+```
+
+Y la difusión, dentro de la de servidor:
+
+```lua
+for _, OtherPlayer in game:GetService('Players'):GetPlayers() do
+	if ModeloCuadro:GetAttribute("Owner") or OtherPlayer ~= Player then
+		events:FindFirstChild('Update'):FireClient(OtherPlayer, ModeloCuadro, serializacion)
+	end
+end
+```
+
+En el servidor no se comprueba ningún ritmo. `DateTimeUpdate` solo se escribe en la rama de
+cliente.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Las guardas de **autorización** están bien puestas —etiqueta del modelo y atributo `Owner`
+o `InInUse` igual al `UserId`, ambos escritos por el servidor— así que un jugador solo puede
+editar su propio lienzo. El problema no es quién, es **cuántas veces**:
+
+| | Valor |
+|---|---|
+| Intervalo previsto entre actualizaciones | `timeUpdate = 3` segundos |
+| Dónde se impone | Solo en el cliente |
+| Destinatarios de cada actualización | Todos los jugadores del servidor |
+| Tamaño de cada mensaje | La serialización completa del cuadro, sin tope (ver el formato en la página) |
+
+Es una **amplificación**: una llamada del cliente produce N mensajes salientes, con N igual
+al número de jugadores conectados, y sin límite de frecuencia.
+
+**HECHO adicional.** `MaxUpdateDistance = 160` se declara en `module.init` y **no se usa en
+ningún sitio**: un `grep` sobre todo `src/` solo encuentra la declaración. La intención de
+limitar la difusión a quien esté cerca existió y no llegó a implementarse, ni en el cliente
+ni en el servidor.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado que llame a `Update` en bucle sobre su propio lienzo genera tráfico
+saliente proporcional al aforo del servidor, con una carga útil que él mismo controla en
+tamaño. No necesita permisos que no tenga: solo su propio cuadro.
+
+Es el mismo patrón que [BUG-CANDIDATE-025](#bug-candidate-025) —una regla declarada en el
+cliente que el servidor no reevalúa— pero aquí lo que se pierde no es una regla de juego,
+es el presupuesto de red del servidor.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El bloque del límite está dentro de `if IsClient then` |
+| 2 | `DateTimeUpdate` solo se asigna en esa rama |
+| 3 | El bucle de difusión no consulta ningún tiempo |
+| 4 | `MaxUpdateDistance` se declara y no aparece en ninguna otra línea del repositorio |
+| 5 | El parámetro `force` permite al propio cliente saltarse su límite, así que ni siquiera es firme de ese lado |
+| 6 | `SeguridadFormato` valida la forma de la serialización, no su tamaño |
+
+#### Incógnitas
+
+- Cuánto pesa una serialización real. Determina si esto es una molestia o una saturación.
+- Si Roblox impone su propio límite al ritmo de `FireClient` por servidor. Si lo hace, acota
+  el daño sin arreglar la causa.
+- Si el cliente aplica alguna otra limitación en el `.rbxm` de la interfaz, que no es
+  inspeccionable (ver **U-001**). Aunque la aplicara, seguiría siendo del lado que no manda.
+
+#### Escenario de ejemplo
+
+Un jugador entra a un servidor lleno, se pone delante de su lienzo y llama a `Update` en
+bucle con una serialización grande. Los demás jugadores reciben esa carga varias veces por
+segundo cada uno, aunque estén al otro lado del mapa: el límite de distancia que iba a
+evitarlo está declarado y no se usa.
+
+**Comportamiento esperado:** el servidor descarta actualizaciones más frecuentes que
+`timeUpdate`, y difunde solo a quien esté a menos de `MaxUpdateDistance`.
+**Comportamiento posible:** acepta y difunde todas, a todos.
+
+#### Plan de verificación — *Seguridad*, *Carga*
+
+1. Entra a un servidor de pruebas con varias cuentas.
+2. Desde la consola del cliente, llama a `Paint.Update` con tu propio lienzo diez veces por
+   segundo.
+3. Mide el tráfico entrante de las otras cuentas.
+4. Comprueba si las que están lejos también lo reciben.
+5. Repite con una serialización grande y compara.
+
+**Pasa:** el servidor descarta las llamadas por encima del ritmo previsto.
+**Falla:** todas se difunden a todos.
+
+**Instrumentación sugerida:** llevar en el servidor el mismo `DateTimeUpdate` por jugador
+que ya existe en el cliente. La estructura está escrita; lo que falta es aplicarla del lado
+que decide.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -3374,7 +3616,9 @@ completa.
 | `Karaoke/init.luau` | Sí | |
 | `RevisarCanciones`, `CrearCancion` | En parte | El modelo de administración, los manejadores y sus guardas; no la paginación ni el editor |
 | `KaraokeTV/`, `BusquedaMusicas` | **No** | En cola |
-| Sistemas de juego (~430 archivos) | **No** | En cola |
+| `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
+| `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
+| Sistemas de juego (~425 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
@@ -3404,6 +3648,8 @@ y los cinco de `Inventory` enteros.
 
 Los remotes de moderación de `Karaoke` están revisados en cuanto a autorización (entrada 028).
 
-**Siguen sin revisar:** los remotes de `Paint` y la cocina, `ToolPlacementServer`, los
+Los ocho remotes de `Paint` están revisados en cuanto a autorización y ritmo (entrada 030).
+
+**Siguen sin revisar:** los remotes de la cocina, `ToolPlacementServer`, los
 televisores de karaoke, y el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
 hallazgos, así que esta sección debe leerse como un barrido en curso, no como una garantía.

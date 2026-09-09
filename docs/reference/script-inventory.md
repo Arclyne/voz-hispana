@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 59 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 17 |
-| Pendiente | Aún sin leer | 474 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 60 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 18 |
+| Pendiente | Aún sin leer | 472 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 67 leídos.
+530 archivos, 76,181 líneas, 69 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1031,12 +1031,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `SplitRespectingBrackets.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.SplitRespectingBrackets` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.init` | Analizado |
 
 </details>
 
@@ -1071,12 +1071,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/ServerClient/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/ServerClient/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Marcos.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Shared.Paint.ServerClient.Marcos.server` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 737 | `ReplicatedStorage.Shared.Paint.ServerClient.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 737 | `ReplicatedStorage.Shared.Paint.ServerClient.init` | Analizado (en parte) |
 
 </details>
 

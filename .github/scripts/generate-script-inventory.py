@@ -79,6 +79,7 @@ ANALYSED |= {
     t("Core/ServerScriptService/ServerScripts/inventory/InventoryManager/init.luau"),
     t("Core/ServerScriptService/ServerScripts/inventory/InventoryManager/DefaultTools.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/init.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -98,6 +99,7 @@ PARTIAL = {
     t("Core/ServerScriptService/ServerScripts/ToolsServer.server.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/init.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Paint/ServerClient/init.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
