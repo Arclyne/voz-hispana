@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 95 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 110 |
-| Pendiente | Aún sin leer | 339 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 105 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 125 |
+| Pendiente | Aún sin leer | 314 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 202 leídos.
+530 archivos, 76,305 líneas, 227 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -490,66 +490,66 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/</code> — 5 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/</code> — 5 archivo(s) — 5/5 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Client.machines.MachineFactory` | Pendiente |
-| `MachinePrompt.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.machines.MachinePrompt` | Pendiente |
-| `Pong.luau` | ModuleScript | — | — | 184 | `ReplicatedStorage.Client.machines.Pong` | Pendiente |
-| `init.server.luau` | Script | Client | yes | 133 | `ReplicatedStorage.Client.machines.init.server` | Pendiente |
-| `machineUtil.luau` | ModuleScript | — | — | 70 | `ReplicatedStorage.Client.machines.machineUtil` | Pendiente |
+| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Client.machines.MachineFactory` | Analizado (en parte) |
+| `MachinePrompt.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.machines.MachinePrompt` | Analizado (en parte) |
+| `Pong.luau` | ModuleScript | — | — | 184 | `ReplicatedStorage.Client.machines.Pong` | Analizado (en parte) |
+| `init.server.luau` | Script | Client | yes | 133 | `ReplicatedStorage.Client.machines.init.server` | Analizado (en parte) |
+| `machineUtil.luau` | ModuleScript | — | — | 70 | `ReplicatedStorage.Client.machines.machineUtil` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Basketball/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Basketball/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Prediction.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Client.machines.Basketball.Prediction` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.machines.Basketball.init` | Pendiente |
+| `Prediction.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Client.machines.Basketball.Prediction` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.machines.Basketball.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/PopTheLock/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/PopTheLock/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Controller.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Client.machines.PopTheLock.Controller` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Client.machines.PopTheLock.init` | Pendiente |
+| `Controller.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Client.machines.PopTheLock.Controller` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Client.machines.PopTheLock.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Roulette/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Roulette/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 163 | `ReplicatedStorage.Client.machines.Roulette.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 163 | `ReplicatedStorage.Client.machines.Roulette.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Stacker/</code> — 5 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Stacker/</code> — 5 archivo(s) — 5/5 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Board.luau` | ModuleScript | — | — | 197 | `ReplicatedStorage.Client.machines.Stacker.Board` | Pendiente |
-| `Controller.luau` | ModuleScript | — | — | 225 | `ReplicatedStorage.Client.machines.Stacker.Controller` | Pendiente |
-| `Figure.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Client.machines.Stacker.Figure` | Pendiente |
-| `idle.luau` | ModuleScript | — | — | 62 | `ReplicatedStorage.Client.machines.Stacker.idle` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.machines.Stacker.init` | Pendiente |
+| `Board.luau` | ModuleScript | — | — | 197 | `ReplicatedStorage.Client.machines.Stacker.Board` | Analizado (en parte) |
+| `Controller.luau` | ModuleScript | — | — | 225 | `ReplicatedStorage.Client.machines.Stacker.Controller` | Analizado (en parte) |
+| `Figure.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Client.machines.Stacker.Figure` | Analizado (en parte) |
+| `idle.luau` | ModuleScript | — | — | 62 | `ReplicatedStorage.Client.machines.Stacker.idle` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.machines.Stacker.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/ToyMachine/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/ToyMachine/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Client.machines.ToyMachine.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Client.machines.ToyMachine.init` | Analizado (en parte) |
 
 </details>
 
@@ -1315,12 +1315,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/machines/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/machines/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `roulettePrizes.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Shared.machines.roulettePrizes` | Pendiente |
-| `rouletteUtil.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.machines.rouletteUtil` | Pendiente |
+| `roulettePrizes.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Shared.machines.roulettePrizes` | Analizado |
+| `rouletteUtil.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.machines.rouletteUtil` | Analizado |
 
 </details>
 
@@ -1524,20 +1524,20 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/machines/</code> — 10 archivo(s) — 3/10 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/machines/</code> — 10 archivo(s) — 10/10 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Basketball.luau` | ModuleScript | — | — | 92 | `ServerScriptService.ServerScripts.machines.Basketball` | Pendiente |
-| `Machine.luau` | ModuleScript | — | — | 86 | `ServerScriptService.ServerScripts.machines.Machine` | Analizado (en parte) |
-| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ServerScriptService.ServerScripts.machines.MachineFactory` | Pendiente |
-| `Pong.luau` | ModuleScript | — | — | 388 | `ServerScriptService.ServerScripts.machines.Pong` | Pendiente |
-| `PopTheLock.luau` | ModuleScript | — | — | 55 | `ServerScriptService.ServerScripts.machines.PopTheLock` | Analizado (en parte) |
-| `Roulette.luau` | ModuleScript | — | — | 177 | `ServerScriptService.ServerScripts.machines.Roulette` | Pendiente |
-| `Stacker.luau` | ModuleScript | — | — | 50 | `ServerScriptService.ServerScripts.machines.Stacker` | Pendiente |
-| `ToyMachine.luau` | ModuleScript | — | — | 158 | `ServerScriptService.ServerScripts.machines.ToyMachine` | Pendiente |
-| `init.server.luau` | Script | Server | yes | 186 | `ServerScriptService.ServerScripts.machines.init.server` | Analizado (en parte) |
-| `oldPong.luau` | ModuleScript | — | — | 114 | `ServerScriptService.ServerScripts.machines.oldPong` | Pendiente |
+| `Basketball.luau` | ModuleScript | — | — | 92 | `ServerScriptService.ServerScripts.machines.Basketball` | Analizado |
+| `Machine.luau` | ModuleScript | — | — | 86 | `ServerScriptService.ServerScripts.machines.Machine` | Analizado |
+| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ServerScriptService.ServerScripts.machines.MachineFactory` | Analizado |
+| `Pong.luau` | ModuleScript | — | — | 388 | `ServerScriptService.ServerScripts.machines.Pong` | Analizado (en parte) |
+| `PopTheLock.luau` | ModuleScript | — | — | 55 | `ServerScriptService.ServerScripts.machines.PopTheLock` | Analizado |
+| `Roulette.luau` | ModuleScript | — | — | 177 | `ServerScriptService.ServerScripts.machines.Roulette` | Analizado |
+| `Stacker.luau` | ModuleScript | — | — | 50 | `ServerScriptService.ServerScripts.machines.Stacker` | Analizado |
+| `ToyMachine.luau` | ModuleScript | — | — | 158 | `ServerScriptService.ServerScripts.machines.ToyMachine` | Analizado |
+| `init.server.luau` | Script | Server | yes | 186 | `ServerScriptService.ServerScripts.machines.init.server` | Analizado |
+| `oldPong.luau` | ModuleScript | — | — | 114 | `ServerScriptService.ServerScripts.machines.oldPong` | Analizado (en parte) |
 
 </details>
 

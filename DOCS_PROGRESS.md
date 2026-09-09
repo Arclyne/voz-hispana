@@ -40,7 +40,7 @@ empaquetadas.
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
 del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 13 de sistemas +
-3 de referencia + 42 candidatos a bug con evidencia, frente a un plan que aún necesita
+3 de referencia + 44 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -214,7 +214,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Invitaciones (referidos) | `WorldSystem/ReferralService`, `Shared/Referrals`, `ServerScripts/Referrals` | **Documentado** — `docs/systems/referrals.md`, 1 diagrama, incluida la configuración razonada y los tres remotes. Faltan `ReferralCommands`, `ReferralShared` y el cliente |
 | Inventario / Herramientas | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | **Documentado** — `docs/systems/inventory.md`, 1 diagrama. Falta la interfaz de cliente |
 | Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | **Documentado** — `docs/systems/interactables.md` (estructura y matriz de validación) + `docs/systems/interactable-types.md` (los 44 módulos de tipo, catalogados con sus acciones y sus remotes) |
-| Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | **Barrido** — `docs/systems/survey.md`; `requestSpinRF` y la ruta de premio |
+| Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong`, `Client/machines` | **Documentado** — `docs/systems/machines.md`, 1 diagrama, 2 candidatos (043, 044). Falta la física de `Shared/pong` |
 | Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | **Documentado** — `docs/systems/karaoke.md`, 1 diagrama |
 | Cuadros (Paint) | `Shared/Paint`, `interactable/Paint` | **Documentado** — `docs/systems/paint.md`. Faltan el editor y la cola de carga, que son de cliente |
 | Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Falta parte de `Compras.luau` |
@@ -321,9 +321,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 95 |
-| Analizado (en parte) | 110 |
-| Pendiente | 339 |
+| Analizado (leído entero, descrito en el sitio) | 105 |
+| Analizado (en parte) | 125 |
+| Pendiente | 314 |
 
 Las lecturas parciales y por qué:
 
@@ -510,7 +510,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 42 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 44 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -547,8 +547,8 @@ y razonado está en la propia página; el resumen es:
 - **Archivos anotados con Moonwave (solo comentarios, demostrado por la guarda de CI):**
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
-- **Diagramas:** 44 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 42 redactados al completo, incluida una pasada de seguridad
+- **Diagramas:** 45 diagramas Mermaid (flowchart, sequence, state)
+- **Candidatos a bug:** 44 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y

@@ -93,6 +93,9 @@ o en un place de pruebas.
 | [038](#bug-candidate-038) | El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado | Chat de voz | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
 | [039](#bug-candidate-039) | El servidor marca un tutorial como terminado porque el cliente se lo dice | Tutoriales / Seguridad | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
 | [042](#bug-candidate-042) | `typee` de comando suministrado por el cliente, sin la comprobación de rol que sí hace el camino del chat | **Explotable hoy**, impacto por determinar |
+| [043](#bug-candidate-043) | Condición de victoria suministrada por el cliente, con manejador de premio **puesto** (no stub) | **Explotable hoy**, entrega un objeto de inventario |
+| [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
+| [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
 | [040](#bug-candidate-040) | Las dos tablas globales del place de donaciones llaman a un método que no existe | Donaciones / Persistencia | Confirmado por análisis estático | Media | **Muy alta** |
 | [041](#bug-candidate-041) | El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno | Utilidades compartidas | Confirmado por análisis estático | Media | **Muy alta** |
 | [042](#bug-candidate-042) | El comando de administración se comprueba en el chat y no en el remote | Comandos / Seguridad | Posible bug / Requiere pruebas de seguridad | Por determinar | Alta en la forma |
@@ -1777,6 +1780,14 @@ El manejador de premio es un stub que solo escribe en el log. Esta entrada docum
 recompensa y solo falta que alguien implemente el premio.
 
 :::
+
+**Actualización.** Al leer las seis máquinas enteras se comprobó que la clasificación
+«latente» **no vale para todas**: `ToyMachine` sí tiene manejador de premio, y entrega un
+objeto de inventario. Ese caso se separó en
+[BUG-CANDIDATE-043](#bug-candidate-043). Esta entrada sigue describiendo a las otras cuatro
+—`Stacker`, `PopTheLock`, `Basketball` y `Pong`—, y ahí sí sigue siendo latente. La tabla de
+qué llega del cliente en cada una está en
+[Máquinas de arcade](../systems/machines.md#las-otras-cuatro).
 
 #### Comportamiento observado — HECHO
 
@@ -5248,6 +5259,330 @@ registro del servidor. La corrección —llamar a `IsAdmin` también en el manej
 remote— es un **cambio de código** y aquí no se aplica.
 
 
+## BUG-CANDIDATE-043
+
+### El cliente decide si ha ganado el peluche, y aquí sí hay premio
+
+**Sistema:** Máquinas / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/machines/ToyMachine.luau`, el `bind` de
+`Machines.ToyPress` y `_handle`
+**Documentación relacionada:** [Máquinas de arcade](../systems/machines.md#la-máquina-de-peluches)
+
+#### Comportamiento observado — HECHO
+
+```lua
+self._machine:bind(remotes.Machines.ToyPress, function(player, inGreenZone, hookPos)
+	self.model.Hook:PivotTo(CFrame.new(hookPos))
+	if inGreenZone then
+		self._trove:Add(task.spawn(function()
+			self:_handleGreenZone(player)
+		end))
+	else
+		self:stop()
+	end
+end)
+```
+
+Al final de `_handleGreenZone`:
+
+```lua
+if toy then
+	self:_handle(self._machine:getPlayer(), toy.Name)
+end
+```
+
+Y `_handle`:
+
+```lua
+function ToyMachine:_handle(player: Player, toyName: string)
+	InventoryManager.addItem(player, toyName)
+	SoundManager:Play(nil, 13697778590, { Volume = 1 }, self.model)
+end
+```
+
+`inGreenZone` es el segundo argumento del `FireServer`. Lo pone el cliente.
+
+#### Por qué esto es distinto de la 016 — HECHO
+
+[BUG-CANDIDATE-016](#bug-candidate-016) registra que las máquinas aceptan del cliente el
+valor de la recompensa, y se clasificó **latente** porque los manejadores de premio son
+`warn`. Eso sigue siendo cierto para `Stacker`, `PopTheLock`, `Basketball` y `Pong`.
+
+`ToyMachine` **no es un stub**. Es la única de las seis que entrega de verdad, y lo que
+entrega es un objeto de inventario:
+
+| Máquina | `_handle` | ¿Entrega? |
+|---|---|---|
+| `Stacker` | `warn` | No |
+| `PopTheLock` | `warn` | No |
+| `Basketball` | `warn` | No |
+| `Pong` | `warn` | No |
+| **`ToyMachine`** | **`InventoryManager.addItem`** | **Sí** |
+
+Por eso va como entrada aparte: la 016 es una superficie a la espera de un manejador; ésta
+tiene el manejador puesto.
+
+#### Lo que sí sujeta — HECHO
+
+No es una escritura arbitraria, y conviene decirlo con precisión:
+
+| Control | Cómo |
+|---|---|
+| Solo puede llamar quien está en **esta** máquina | `Machine:bind` comprueba `model == self.model and table.find(self._players, player)` |
+| El objeto **no lo elige el cliente** | `_getRandomToy()` sortea entre cinco `ReplicatedStorage.Assets.Tools.Toy1..5` en el servidor |
+| Entrar cuesta | `Machines.Request` descuenta `model:GetAttribute("Price")` antes de dejar jugar |
+| Una partida a la vez | `_maxPlayers = 1`, y `machineByPlayer` bloquea entrar en dos |
+
+Es decir: lo que se salta no es el precio ni el catálogo, sino **la habilidad**. Quien
+explote esto gana un peluche en cada partida en vez de en las que acierte, pagando el precio
+cada vez.
+
+#### Lo que agrava — HECHO
+
+`hookPos` va directo a `CFrame.new(hookPos)` sin comprobar tipo ni rango, y el resultado se
+aplica a una pieza del mundo que ven todos:
+
+```lua
+self.model.Hook:PivotTo(CFrame.new(hookPos))
+```
+
+Si no es un `Vector3`, `CFrame.new` lanza dentro del manejador y la llamada muere ahí —falla
+cerrado—. Si lo es, el gancho de la máquina se teletransporta a donde diga el cliente, para
+todo el servidor. Es vandalismo acotado a esa pieza, de la familia de la
+[BUG-CANDIDATE-023](#bug-candidate-023).
+
+#### Teoría — TEORÍA
+
+Un jugador con un script puede convertir la máquina de peluches en una compra a precio fijo:
+paga, dispara `ToyPress` con `inGreenZone = true`, recibe peluche. Cuánto importa depende
+enteramente de para qué sirven los cinco peluches —si son cosméticos, es poco; si valen algo
+en el juego o se pueden vender, es una fuente de ingreso—, y eso no se puede responder desde
+este repositorio.
+
+Lo que sí se puede afirmar es que **el servidor no tiene con qué comprobarlo**: la posición
+del gancho, el momento de soltar y la zona verde viven todos en el cliente. Cerrar esto
+como está exigiría que el servidor simulara la grúa, que es lo que ya hace `Pong` con su
+pelota. Eso es rediseño, no un parche.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `inGreenZone` es un argumento del `FireServer`, no un cálculo del servidor |
+| 2 | La rama `if inGreenZone` es lo único que separa ganar de perder |
+| 3 | `_handle` llama a `InventoryManager.addItem`, no a un `warn` |
+| 4 | Las otras cuatro máquinas sí tienen `_handle` vacío |
+| 5 | `hookPos` se pasa a `CFrame.new` sin validar |
+| 6 | `Machine:bind` sí comprueba que quien llama esté en esta máquina — lo que acota, no elimina |
+| 7 | El peluche lo sortea el servidor entre cinco fijos |
+
+#### Incógnitas
+
+- **La principal:** qué valen `Toy1` a `Toy5`. Si son herramientas cosméticas sin valor de
+  cambio, la gravedad baja a Baja.
+- Si `InventoryManager.addItem` tiene tope de inventario o deduplicación. `InventoryManager`
+  está leído, pero no se ha comprobado el caso de cinco mil peluches.
+- Cuánto cuesta jugar: `Price` es un atributo del modelo y no está en este repositorio.
+- Si el cliente puede saltarse `Machines.Request` y llegar a `ToyPress` sin pagar. No debería
+  —`Machine:bind` exige estar en `_players`, y solo `join` mete ahí— pero es lo primero que
+  hay que probar.
+
+#### Escenario de ejemplo
+
+Alguien mira el remote, ve dos argumentos, prueba `ToyPress:FireServer(model, true, Vector3.new())`
+y le cae un peluche. Repite en bucle mientras le queden monedas. La máquina sigue cobrando,
+así que en el registro económico no se ve nada raro: solo alguien con mucha suerte en la
+grúa.
+
+**Comportamiento esperado:** el servidor sabe si el gancho estaba en la zona verde.
+**Comportamiento posible:** se lo pregunta al cliente.
+
+#### Plan de verificación — *Seguridad*
+
+1. Averigua primero qué son `Toy1` a `Toy5` y si tienen valor de cambio. Eso fija la gravedad.
+2. Entra a una máquina de peluches por la vía normal y comprueba que se te cobra el `Price`.
+3. Desde la consola del cliente: `Machines.ToyPress:FireServer(model, true, Vector3.new(0,0,0))`.
+4. Comprueba si el peluche llega al inventario.
+5. Repite sin haber pulsado `Machines.Request` antes, para confirmar que `Machine:bind` te
+   rechaza si no estás en `_players`.
+6. Repite apuntando a **otra** máquina de peluches distinta de la tuya, para confirmar que
+   `model == self.model` te rechaza.
+7. Dispara con `hookPos` fuera del mapa —`Vector3.new(0, 10000, 0)`— y mira si el gancho se
+   va y si otros jugadores lo ven.
+8. Dispara con `hookPos` que no sea un `Vector3` y confirma que falla cerrado.
+9. Repite el paso 3 cincuenta veces y comprueba qué hace `InventoryManager` con cincuenta
+   peluches.
+
+**Pasa:** los pasos 3 y 4 no entregan nada.
+**Falla:** llega el peluche. Si además el paso 5 funciona, la gravedad sube a Alta: se ganaría
+sin pagar.
+
+**Instrumentación sugerida:** ninguna. Cerrar esto de verdad exige simular la grúa en el
+servidor —el patrón que ya usa `Pong`—, y eso es un **cambio de código** que aquí no se
+aplica.
+
+
+## BUG-CANDIDATE-044
+
+### La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1
+
+**Sistema:** Máquinas / Economía · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta** en la aritmética, media en el encaje con el modelo
+
+**Código relacionado:** `Core/…/ServerScripts/machines/Roulette.luau`, la función `modulo` y
+`applyPrizeReward`; `Core/ReplicatedStorage/Shared/machines/roulettePrizes.luau`
+**Documentación relacionada:** [Máquinas de arcade → La ruleta](../systems/machines.md#la-ruleta)
+
+Son dos defectos pequeños en la misma función de sorteo. Van juntos porque quien vaya a
+tocar uno va a tocar el otro.
+
+#### Primero: la casilla 11 no entrega nada — HECHO
+
+`roulettePrizes` devuelve 16 premios, y el número 11 es:
+
+```lua
+local FURNITURE = {
+	type = "Mueble",
+	reward = { _Special = "Furniture" }, -- TODO
+}
+```
+
+`applyPrizeReward` sabe hacer exactamente dos cosas: sumar los campos **numéricos** de
+`reward` a `leaderstats`, y el caso `_Special == "Dance"`. Para `Furniture`:
+
+```lua
+if reward._Special == "Furniture" then
+	-- TODO: cuando exista el sistema de construcción, aquí se entrega
+end
+```
+
+Un bloque vacío. Ni premio ni aviso: el jugador ve la rueda pararse en «Mueble» y no recibe
+nada, sin ningún mensaje que lo explique.
+
+**Lo que hace notar que fue un descuido y no una decisión:** el caso `Dance` **sí** tiene
+respaldo. Si el jugador ya tiene todos los bailes, se le dan `+2 Spins` con un aviso —«Ya
+tienes todos los bailes. Te damos +2 Spins»— precisamente *para que el premio no salga
+vacío*. Quien escribió esa red de seguridad estaba pensando en este problema. `Furniture` se
+quedó sin ella.
+
+#### Segundo: el sorteo está sesgado — HECHO
+
+```lua
+local function modulo(a, b)
+	if a < b then
+		return a
+	else
+		return a % b + 1
+	end
+end
+
+function Roulette:_getRandomTurns()
+	return self._parts * math.random(2, 4) + math.random(0, self._parts)
+end
+```
+
+Con `P = self._parts`, los giros son `P·k + r` con `k ∈ {2,3,4}` y **`r ∈ {0, …, P}`**: eso
+son `P+1` valores equiprobables, no `P`.
+
+Como `P·k + r ≥ 2P ≥ P`, siempre se toma la rama `a % b + 1`. Y `(P·k + r) % P = r % P`:
+
+| `r` | `r % P` | Casilla |
+|---|---|---|
+| `0` | 0 | **1** |
+| `1` … `P-1` | 1 … P-1 | 2 … P |
+| **`P`** | **0** | **1** |
+
+`r = 0` y `r = P` caen los dos en la casilla 1. Con 16 casillas:
+
+| Casilla | Probabilidad |
+|---|---|
+| **1** | **2/17 ≈ 11,8 %** |
+| 2 … 16 | 1/17 ≈ 5,9 % cada una |
+
+**Exactamente el doble.** Y la casilla 1 es `EXTRA_SPIN`, `reward = { Spins = 2 }` — el
+premio que te devuelve a la ruleta con más tiradas.
+
+La causa es que `math.random(0, self._parts)` es inclusivo por los dos extremos y devuelve
+`P+1` valores distintos para repartir entre `P` casillas.
+
+**OBSERVACIÓN.** La rama `if a < b then return a end` es **inalcanzable** —los giros nunca
+bajan de `2P`—, y si lo fuera devolvería `0` para `a = 0`, que no es una casilla válida. Es
+otra señal de que la función se escribió con un modelo mental distinto del que acabó
+teniendo.
+
+#### Teoría — TEORÍA
+
+Una de cada dieciséis tiradas no paga nada y el jugador no sabe por qué. Y la casilla de
+tiradas gratis sale al doble de lo previsto, lo que abarata la ruleta frente a lo que diga la
+hoja de balance — si la hay.
+
+Ninguno de los dos hunde el juego. Los dos son de los que nadie reporta porque desde dentro
+son indistinguibles de la mala suerte, y de los que no se detectan sin contar tiradas. Por
+eso quedan aquí: son exactamente el tipo de cosa para la que sirve un plan de verificación.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `roulettePrizes` devuelve una lista de 16, con `FURNITURE` en la posición 11 |
+| 2 | La rama `_Special == "Furniture"` está vacía salvo un comentario `TODO` |
+| 3 | `applyPrizeReward` solo suma campos numéricos y atiende `_Special == "Dance"` |
+| 4 | El caso `Dance` sí tiene respaldo con aviso, lo que prueba que el premio vacío se consideró un problema |
+| 5 | `math.random(0, P)` devuelve `P+1` valores equiprobables |
+| 6 | `(P·k + r) % P` vale 0 tanto para `r = 0` como para `r = P` |
+| 7 | Por tanto la casilla 1 sale con probabilidad `2/(P+1)` y las demás con `1/(P+1)` |
+| 8 | La casilla 1 es `EXTRA_SPIN`, `{ Spins = 2 }` |
+| 9 | La rama `a < b` de `modulo` es inalcanzable con los giros que genera `_getRandomTurns` |
+
+#### Incógnitas
+
+- **`self._parts` es el número de hijos de `model.Parts`, y ese modelo no está en este
+  repositorio.** Toda la aritmética de arriba supone `_parts = 16` para que encaje con
+  `roulettePrizes`. Si no lo fuera, el problema es otro y peor: con `_parts > 16` habría
+  resultados sin premio (`prize missing`, ya avisado con `warn`), y con `_parts < 16` las
+  casillas altas serían inalcanzables. **Esto hay que medirlo en Studio antes que nada.**
+- Si existe una tabla de probabilidades previstas contra la que comparar. Sin ella, «sesgo»
+  significa «distinto de uniforme», que es lo que se afirma aquí.
+- Si el sistema de construcción al que apunta el `TODO` está previsto a corto plazo. Si lo
+  está, la casilla 11 se arregla sola y solo queda decidir qué hacer mientras.
+
+#### Escenario de ejemplo
+
+Un jugador gasta veinte spins. Dos veces cae en «Mueble» y no le llega nada; escribe en el
+Discord que la ruleta está rota y nadie sabe decirle si es un fallo o si el mueble llega más
+tarde. Al mismo tiempo nota que le tocan tiradas gratis «bastante seguido», lo que le gusta y
+no reporta.
+
+**Comportamiento esperado:** las 16 casillas pagan, y todas con la misma probabilidad.
+**Comportamiento posible:** una no paga, y otra sale el doble.
+
+#### Plan de verificación — *Corrección funcional*
+
+1. **Lo primero:** en Studio, cuenta los hijos de `model.Parts` y compáralo con las 16
+   entradas de `roulettePrizes`. Si no coinciden, para y registra eso: es un problema mayor
+   que los dos de esta entrada.
+2. Instrumenta `Roulette:_handle` para registrar `result` en cada tirada. *(Instrumentación
+   para la prueba.)*
+3. Ejecuta 2 000 tiradas y cuenta cuántas veces sale cada casilla.
+4. Comprueba si la casilla 1 sale en torno al 11,8 % y las demás en torno al 5,9 %.
+5. Fuerza una tirada en la casilla 11 y comprueba `leaderstats` y el inventario antes y
+   después.
+6. Comprueba que no aparece ninguna notificación al jugador en ese caso.
+7. Comprueba por contraste que la casilla 7 (`DANCE`) sí entrega, y que su respaldo de
+   `+2 Spins` funciona con una cuenta que ya tenga todos los bailes.
+
+**Pasa:** el reparto es uniforme y las 16 casillas entregan algo.
+**Falla:** la casilla 1 sale al doble, o la 11 no entrega nada.
+
+**Instrumentación sugerida:** solo el registro del paso 2. La corrección —cambiar
+`math.random(0, self._parts)` por `math.random(0, self._parts - 1)`, o el `+1` del `modulo`,
+y decidir qué hacer con `Furniture`— es un **cambio de código** y aquí no se aplica. Ojo al
+tocarlo: los dos extremos interactúan, y cambiar uno sin el otro desplaza el sesgo en vez de
+quitarlo.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -5309,6 +5644,10 @@ completa.
 | `Shared/BartenderSystem/init.luau` | Sí | El registro y el despacho por acción fija |
 | `BartenderSystem/Instance`, `NPC_Custom/` (5), `DialogModule` | En parte | La superficie de red y sus guardas; no la coreografía ni la interfaz |
 | `Shared/GuideService/` (6 archivos), `Shared/Tutorials/` (2) | Sí | Salvo `InterfaceController`, que es montaje de GUI |
+| Los 44 módulos de tipo de `Client/interactable/` | Sí, en superficie | Acciones y remotes de cada uno; la coreografía interna no |
+| Máquinas: `Machine`, `MachineFactory`, `init.server`, `Roulette`, `ToyMachine`, `Stacker`, `PopTheLock`, `Basketball` | Sí | Las dos rutas de entrada y los seis manejadores de premio |
+| `machines/Pong.luau`, `Shared/pong/` | En parte | Quién simula y quién cuenta; la física no |
+| `Client/machines/` (16 archivos) | **Superficie** | Animación e interfaz, sin autoridad |
 | `Shared/ComprasTablero/` (2 archivos) | Sí | El teletipo entre servidores y la tabla global |
 | `ReplicatedStorage/ShopInfo.luau` | Sí | Las 18 entradas y sus tres consumidores |
 | `Shared/Nametag/`, `NametagMicClient` | **No** | En cola |
