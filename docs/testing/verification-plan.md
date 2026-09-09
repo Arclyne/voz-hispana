@@ -85,6 +85,7 @@ o en un place de pruebas.
 | [030](#bug-candidate-030) | El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos | Cuadros / Seguridad | Posible bug / Requiere pruebas de seguridad | Media | Alta |
 | [031](#bug-candidate-031) | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
 | [032](#bug-candidate-032) | Una condición de trabajo mal escrita permite la acción en silencio | Trabajos | Observación / Requiere verificación en ejecución | Baja | Alta |
+| [033](#bug-candidate-033) | Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva | Persistencia | Posible bug / Requiere pruebas de concurrencia | Media | Alta |
 
 ### Entradas de seguridad
 
@@ -129,6 +130,8 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Entrega de un regalo en Robux con el receptor ausente | **Correcto, y es el módulo mejor razonado del repositorio.** `GiftInbox` documenta por qué no puede ir en el perfil —el lease es de un solo escritor y aquí el servidor del comprador escribe sobre otra identidad—, devuelve `false` si no pudo escribir para que el recibo no se dé por bueno, y no borra el buzón si la lectura falla. |
+| Buzón de regalos creciendo sin límite | **Correcto.** `MAX_ENTRIES = 50`, cancelando la escritura con `nil`, que además no gasta la operación. |
 | Despacho de métodos por nombre en Trabajos | **Correcto, y es el mejor patrón del repositorio para esto.** El cliente manda el nombre del método, pero hay una lista blanca **por instancia** —cuatro o cinco nombres declarados junto al objeto— y quien la burla recibe `Player:Kick("Exploiter detected.")`. `LimpiarPiso` incluso deja la lista vacía para las instancias que no deben aceptar nada. |
 | Acumular trabajos | **Correcto.** `UsosPlayer` es uno por jugador y empezar otro renuncia al anterior; la limpieza compara `== getMetatable` antes de borrar, para que una señal tardía no pise el trabajo nuevo. |
 | Pago del botón VIP | **Correcto.** Solo se paga si `state == "Success"`, y `Proccess[Player]` más `MarkPrompt` impiden compras solapadas. |
@@ -3435,9 +3438,14 @@ caída inmediata. Eso lo hace difícil de correlacionar con su causa.
 
 #### Incógnitas
 
-- Si `GlobalDataStore:GetData` y `DeleteData` traen su propio reintento interno. No se ha
-  leído `GlobalDataStore` (ver **U-008**); si lo tienen, hay reintentos anidados y el
-  problema es mayor, no menor.
+- ~~Si `GlobalDataStore:GetData` y `DeleteData` traen su propio reintento interno.~~
+  **Resuelto:** no lo traen. Cada operación es un único `pcall` sin reintento y sin
+  cortacircuitos, así que este bucle es el único reintento del sistema — y sigue siendo el
+  único sin techo. Ver [Persistencia fuera de DataKit](../systems/global-storage.md).
+- **Añadido tras leer `GlobalDataStore`:** este bucle puede dispararse **sin que el DataStore
+  falle**. Si el borrado colisiona con una escritura sobre la misma clave, `DeleteData`
+  devuelve `nil` sin haber borrado, el bucle lo lee como fallo y reintenta. Ver
+  [BUG-CANDIDATE-033](#bug-candidate-033).
 - Cuántos marcos de pila aguanta Luau aquí. A un reintento cada 3 segundos, alcanzar el
   límite lleva horas: la consecuencia realista es el consumo sostenido, no el desbordamiento.
 
@@ -3842,6 +3850,131 @@ actual y convertiría cada errata en algo visible en el registro. Es un **cambio
 así que queda registrado aquí y no aplicado.
 
 
+## BUG-CANDIDATE-033
+
+### Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva
+
+**Sistema:** Persistencia · **Clasificación:** Posible bug / Requiere pruebas de concurrencia
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerStorage/GlobalDataStore/init.luau` — `GetData`,
+`UpdateData`, `SetData`, `DeleteData`, y la tabla `AsyncInProcess`
+**Documentación relacionada:** [Persistencia fuera de DataKit](../systems/global-storage.md#la-deduplicación-de-operaciones-en-vuelo)
+
+#### Comportamiento observado — HECHO
+
+Las cuatro operaciones evitan solaparse sobre la misma clave con un `BindableEvent`
+guardado bajo `"<NameType>:<key>"`. La tabla declara cuatro espacios:
+
+```lua
+AsyncInProcess = {
+	Set = {},
+	Update = {},
+	Get = {},
+	Delete = {},
+},
+```
+
+y **las cuatro operaciones usan `AsyncInProcess.Get`**. Las otras tres tablas no aparecen en
+ninguna línea del archivo.
+
+Compartir un espacio sería correcto —una escritura debería esperar a una lectura en curso de
+la misma clave— si todas estuvieran de acuerdo en qué transporta la señal. No lo están:
+
+| Operación | Al terminar dispara | En contención hace |
+|---|---|---|
+| `GetData` | `bin:Fire(n, s)` — con resultado | `local n,s = process:Wait()` → **usa el resultado ajeno** |
+| `DeleteData` | `bin:Fire(n, s)` — con resultado | `return process:Wait()` → **devuelve el resultado ajeno** |
+| `SetData` | `bin:Fire()` — **sin argumentos** | `process:Wait()` y luego **reintenta lo suyo** |
+| `UpdateData` | `bin:Fire()` — **sin argumentos** | `process:Wait()` y luego **reintenta lo suyo** |
+
+#### Por qué esto puede ser un problema — HECHO
+
+Dos operaciones emiten carga útil y dos no; dos consumen la carga y dos reintentan. Cuando
+las que se cruzan son del mismo tipo, todo cuadra. Cuando no, no:
+
+| Colisión sobre la misma clave | Qué pasa |
+|---|---|
+| `DeleteData` espera a un `SetData` o `UpdateData` | `process:Wait()` devuelve **nada**. `DeleteData` devuelve `nil` y **el borrado nunca se intenta** |
+| `GetData` espera a un `SetData` o `UpdateData` | `process:Wait()` devuelve nada → `n` es `nil` → **informa de fallo sin haber leído** |
+| `SetData` o `UpdateData` esperan a un `GetData` o `DeleteData` | Reintentan lo suyo. Correcto |
+| Dos del mismo tipo | Correcto |
+
+La primera fila es la que importa: **un borrado que devuelve `nil` no ha borrado nada y no
+dice que haya fallado.** `nil` no es `false`; quien lo interprete como «hecho» dejará el dato
+en su sitio para siempre.
+
+`SetData` y `UpdateData` demuestran la forma correcta —esperar y reintentar la operación
+propia— así que la asimetría parece un olvido, no una decisión.
+
+#### Teoría — TEORÍA
+
+`DeleteData` es la única de las cuatro que no reintenta lo suyo tras esperar. Basta con que
+una escritura sobre la misma clave esté en vuelo para que un borrado se pierda en silencio.
+
+Hay un efecto encadenado con [BUG-CANDIDATE-029](#bug-candidate-029): `Paint:Remove` reintenta
+el borrado indefinidamente mientras `DeleteData` no devuelva éxito. Si el borrado colisiona
+con una escritura, devuelve `nil` —falso para el bucle— y `Paint` reintenta. Es decir, ese
+bucle infinito puede dispararse **sin que el DataStore falle en absoluto**, solo por
+contención. Es un camino de activación que aquella entrada no contemplaba.
+
+Lo que acota todo esto: las claves son por entidad —un GUID por cuadro, un identificador por
+canción— así que dos operaciones distintas sobre la **misma** clave a la vez no es lo
+habitual. La probabilidad es baja; el mecanismo es seguro.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `AsyncInProcess` declara cuatro tablas y solo se usa `Get`, en las cuatro operaciones |
+| 2 | `GetData` y `DeleteData` hacen `bin:Fire(n, s)`; `SetData` y `UpdateData` hacen `bin:Fire()` |
+| 3 | `DeleteData` en contención hace `return process:Wait()` sin volver a intentar |
+| 4 | `SetData` y `UpdateData` en contención sí reintentan, lo que enseña la forma prevista |
+| 5 | `nil` y `false` no se distinguen en la mayoría de los sitios que consumen estos valores |
+| 6 | `GlobalDataStore` no tiene reintento propio ni cortacircuitos, así que nada de esto se corrige después |
+
+#### Incógnitas
+
+- Cuántos consumidores tratan `nil` como fallo y cuántos como éxito. Solo se ha leído el de
+  `Paint`, que lo trata como fallo — y por eso reintenta sin fin.
+- Si hay alguna clave compartida de verdad entre varios jugadores a la vez. Las de karaoke
+  van por canción; la lista de palabras clave de `BusquedaMusicas` podría no ir por entidad,
+  y no se ha leído.
+- Si `bin:Fire()` sin argumentos entrega `nil` o no entrega nada a `Wait()`. A efectos de
+  `local n, s = process:Wait()` es lo mismo, pero conviene confirmarlo en Studio.
+
+#### Escenario de ejemplo
+
+Un jugador borra un cuadro justo mientras otro sistema guarda algo sobre esa misma clave.
+`DeleteData` espera, devuelve `nil` y no borra. `Paint:Remove` lo lee como fallo y entra en
+su bucle de reintentos, que no tiene techo. El cuadro ya desapareció de la lista del jugador
+—eso ocurre antes— pero el dato sigue en el DataStore, y un hilo lo reintenta cada tres
+segundos indefinidamente.
+
+**Comportamiento esperado:** el borrado espera a la escritura en curso y **entonces se
+ejecuta**, como hace `SetData`.
+**Comportamiento posible:** devuelve `nil` sin ejecutarse.
+
+#### Plan de verificación — *Concurrencia*, *Persistencia*
+
+1. En un place de pruebas, lanza en paralelo sobre la misma clave un `SetData` con un dato
+   grande —para que tarde— y, medio segundo después, un `DeleteData`.
+2. Anota lo que devuelve el `DeleteData`.
+3. Lee la clave después y comprueba si el dato sigue ahí.
+4. Repite invirtiendo el orden (`DeleteData` primero, `SetData` después) y comprueba que ese
+   sentido sí funciona.
+5. Repite con `GetData` colisionando con un `SetData` y mira si informa de fallo pese a que
+   el dato existe.
+
+**Pasa:** el borrado se ejecuta tras esperar, y devuelve `true`.
+**Falla:** devuelve `nil` y el dato sigue en el DataStore.
+
+**Instrumentación sugerida:** hacer que las cuatro operaciones disparen la misma forma de
+señal —`bin:Fire(n, s)` en todas— y que las cuatro reintenten lo suyo tras esperar, como ya
+hacen `SetData` y `UpdateData`. Es un **cambio de código**, así que queda registrado aquí y
+no aplicado; se menciona porque la simetría es la explicación más corta de qué falta.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -3865,7 +3998,8 @@ completa.
 | `Collections` (moneda) | Sí | Leído entero: la pasada de seguridad (BUG-CANDIDATE-015), la ruta de persistencia (BUG-CANDIDATE-008) y la escritura silenciosa de `Give` (BUG-CANDIDATE-019) |
 | `RoleService`, `EventCommands`, `ReferralCommands` | **En parte** | Solo la ruta de autorización, para la pasada de seguridad |
 | `machines/Machine`, `machines/PopTheLock` | **En parte** | Solo las rutas de enlace y de premio |
-| `GlobalDataStore`, `GiftInbox` | **No** | Ambos usan DataStoreService fuera de DataKit |
+| `GiftInbox` | Sí | Cierra **U-008** |
+| `GlobalDataStore/init` | En parte | Las cuatro operaciones y la deduplicación; no la rama paginada de `OrderedDataStore` |
 | `Shared/Stores`: `init`, `HouseAdded`, `ColorTexture` | Sí | Los trece manejadores de remotes y el ciclo de `content` |
 | `Shared/Stores`: `Compras` | En parte | Solo `Comprar` y la forma general |
 | `Shared/Stores`: `DecorFuncs/` (3 archivos), `DecorsPlayer` | Sí | La colocación y el índice por jugador |

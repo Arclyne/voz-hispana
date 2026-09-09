@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 59 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 21 |
-| Pendiente | Aún sin leer | 464 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 22 |
+| Pendiente | Aún sin leer | 461 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 77 leídos.
+530 archivos, 76,305 líneas, 80 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1603,13 +1603,13 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/GlobalDataStore/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/GlobalDataStore/</code> — 3 archivo(s) — 2/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ReadMe.server.luau` | Script | Server | — | 60 | `ServerStorage.GlobalDataStore.ReadMe.server` | Pendiente |
+| `ReadMe.server.luau` | Script | Server | — | 60 | `ServerStorage.GlobalDataStore.ReadMe.server` | Analizado |
 | `Testeo_GlobalDataStore.luau` | ModuleScript | — | — | 164 | `ServerStorage.GlobalDataStore.Testeo_GlobalDataStore` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 335 | `ServerStorage.GlobalDataStore.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 335 | `ServerStorage.GlobalDataStore.init` | Analizado (en parte) |
 
 </details>
 
@@ -1624,12 +1624,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 7/8 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 8/8 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `EventService.luau` | ModuleScript | — | — | 456 | `ServerStorage.WorldSystem.EventService` | Analizado |
-| `GiftInbox.luau` | ModuleScript | — | — | 89 | `ServerStorage.WorldSystem.GiftInbox` | Pendiente |
+| `GiftInbox.luau` | ModuleScript | — | — | 89 | `ServerStorage.WorldSystem.GiftInbox` | Analizado |
 | `PlayerDataReplicator.luau` | ModuleScript | — | — | 555 | `ServerStorage.WorldSystem.PlayerDataReplicator` | Analizado |
 | `PlayerDataService.luau` | ModuleScript | — | — | 116 | `ServerStorage.WorldSystem.PlayerDataService` | **Documentado** |
 | `PlayerSchema.luau` | ModuleScript | — | — | 151 | `ServerStorage.WorldSystem.PlayerSchema` | **Documentado** |

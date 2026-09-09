@@ -84,6 +84,8 @@ ANALYSED |= {
     t("Core/ServerScriptService/ServerScripts/Quests/QuestMain.server.luau"),
     t("Core/ReplicatedStorage/Shared/JobSystem/init.luau"),
     t("Core/ReplicatedStorage/Shared/JobSystem/ConditionsUses.luau"),
+    t("Core/ServerStorage/WorldSystem/GiftInbox.luau"),
+    t("Core/ServerStorage/GlobalDataStore/ReadMe.server.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -109,6 +111,7 @@ PARTIAL = {
     t("Core/ServerScriptService/ServerScripts/cooking/CookingStation.luau"),
     t("Core/ServerScriptService/ServerScripts/cooking/CuttingBoard.server.luau"),
     t("Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/init.luau"),
+    t("Core/ServerStorage/GlobalDataStore/init.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",

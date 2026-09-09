@@ -44,10 +44,10 @@ agrupadas por sistema en la barra lateral:
 | DataKit (paquete externo) | Sus trece clases |
 
 `DataKit` es un caso aparte: es un paquete externo instalado con wally que **ya viene
-documentado por sus autores**. Sus once clases aparecen en la referencia sin que este
-proyecto haya escrito ni tocado una línea de ellas, y la documentación conceptual no las
-duplica — solo describe cómo las usa Voz Hispana. Ver
-[Persistencia](./architecture/persistence.md).
+documentado por sus autores**. Sus trece clases aparecen en la referencia sin que este
+proyecto haya escrito ni tocado una línea de ellas. Qué resuelve, cómo funciona y qué
+sistema usa cada identidad está explicado, con diagramas, en
+[DataKit — qué hace y quién lo usa](./architecture/datakit.md).
 
 Buena parte de `Core/ReplicatedStorage` es anterior a este proyecto y usa líneas `---`
 como separadores visuales, que el extractor de Moonwave lee como comentarios de
