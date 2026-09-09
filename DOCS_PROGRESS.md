@@ -53,7 +53,8 @@ del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 11 de sistemas
       Monetización, Eventos, Invitaciones hechos)*
 - [ ] Fase 4 — Referencia por script y Moonwave *(anotaciones y `classOrder` hechos)*
 - [x] Fase 5 — Análisis transversal
-- [ ] Fase 6 — Validación y planificación de pruebas
+- [ ] Fase 6 — Validación y planificación de pruebas *(la validación automatizada, hecha;
+      ejecutar los planes necesita Studio)*
 
 ---
 
@@ -579,10 +580,11 @@ Anotadas aquí para que una ejecución futura no las vuelva a deducir:
 - **Moonwave no se puede construir localmente en este entorno.** La CLI se instala desde
   npm, pero `moonwave build` descarga su binario extractor de
   `latest-github-release.eryn.io` / `github.com`, ambos fuera de la lista permitida de red
-  (HTTP 403). El build se valida en los runners de GitHub Actions. **Ejecuta estos dos
-  antes de cada commit** — son el sustituto local, y los dos están cableados en CI:
+  (HTTP 403). El build se valida en los runners de GitHub Actions. **Ejecuta estos tres
+  antes de cada commit** — son el sustituto local, y los tres están cableados en CI:
   - `python3 .github/scripts/check-docs-links.py docs $DOC_CODE_PATHS`
   - `python3 .github/scripts/check-luau-code-unchanged.py origin/main`
+  - `python3 .github/scripts/check-docs-facts.py`
 - **Regenera las páginas de referencia** después de leer archivos nuevos, y actualiza los
   conjuntos `ANALYSED` / `PARTIAL` / `DOCUMENTED` de la cabecera de
   `generate-script-inventory.py`:
@@ -645,8 +647,16 @@ grep -rh '@class ' src/ReplicatedStorage \
 
 :::
 
-Lo que queda de Fase 6 es ejecutar los planes de `verification-plan.md`, y eso necesita
-Roblox Studio.
+**La parte automatizable de la Fase 6 está hecha.** `check-docs-facts.py` vuelve a contar
+contra el árbol todo lo que la documentación afirma —archivos, remotes, scripts
+desactivados, clases anotadas, diagramas, candidatos— y falla si algo se ha desviado.
+Comprueba además que `classOrder` nombre clases reales en las dos direcciones, que no haya
+`@class` duplicadas —lo que hizo fallar el primer build real de este proyecto—, y que cada
+entrada `BUG-CANDIDATE` traiga sistema, clasificación, estado, plan y condiciones de paso y
+fallo. Se verificó que detecta los tres tipos de fallo introduciéndolos a propósito.
+
+Lo que queda de Fase 6 es **ejecutar** los planes de `verification-plan.md`, y eso necesita
+Roblox Studio, que no está disponible en este entorno.
 
 ### Diferido a propósito, con motivos
 
@@ -657,7 +667,7 @@ Roblox Studio.
 
 ### Antes de terminar cualquier ejecución futura
 
-1. Ejecuta los dos scripts de comprobación.
+1. Ejecuta los tres scripts de comprobación.
 2. Regenera las dos páginas de referencia y actualiza los conjuntos de estado.
 3. Actualiza *Fase actual*, *Último trabajo completado*, *Trabajo recomendado a
    continuación*, *Incógnitas* y cualquier candidato nuevo **tanto en este archivo como en**
