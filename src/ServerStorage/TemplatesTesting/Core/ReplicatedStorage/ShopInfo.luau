@@ -1,0 +1,228 @@
+local PENDIENTE_DE_CREAR_EN_ROBLOX = 0
+
+local COIN_ICON = "rbxassetid://112782519673653"
+local COIN_PREVIEW = "rbxassetid://127639214094666"
+
+local ShopInfo = {
+	Invisible = {
+		Type = "GamePass",
+		MainId = 1649443366,
+		GiftProductId = 3486170755,
+		Giftable = true,
+		ToolName = "Invisible",
+		image = "rbxassetid://112782519673653",
+		preview = "rbxassetid://127639214094666",
+		name = "Invisible",
+		description = "Invisibilidad pass",
+	},
+
+	MagicClock = {
+		Type = "GamePass",
+		MainId = 1953092437,
+		GiftProductId = 3709007377,
+		Giftable = true,
+		ToolName = "MagicClock",
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "Reloj Magico",
+		description = "Controla el tiempo a tu antojo",
+	},
+
+	Vip = {
+		Type = "GamePass",
+		MainId = 1934283521,
+		GiftProductId = 3709007512,
+		Giftable = true,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "VIP",
+		description = "Comandos, nametag VIP y objetos exclusivos",
+	},
+
+	cofre = {
+		Type = "GamePass",
+		MainId = PENDIENTE_DE_CREAR_EN_ROBLOX,
+		GiftProductId = PENDIENTE_DE_CREAR_EN_ROBLOX,
+		Giftable = true,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "Premium",
+		description = "Cofre premium",
+	},
+
+	StartPack = {
+		Type = "DevProduct",
+		MainId = PENDIENTE_DE_CREAR_EN_ROBLOX,
+		GiftProductId = PENDIENTE_DE_CREAR_EN_ROBLOX,
+		Giftable = false,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "Pack de Bienvenida",
+		description = "Potencia tu experiencia con un gran pack de bienvenida",
+	},
+
+	["150monedas"] = {
+		Type = "DevProduct",
+		MainId = 3495597716,
+		GiftProductId = 3495597716,
+		Giftable = true,
+		Currency = "Coins",
+		Amount = 150,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "150 Monedas",
+		description = "Recarga de monedas",
+	},
+
+	["840monedas"] = {
+		Type = "DevProduct",
+		MainId = 3709006503,
+		GiftProductId = 3709006503,
+		Giftable = true,
+		Currency = "Coins",
+		Amount = 840,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "840 Monedas",
+		description = "Recarga de monedas",
+	},
+
+	["4400monedas"] = {
+		Type = "DevProduct",
+		MainId = 3709006567,
+		GiftProductId = 3709006567,
+		Giftable = true,
+		Currency = "Coins",
+		Amount = 4400,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "4,400 Monedas",
+		description = "Recarga de monedas",
+	},
+
+	["9200monedas"] = {
+		Type = "DevProduct",
+		MainId = 3709006616,
+		GiftProductId =  3709006616,
+		Giftable = true,
+		Currency = "Coins",
+		Amount = 9200,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "9,200 Monedas",
+		description = "Recarga de monedas",
+	},
+
+	["20400monedas"] = {
+		Type = "DevProduct",
+		MainId = 3709006644,
+		GiftProductId = 3709006644,
+		Giftable = true,
+		Currency = "Coins",
+		Amount = 20400,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "20,400 Monedas",
+		description = "Recarga de monedas",
+	},
+
+	["20gemas"] = {
+		Type = "DevProduct",
+		MainId = 3526945488,
+		GiftProductId = 3526945488,
+		Giftable = true,
+		Currency = "Gems",
+		Amount = 20,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "20 Gemas",
+		description = "Recarga de Gemas",
+	},
+
+	["105gemas"] = {
+		Type = "DevProduct",
+		MainId = 3709006673,
+		GiftProductId = 3709006673,
+		Giftable = true,
+		Currency = "Gems",
+		Amount = 105,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "105 Gemas",
+		description = "Recarga de Gemas",
+	},
+
+	["220gemas"] = {
+		Type = "DevProduct",
+		MainId = 3709006713,
+		GiftProductId = 3709006713,
+		Giftable = true,
+		Currency = "Gems",
+		Amount = 220,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "220 Gemas",
+		description = "Recarga de Gemas",
+	},
+
+	["490gemas"] = {
+		Type = "DevProduct",
+		MainId = 3709006758,
+		GiftProductId = 3709006758,
+		Giftable = true,
+		Currency = "Gems",
+		Amount = 490,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "490 Gemas",
+		description = "Recarga de Gemas",
+	},
+
+	["1350gemas"] = {
+		Type = "DevProduct",
+		MainId = 3709006803,
+		GiftProductId = 3709006803,
+		Giftable = true,
+		Currency = "Gems",
+		Amount = 1350,
+		image = COIN_ICON,
+		preview = COIN_PREVIEW,
+		name = "1,350 Gemas",
+		description = "Recarga de Gemas",
+	},
+
+	Buy1Spins = {
+		Type = "DevProduct",
+		MainId = 3537141632,
+		GiftProductId = 3537141632,
+		Giftable = false,
+		Currency = "Spins",
+		Amount = 1,
+		name = "1 Spin",
+		description = "Compra 1 spin",
+	},
+
+	Buy5Spins = {
+		Type = "DevProduct",
+		MainId = 3537141894,
+		GiftProductId = 3537141894,
+		Giftable = false,
+		Currency = "Spins",
+		Amount = 5,
+		name = "5 Spins",
+		description = "Compra 5 spins",
+	},
+
+	Buy10Spins = {
+		Type = "DevProduct",
+		MainId = 3537142253,
+		GiftProductId = 3537142253,
+		Giftable = false,
+		Currency = "Spins",
+		Amount = 10,
+		name = "10 Spins",
+		description = "Compra 10 spins",
+	},
+}
+
+return ShopInfo

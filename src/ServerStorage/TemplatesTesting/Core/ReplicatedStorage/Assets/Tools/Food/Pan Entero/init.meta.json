@@ -1,0 +1,37 @@
+{
+  "properties": {
+    "WorldPivotData": {
+      "OptionalCFrame": {
+        "position": [
+          -17.726389,
+          0.45012057,
+          -2911.862
+        ],
+        "orientation": [
+          [
+            1.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            1.0
+          ]
+        ]
+      }
+    },
+    "CanBeDropped": false
+  },
+  "attributes": {
+    "Colocable": true,
+    "Cuttable": true,
+    "Target": "Pan Cortado"
+  },
+  "className": "Tool"
+}

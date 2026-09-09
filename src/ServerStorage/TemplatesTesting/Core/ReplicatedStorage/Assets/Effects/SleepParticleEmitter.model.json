@@ -1,0 +1,103 @@
+{
+  "className": "ParticleEmitter",
+  "properties": {
+    "Speed": {
+      "NumberRange": [
+        1.2,
+        1.2
+      ]
+    },
+    "Lifetime": {
+      "NumberRange": [
+        2.0,
+        2.0
+      ]
+    },
+    "Acceleration": [
+      0.0,
+      0.5,
+      0.0
+    ],
+    "Enabled": false,
+    "Transparency": {
+      "NumberSequence": {
+        "keypoints": [
+          {
+            "time": 0.0,
+            "value": 1.0,
+            "envelope": 0.0
+          },
+          {
+            "time": 0.3,
+            "value": 0.75,
+            "envelope": 0.0
+          },
+          {
+            "time": 0.325,
+            "value": 0.5,
+            "envelope": 0.0
+          },
+          {
+            "time": 0.35,
+            "value": 0.1,
+            "envelope": 0.0
+          },
+          {
+            "time": 0.375,
+            "value": 0.0,
+            "envelope": 0.0
+          },
+          {
+            "time": 0.75,
+            "value": 0.0,
+            "envelope": 0.0
+          },
+          {
+            "time": 0.9,
+            "value": 0.25,
+            "envelope": 0.0
+          },
+          {
+            "time": 1.0,
+            "value": 1.0,
+            "envelope": 0.0
+          }
+        ]
+      }
+    },
+    "RotSpeed": {
+      "NumberRange": [
+        -15.0,
+        15.0
+      ]
+    },
+    "Rate": 4.0,
+    "SpreadAngle": [
+      40.0,
+      40.0
+    ],
+    "TextureContent": "rbxassetid://71812383922635",
+    "Size": {
+      "NumberSequence": {
+        "keypoints": [
+          {
+            "time": 0.0,
+            "value": 0.4,
+            "envelope": 0.0
+          },
+          {
+            "time": 1.0,
+            "value": 0.4,
+            "envelope": 0.0
+          }
+        ]
+      }
+    },
+    "Rotation": {
+      "NumberRange": [
+        -15.0,
+        15.0
+      ]
+    }
+  }
+}

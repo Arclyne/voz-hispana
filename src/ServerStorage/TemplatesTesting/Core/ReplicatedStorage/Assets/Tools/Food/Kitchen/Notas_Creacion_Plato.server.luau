@@ -1,0 +1,3 @@
+-- Todo menos el handle debe ir en un model que tenga como primary part una "Part"
+-- que será la que moveremos y orientemos para que quede bien en el horno
+-- crear la part en la posición del plato y luego ajustar un poco

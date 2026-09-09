@@ -1,0 +1,17 @@
+{
+  "attributes": {
+    "AlwaysOnTop": false,
+    "Color": {
+      "Color3": [
+        0.18832006,
+        0.37800556,
+        0.47843137
+      ]
+    },
+    "DrawType": "Box",
+    "Group": "",
+    "Icon": "tag_green",
+    "Visible": true
+  },
+  "className": "Configuration"
+}

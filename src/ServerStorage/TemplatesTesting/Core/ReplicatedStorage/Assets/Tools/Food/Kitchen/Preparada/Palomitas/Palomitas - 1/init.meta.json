@@ -1,0 +1,55 @@
+{
+  "properties": {
+    "TextureContent": "rbxassetid://84976649700760",
+    "WorldPivotData": {
+      "OptionalCFrame": {
+        "position": [
+          236.06647,
+          199.23792,
+          -751.752
+        ],
+        "orientation": [
+          [
+            1.0,
+            0.0,
+            3.2505977e-30
+          ],
+          [
+            -3.2505977e-30,
+            0.0,
+            -1.0
+          ],
+          [
+            0.0,
+            1.0,
+            0.0
+          ]
+        ]
+      }
+    },
+    "CanBeDropped": false,
+    "Grip": [
+      0.0,
+      0.0,
+      0.15000152587890625,
+      1.0,
+      -3.327955184533888e-28,
+      2.3418402701519576e-14,
+      0.0,
+      1.0,
+      1.4210854715202004e-14,
+      -2.3418402701519576e-14,
+      -1.4210854715202004e-14,
+      1.0
+    ]
+  },
+  "attributes": {
+    "Colocable": true,
+    "Currency": "Coins",
+    "Dificulty": "Fácil",
+    "Microwaveable": true,
+    "Price": 3.0,
+    "Stack": 1.0
+  },
+  "className": "Tool"
+}
