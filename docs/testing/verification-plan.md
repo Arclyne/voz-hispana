@@ -612,6 +612,25 @@ afectada.
 procedencia del código (reservado frente a generado) en cada `reserveAccessCode`, para que
 las entradas de origen Studio sean identificables en el registro.
 
+#### Ya existe un patrón mejor en este mismo repositorio
+
+`EventService` tiene exactamente la misma necesidad —poder probar en Studio, donde el
+teleport es una operación vacía— y la resuelve **sin fabricar nada**. Su comentario lo dice:
+
+```lua
+-- Puente de Studio: como ahí el teleport es no-op, `reserve()` deja la reserva anotada
+-- con TTL largo y la place reservada la levanta al darle Play. Es el equivalente a lo que
+-- hacen las casas en PlayerWorld_Init, pero sin inventar datos: usa la reserva de verdad.
+```
+
+Reserva de verdad con `ReserveServer`, y anota en un mapa aparte (`EventStudioPending`) que
+hay una reserva esperando a que alguien le dé Play. El código que llega al registro
+compartido es siempre un código real.
+
+Esto no es una propuesta de arreglo —este proyecto no cambia código— pero sí acota mucho la
+discusión: la solución ya está escrita, probada y comentada a unos pocos archivos de
+distancia. Ver [Eventos](../systems/events.md).
+
 ---
 
 ## BUG-CANDIDATE-007
@@ -756,6 +775,39 @@ El mismo razonamiento aplica a `buySlot`, donde `slots` tampoco está en `SPEC`.
   estructural, no accidental.
 - `FLUSH_INTERVAL = 60` y el autoguardado por defecto de `Store` de 300 s son constantes
   explícitas — **HECHO**.
+
+#### El patrón correcto ya existe en este repositorio, escrito y razonado
+
+`ReferralService.ClaimReward` resuelve exactamente el mismo problema —mover valor sin
+poder perderlo ni duplicarlo— y lo hace al revés que la tienda. Su comentario lo justifica:
+
+```lua
+--[[
+	El orden importa: primero se marca como reclamado y se guarda, y solo despues
+	se da el dinero. Al reves, un fallo de guardado dejaria al jugador cobrando el
+	mismo hito una y otra vez.
+]]
+```
+
+Y el código lo cumple, incluida la parte que la tienda no hace: **comprobar que el guardado
+funcionó** antes de mover el valor.
+
+```lua
+if not store:save("referral:claim") then
+    return false, "No se pudo guardar. Intentalo otra vez."
+end
+
+giveReward(player, reward.Currency, reward.Amount)
+```
+
+`SetInviter` hace lo mismo por el mismo motivo (`store:save("referral:attributed")`, con el
+comentario *«Se persiste ya: si el servidor se cae en el proximo minuto, la invitacion no se
+pierde»*).
+
+**Esto es lo que sube la clasificación a Bug probable.** No son dos criterios defendibles
+conviviendo: es el mismo problema resuelto bien en un sitio y mal en otro, con el
+razonamiento correcto escrito a unos archivos de distancia. Ver
+[Invitaciones](../systems/referrals.md).
 
 #### Incógnitas
 

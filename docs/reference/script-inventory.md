@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 33 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 34 |
 | Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 7 |
-| Pendiente | Aún sin leer | 510 |
+| Pendiente | Aún sin leer | 509 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 31 leídos.
+530 archivos, 76,181 líneas, 32 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1624,7 +1624,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 6/8 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 7/8 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -1634,7 +1634,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `PlayerDataService.luau` | ModuleScript | — | — | 90 | `ServerStorage.WorldSystem.PlayerDataService` | Analizado |
 | `PlayerSchema.luau` | ModuleScript | — | — | 126 | `ServerStorage.WorldSystem.PlayerSchema` | Analizado |
 | `Profiles.luau` | ModuleScript | — | — | 296 | `ServerStorage.WorldSystem.Profiles` | Analizado |
-| `ReferralService.luau` | ModuleScript | — | — | 1244 | `ServerStorage.WorldSystem.ReferralService` | Pendiente |
+| `ReferralService.luau` | ModuleScript | — | — | 1244 | `ServerStorage.WorldSystem.ReferralService` | Analizado |
 | `ServerPresence.luau` | ModuleScript | — | — | 366 | `ServerStorage.WorldSystem.ServerPresence` | **Documentado** |
 
 </details>

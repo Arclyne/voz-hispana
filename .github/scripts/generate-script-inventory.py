@@ -53,6 +53,7 @@ ANALYSED |= {
     t("Core/ReplicatedStorage/Client/EconomySystem/Collections.luau"),
     t("Core/ServerStorage/WorldSystem/EventService.luau"),
     t("Core/ServerScriptService/ServerScripts/EventBootstrap.server.luau"),
+    t("Core/ServerStorage/WorldSystem/ReferralService.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
