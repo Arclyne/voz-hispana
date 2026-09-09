@@ -473,6 +473,27 @@ Recorded here so a future run does not re-derive them:
 
 ### Tooling notes for the next run
 
+- **The Moonwave API layer is scoped, and this is load-bearing.** The workflow passes
+  `--code src/ReplicatedStorage src/ServerStorage/TemplatesTesting/Core/ServerStorage`
+  (`DOC_CODE_PATHS` in `.github/workflows/docs.yml`), **not** all of `src/`. The first
+  real CI build proved why: Moonwave's extractor treats every `---` comment and every
+  `--[=[ ]=]` block as a doc comment and aborts on the first batch of diagnostics. It
+  found **16 errors**, every one of them in `Core/ReplicatedStorage`, in files this
+  project never touched:
+
+  | Cause | Files |
+  |---|---|
+  | `---` used as a visual separator with text on the line | `Icon/Types`, `Icon/init`, `PartCache/init`, `FastCastRedux/init`, `FastCastRedux/ActiveCast`, `Karaoke/RevisarCanciones/init`, `Karaoke/CrearCancion/init`, `Paint/ServerClient/init`, `DancesInfo`, `Client/BusquedaSettings` |
+  | `--[=[ ]=]` block whose parent class has no `@class` entry | `CardSlots`, `Carousel`, `ButtonMotion`, `AreaSystem` |
+  | Duplicate `@class Signal` | `Shared/Signal.luau` vs `DataKit/Signal.luau` |
+
+  A bare `-----` line with no text does **not** error — `WorldSystem/EventService` and
+  `ReferralService` use those and were clean. It is only `---` followed by text.
+
+  **Before widening `DOC_CODE_PATHS`**, fix the comments in the files being brought in,
+  or the build fails for everyone. `check-docs-links.py` validates `/api/<Class>` links
+  against exactly these paths, so the two must be kept in step.
+
 - **Moonwave cannot be built locally in this environment.** The CLI installs from npm, but
   `moonwave build` fetches its extractor binary from `latest-github-release.eryn.io` /
   `github.com`, both outside the network allowlist (HTTP 403). The build is validated on

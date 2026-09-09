@@ -28,6 +28,24 @@ PROJECT  →  ARCHITECTURE  →  LIFECYCLES  →  SYSTEMS  →  FLOWS  →  SCRI
 
 Use the sidebar to navigate; the sections above appear there as they are written.
 
+:::note What the API Reference covers
+
+Moonwave extracts it from `--[=[ ]=]` comments in the Luau sources, but **not from all
+of them**. It is scoped to `ReplicatedStorage` and to
+`ServerStorage/TemplatesTesting/Core/ServerStorage` — the paths that carry annotated
+classes today: `PlayerInit`, `ServerPresence`, and the `DataKit` package.
+
+Much of `Core/ReplicatedStorage` predates this project and uses `---` lines as visual
+separators, which Moonwave's extractor reads as malformed doc comments and refuses to
+build on. Bringing those files in would mean editing comments in about fifteen files —
+several of them vendored third-party libraries — which is a larger change than the
+documentation it would unlock. The scope widens as more systems are documented.
+
+Everything outside that scope is still covered by the conceptual documentation; it just
+has no generated API page.
+
+:::
+
 ## What this project is, structurally
 
 Voz Hispana is **not** a single Roblox place with a single script tree. Three facts

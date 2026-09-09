@@ -4,12 +4,23 @@
 #   * docs/   — conceptual engineering documentation (Markdown + Mermaid)
 #   * /api/   — Moonwave API reference extracted from `--[=[ ... ]=]` comments in src/
 #
-# Build:  npx moonwave build --code src
-# Dev:    npx moonwave dev   --code src
+# Build and dev must be given the same --code paths the workflow uses; see
+# DOC_CODE_PATHS in .github/workflows/docs.yml and the note further down.
+#
+#   npx moonwave build --code src/ReplicatedStorage \
+#                             src/ServerStorage/TemplatesTesting/Core/ServerStorage
+#
+# Plain `--code src` does NOT work: the extractor aborts on pre-existing comments
+# elsewhere in the tree.
 
 title = "Voz Hispana"
 gitRepoUrl = "https://github.com/arclyne/voz-hispana"
 gitSourceBranch = "main"
+
+# The API reference is scoped: the Documentation workflow passes `--code` paths
+# rather than all of `src/`, because Moonwave's extractor aborts on pre-existing
+# `---` separator comments elsewhere in the tree. The rationale and the current
+# paths live in .github/workflows/docs.yml (DOC_CODE_PATHS).
 
 # `classOrder` is intentionally not set yet. It is added once the full set of
 # `@class` annotations exists (Phase 4), so that the sidebar groups classes by

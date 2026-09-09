@@ -29,6 +29,31 @@ on:
 permissions:
   contents: read
 
+# Which Luau paths Moonwave extracts the API reference from.
+#
+# NOT all of src/. Moonwave's extractor treats every `---` comment and every
+# `--[=[ ]=]` block as a doc comment, and aborts the whole build on the first
+# batch of diagnostics. Much of src/ServerStorage/TemplatesTesting/Core/
+# ReplicatedStorage predates this documentation project and uses `--- SECTION`
+# lines as visual separators, or carries `--[=[ ]=]` blocks whose parent class
+# has no `@class` entry. That produced 16 extractor errors across Icon,
+# FastCastRedux, PartCache, Karaoke, Paint, CardSlots, Carousel, ButtonMotion,
+# AreaSystem, DancesInfo and BusquedaSettings, plus a duplicate `@class Signal`
+# between Shared/Signal.luau and DataKit/Signal.luau.
+#
+# Fixing those would mean editing comments in ~15 files this project has not
+# read, several of them vendored third-party libraries — a much larger and
+# riskier change than the documentation it would enable. So the API layer is
+# scoped to the paths that actually carry annotated classes, and the conceptual
+# documentation continues to cover the rest.
+#
+# Widen this as more systems are documented, and re-run the link checker: it
+# validates /api/<Class> links against exactly these paths.
+env:
+  DOC_CODE_PATHS: >-
+    src/ReplicatedStorage
+    src/ServerStorage/TemplatesTesting/Core/ServerStorage
+
 concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
@@ -60,7 +85,7 @@ jobs:
       # Same class of failure the Docusaurus build would raise (moonwave.toml sets
       # onBrokenLinks = "throw"), but caught in seconds and with a precise message.
       - name: Check internal documentation links
-        run: python3 .github/scripts/check-docs-links.py
+        run: python3 .github/scripts/check-docs-links.py docs $DOC_CODE_PATHS
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -89,7 +114,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          moonwave build --out-dir .moonwave-warmup --code src
+          moonwave build --out-dir .moonwave-warmup --code $DOC_CODE_PATHS
           rm -rf .moonwave-warmup
 
           CACHE="$HOME/.cache/moonwave/$(basename "$PWD")"
@@ -102,7 +127,7 @@ jobs:
             echo "::warning::Could not install @docusaurus/theme-mermaid — Mermaid diagrams will render as code blocks."
           fi
 
-          moonwave build --out-dir build --code src
+          moonwave build --out-dir build --code $DOC_CODE_PATHS
 
       - name: Verify build output exists
         run: |

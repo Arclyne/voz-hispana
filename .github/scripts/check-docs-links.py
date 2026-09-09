@@ -15,7 +15,12 @@ It checks two kinds of link:
 
 External links (http/https) and mailto: are not checked.
 
-Usage: python3 .github/scripts/check-docs-links.py [DOCS_DIR] [CODE_DIR]
+The code directories must match the `--code` paths the Documentation workflow
+passes to Moonwave. Moonwave only generates /api/ routes for the paths it is
+given, so validating against a wider set would pass links that 404 on the built
+site. See the "Build site" step in .github/workflows/docs.yml.
+
+Usage: python3 .github/scripts/check-docs-links.py [DOCS_DIR] [CODE_DIR ...]
 """
 
 from __future__ import annotations
@@ -45,15 +50,19 @@ def headings(path: str) -> set[str]:
 
 def main() -> int:
     docs = sys.argv[1] if len(sys.argv) > 1 else "docs"
-    code = sys.argv[2] if len(sys.argv) > 2 else "src"
+    code_dirs = sys.argv[2:] or [
+        "src/ReplicatedStorage",
+        "src/ServerStorage/TemplatesTesting/Core/ServerStorage",
+    ]
 
     classes: set[str] = set()
-    for root, _, files in os.walk(code):
-        for name in files:
-            if not name.endswith(".luau"):
-                continue
-            source = open(os.path.join(root, name), encoding="utf-8", errors="replace").read()
-            classes.update(re.findall(r"@class\s+(\S+)", source))
+    for code in code_dirs:
+        for root, _, files in os.walk(code):
+            for name in files:
+                if not name.endswith(".luau"):
+                    continue
+                source = open(os.path.join(root, name), encoding="utf-8", errors="replace").read()
+                classes.update(re.findall(r"@class\s+(\S+)", source))
 
     pages = [
         os.path.join(root, name)
@@ -80,7 +89,8 @@ def main() -> int:
                 cls = path_part[len("/api/"):].strip("/")
                 if cls and cls not in classes:
                     problems.append(
-                        f"{page}: /api/{cls} — no `@class {cls}` found under {code}/"
+                        f"{page}: /api/{cls} — no `@class {cls}` in the documented "
+                        f"code paths ({', '.join(code_dirs)})"
                     )
                 continue
 
@@ -96,7 +106,8 @@ def main() -> int:
             if anchor and anchor not in anchors.get(resolved, set()):
                 problems.append(f"{page}: {target} — no heading anchor #{anchor} in {resolved}")
 
-    print(f"Checked {checked} internal link(s) across {len(pages)} page(s).")
+    print(f"Checked {checked} internal link(s) across {len(pages)} page(s); "
+          f"{len(classes)} @class annotation(s) in scope.")
     if problems:
         print("\nBroken links:\n")
         print("\n".join("  " + p for p in problems))
