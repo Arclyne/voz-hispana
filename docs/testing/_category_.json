@@ -1,10 +1,10 @@
 {
-  "label": "Verification",
+  "label": "Verificación",
   "position": 5,
   "collapsed": false,
   "link": {
     "type": "generated-index",
-    "title": "Verification",
-    "description": "Suspected defects, the evidence and theory behind each, and a reproducible plan to confirm or dismiss them. Nothing here is asserted as a confirmed bug."
+    "title": "Verificación",
+    "description": "Defectos sospechados, la evidencia y la teoría detrás de cada uno, y un plan reproducible para confirmarlos o descartarlos. Nada de lo que hay aquí se afirma como bug confirmado."
   }
 }
