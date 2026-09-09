@@ -1,21 +1,21 @@
 ---
 sidebar_position: 3
-title: Remotes and bindables
+title: Remotes y bindables
 ---
 
-# Remotes and bindables
+# Remotes y bindables
 
-Every `RemoteEvent`, `RemoteFunction`, `BindableEvent` and `BindableFunction` declared in
-this repository, with the DataModel path it occupies at runtime.
+Todos los `RemoteEvent`, `RemoteFunction`, `BindableEvent` y `BindableFunction` declarados
+en este repositorio, con la ruta del DataModel que ocupan en tiempo de ejecución.
 
-They are **declared as Rojo `.model.json` files**, not created in code, so this list is
-complete for the inspectable source. Instances created at runtime by a script — for example
-`TemplatesReady`, which `ImportTemplates` creates with `Instance.new` — are noted separately
-at the end.
+Se **declaran como archivos `.model.json` de Rojo**, no se crean en código, así que esta
+lista es completa para el código inspeccionable. Las instancias que crea un script en
+ejecución —por ejemplo `TemplatesReady`, que `ImportTemplates` crea con `Instance.new`— se
+anotan aparte al final.
 
-For what they are used for, see [Architecture → Networking](../architecture/networking.md).
+Para qué se usan, ver [Arquitectura → Red](../architecture/networking.md).
 
-| Class | Count |
+| Clase | Cantidad |
 |---|---|
 | `RemoteEvent` | 174 |
 | `RemoteFunction` | 40 |
@@ -24,7 +24,7 @@ For what they are used for, see [Architecture → Networking](../architecture/ne
 
 ## RemoteEvent (174)
 
-| Runtime path | Template |
+| Ruta en ejecución | Plantilla |
 |---|---|
 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.RemoteEvent` | Core |
 | `ReplicatedStorage.Events.Animate` | Core |
@@ -203,7 +203,7 @@ For what they are used for, see [Architecture → Networking](../architecture/ne
 
 ## RemoteFunction (40)
 
-| Runtime path | Template |
+| Ruta en ejecución | Plantilla |
 |---|---|
 | `ReplicatedStorage.Events.Animator.GetAnimations` | Core |
 | `ReplicatedStorage.Events.Collections.charge` | Core |
@@ -248,7 +248,7 @@ For what they are used for, see [Architecture → Networking](../architecture/ne
 
 ## BindableEvent (11)
 
-| Runtime path | Template |
+| Ruta en ejecución | Plantilla |
 |---|---|
 | `ReplicatedStorage.Events.IconsUI.FavoriteWorld` | Core |
 | `ReplicatedStorage.Events.IconsUI.OpenAdminPanel` | Core |
@@ -264,15 +264,15 @@ For what they are used for, see [Architecture → Networking](../architecture/ne
 
 ## BindableFunction (1)
 
-| Runtime path | Template |
+| Ruta en ejecución | Plantilla |
 |---|---|
 | `ServerStorage.WorldSystem.GetOwnerServers` | Core |
 
-## Created at runtime, not declared
+## Creados en ejecución, no declarados
 
-| Name | Class | Created by |
+| Nombre | Clase | Lo crea |
 |---|---|---|
 | `ReplicatedStorage.TemplatesReady` | `RemoteEvent` | `ImportTemplates.server.luau` |
 | `ReplicatedStorage.TemplatesReadyFlag` | `BoolValue` | `ImportTemplates.server.luau` |
 | `ReplicatedStorage.InitScriptsReadyFlag` | `BoolValue` | `InitScripts.server.luau` |
-| `ReplicatedStorage.IsInEvent` | `Configuration` | `Core/StarterGui/LocalScript.client.luau`, if absent |
+| `ReplicatedStorage.IsInEvent` | `Configuration` | `Core/StarterGui/LocalScript.client.luau`, si no existe |

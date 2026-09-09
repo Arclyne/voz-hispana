@@ -23,27 +23,29 @@ local MSG_TOPIC_CLOSED = "UserServerRegistryClosed"
 --[=[
 	@class ServerPresence
 
-	Keeps this server advertised in the cross-server directory, a MemoryStore hash map
-	(`UserServerRegistry_Test`) that maps a **server key** to everything another server
-	needs in order to send a player here.
+	Mantiene este servidor anunciado en el directorio entre servidores: un hash map de
+	MemoryStore (`UserServerRegistry_Test`) que asocia una **clave de servidor** con todo
+	lo que otro servidor necesita para mandar aquí a un jugador.
 
-	Every kind of server uses it, and each supplies its own key shape and payload:
+	Lo usan todos los tipos de servidor, y cada uno aporta su propia forma de clave y su
+	propio contenido:
 
-	| Server | Key | `hostingType` | Joined by |
+	| Servidor | Clave | `hostingType` | Se entra con |
 	| --- | --- | --- | --- |
-	| Public place | `"{PlaceId}_{JobId}"` | `"default"` | `TeleportOptions.ServerInstanceId` |
-	| Player house | `"{UserId}_{roomName}"` | `"room"` | `ReservedServerAccessCode` |
-	| Event | event key | `"event"` | `ReservedServerAccessCode` |
+	| Place público | `"{PlaceId}_{JobId}"` | `"default"` | `TeleportOptions.ServerInstanceId` |
+	| Casa de jugador | `"{UserId}_{roomName}"` | `"room"` | `ReservedServerAccessCode` |
+	| Evento | clave del evento | `"event"` | `ReservedServerAccessCode` |
 
-	The entry carries a TTL of `ACTIVE_TTL` (120 s) and is refreshed on a heartbeat every
-	`UPDATE_INTERVAL` (30 s), so a server that dies without running `Cleanup` disappears
-	from the directory on its own within the TTL. Every write is also published over
-	`MessagingService` (`UserServerRegistryUpdate` / `UserServerRegistryClosed`) so that
-	listeners can react before the next poll.
+	La entrada lleva un TTL de `ACTIVE_TTL` (120 s) y se refresca por heartbeat cada
+	`UPDATE_INTERVAL` (30 s), así que un servidor que muera sin ejecutar `Cleanup`
+	desaparece del directorio por sí solo dentro del TTL. Cada escritura se publica además
+	por `MessagingService` (`UserServerRegistryUpdate` / `UserServerRegistryClosed`) para
+	que los oyentes puedan reaccionar antes del siguiente sondeo.
 
-	MemoryStore throttling is handled separately from MemoryStore failure: a transient
-	failure is retried with exponential backoff, while a throttle stops the retries and
-	pauses all refreshes for `THROTTLE_COOLDOWN` (60 s) — still well under the TTL.
+	El throttling de MemoryStore se trata aparte de un fallo de MemoryStore: un fallo
+	transitorio se reintenta con backoff exponencial, mientras que un throttle detiene los
+	reintentos y pausa todos los refrescos durante `THROTTLE_COOLDOWN` (60 s), que sigue
+	holgadamente por debajo del TTL.
 
 	@server
 ]=]
@@ -145,7 +147,7 @@ end
 --[=[
 	@within ServerPresence
 
-	Creates a presence handle. Nothing is written until [ServerPresence:Start] is called.
+	Crea un manejador de presencia. No se escribe nada hasta llamar a [ServerPresence:Start].
 ]=]
 function ServerPresence.new(config: ManagerConfig): ServerPresence
 	local self = setmetatable({} :: any, ServerPresence)
@@ -167,16 +169,17 @@ end
 --[=[
 	@within ServerPresence
 
-	Writes the entry now and reschedules the next refresh a full `UPDATE_INTERVAL` out.
+	Escribe la entrada ahora y reprograma el siguiente refresco a un `UPDATE_INTERVAL`
+	completo vista.
 
-	The payload comes from the caller's `GetRefreshPayload(old)`, which receives the
-	previous value and returns the new one — it runs inside `UpdateAsync`, so it may be
-	invoked more than once. On success the new payload is published over
-	`MessagingService`, and the first time the payload reports `status == "ready"` while
-	`ReplicatedStorage.ServerInfo` still reads `"pending"`, `OnStarted` fires.
+	El contenido viene del `GetRefreshPayload(old)` del llamante, que recibe el valor
+	anterior y devuelve el nuevo; corre dentro de `UpdateAsync`, así que puede invocarse
+	más de una vez. Si tiene éxito, el nuevo contenido se publica por `MessagingService`, y
+	la primera vez que el contenido reporta `status == "ready"` mientras
+	`ReplicatedStorage.ServerInfo` sigue en `"pending"`, se dispara `OnStarted`.
 
-	A throttled write pauses refreshes for `THROTTLE_COOLDOWN`; any other failure is left
-	for the next heartbeat tick.
+	Una escritura con throttle pausa los refrescos durante `THROTTLE_COOLDOWN`; cualquier
+	otro fallo se deja para el siguiente tick del heartbeat.
 ]=]
 function ServerPresence.RefreshNow(self: ServerPresence)
 	self._nextTick = os.clock() + UPDATE_INTERVAL
@@ -209,9 +212,9 @@ end
 --[=[
 	@within ServerPresence
 
-	Asks for a refresh *soon* rather than *now*: pulls the next tick forward to
-	`REFRESH_DEBOUNCE` (2 s) from now, never pushes it back. Ten players joining at once
-	then cost one write carrying the complete list instead of ten.
+	Pide un refresco *pronto* en vez de *ya*: adelanta el siguiente tick a
+	`REFRESH_DEBOUNCE` (2 s) desde ahora, y nunca lo retrasa. Así, diez jugadores entrando
+	a la vez cuestan una sola escritura con la lista completa en vez de diez.
 ]=]
 function ServerPresence.RequestRefresh(self: ServerPresence)
 	local soon = os.clock() + REFRESH_DEBOUNCE
@@ -223,9 +226,10 @@ end
 --[=[
 	@within ServerPresence
 
-	Publishes the entry and starts the keepalive: a `Heartbeat` connection that refreshes
-	on schedule, plus `PlayerAdded` / `PlayerRemoving` connections that request an early
-	refresh so the advertised player list does not lag. Calling it twice is a no-op.
+	Publica la entrada y arranca el keepalive: una conexión a `Heartbeat` que refresca
+	según lo programado, más conexiones a `PlayerAdded` / `PlayerRemoving` que piden un
+	refresco anticipado para que la lista de jugadores anunciada no se quede atrás.
+	Llamarlo dos veces no hace nada.
 ]=]
 function ServerPresence.Start(self: ServerPresence)
 	if self._updaterConnection then return end
@@ -254,15 +258,16 @@ end
 --[=[
 	@within ServerPresence
 
-	Stops the keepalive and withdraws the server from the directory: disconnects the
-	heartbeat and the player connections, runs `OnCleanup`, removes the MemoryStore entry,
-	publishes `UserServerRegistryClosed`, and sets `ServerInfo.status` to `"closed"`.
+	Detiene el keepalive y retira el servidor del directorio: desconecta el heartbeat y las
+	conexiones de jugador, ejecuta `OnCleanup`, elimina la entrada de MemoryStore, publica
+	`UserServerRegistryClosed`, y pone `ServerInfo.status` en `"closed"`.
 
-	The player connections are dropped **before** the entry is removed on purpose. If they
-	survived, a `PlayerRemoving` firing during shutdown would request a refresh that
-	rewrites the key just deleted, leaving a dead server advertised until its TTL expires.
+	Las conexiones de jugador se sueltan **antes** de eliminar la entrada, a propósito. Si
+	sobrevivieran, un `PlayerRemoving` disparado durante el apagado pediría un refresco que
+	reescribiría la clave recién borrada, dejando un servidor muerto anunciado hasta que
+	expire su TTL.
 
-	Normally reached from `game:BindToClose`.
+	Normalmente se llega desde `game:BindToClose`.
 ]=]
 function ServerPresence.Cleanup(self: ServerPresence)
 	if self._updaterConnection then
@@ -287,7 +292,7 @@ end
 --[=[
 	@within ServerPresence
 
-	The `UserId`s currently in this server, as published in the directory payload.
+	Los `UserId` que están ahora en este servidor, tal y como se publican en el contenido del directorio.
 ]=]
 function ServerPresence.GetPlayerList(): {number}
 	local playerList = {}
@@ -300,13 +305,13 @@ end
 --[=[
 	@within ServerPresence
 
-	Reads one directory entry, retrying transient MemoryStore failures with backoff and
-	abandoning immediately on a throttle.
+	Lee una entrada del directorio, reintentando los fallos transitorios de MemoryStore con
+	backoff y abandonando de inmediato ante un throttle.
 
-	@param map MemoryStoreHashMap -- normally [ServerPresence.GetActiveMap]
-	@param key string -- the server key to look up
-	@return any -- the entry, or nil if absent or unreadable
-	@return boolean -- true when the read **failed**; nil data with false means "no such server"
+	@param map MemoryStoreHashMap -- normalmente [ServerPresence.GetActiveMap]
+	@param key string -- la clave de servidor a buscar
+	@return any -- la entrada, o nil si no existe o no se pudo leer
+	@return boolean -- true cuando la lectura **falló**; datos nil con false significa "ese servidor no existe"
 ]=]
 function ServerPresence.SafeGet(map: MemoryStoreHashMap, key: string): (any, boolean)
 	local attempt = 0
@@ -336,7 +341,7 @@ end
 --[=[
 	@within ServerPresence
 
-	The MemoryStore hash map backing the directory. Every server in the universe shares it.
+	El hash map de MemoryStore que respalda el directorio. Lo comparten todos los servidores del universo.
 ]=]
 function ServerPresence.GetActiveMap(): MemoryStoreHashMap
 	return MemoryStoreService:GetHashMap(ACTIVE_MAP_NAME)
@@ -345,8 +350,8 @@ end
 --[=[
 	@within ServerPresence
 
-	Kicks everyone with `message`. Used when a server cannot establish a valid identity.
-	In Studio it only warns, so a local playtest is not ejected.
+	Expulsa a todos con `message`. Se usa cuando un servidor no puede establecer una
+	identidad válida. En Studio solo avisa, para no echar a nadie de una prueba local.
 ]=]
 function ServerPresence.KickAll(message: string)
 	if RunService:IsStudio() then
