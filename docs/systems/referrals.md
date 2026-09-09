@@ -196,6 +196,48 @@ motivo:
 debe fallar, no robarse el candado.
 ```
 
+## Los comandos: el manejador mejor escrito del repositorio
+
+**HECHO.** `ReferralCommands.server.luau` (333) expone siete comandos de chat —`/invites`,
+`/socio`, `/pagar`, `/codigo`, `/link`, `/testinvite`, `/testprogress`— y su despacho es
+este:
+
+```lua
+local function onChatted(player: Player, message: string)
+	local command, rest = message:match("^/(%a+)%s*(.*)$")
+	if not command then return end
+
+	local handler = COMMANDS[command:lower()]
+	if not handler then return end
+
+	if not Admins:IsRole(player, "Admins") then return end
+
+	local ok, err = pcall(handler, player, rest)
+	if not ok then
+		warn("[ReferralCommands] Error en /" .. command .. ":", err)
+		notify(player, "Error interno ejecutando el comando.")
+	end
+end
+```
+
+**Registrado como correcto, en cuatro puntos**, y merece compararse con lo que hacen otros:
+
+| Control | Por qué importa |
+|---|---|
+| La comprobación de rol está **una sola vez**, antes del despacho | Un comando nuevo no puede olvidarse de comprobarlo: no es suyo. Al contrario que [`Commands.luau`](./shared-utilities.md#commandsluau-los-comandos-de-chat), donde la comprobación va por comando |
+| **No hay segunda vía** | Los comandos entran solo por `Chatted`. No existe un remote paralelo, que es justo el hueco de [BUG-CANDIDATE-042](../testing/verification-plan.md#bug-candidate-042) |
+| Cada manejador va en `pcall` | Un error no rompe la conexión `Chatted` del jugador, y se avisa |
+| Los argumentos se parsean con patrones estrictos | `cmdPagar` exige `^(%S+)%s+(-?%d+)$`: usuario y número, o nada |
+
+Es, de todos los caminos de administración leídos en este repositorio, el único al que no hay
+que ponerle ninguna salvedad. Ver por contraste
+[BUG-CANDIDATE-028](../testing/verification-plan.md#bug-candidate-028) y
+[BUG-CANDIDATE-042](../testing/verification-plan.md#bug-candidate-042).
+
+**OBSERVACIÓN.** `cmdPagar` acepta cantidades **negativas** (`-?%d+`), lo que resta de
+`PointsPaid`. Siendo un comando de administrador, lo más probable es que sea deliberado —
+deshacer un pago mal apuntado—, pero no está dicho en ninguna parte.
+
 ## La configuración, que es el único archivo que hay que tocar
 
 **HECHO.** `Shared/Referrals/ReferralConfig.luau` concentra todo lo ajustable, y **se

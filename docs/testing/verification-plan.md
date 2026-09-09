@@ -6713,6 +6713,9 @@ completa.
 | Cocina: `CookingStation`, `Blender`, `Oven`, `Stove` | **Sí, enteros** | El ciclo, el consumo del ingrediente y la rama de recogida |
 | Cocina: `Microwave`, `CuttingBoard` | En parte | Su `validate` y su superficie de red |
 | `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
+| `JobSystem`: `Bartender`, `LimpiarPiso`, `CajasTransport` | Sí | Sus listas blancas y **dónde sale el dinero**: ninguno de los pagos lo pide el cliente |
+| `Referrals/ReferralCommands.server.luau` | Sí | El despacho de los siete comandos y su comprobación de rol |
+| `BuildingSystem` — `init.luau`, `ColorFormat` | Sí | Y confirmado que el módulo entero no tiene ni un remote |
 | `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
 | `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
 | `BuildingSystem` (8 archivos, 2 749 líneas) | En parte | Confirmado que no tiene ni un remote; leídos `init.luau`, `ColorFormat` y la ficha del catálogo. Los otros cinco, en superficie a propósito |

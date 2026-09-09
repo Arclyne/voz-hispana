@@ -26,10 +26,10 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 145 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 149 |
 | Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 187 |
-| Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** — ver [Librerías de terceros](../architecture/third-party.md) | 160 |
-| Pendiente | Aún sin leer | 52 |
+| Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** — ver [Librerías de terceros](../architecture/third-party.md) | 169 |
+| Pendiente | Aún sin leer | 39 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -79,7 +79,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 481 leídos.
+530 archivos, 76,305 líneas, 494 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -876,13 +876,13 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/</code> — 4 archivo(s) — 2/4 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Bartender.luau` | ModuleScript | — | — | 447 | `ReplicatedStorage.Shared.JobSystem.Bartender` | Pendiente |
+| `Bartender.luau` | ModuleScript | — | — | 447 | `ReplicatedStorage.Shared.JobSystem.Bartender` | Analizado |
 | `ConditionsUses.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.JobSystem.ConditionsUses` | Analizado |
-| `LimpiarPiso.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Shared.JobSystem.LimpiarPiso` | Pendiente |
+| `LimpiarPiso.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Shared.JobSystem.LimpiarPiso` | Analizado |
 | `init.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Shared.JobSystem.init` | Analizado |
 
 </details>
@@ -897,11 +897,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/CajasTransport/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/CajasTransport/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 261 | `ReplicatedStorage.Shared.JobSystem.CajasTransport.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 261 | `ReplicatedStorage.Shared.JobSystem.CajasTransport.init` | Analizado |
 
 </details>
 
@@ -1415,11 +1415,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Referrals/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Referrals/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ReferralCommands.server.luau` | Script | — | yes | 333 | `ServerScriptService.ServerScripts.Referrals.ReferralCommands.server` | Pendiente |
+| `ReferralCommands.server.luau` | Script | — | yes | 333 | `ServerScriptService.ServerScripts.Referrals.ReferralCommands.server` | Analizado |
 | `ReferralMain.server.luau` | Script | — | yes | 233 | `ServerScriptService.ServerScripts.Referrals.ReferralMain.server` | Analizado (en parte) |
 
 </details>
@@ -1564,42 +1564,42 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/</code> — 9 archivo(s) — 7/9 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/</code> — 9 archivo(s) — 9/9 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `BaseStore.luau` | ModuleScript | — | — | 330 | `ServerStorage.DataKit.BaseStore` | Analizado (en parte) |
 | `Health.luau` | ModuleScript | — | — | 82 | `ServerStorage.DataKit.Health` | Analizado |
-| `Inbox.luau` | ModuleScript | — | — | 71 | `ServerStorage.DataKit.Inbox` | Pendiente |
+| `Inbox.luau` | ModuleScript | — | — | 71 | `ServerStorage.DataKit.Inbox` | Frontera (terceros) |
 | `Lease.luau` | ModuleScript | — | — | 254 | `ServerStorage.DataKit.Lease` | Analizado |
 | `Mutex.luau` | ModuleScript | — | — | 62 | `ServerStorage.DataKit.Mutex` | Analizado |
 | `Profile.luau` | ModuleScript | — | — | 149 | `ServerStorage.DataKit.Profile` | Analizado |
-| `Signal.luau` | ModuleScript | — | — | 56 | `ServerStorage.DataKit.Signal` | Pendiente |
+| `Signal.luau` | ModuleScript | — | — | 56 | `ServerStorage.DataKit.Signal` | Frontera (terceros) |
 | `Store.luau` | ModuleScript | — | — | 1237 | `ServerStorage.DataKit.Store` | Analizado (en parte) |
 | `init.luau` | ModuleScript | — | — | 56 | `ServerStorage.DataKit.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Adapters/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Adapters/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Types.luau` | ModuleScript | — | — | 62 | `ServerStorage.DataKit.Adapters.Types` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 46 | `ServerStorage.DataKit.Adapters.init` | Pendiente |
+| `Types.luau` | ModuleScript | — | — | 62 | `ServerStorage.DataKit.Adapters.Types` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 46 | `ServerStorage.DataKit.Adapters.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Util/</code> — 5 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Util/</code> — 5 archivo(s) — 5/5 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `capitalize.luau` | ModuleScript | — | — | 14 | `ServerStorage.DataKit.Util.capitalize` | Pendiente |
-| `deepCopy.luau` | ModuleScript | — | — | 26 | `ServerStorage.DataKit.Util.deepCopy` | Pendiente |
-| `deepEquals.luau` | ModuleScript | — | — | 31 | `ServerStorage.DataKit.Util.deepEquals` | Pendiente |
-| `reconcile.luau` | ModuleScript | — | — | 27 | `ServerStorage.DataKit.Util.reconcile` | Pendiente |
-| `retry.luau` | ModuleScript | — | — | 41 | `ServerStorage.DataKit.Util.retry` | Pendiente |
+| `capitalize.luau` | ModuleScript | — | — | 14 | `ServerStorage.DataKit.Util.capitalize` | Frontera (terceros) |
+| `deepCopy.luau` | ModuleScript | — | — | 26 | `ServerStorage.DataKit.Util.deepCopy` | Frontera (terceros) |
+| `deepEquals.luau` | ModuleScript | — | — | 31 | `ServerStorage.DataKit.Util.deepEquals` | Frontera (terceros) |
+| `reconcile.luau` | ModuleScript | — | — | 27 | `ServerStorage.DataKit.Util.reconcile` | Frontera (terceros) |
+| `retry.luau` | ModuleScript | — | — | 41 | `ServerStorage.DataKit.Util.retry` | Frontera (terceros) |
 
 </details>
 

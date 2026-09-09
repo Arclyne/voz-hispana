@@ -5,8 +5,12 @@ title: Librerías de terceros
 
 # Librerías de terceros
 
-Siete librerías que no escribió este proyecto, 19 303 líneas en 158 archivos — **el 24 % de
-todo el código Luau del repositorio**.
+Nueve librerías que no escribió este proyecto, **160 archivos y 20 347 líneas**: el 25 % de
+todo el código Luau del repositorio.
+
+(El inventario marca 169 archivos como frontera. Los otros 9 son el interior de
+[DataKit](./datakit.md) que no se abrió; sus clases principales sí se leyeron y figuran
+aparte.)
 
 Esta página documenta su **frontera**: qué son, de dónde vienen, quién las usa aquí y para
 qué. No su interior. Es la misma decisión que con [DataKit](./datakit.md), y por la misma
@@ -23,9 +27,15 @@ este repositorio**. Eso es lo que hay aquí.
 | [`Icon` (TopbarPlus v3)](https://1foreverhd.github.io/TopbarPlus/) | 21 | 5 523 | La barra superior: iconos, temas, widgets | 12 |
 | `Kinetic` | 20 | 4 137 | Animación por muelles y transiciones | 4 |
 | [`Promise`](https://eryn.io/roblox-lua-promise/) | 2 | 3 910 | Promesas al estilo A+ | 4 (todos indirectos) |
+| [`Trove`](https://sleitnick.github.io/RbxUtil/api/Trove) | 1 | 612 | Contenedor de limpieza | 16 |
+| [`Signal`](https://github.com/stravant/goodsignal) | 1 | 432 | Señal *batched yield-safe*, MIT | 14 |
 | [`FastCastRedux`](https://etithespirit.github.io/FastCastAPIDocs) | 6 | 1 280 | Proyectiles por *raycast* en vez de por física | 1 |
 | [`Observers`](https://sleitnick.github.io/RbxObservers/) | 6 | 549 | Observadores de etiqueta, atributo, propiedad y jugador | 1 |
 | `PartCache` | 2 | 297 | Reserva de piezas precreadas, para no crearlas en caliente | 3 |
+
+`Spring.luau` (31 líneas) y `lerp.luau` (5) también vienen de fuera, pero se leyeron enteros
+y figuran como **Analizado** en el inventario: decir «no se lee por dentro» de cinco líneas
+sería falso. Están en el [catálogo de utilidades](../systems/shared-utilities.md#de-terceros-no-del-proyecto).
 
 **HECHO.** Los recuentos de consumidores salen de buscar cada nombre en los 552 `.luau`.
 Como en el [catálogo de utilidades](../systems/shared-utilities.md#cómo-se-leyó-esto), **son

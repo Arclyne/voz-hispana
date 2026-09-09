@@ -323,10 +323,10 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 145 |
+| Analizado (leído entero, descrito en el sitio) | 149 |
 | Analizado (en parte) | 187 |
-| Frontera (terceros) — documentada por fuera, sin leer por dentro | 160 |
-| Pendiente | 52 |
+| Frontera (terceros) — documentada por fuera, sin leer por dentro | 169 |
+| Pendiente | 39 |
 
 Las lecturas parciales y por qué:
 
