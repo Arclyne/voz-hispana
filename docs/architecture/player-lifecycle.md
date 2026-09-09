@@ -1,75 +1,75 @@
 ---
 sidebar_position: 3
-title: Player lifecycle
+title: Ciclo de vida del jugador
 ---
 
-# Player lifecycle
+# Ciclo de vida del jugador
 
-## Why `Players.PlayerAdded` is not used directly
+## Por qué no se usa `Players.PlayerAdded` directamente
 
-**FACT.** Most systems in Voz Hispana do **not** connect to `Players.PlayerAdded`. They
-register with [`PlayerInit`](/api/PlayerInit) instead:
+**HECHO.** La mayoría de los sistemas de Voz Hispana **no** se conectan a
+`Players.PlayerAdded`. Se registran en [`PlayerInit`](/api/PlayerInit):
 
 ```lua
 local PlayerInit = require(ReplicatedStorage:WaitForChild("PlayerInit"))
 PlayerInit.Connect(OnPlayerAdded)
 ```
 
-19 scripts in the repository do this.
+19 scripts del repositorio lo hacen así.
 
-The reason is in the module's own header comment: template scripts are imported by
-`InsertService` and enabled afterwards, so a script that connects to `Players.PlayerAdded`
-in its first line may already have missed the players who joined while the import was
-running. `PlayerInit` connects once, from the moment it is first required, records which
-players it has announced, and **replays** that announcement to every listener registered
-later.
+La razón está en el comentario de cabecera del propio módulo: los scripts de plantilla se
+importan con `InsertService` y se activan después, así que un script que se conecte a
+`Players.PlayerAdded` en su primera línea puede haberse perdido ya a los jugadores que
+entraron mientras corría la importación. `PlayerInit` se conecta una sola vez, desde el
+momento en que se le pide por primera vez, registra a qué jugadores ya ha anunciado, y
+**reproduce** ese anuncio para los listeners que se registren más tarde.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant P as Players service
+    participant P as Servicio Players
     participant PI as PlayerInit
-    participant Early as Listener registered<br/>before the join
-    participant Late as Listener registered<br/>after the join
+    participant Early as Listener registrado<br/>antes de la entrada
+    participant Late as Listener registrado<br/>después de la entrada
 
-    Note over PI: required for the first time → connects
-    P->>PI: PlayerAdded(playerA)
-    PI->>PI: initialized[playerA] = true
-    PI-->>Early: task.defer(callback, playerA)
+    Note over PI: se pide por primera vez → se conecta
+    P->>PI: PlayerAdded(jugadorA)
+    PI->>PI: initialized[jugadorA] = true
+    PI-->>Early: task.defer(callback, jugadorA)
 
-    Note over Late: script enabled by InitScripts, requires PlayerInit
+    Note over Late: InitScripts lo activa, hace require de PlayerInit
     Late->>PI: PlayerInit.Connect(callback)
-    PI->>PI: playerA is already initialized
-    PI-->>Late: task.defer(callback, playerA)
+    PI->>PI: jugadorA ya está inicializado
+    PI-->>Late: task.defer(callback, jugadorA)
 
-    P->>PI: PlayerRemoving(playerA)
-    PI->>PI: initialized[playerA] = nil
+    P->>PI: PlayerRemoving(jugadorA)
+    PI->>PI: initialized[jugadorA] = nil
 ```
 
-### Guarantees it does and does not give
+### Qué garantiza y qué no
 
 | | |
 |---|---|
-| **Does** | Each listener runs at most once per player, per join. |
-| **Does** | A listener registered late still sees players who joined earlier. |
-| **Does** | One listener raising an error cannot break the others — each call is `task.defer`red and `pcall`ed. |
-| **Does** | `Connect` returns a disposer that deactivates the listener. |
-| **Does not** | Guarantee any ordering between listeners. Every call is deferred, so all listeners for a player are queued and run in an unspecified interleaving. |
-| **Does not** | Filter to the local player on the client. `Players.PlayerAdded` fires for *all* players on the client too, and consumers such as `Client/PlayerManager` filter for `Players.LocalPlayer` themselves. |
-| **Does not** | Provide a "player removing" fan-out. Only `PlayerAdded` is replayed; cleanup is each system's own `Players.PlayerRemoving` connection. |
+| **Garantiza** | Cada listener corre como mucho una vez por jugador y por entrada. |
+| **Garantiza** | Un listener registrado tarde sigue viendo a los jugadores que entraron antes. |
+| **Garantiza** | Un listener que lance error no puede romper a los demás: cada llamada va con `task.defer` y `pcall`. |
+| **Garantiza** | `Connect` devuelve un desactivador del listener. |
+| **No garantiza** | Ningún orden entre listeners. Toda llamada es diferida, así que todos los listeners de un jugador se encolan y corren en un entrelazado no especificado. |
+| **No garantiza** | Filtrar al jugador local en el cliente. En el cliente `Players.PlayerAdded` también dispara para *todos* los jugadores, y consumidores como `Client/PlayerManager` filtran por `Players.LocalPlayer` ellos mismos. |
+| **No garantiza** | Un reparto de «jugador saliendo». Solo se reproduce `PlayerAdded`; la limpieza es la conexión `Players.PlayerRemoving` propia de cada sistema. |
 
-## Join flow
+## Flujo de entrada
 
-There is no central "player loader". Systems initialise **independently and
-concurrently**, each from its own `PlayerInit.Connect` callback.
+No hay un «cargador de jugador» central. Los sistemas se inicializan **de forma
+independiente y concurrente**, cada uno desde su propio callback de `PlayerInit.Connect`.
 
 ```mermaid
 flowchart TD
-    J(["Player joins"]) --> PA["Players.PlayerAdded"]
-    PA --> PI["PlayerInit fan-out<br/>(task.defer, unordered)"]
+    J(["Entra un jugador"]) --> PA["Players.PlayerAdded"]
+    PA --> PI["Reparto de PlayerInit<br/>(task.defer, sin orden)"]
 
-    PI --> VC["ImportTemplates<br/>voice-chat gate"]
-    PI --> PM["playerManager<br/>character wiring"]
+    PI --> VC["ImportTemplates<br/>control de chat de voz"]
+    PI --> PM["playerManager<br/>cableado del personaje"]
     PI --> PD["PlayerDataInit"]
     PI --> INV["inventory"]
     PI --> NT["NametagServer"]
@@ -79,35 +79,36 @@ flowchart TD
     PI --> WK["WalkieServer"]
     PI --> COL["collisions"]
     PI --> RF["Referrals"]
-    PI --> ETC["…and others"]
+    PI --> ETC["…y otros"]
 
-    VC --> K{"voice chat<br/>enabled?"}
-    K -- "no" --> KICK(["Kick"])
-    K -- "yes / check failed" --> CONT["stays"]
+    VC --> K{"¿chat de voz<br/>activado?"}
+    K -- "no" --> KICK(["Expulsión"])
+    K -- "sí / la comprobación falló" --> CONT["se queda"]
 ```
 
-**INFERENCE — this is worth stating plainly:** there is **no bootstrap that orders player
-initialization**. There is no `PlayerReady` signal, no dependency declaration, and no
-barrier between "data loaded" and "systems started". If two systems both need player data,
-each obtains it itself. Any ordering that holds in practice is a consequence of `task.defer`
-scheduling and of how long each system's own async work takes — not of a guarantee in the
-source.
+**INFERENCIA — conviene decirlo sin rodeos:** **no hay ningún bootstrap que ordene la
+inicialización del jugador**. No hay señal `PlayerReady`, ni declaración de dependencias,
+ni barrera entre «datos cargados» y «sistemas arrancados». Si dos sistemas necesitan los
+datos del jugador, cada uno los obtiene por su cuenta. Cualquier orden que se cumpla en
+la práctica es consecuencia de la planificación de `task.defer` y de cuánto tarde el
+trabajo asíncrono de cada sistema, no de una garantía del código.
 
-This is a real architectural property of the project, not a gap in this documentation.
+Esto es una propiedad arquitectónica real del proyecto, no un hueco de esta
+documentación.
 
-### Related implementation
+### Implementación relacionada
 
-| Concern | Script |
+| Aspecto | Script |
 |---|---|
-| Voice-chat entry requirement | `ServerScriptService/ImportTemplates.server.luau`, `onPlayerAdded` |
-| Character loading and respawn | `Core/…/ServerScripts/playerManager.server.luau` |
-| Player data | `Core/…/ServerScripts/PlayerDataInit.server.luau`, `Core/ServerStorage/WorldSystem/PlayerDataService.luau` |
-| Data replication to client | `Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau` |
+| Requisito de entrada por chat de voz | `ServerScriptService/ImportTemplates.server.luau`, `onPlayerAdded` |
+| Carga del personaje y respawn | `Core/…/ServerScripts/playerManager.server.luau` |
+| Datos del jugador | `Core/…/ServerScripts/PlayerDataInit.server.luau`, `Core/ServerStorage/WorldSystem/PlayerDataService.luau` |
+| Replicación de datos al cliente | `Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau` |
 
-## The voice-chat gate
+## El control de chat de voz
 
-**FACT.** The first thing `ImportTemplates.server.luau` does, before importing anything,
-is register the game's admission rule:
+**HECHO.** Lo primero que hace `ImportTemplates.server.luau`, antes de importar nada, es
+registrar la regla de admisión del juego:
 
 ```lua
 local success, isVoiceEnabled = pcall(function()
@@ -123,64 +124,65 @@ else
 end
 ```
 
-Voz Hispana is voice-chat-only by design. Note the third branch: when the Roblox call
-*errors*, the player is not kicked. The source comment marks this as an open decision.
-Recorded as [BUG-CANDIDATE-001](../testing/verification-plan.md#bug-candidate-001).
+Voz Hispana es exclusivo de chat de voz por diseño. Nótese la tercera rama: cuando la
+llamada a Roblox *da error*, no se expulsa al jugador. El comentario del código marca
+esto como una decisión abierta. Registrado como
+[BUG-CANDIDATE-001](../testing/verification-plan.md#bug-candidate-001).
 
-## Character request handshake
+## Handshake de solicitud de personaje
 
-**FACT.** Characters are **not** auto-loaded on join in the normal path. The client asks
-for one, over the `Player/LoadCharacterRequest` `RemoteEvent`, and
-`playerManager.server.luau` decides.
+**HECHO.** Los personajes **no** se cargan automáticamente al entrar por la vía normal.
+El cliente pide uno, por el `RemoteEvent` `Player/LoadCharacterRequest`, y
+`playerManager.server.luau` decide.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant C as Client
-    participant PM as playerManager (server)
+    participant C as Cliente
+    participant PM as playerManager (servidor)
     participant R as Roblox
 
     C->>PM: LoadCharacterRequest:FireServer()
     PM->>PM: canProcessLoadCharacterRequest(player)
 
-    alt player left, or Parent ~= Players
-        PM-->>C: ignored ("Jugador no válido")
-    else within LOAD_REQUEST_COOLDOWN (2s)
-        PM-->>C: ignored ("Cooldown"), silently
-    else InitScriptsReadyFlag is false
-        PM-->>C: ignored, warns
-    else already loaded
-        PM-->>C: ignored ("Character ya solicitado/cargado"), silently
-    else accepted
+    alt el jugador se fue, o Parent ~= Players
+        PM-->>C: ignorado ("Jugador no válido")
+    else dentro de LOAD_REQUEST_COOLDOWN (2 s)
+        PM-->>C: ignorado ("Cooldown"), en silencio
+    else InitScriptsReadyFlag es false
+        PM-->>C: ignorado, con warn
+    else ya cargado
+        PM-->>C: ignorado ("Character ya solicitado/cargado"), en silencio
+    else aceptado
         PM->>PM: playersLoaded[player] = true
         PM->>R: player:LoadCharacterAsync()  (pcall)
-        R-->>PM: character
-        Note over PM: on failure, playersLoaded[player] = nil<br/>so the client may retry
+        R-->>PM: personaje
+        Note over PM: si falla, playersLoaded[player] = nil<br/>para que el cliente pueda reintentar
     end
 ```
 
-**FACT — the server-side validations that exist:**
+**HECHO — las validaciones del servidor que existen:**
 
-| Check | Effect |
+| Comprobación | Efecto |
 |---|---|
-| `player.Parent ~= Players` | Rejected. Guards a request racing the player's departure. |
-| `os.clock() - lastRequest < 2` | Rejected. Rate-limits remote spam, and the timestamp is recorded **before** the other checks, so a rejected request still consumes the cooldown. |
-| `not InitScriptsReadyFlag.Value` | Rejected. No character before template scripts are enabled. |
-| `playersLoaded[player]` | Rejected. One character per player per session, unless a `LoadCharacterAsync` failure clears the flag. |
+| `player.Parent ~= Players` | Rechazado. Protege de una petición que carrera con la salida del jugador. |
+| `os.clock() - lastRequest < 2` | Rechazado. Limita el spam del remote, y la marca de tiempo se registra **antes** que las demás comprobaciones, así que una petición rechazada también consume el cooldown. |
+| `not InitScriptsReadyFlag.Value` | Rechazado. No hay personaje antes de que los scripts de plantilla estén activados. |
+| `playersLoaded[player]` | Rechazado. Un personaje por jugador y sesión, salvo que un fallo de `LoadCharacterAsync` limpie el flag. |
 
-**INFERENCE.** This is the only remote in the reviewed bootstrap path that is
-rate-limited, and the ordering of the cooldown write is deliberate: it cannot be bypassed
-by sending requests that fail a later check.
+**INFERENCIA.** Es el único remote de la ruta de arranque revisada que tiene límite de
+frecuencia, y el orden de escritura del cooldown es deliberado: no se puede saltar
+enviando peticiones que fallen una comprobación posterior.
 
-**UNKNOWN.** Which client script fires `LoadCharacterRequest`. No `.luau` in this
-repository fires it, so the sender is inside one of the binary `.rbxm` files (most
-likely `StarterPlayerScripts.rbxm` or a `StarterGui` UI). See
-[Client lifecycle](./client-lifecycle.md).
+**DESCONOCIDO.** Qué script de cliente dispara `LoadCharacterRequest`. Ningún `.luau` de
+este repositorio lo dispara, así que el emisor está dentro de uno de los `.rbxm` binarios
+(lo más probable, `StarterPlayerScripts.rbxm` o una UI de `StarterGui`). Ver
+[Ciclo de vida del cliente](./client-lifecycle.md).
 
-## Leave flow
+## Flujo de salida
 
-**FACT.** There is no central teardown either. Each system cleans up in its own
-`Players.PlayerRemoving` connection. In `playerManager`:
+**HECHO.** Tampoco hay desmontaje central. Cada sistema limpia en su propia conexión
+`Players.PlayerRemoving`. En `playerManager`:
 
 ```lua
 Players.PlayerRemoving:Connect(function(player)
@@ -190,33 +192,34 @@ Players.PlayerRemoving:Connect(function(player)
 end)
 ```
 
-and in `PlayerInit`, `initialized[player] = nil`.
+y en `PlayerInit`, `initialized[player] = nil`.
 
 ```mermaid
 flowchart LR
-    L(["Player leaves"]) --> PR["Players.PlayerRemoving"]
+    L(["Sale un jugador"]) --> PR["Players.PlayerRemoving"]
     PR --> A["PlayerInit: initialized[player] = nil"]
-    PR --> B["playerManager: 3 tables cleared"]
-    PR --> C["ServerPresence: RequestRefresh()<br/>→ registry player list updated"]
-    PR --> D["Each system's own cleanup"]
-    PR --> E["Data stores: see Persistence"]
+    PR --> B["playerManager: 3 tablas limpiadas"]
+    PR --> C["ServerPresence: RequestRefresh()<br/>→ lista de jugadores del registro actualizada"]
+    PR --> D["Limpieza propia de cada sistema"]
+    PR --> E["Data stores: ver Persistencia"]
 ```
 
-**INFERENCE.** Because per-player state lives in plain Lua tables keyed by the `Player`
-instance in each system independently, a system that forgets its own `PlayerRemoving`
-cleanup leaks that player's entry for the life of the server. Whether any system does is
-a per-script question, answered during the per-script review.
+**INFERENCIA.** Como el estado por jugador vive en tablas Lua planas indexadas por la
+instancia `Player` en cada sistema de forma independiente, un sistema que olvide su
+propia limpieza en `PlayerRemoving` filtra la entrada de ese jugador durante toda la vida
+del servidor. Si algún sistema lo hace es una pregunta por script, que se responde en la
+revisión por script.
 
-## Welcome notification
+## Notificación de bienvenida
 
-**FACT.** `playerManager.OnPlayerAdded` reads `player:GetJoinData()` and treats
-`SourcePlaceId ~= nil` as "arrived by teleport from another place". A player who did
-**not** arrive by teleport gets a beta-warning notification 3 seconds after their
-character exists, via `Player/ShowNotification`.
+**HECHO.** `playerManager.OnPlayerAdded` lee `player:GetJoinData()` y trata
+`SourcePlaceId ~= nil` como «llegó por teleport desde otro place». A un jugador que **no**
+llegó por teleport se le muestra un aviso de beta 3 segundos después de que exista su
+personaje, vía `Player/ShowNotification`.
 
-**INFERENCE.** This is how the game avoids re-greeting a player every time they walk
-between the lobby and their house, since inter-place travel is routine here.
+**INFERENCIA.** Así es como el juego evita volver a saludar al jugador cada vez que va del
+lobby a su casa, ya que el viaje entre places es rutinario aquí.
 
-**FACT.** The same handler sets an idempotence attribute, `PlayerManagerLoaded`, and
-returns early if it is already set — a second-layer guard on top of `PlayerInit`'s own
-`initialized` map. It also sets `player.DevEnableMouseLock = false`.
+**HECHO.** El mismo handler pone un atributo de idempotencia, `PlayerManagerLoaded`, y
+retorna pronto si ya está puesto — una segunda capa de guarda sobre el mapa `initialized`
+del propio `PlayerInit`. También pone `player.DevEnableMouseLock = false`.

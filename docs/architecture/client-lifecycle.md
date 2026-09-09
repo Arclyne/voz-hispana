@@ -1,35 +1,35 @@
 ---
 sidebar_position: 5
-title: Client lifecycle
+title: Ciclo de vida del cliente
 ---
 
-# Client lifecycle
+# Ciclo de vida del cliente
 
-:::warning This page is incomplete, and says so deliberately
+:::warning Esta página está incompleta, y lo dice a propósito
 
-The client's real entry point is almost certainly inside
-`src/StarterPlayer/StarterPlayerScripts.rbxm`, which is a **binary file that cannot be
-read**. Everything below is what the inspectable source proves. The gap is stated
-explicitly rather than filled with a plausible guess.
+El punto de entrada real del cliente está casi con seguridad dentro de
+`src/StarterPlayer/StarterPlayerScripts.rbxm`, que es un **archivo binario que no se
+puede leer**. Todo lo de abajo es lo que demuestra el código inspeccionable. El hueco se
+declara explícitamente en vez de rellenarlo con una suposición verosímil.
 
 :::
 
-## Where client code lives
+## Dónde vive el código de cliente
 
-**FACT.** Voz Hispana barely uses `LocalScript`s. Client code lives in
-`ReplicatedStorage.Client` as `Script`s with `RunContext = "Client"`.
+**HECHO.** Voz Hispana apenas usa `LocalScript`. El código de cliente vive en
+`ReplicatedStorage.Client` como `Script` con `RunContext = "Client"`.
 
-| Location | Count | Notes |
+| Ubicación | Cantidad | Notas |
 |---|---|---|
-| `Core/ReplicatedStorage/Client/**` — `RunContext: Client` `Script`s | 27 | Every one ships `Disabled: true` |
-| `Core/ReplicatedStorage/Client/**` — `ModuleScript`s | 88 | Controllers, UI, interactables |
-| `Core/ReplicatedStorage/Client/WorldSystem/ClientDataManager/init.client.luau` | 1 | The only true `LocalScript` here, also `Disabled` |
-| `src/ReplicatedStorage/Client/visualsManager.server.luau` | 1 | `RunContext: Client`, `Disabled`, outside the templates |
-| `Core/StarterGui/LocalScript.client.luau` | 1 | Toggles `ProximityPromptService.Enabled` from `IsInEvent` attributes |
-| `src/StarterPlayer/StarterPlayerScripts.rbxm` | ? | **Binary — not inspectable** |
-| `src/StarterPlayer/StarterCharacterScripts.rbxm` | ? | **Binary — not inspectable** |
+| `Core/ReplicatedStorage/Client/**` — `Script` con `RunContext: Client` | 27 | Todos se distribuyen con `Disabled: true` |
+| `Core/ReplicatedStorage/Client/**` — `ModuleScript` | 88 | Controladores, UI, interactuables |
+| `Core/ReplicatedStorage/Client/WorldSystem/ClientDataManager/init.client.luau` | 1 | El único `LocalScript` de verdad aquí, también `Disabled` |
+| `src/ReplicatedStorage/Client/visualsManager.server.luau` | 1 | `RunContext: Client`, `Disabled`, fuera de las plantillas |
+| `Core/StarterGui/LocalScript.client.luau` | 1 | Conmuta `ProximityPromptService.Enabled` según los atributos de `IsInEvent` |
+| `src/StarterPlayer/StarterPlayerScripts.rbxm` | ? | **Binario — no inspeccionable** |
+| `src/StarterPlayer/StarterCharacterScripts.rbxm` | ? | **Binario — no inspeccionable** |
 
-The complete list of client-context scripts:
+La lista completa de scripts de contexto cliente:
 
 ```
 ClickDetectorHandler   MainPS                 NametagMicClient       PlayerManager
@@ -41,12 +41,12 @@ inventory              machines               messagesManager        notificatio
 stats                  topbar                 CodeExamples/MicStatusExample
 ```
 
-## The open question: who enables them?
+## La pregunta abierta: ¿quién los activa?
 
-**FACT.** Every one of those 27 scripts ships `Disabled: true`.
+**HECHO.** Los 27 se distribuyen con `Disabled: true`.
 
-**FACT.** `InitScripts.server.luau`, the script that enables everything else, explicitly
-**excludes** this folder:
+**HECHO.** `InitScripts.server.luau`, el script que activa todo lo demás, **excluye**
+explícitamente esa carpeta:
 
 ```lua
 local ClientScriptsFolder = ReplicatedStorage:FindFirstChild("Client")
@@ -56,36 +56,37 @@ if ClientScriptsFolder and obj:IsDescendantOf(ClientScriptsFolder) then
 end
 ```
 
-**FACT.** No `.luau` file in this repository assigns `Enabled = true` to a `Script` or
-`LocalScript`. The only code that reads `BaseScript.Enabled` at all is
-`InitScripts.server.luau` itself — and that is the server, which could not enable a
-client-context script for a specific client anyway.
+**HECHO.** Ningún archivo `.luau` de este repositorio asigna `Enabled = true` a un
+`Script` o `LocalScript`. El único código que lee `BaseScript.Enabled` es el propio
+`InitScripts.server.luau` — y ese es el servidor, que de todos modos no podría activar un
+script de contexto cliente para un cliente concreto.
 
-**FACT.** A `RemoteEvent` named `InitScriptsRequest` exists at
-`Core/ReplicatedStorage/Events/GameLoad/InitScriptsRequest`, and **no `.luau` file in
-this repository references it**. It is declared and unused, as far as inspectable source
-goes.
+**HECHO.** Existe un `RemoteEvent` llamado `InitScriptsRequest` en
+`Core/ReplicatedStorage/Events/GameLoad/InitScriptsRequest`, y **ningún archivo `.luau` de
+este repositorio lo referencia**. Está declarado y sin usar, en lo que respecta al código
+inspeccionable.
 
-**INFERENCE.** A client-side loader exists that this repository does not contain. It
-enables the `ReplicatedStorage.Client` scripts on each client after the templates land,
-and `InitScriptsRequest` is very likely its handshake with the server. The most probable
-home is `StarterPlayerScripts.rbxm`.
+**INFERENCIA.** Existe un cargador del lado cliente que este repositorio no contiene.
+Activa los scripts de `ReplicatedStorage.Client` en cada cliente después de que lleguen
+las plantillas, y `InitScriptsRequest` es muy probablemente su handshake con el servidor.
+El sitio más probable es `StarterPlayerScripts.rbxm`.
 
-**This inference is not a fact and is not treated as one anywhere else on this site.**
-Recorded as [BUG-CANDIDATE-007](../testing/verification-plan.md#bug-candidate-007), which
-carries a plan to settle it in Studio in about two minutes.
+**Esta inferencia no es un hecho y no se trata como tal en ningún otro punto del sitio.**
+Registrada como
+[BUG-CANDIDATE-007](../testing/verification-plan.md#bug-candidate-007), que incluye un
+plan para resolverla en Studio en unos dos minutos.
 
 ```mermaid
 flowchart TD
-    A(["Client joins"]) --> B["ReplicatedFirst: LoadingScreenUI.rbxm<br/>(binary — contents unknown)"]
-    B --> C["StarterPlayerScripts.rbxm<br/>(binary — contents unknown)"]
-    C -.->|"INFERRED, not proven"| D["require(InitAfterTemplates)<br/>waits for TemplatesReady"]
-    D -.->|"INFERRED, not proven"| E["enable ReplicatedStorage.Client.* scripts"]
-    E --> F["27 client-context Scripts start"]
-    F --> G["each requires its controllers<br/>from ReplicatedStorage.Client/Shared"]
-    G --> H["UI built, remotes connected"]
-    C -.->|"INFERRED, not proven"| I["fire Player/LoadCharacterRequest"]
-    I --> J["server validates and spawns<br/>(see Player lifecycle)"]
+    A(["Entra un cliente"]) --> B["ReplicatedFirst: LoadingScreenUI.rbxm<br/>(binario — contenido desconocido)"]
+    B --> C["StarterPlayerScripts.rbxm<br/>(binario — contenido desconocido)"]
+    C -.->|"INFERIDO, no probado"| D["require(InitAfterTemplates)<br/>espera a TemplatesReady"]
+    D -.->|"INFERIDO, no probado"| E["activa los scripts de ReplicatedStorage.Client"]
+    E --> F["arrancan los 27 Scripts de contexto cliente"]
+    F --> G["cada uno pide sus controladores<br/>de ReplicatedStorage.Client/Shared"]
+    G --> H["UI construida, remotes conectados"]
+    C -.->|"INFERIDO, no probado"| I["dispara Player/LoadCharacterRequest"]
+    I --> J["el servidor valida y genera el personaje<br/>(ver Ciclo de vida del jugador)"]
 
     style C fill:#5a3a3a,stroke:#a66,color:#fff
     style B fill:#5a3a3a,stroke:#a66,color:#fff
@@ -94,11 +95,11 @@ flowchart TD
     style I stroke-dasharray: 5 5
 ```
 
-## What the client waits for
+## Qué espera el cliente
 
-**FACT.** `InitAfterTemplates` has a client branch. It listens on the `TemplatesReady`
-`RemoteEvent` **and** reads `TemplatesReadyFlag.Value` first, so a client that arrives
-after the broadcast still resolves:
+**HECHO.** `InitAfterTemplates` tiene una rama de cliente. Escucha el `RemoteEvent`
+`TemplatesReady` **y** lee antes `TemplatesReadyFlag.Value`, de modo que un cliente que
+llegue después del broadcast también resuelve:
 
 ```lua
 if TemplatesReadyFlag.Value then
@@ -108,26 +109,28 @@ else
 end
 ```
 
-**INFERENCE.** This matters because `TemplatesReady:FireAllClients()` reaches only the
-clients connected at that instant. Everyone who joins later depends entirely on the
-replicated `BoolValue`. The double check is what makes late joiners work.
+**INFERENCIA.** Esto importa porque `TemplatesReady:FireAllClients()` solo alcanza a los
+clientes conectados en ese instante. Todo el que entre después depende enteramente del
+`BoolValue` replicado. La doble comprobación es lo que hace que funcionen los que llegan
+tarde.
 
-## Client-visible server state
+## Estado del servidor visible para el cliente
 
-**FACT.** The client can read where the server is in its lifecycle without a remote
-round-trip, because these are replicated instances in `ReplicatedStorage`:
+**HECHO.** El cliente puede leer en qué punto del ciclo está el servidor sin ida y vuelta
+por remote, porque son instancias replicadas en `ReplicatedStorage`:
 
-| Instance | Class | Meaning |
+| Instancia | Clase | Significado |
 |---|---|---|
-| `TemplatesReadyFlag` | `BoolValue` | Templates merged |
-| `InitScriptsReadyFlag` | `BoolValue` | Template scripts enabled |
-| `ServerInfo` | `Configuration` | `ServerKey`, `HostingType`, `status` (`pending`/`ready`/`closed`) attributes |
-| `isStarted` | `Configuration` | `Started` attribute — house servers only |
-| `IsInEvent` | `Configuration` | Attributes gate `ProximityPromptService.Enabled` |
-| `PlaceType` | `Configuration` | Present in the `PlayerHouses` template |
+| `TemplatesReadyFlag` | `BoolValue` | Plantillas fusionadas |
+| `InitScriptsReadyFlag` | `BoolValue` | Scripts de plantilla activados |
+| `ServerInfo` | `Configuration` | Atributos `ServerKey`, `HostingType`, `status` (`pending`/`ready`/`closed`) |
+| `isStarted` | `Configuration` | Atributo `Started` — solo servidores de casa |
+| `IsInEvent` | `Configuration` | Sus atributos controlan `ProximityPromptService.Enabled` |
+| `PlaceType` | `Configuration` | Presente en la plantilla `PlayerHouses` |
 
-`IsInEvent` is the clearest example of the pattern. `Core/StarterGui/LocalScript.client.luau`
-disables all proximity prompts while **any** attribute on `IsInEvent` is truthy:
+`IsInEvent` es el ejemplo más claro del patrón.
+`Core/StarterGui/LocalScript.client.luau` desactiva todos los proximity prompts mientras
+**cualquier** atributo de `IsInEvent` sea verdadero:
 
 ```lua
 function change()
@@ -140,24 +143,24 @@ change()
 Evento.AttributeChanged:Connect(change)
 ```
 
-**INFERENCE.** Any client feature that opens a full-screen UI can suppress world
-interaction by setting its own named attribute, and clear it when done, without any
-feature needing to know about the others. `Client/MainPS.server.luau` does exactly this
-with `OpenGuiPaint`.
+**INFERENCIA.** Cualquier función del cliente que abra una UI a pantalla completa puede
+suprimir la interacción con el mundo poniendo su propio atributo con nombre, y limpiarlo
+al terminar, sin que ninguna función necesite conocer a las demás.
+`Client/MainPS.server.luau` hace exactamente eso con `OpenGuiPaint`.
 
-## Client → server communication
+## Comunicación cliente → servidor
 
-Covered in [Networking](./networking.md). In summary: **174 `RemoteEvent`s and 40
-`RemoteFunction`s**, declared as Rojo `.model.json` files and organised into topic
-folders under `ReplicatedStorage.Events`.
+Cubierto en [Red](./networking.md). En resumen: **174 `RemoteEvent` y 40
+`RemoteFunction`**, declarados como archivos `.model.json` de Rojo y organizados en
+carpetas por tema bajo `ReplicatedStorage.Events`.
 
-## Related implementation
+## Implementación relacionada
 
-| Concern | Code |
+| Aspecto | Código |
 |---|---|
-| Readiness barrier (client branch) | `ReplicatedStorage/InitAfterTemplates.luau` |
-| Local character cleanup + welcome tutorial | `Client/PlayerManager.server.luau` |
-| Proximity-prompt gating | `Core/StarterGui/LocalScript.client.luau`, `Client/MainPS.server.luau` |
-| Topbar / icons | `Client/topbar.server.luau`, `Shared/Icon` |
-| Notifications | `Client/notificationsManager/init.server.luau` |
-| Rotating lobby visuals | `src/ReplicatedStorage/Client/visualsManager.server.luau` |
+| Barrera de disponibilidad (rama cliente) | `ReplicatedStorage/InitAfterTemplates.luau` |
+| Limpieza del personaje local + tutorial de bienvenida | `Client/PlayerManager.server.luau` |
+| Control de proximity prompts | `Core/StarterGui/LocalScript.client.luau`, `Client/MainPS.server.luau` |
+| Topbar / iconos | `Client/topbar.server.luau`, `Shared/Icon` |
+| Notificaciones | `Client/notificationsManager/init.server.luau` |
+| Visuales rotatorios del lobby | `src/ReplicatedStorage/Client/visualsManager.server.luau` |

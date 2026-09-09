@@ -1,54 +1,54 @@
 ---
 sidebar_position: 2
-title: Server lifecycle
+title: Ciclo de vida del servidor
 ---
 
-# Server lifecycle
+# Ciclo de vida del servidor
 
-There is **no single server lifecycle in Voz Hispana.** There are three, because there
-are three kinds of place, and which one a server runs is decided by what is present in
-its DataModel after the [template import](./initialization.md) finishes.
+**No hay un único ciclo de vida de servidor en Voz Hispana.** Hay tres, porque hay tres
+tipos de place, y cuál corre un servidor lo decide lo que hay en su DataModel una vez
+termina la [importación de plantillas](./initialization.md).
 
-| Server kind | Decided by | Lifecycle script |
+| Tipo de servidor | Lo decide | Script del ciclo de vida |
 |---|---|---|
-| **Public place** (lobby, karaoke, arcade, plsDonate) | `game.PrivateServerId == ""` | `GameWorlds/ServerScriptService/ServerScripts/PublicServerInit.lua.server.luau` |
-| **Player house** (reserved server) | `TeleportData.key` present on the first joining player | `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` |
-| **Event server** (reserved server) | Registry entry with `hostingType == "event"` | `Core/ServerStorage/WorldSystem/EventService.luau` |
+| **Place público** (lobby, karaoke, arcade, plsDonate) | `game.PrivateServerId == ""` | `GameWorlds/ServerScriptService/ServerScripts/PublicServerInit.lua.server.luau` |
+| **Casa de jugador** (servidor reservado) | `TeleportData.key` en el primer jugador que entra | `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` |
+| **Servidor de evento** (servidor reservado) | Entrada del registro con `hostingType == "event"` | `Core/ServerStorage/WorldSystem/EventService.luau` |
 
-All three converge on one shared component,
-[`ServerPresence`](/api/ServerPresence), which announces the server to a
-MemoryStore-backed registry so that other servers can find and teleport into it.
+Los tres convergen en un componente compartido, [`ServerPresence`](/api/ServerPresence),
+que anuncia el servidor en un registro respaldado por MemoryStore para que otros
+servidores puedan encontrarlo y teletransportar hacia él.
 
-## Common shape
+## Forma común
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Booting: Roblox starts the server
-    Booting --> Importing: ImportTemplates runs
-    Importing --> Enabling: TemplatesReadyFlag = true
-    Enabling --> Identifying: InitScriptsReadyFlag = true
+    [*] --> Arrancando: Roblox inicia el servidor
+    Arrancando --> Importando: corre ImportTemplates
+    Importando --> Activando: TemplatesReadyFlag = true
+    Activando --> Identificando: InitScriptsReadyFlag = true
 
-    Identifying --> Pending: server key established<br/>ServerInfo.status = "pending"
-    Identifying --> Rejected: cannot establish identity
+    Identificando --> Pendiente: clave de servidor establecida<br/>ServerInfo.status = "pending"
+    Identificando --> Rechazado: no puede establecer identidad
 
-    Pending --> Ready: first successful registry write<br/>ServerInfo.status = "ready"
-    Ready --> Ready: refresh every 30s (TTL 120s)
+    Pendiente --> Listo: primera escritura correcta en el registro<br/>ServerInfo.status = "ready"
+    Listo --> Listo: refresco cada 30 s (TTL 120 s)
 
-    Ready --> Closing: BindToClose
-    Pending --> Closing: BindToClose
-    Rejected --> Closing: KickAll
-    Closing --> [*]: registry entry removed,<br/>ServerInfo.status = "closed"
+    Listo --> Cerrando: BindToClose
+    Pendiente --> Cerrando: BindToClose
+    Rechazado --> Cerrando: KickAll
+    Cerrando --> [*]: entrada del registro eliminada,<br/>ServerInfo.status = "closed"
 ```
 
-**FACT.** `ServerInfo` is a `Configuration` instance in `ReplicatedStorage` whose
-`status` attribute moves `pending → ready → closed`, and which also carries the
-`ServerKey` attribute. It is the client-visible statement of where this server is in its
-lifecycle.
+**HECHO.** `ServerInfo` es una instancia `Configuration` en `ReplicatedStorage` cuyo
+atributo `status` recorre `pending → ready → closed`, y que además lleva el atributo
+`ServerKey`. Es la declaración visible para el cliente de en qué punto del ciclo está
+este servidor.
 
-## Public places
+## Places públicos
 
-**FACT.** `PublicServerInit.lua.server.luau` is 68 lines and does exactly one thing:
-register the server in the live directory.
+**HECHO.** `PublicServerInit.lua.server.luau` tiene 68 líneas y hace exactamente una
+cosa: registrar el servidor en el directorio vivo.
 
 ```mermaid
 sequenceDiagram
@@ -62,49 +62,51 @@ sequenceDiagram
     S->>S: if game.PrivateServerId ~= "" then return
     S->>S: serverKey = "{PlaceId}_{JobId}"
     S->>MP: GetProductInfo(game.PlaceId) (pcall)
-    MP-->>S: place name, or "Game" on failure
+    MP-->>S: nombre del place, o "Game" si falla
     S->>SI: ServerKey, HostingType="default", status="pending"
     S->>SP: ServerPresence.new{ ServerKey, GetRefreshPayload, OnStarted }
     S->>SP: :Start()
     SP->>MS: UpdateAsync(serverKey, payload, ttl=120)
     SP->>S: OnStarted -> status = "ready"
-    Note over SP,MS: Heartbeat refresh every 30s
+    Note over SP,MS: Refresco por heartbeat cada 30 s
     S->>S: game:BindToClose(-> presence:Cleanup())
 ```
 
-Two facts worth pulling out:
+Dos hechos que conviene destacar:
 
-- **The guard is the first thing that runs.** `if game.PrivateServerId ~= "" then return end`
-  means this script does nothing at all in a reserved server. A house server and a
-  public server can therefore ship the same `GameWorlds` template without conflict.
-- **The server key is `"{PlaceId}_{JobId}"`.** This is a *different key shape* from the
-  one houses use (`"{UserId}_{roomName}"`), and that difference is how
-  `WorldManager` tells the two apart. See [Reserved servers](./reserved-servers.md).
+- **La guarda es lo primero que corre.** `if game.PrivateServerId ~= "" then return end`
+  significa que este script no hace absolutamente nada en un servidor reservado. Un
+  servidor de casa y uno público pueden así distribuir la misma plantilla `GameWorlds`
+  sin conflicto.
+- **La clave de servidor es `"{PlaceId}_{JobId}"`.** Es una *forma de clave distinta* de
+  la que usan las casas (`"{UserId}_{roomName}"`), y esa diferencia es como `WorldManager`
+  las distingue. Ver [Servidores reservados](./reserved-servers.md).
 
-## Player houses
+## Casas de jugador
 
-Covered in depth under [Housing](../systems/housing/overview.md). In lifecycle terms:
+Cubierto en profundidad en [Casas](../systems/housing/overview.md). En términos de ciclo
+de vida:
 
-**FACT.** `PlayerWorld_Init.lua.server.luau` does not start on server start. It starts
-when the *first player arrives*, because the house's identity travels in that player's
-`TeleportData`:
+**HECHO.** `PlayerWorld_Init.lua.server.luau` no arranca al iniciar el servidor. Arranca
+cuando llega el *primer jugador*, porque la identidad de la casa viaja en el
+`TeleportData` de ese jugador:
 
 ```lua
 Players.PlayerAdded:Once(onPlayerAdded)
 ```
 
-`:Once` — not `:Connect`. Combined with the `booting`/`presence` guards in
-`onPlayerAdded`, a house server initialises from exactly one player, once.
+`:Once`, no `:Connect`. Junto con las guardas `booting`/`presence` de `onPlayerAdded`, un
+servidor de casa se inicializa a partir de exactamente un jugador, una sola vez.
 
-**INFERENCE.** A reserved house server that nobody ever joins never initialises,
-never claims a lease, and never registers itself. It is inert until Roblox reclaims it.
+**INFERENCIA.** Un servidor de casa reservado al que nadie llega nunca se inicializa,
+nunca reclama un lease y nunca se registra. Queda inerte hasta que Roblox lo recupera.
 
-## Event servers
+## Servidores de evento
 
-**FACT.** `EventService.luau` is the only other module that calls
-`TeleportService:ReserveServer`. Events are registered with `hostingType = "event"` and
-are joined through the stored `accessCode`, never by `jobId` —
-`WorldManager.JoinServerFunc` handles that case explicitly:
+**HECHO.** `EventService.luau` es el único otro módulo que llama a
+`TeleportService:ReserveServer`. Los eventos se registran con `hostingType = "event"` y
+se entra por el `accessCode` guardado, nunca por `jobId` —
+`WorldManager.JoinServerFunc` trata ese caso explícitamente:
 
 ```lua
 -- El evento corre en un servidor reservado: hay que entrar con su accessCode,
@@ -114,65 +116,65 @@ if hostingType == "event" then
 end
 ```
 
-## Presence: how a server stays discoverable
+## Presencia: cómo un servidor sigue siendo localizable
 
-**FACT.** [`ServerPresence`](/api/ServerPresence) maintains one entry in the MemoryStore
-hash map `UserServerRegistry_Test`, keyed by the server key.
+**HECHO.** [`ServerPresence`](/api/ServerPresence) mantiene una entrada en el hash map de
+MemoryStore `UserServerRegistry_Test`, con la clave del servidor.
 
-| Constant | Value | Meaning |
+| Constante | Valor | Significado |
 |---|---|---|
-| `ACTIVE_TTL` | 120 s | Lifetime of the registry entry |
-| `UPDATE_INTERVAL` | 30 s | Normal refresh cadence |
-| `REFRESH_DEBOUNCE` | 2 s | Coalescing window for player join/leave triggered refreshes |
-| `THROTTLE_COOLDOWN` | 60 s | Pause after MemoryStore reports throttling |
-| `MAX_RETRIES` | 6 | Retry budget for a non-throttle failure |
-| `RETRY_BASE_WAIT` | 0.25 s | Base of the exponential backoff |
+| `ACTIVE_TTL` | 120 s | Vida de la entrada del registro |
+| `UPDATE_INTERVAL` | 30 s | Cadencia normal de refresco |
+| `REFRESH_DEBOUNCE` | 2 s | Ventana de agrupación para refrescos por entrada/salida de jugadores |
+| `THROTTLE_COOLDOWN` | 60 s | Pausa cuando MemoryStore reporta throttling |
+| `MAX_RETRIES` | 6 | Presupuesto de reintentos para un fallo que no sea throttle |
+| `RETRY_BASE_WAIT` | 0,25 s | Base del backoff exponencial |
 
 ```mermaid
 flowchart TD
     Start([":Start()"]) --> RN["RefreshNow()"]
-    RN --> HB["Heartbeat connection"]
+    RN --> HB["Conexión Heartbeat"]
     PA["Players.PlayerAdded"] --> RR["RequestRefresh()"]
     PR["Players.PlayerRemoving"] --> RR
-    RR --> |"pull _nextTick to now+2s"| HB
-    HB --> Q{"now >= _nextTick<br/>and now >= _blockedUntil?"}
+    RR --> |"adelanta _nextTick a ahora+2 s"| HB
+    HB --> Q{"¿now >= _nextTick<br/>y now >= _blockedUntil?"}
     Q -- no --> HB
-    Q -- yes --> RN2["RefreshNow()"]
+    Q -- sí --> RN2["RefreshNow()"]
     RN2 --> U["safeUpdate(map, key, payload, ttl=120)"]
-    U --> OK{"result"}
-    OK -- success --> P["MessagingService: publish update"]
-    P --> S{"payload.status == 'ready'<br/>and ServerInfo.status == 'pending'?"}
-    S -- yes --> ONS["OnStarted()"]
+    U --> OK{"resultado"}
+    OK -- éxito --> P["MessagingService: publica actualización"]
+    P --> S{"¿payload.status == 'ready'<br/>y ServerInfo.status == 'pending'?"}
+    S -- sí --> ONS["OnStarted()"]
     S -- no --> HB
-    OK -- throttled --> B["_blockedUntil = now + 60s"]
-    OK -- other failure --> HB
+    OK -- throttled --> B["_blockedUntil = now + 60 s"]
+    OK -- otro fallo --> HB
     B --> HB
 ```
 
-### Throttling is treated differently from failure
+### El throttling se trata distinto que el fallo
 
-**FACT.** `isThrottled()` matches `RequestThrottled` or `TotalRequestsOverLimit` in the
-error text, and the code stops retrying entirely for 60 s in that case. The source
-comment states the reasoning plainly: a throttle is the universe's MemoryStore quota
-being exhausted, and retrying prolongs it. 60 s is comfortably under the 120 s TTL, so
-the entry does not expire during a cooldown.
+**HECHO.** `isThrottled()` busca `RequestThrottled` o `TotalRequestsOverLimit` en el texto
+del error, y en ese caso el código deja de reintentar del todo durante 60 s. El
+comentario del código lo razona sin rodeos: un throttle es la cuota de MemoryStore del
+universo agotándose, y reintentar lo prolonga. 60 s queda holgadamente por debajo del TTL
+de 120 s, así que la entrada no llega a expirar durante un cooldown.
 
-The same distinction appears in `Lease`, in `DataKit`. It is a deliberate,
-consistently-applied pattern across the codebase, not a local trick.
+La misma distinción aparece en `Lease`, dentro de `DataKit`. Es un patrón deliberado y
+aplicado con coherencia en todo el código, no un truco local.
 
-## Shutdown
+## Apagado
 
-**FACT.** Both `PublicServerInit` and `PlayerWorld_Init` bind cleanup to
-`game:BindToClose`. `ServerPresence.Cleanup` performs, in order:
+**HECHO.** Tanto `PublicServerInit` como `PlayerWorld_Init` enganchan la limpieza a
+`game:BindToClose`. `ServerPresence.Cleanup` hace, en este orden:
 
-1. disconnect the heartbeat connection;
-2. disconnect the `PlayerAdded` / `PlayerRemoving` connections;
-3. run the caller's `OnCleanup` callback, if any;
-4. `RemoveAsync` the registry entry (with retry/throttle handling);
-5. publish `UserServerRegistryClosed` over `MessagingService`;
-6. set `ServerInfo.status = "closed"`.
+1. desconectar la conexión de heartbeat;
+2. desconectar las conexiones `PlayerAdded` / `PlayerRemoving`;
+3. ejecutar el callback `OnCleanup` del llamante, si lo hay;
+4. `RemoveAsync` de la entrada del registro (con reintentos y manejo de throttle);
+5. publicar `UserServerRegistryClosed` por `MessagingService`;
+6. poner `ServerInfo.status = "closed"`.
 
-Step 2 is load-bearing, and the source says why:
+El paso 2 es determinante, y el código dice por qué:
 
 ```lua
 -- Guardadas para poder soltarlas en Cleanup. Si sobreviven al cierre, el jugador que sale
@@ -180,34 +182,36 @@ Step 2 is load-bearing, and the source says why:
 -- en el directorio hasta que expira su TTL.
 ```
 
-That is: without disconnecting first, a `PlayerRemoving` firing during shutdown would
-re-create the entry that step 4 just deleted, and a dead server would stay advertised for
-up to 120 s.
+Es decir: sin desconectar primero, un `PlayerRemoving` disparado durante el apagado
+recrearía la entrada que el paso 4 acaba de borrar, y un servidor muerto seguiría
+anunciado hasta 120 s.
 
-### What happens if `BindToClose` does not complete
+### Qué pasa si `BindToClose` no llega a completarse
 
-**THEORY — requires runtime verification.** Roblox gives `BindToClose` a bounded window
-(documented by Roblox as 30 seconds). `Cleanup` performs a `RemoveAsync` with up to 6
-retries and exponential backoff, then a `MessagingService` publish. If the process dies
-first — or if MemoryStore is throttling, in which case `safeRemove` abandons the removal
-by design — the registry entry survives until its 120 s TTL expires.
+**TEORÍA — requiere verificación en ejecución.** Roblox da a `BindToClose` una ventana
+acotada (documentada por Roblox como 30 segundos). `Cleanup` hace un `RemoveAsync` con
+hasta 6 reintentos y backoff exponencial, y luego una publicación por `MessagingService`.
+Si el proceso muere antes —o si MemoryStore está haciendo throttling, en cuyo caso
+`safeRemove` abandona la eliminación por diseño— la entrada del registro sobrevive hasta
+que expira su TTL de 120 s.
 
-The TTL is what bounds the damage: a stale entry cannot outlive it. Whether a stale
-entry inside that window causes a user-visible failure depends on how the consumer
-handles a teleport to a dead `jobId`, which is a runtime property.
-Recorded as [BUG-CANDIDATE-002](../testing/verification-plan.md#bug-candidate-002).
+El TTL es lo que acota el daño: una entrada obsoleta no puede sobrevivirlo. Si dentro de
+esa ventana una entrada obsoleta provoca un fallo visible para el usuario depende de cómo
+maneje el consumidor un teleport a un `jobId` muerto, lo cual es una propiedad de
+ejecución. Registrado como
+[BUG-CANDIDATE-002](../testing/verification-plan.md#bug-candidate-002).
 
-## Periodic and long-lived work
+## Trabajo periódico y de larga duración
 
-**FACT.** The recurring server-side work established at boot:
+**HECHO.** El trabajo recurrente del lado servidor que se establece en el arranque:
 
-| Work | Mechanism | Cadence |
+| Trabajo | Mecanismo | Cadencia |
 |---|---|---|
-| Registry TTL refresh | `RunService.Heartbeat` in `ServerPresence` | 30 s (2 s when debounced) |
-| Lease keepalive | `RunService.Heartbeat` in `DataKit.Lease` | 30 s (TTL 120 s) |
-| Store autosave | `Store._heartbeat` | 300 s default |
-| Store message polling | `Store._pollMessages` | 10 s default, only when a profile declares `onMessage` |
-| Ownership resolution | `Store._resolveOwnership` | at most every 3 s until resolved |
+| Refresco del TTL del registro | `RunService.Heartbeat` en `ServerPresence` | 30 s (2 s cuando hay debounce) |
+| Keepalive del lease | `RunService.Heartbeat` en `DataKit.Lease` | 30 s (TTL 120 s) |
+| Autoguardado del Store | `Store._heartbeat` | 300 s por defecto |
+| Sondeo de mensajes del Store | `Store._pollMessages` | 10 s por defecto, solo si el perfil declara `onMessage` |
+| Resolución de propiedad | `Store._resolveOwnership` | como mucho cada 3 s hasta resolverse |
 
-All of them are heartbeat-driven with their own deadline arithmetic rather than
-`task.wait` loops, so none of them accumulate drift or survive a `Disconnect`.
+Todos van dirigidos por heartbeat con su propia aritmética de plazos, en vez de por
+bucles `task.wait`, así que ninguno acumula deriva ni sobrevive a un `Disconnect`.
