@@ -120,6 +120,88 @@ actual (`SizeState`), así que no se pueden encadenar más allá de `Small` / `N
 **OBSERVACIÓN.** Quedan dos `print` de depuración —«Transformando al jugador de … a estado:
 …»— en las rutas de encoger y crecer.
 
+## Colocar herramientas en el mundo
+
+`ToolPlacementServer.server.luau` (880 líneas) es la ruta por la que una herramienta pasa
+del inventario al suelo y vuelve. Sirve además la mecánica de raciones de comida.
+
+**Y es, con diferencia, el archivo que mejor valida entradas de todo el repositorio.**
+
+### La función que el resto de sistemas no tiene
+
+**HECHO.** `canUsePlacedModel` es la comprobación compartida que
+[BUG-CANDIDATE-025](../testing/verification-plan.md#bug-candidate-025) señala como
+inexistente en los interactuables. Existe — aquí, privada a este archivo:
+
+```lua
+local function canUsePlacedModel(player: Player, model: Instance): boolean
+	if typeof(model) ~= "Instance" or not model:IsA("Model") then return false end
+	if model.Parent ~= workspaceTools then return false end
+	if not CollectionService:HasTag(model, PLACE_TAG) then return false end
+
+	local owner = model:GetAttribute("owner")
+	if owner and type(owner) == "string" and owner ~= "" and owner ~= player.Name then
+		return false
+	end
+
+	local character = player.Character
+	if not character or not character.PrimaryPart then return false end
+
+	local distance = (character.PrimaryPart.Position - getModelPosition(model)).Magnitude
+	if distance > MAX_PICKUP_DISTANCE then return false end
+
+	return true
+end
+```
+
+Tipo, contenedor esperado, etiqueta, propiedad, personaje vivo **y distancia**. Los cuatro
+remotes de este archivo empiezan llamándola.
+
+**Es exactamente la forma de la solución** que aquella entrada propone. Existe en el
+repositorio y no está compartida.
+
+### Cerrojo por modelo, liberado en todas las salidas
+
+**HECHO.** `modelLocks[model]` impide que dos llamadas simultáneas operen sobre el mismo
+objeto, y se libera en **cada** camino de salida — no solo en el feliz:
+
+```lua
+if modelLocks[model] then return end
+modelLocks[model] = true
+
+local character = player.Character
+if not character then
+	modelLocks[model] = nil
+	return
+end
+```
+
+Es la protección contra doble consumo que a la reclamación de misiones le falta —donde
+funciona solo porque nada cede el hilo— y que a las compras de
+[BUG-CANDIDATE-008](../testing/verification-plan.md#bug-candidate-008) también.
+
+### Lo que sí queda abierto
+
+**HECHO.** `PlaceTool` valida los cuatro argumentos por tipo, que el jugador **lleve
+puesta** la herramienta, que sea `Colocable`, y que exista una plantilla con ese nombre.
+No comprueba **dónde** se coloca:
+
+```lua
+local finalPosition = position + Vector3.new(0, size.Y / 2, 0)
+local finalCFrame = CFrame.new(finalPosition) * CFrame.Angles(0, math.rad(rotY + 180), 0)
+...
+newModel:PivotTo(finalCFrame)
+```
+
+La asimetría está dentro del mismo archivo: **recoger comprueba distancia, colocar no.** Ver
+[BUG-CANDIDATE-023](../testing/verification-plan.md#bug-candidate-023).
+
+**OBSERVACIÓN.** La propiedad se lleva por **nombre de jugador**, no por `UserId`:
+`owner ~= player.Name` al comprobar, y `Players:FindFirstChild(owner)` al buscar. Roblox
+permite cambiar de nombre de usuario. Quien lo cambie pierde el acceso a sus objetos
+colocados, y quien adopte ese nombre lo gana. Es poco probable y fácil de evitar guardando
+el `UserId`; se registra por completitud.
+
 ## Controles que sí sujetan
 
 | Control | Cómo |
@@ -130,6 +212,9 @@ actual (`SizeState`), así que no se pueden encadenar más allá de `Small` / `N
 | **`Cannon` no se puede disparar con la herramienta de otro** | `tool.Parent ~= character` corta antes de nada, y hay cooldown de 5 s |
 | **Los objetos por defecto no se re-conceden** | La bandera `defaultsInitialised` impide devolver a un jugador lo que ha gastado |
 | **El guardado de la rueda está amortiguado** | 30 s de debounce, y se cancela si el jugador se va |
+| **Recoger un objeto colocado exige estar cerca y ser su dueño** | `canUsePlacedModel`: contenedor, etiqueta, propiedad, personaje vivo y 30 studs de distancia |
+| **Dos llamadas no operan sobre el mismo objeto colocado** | `modelLocks`, liberado en cada camino de salida, no solo en el feliz |
+| **Solo se coloca lo que se lleva en la mano** | `character:FindFirstChild(toolName)` más el atributo `Colocable` |
 
 ## Puntos de verificación
 
@@ -137,6 +222,7 @@ actual (`SizeState`), así que no se pueden encadenar más allá de `Small` / `N
 |---|---|
 | El globo nunca se concede a nadie | [BUG-CANDIDATE-026](../testing/verification-plan.md#bug-candidate-026) |
 | `ToolsServer` reparenta y manipula `Instance` arbitrarias del cliente | [BUG-CANDIDATE-027](../testing/verification-plan.md#bug-candidate-027) |
+| Colocar una herramienta no comprueba dónde, aunque recogerla sí compruebe distancia | [BUG-CANDIDATE-023](../testing/verification-plan.md#bug-candidate-023) |
 
 ## Qué queda por leer
 
@@ -144,7 +230,7 @@ actual (`SizeState`), así que no se pueden encadenar más allá de `Small` / `N
 |---|---|---|
 | `inventory/init.server.luau`, `InventoryManager/init.luau`, `DefaultTools.luau` | 706 | Leídos |
 | `ToolsServer.server.luau` | 988 | **En parte** — los ocho manejadores y su validación; no la mecánica del cañón ni del guante |
-| `ToolPlacementServer.server.luau` | 880 | **Pendiente** |
+| `ToolPlacementServer.server.luau` | 880 | **En parte** — los cuatro remotes, la validación y los cerrojos; no la mecánica de animaciones de apertura |
 | `Client/inventory/` (4 archivos) | 908 | **Pendiente** — la rueda y la lista son interfaz |
 | `Shared/ToolUseManagge.luau` | 108 | **Pendiente** — lo instancia `Data.Main` por jugador (`list.Agarre`) |
 
@@ -157,4 +243,5 @@ actual (`SizeState`), así que no se pueden encadenar más allá de `Small` / `N
 | Objetos iniciales | `inventory/InventoryManager/DefaultTools.luau` |
 | Sincronía con la mochila | `InventoryManager`, `syncPhysicalTool`, `normalizePhysicalTool`, `clearManagedPhysicalTools` |
 | Comportamiento de cada herramienta | `ServerScripts/ToolsServer.server.luau` |
+| Colocar y recoger en el mundo | `ServerScripts/ToolPlacementServer.server.luau`, `canUsePlacedModel`, `modelLocks` |
 | Cooldowns | `Shared/Cooldown/CooldownManager` |

@@ -75,7 +75,7 @@ o en un place de pruebas.
 | [020](#bug-candidate-020) | El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual | Tiendas / Casas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Media |
 | [021](#bug-candidate-021) | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
 | [022](#bug-candidate-022) | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
-| [023](#bug-candidate-023) | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [023](#bug-candidate-023) | La posición de lo que se coloca la decide el cliente y el servidor no la comprueba | Tiendas / Casas / Herramientas | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [024](#bug-candidate-024) | `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
 | [025](#bug-candidate-025) | La distancia de interacción la comprueba solo el cliente | Interactuables | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [026](#bug-candidate-026) | El globo está implementado entero y ningún jugador lo recibe nunca | Inventario | Bug probable / Confirmado por análisis estático | Baja | **Muy alta** |
@@ -84,6 +84,9 @@ o en un place de pruebas.
 | [029](#bug-candidate-029) | Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos | Cuadros | Posible bug / Requiere inyección de fallos | Media | Alta |
 | [030](#bug-candidate-030) | El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos | Cuadros / Seguridad | Posible bug / Requiere pruebas de seguridad | Media | Alta |
 | [031](#bug-candidate-031) | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
+| [032](#bug-candidate-032) | Una condición de trabajo mal escrita permite la acción en silencio | Trabajos | Observación / Requiere verificación en ejecución | Baja | Alta |
+| [033](#bug-candidate-033) | Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva | Persistencia | Posible bug / Requiere pruebas de concurrencia | Media | Alta |
+| [034](#bug-candidate-034) | Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado | Karaoke | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
 
 ### Entradas de seguridad
 
@@ -114,6 +117,8 @@ engañosa:
 | Superficie | Resultado |
 |---|---|
 | Remotes de moderación de Karaoke | **Correcto, y es la postura más dura del proyecto.** Cinco de los ocho manejadores comprueban al llamante lo primero y, si no cumple, `IntenteSerAdmin` lo **expulsa** con un aviso explícito. Los baneos exigen además el rango `KaraokeSuperAdmin`. |
+| Saltar una canción en un televisor | **Correcto.** Es una votación: hay que estar escuchando para votar, el voto se puede retirar, y salta con el dueño o con la mayoría de oyentes descontando al dueño. |
+| Registrar cualquier modelo como televisor | **Correcto.** `TV.new` exige un hijo `Screen` que contenga un `SurfaceGui`. |
 | Difusión de datos de moderación | **Correcto.** `FireOnlyAdmins` recorre `AdminsActive` y `ObtenerMusica` revalida por página: la página de baneos exige superadministrador incluso en la ruta de difusión. |
 | Comandos de administración (`EventCommands`, `ReferralCommands`) | **Correcto.** Ambos comprueban `Admins:IsRole(player, "Admins")` contra un grupo de Roblox, y rechazan en silencio para no revelar la existencia del comando. |
 | `RoleService` ante fallo de `GroupService` | **Falla cerrado.** Un `pcall` fallido produce una tabla de roles vacía, no un pase libre. |
@@ -128,6 +133,14 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Toda la ruta de regalos en Robux | **Correcto, y es el camino mejor protegido del repositorio.** `ProcessReceipt` resuelve **toda** decisión dudosa no otorgando y dejando que Roblox reintente: producto de regalo sin destinatario, comprador igual al receptor, propiedad no verificable, `applyItem` que no devuelve `true`. Un producto creado solo para regalar jamás cae al comprador por defecto, y el código lo marca como «Seguridad crítica». |
+| Reutilizar una intención de regalo | **Correcto.** Lleva TTL, está atada a un `productId` concreto, y se consume **antes** de comprobar la caducidad, así que una vencida no queda rondando para el siguiente recibo. |
+| Varios `ProcessReceipt` compitiendo | **Correcto.** `grep` sobre todo `src/` confirma una única asignación, en `GiftHandler.server.luau`. Es un asignador global: dos scripts que lo pongan se pisan en silencio. |
+| Entrega de un regalo en Robux con el receptor ausente | **Correcto, y es el módulo mejor razonado del repositorio.** `GiftInbox` documenta por qué no puede ir en el perfil —el lease es de un solo escritor y aquí el servidor del comprador escribe sobre otra identidad—, devuelve `false` si no pudo escribir para que el recibo no se dé por bueno, y no borra el buzón si la lectura falla. |
+| Buzón de regalos creciendo sin límite | **Correcto.** `MAX_ENTRIES = 50`, cancelando la escritura con `nil`, que además no gasta la operación. |
+| Despacho de métodos por nombre en Trabajos | **Correcto, y es el mejor patrón del repositorio para esto.** El cliente manda el nombre del método, pero hay una lista blanca **por instancia** —cuatro o cinco nombres declarados junto al objeto— y quien la burla recibe `Player:Kick("Exploiter detected.")`. `LimpiarPiso` incluso deja la lista vacía para las instancias que no deben aceptar nada. |
+| Acumular trabajos | **Correcto.** `UsosPlayer` es uno por jugador y empezar otro renuncia al anterior; la limpieza compara `== getMetatable` antes de borrar, para que una señal tardía no pise el trabajo nuevo. |
+| Pago del botón VIP | **Correcto.** Solo se paga si `state == "Success"`, y `Proccess[Player]` más `MarkPrompt` impiden compras solapadas. |
 | Reclamar una misión | **Correcto, y de lo más completo del repositorio.** Lista blanca de grupos, tipo del hueco, la misión existe, no está reclamada, el progreso llega al objetivo, y la recompensa sale de la configuración del servidor. |
 | Doble reclamación de una misión | **Correcto hoy, por una propiedad frágil.** `Claimed = true` se escribe después de conceder, pero en todo el recorrido no hay un solo punto de suspensión, así que dos llamadas no se entrelazan. Añadir cualquier espera a `Collections.Give` o a `saveData` abriría la ventana. |
 | Giro de la ruleta | **Correcto.** `requestSpinRF` valida en cadena con un motivo por rechazo, comprueba el recurso **antes** de cobrarlo, y usa `CooldownManager` para el giro gratuito. |
@@ -141,6 +154,9 @@ engañosa:
 | Re-conceder objetos que el jugador gastó | **Correcto, y razonado en el propio código.** La bandera `defaultsInitialised` es explícitamente preferida a «¿está vacío el inventario?», con el comentario que lo justifica. |
 | Uso de la herramienta de otro jugador | **Correcto en `Cannon` y `GloveGun`.** Ambos exigen `IsA("Tool")` y `tool.Parent == character`, y el cañón añade un cooldown de 5 s. |
 | Validación de entrada en `Fridge` | **Correcto, y es el modelo a imitar.** Comprueba que el modelo sea una `Model`, que tenga la etiqueta `Fridge` y la distancia al jugador, las tres cosas antes de actuar. |
+| Recoger o usar un objeto colocado en el mundo | **Correcto, y es la mejor validación del repositorio.** `canUsePlacedModel` comprueba tipo, contenedor esperado, etiqueta, propiedad, personaje vivo y distancia (30 studs), y los cuatro remotes de `ToolPlacementServer` empiezan llamándola. |
+| Doble consumo de una ración de comida | **Correcto.** `modelLocks[model]` es un cerrojo por objeto, y se libera en **cada** camino de salida, no solo en el feliz. |
+| Colocar una herramienta que no llevas | **Correcto.** `character:FindFirstChild(toolName)` más `IsA("Tool")` y el atributo `Colocable`. |
 | `Bin` como interactuable sin modelo | **Correcto.** No acepta ninguna `Instance` del cliente: actúa sobre la `Tool` equipada, y solo si tiene el atributo `Kitchen`. |
 | Bloqueo permanente de duchas y lavabos al morir dentro | **Correcto.** `humanoid.Died:Once` libera el `Occupant`. |
 | Recolorear partes arbitrarias de un mueble | **Correcto.** Solo se aceptan partes llamadas `LightColor` o terminadas en dígito, y un valor que no sea `Color3` se sustituye por blanco. |
@@ -2604,7 +2620,7 @@ ids.
 
 ## BUG-CANDIDATE-023
 
-### La posición de un mueble la decide el cliente y el servidor no la comprueba
+### La posición de lo que se coloca la decide el cliente y el servidor no la comprueba
 
 **Sistema:** Tiendas / Casas · **Clasificación:** Observación / Requiere pruebas de seguridad
 **Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
@@ -2675,6 +2691,34 @@ colocación son sugerencias**, porque quien las aplica es la parte que no manda.
 | 3 | `Posicionamientos`, `RayParams` y `Collitions` viven en el lado cliente o solo producen datos para él |
 | 4 | `UpdateData` persiste `Position` como atributo, y de ahí va a `content.Objects` |
 | 5 | El único punto donde se exige un `CFrame` es la primera colocación (`typeof(Data.Position)=="CFrame"`); en las actualizaciones posteriores un valor de otro tipo simplemente conserva la posición actual |
+
+:::note Un segundo camino, y una asimetría que lo hace más claro
+
+Colocar **herramientas** tiene el mismo hueco, en otro archivo.
+`ToolPlacementServer.server.luau` valida los cuatro argumentos de `PlaceTool` por tipo, que
+el jugador lleve puesta la herramienta y que sea `Colocable` — y después aplica la posición
+tal cual:
+
+```lua
+local finalPosition = position + Vector3.new(0, size.Y / 2, 0)
+local finalCFrame = CFrame.new(finalPosition) * CFrame.Angles(0, math.rad(rotY + 180), 0)
+...
+newModel:PivotTo(finalCFrame)
+```
+
+Lo llamativo es que **ese mismo archivo sí comprueba distancia para recoger**:
+`canUsePlacedModel` rechaza a más de `MAX_PICKUP_DISTANCE = 30` studs, además de comprobar
+contenedor, etiqueta y propiedad.
+
+Es decir: recoger un objeto exige estar cerca; **colocarlo, no**. Un cliente modificado puede
+dejar objetos a cualquier distancia, y después no poder recogerlos él mismo. La comprobación
+que falta está escrita quince líneas más arriba, en el mismo archivo, para la operación
+inversa.
+
+Eso refuerza que es un olvido y no una decisión, y acota bastante la corrección: reutilizar
+`canUsePlacedModel` —o solo su tramo de distancia— en `PlaceTool`.
+
+:::
 
 #### Incógnitas
 
@@ -2879,9 +2923,9 @@ propia, `Fridge` la resta de posiciones.
 |---|---|
 | 1 | Las tres constantes de interacción están en un módulo que solo el cliente carga |
 | 2 | 4 de 25 manejadores comprueban distancia; 8 de 25 comprueban la etiqueta |
-| 3 | Los cuatro que la comprueban usan tres formas distintas y dos umbrales distintos (18 en el cliente, 20 en `Bed`) |
+| 3 | Los que la comprueban usan formas y umbrales distintos: 18 en el cliente, 20 en `Bed` y `DoubleBed`, 30 en `ToolPlacementServer` |
 | 4 | `Washbasin` indexa `model.Occupant` y `model.Player` sin comprobar nada |
-| 5 | No existe ninguna función auxiliar compartida de validación en `ServerScripts/interactable/` |
+| 5 | No existe ninguna función auxiliar compartida de validación en `ServerScripts/interactable/` — aunque sí una equivalente, privada, en `ToolPlacementServer.server.luau` |
 
 #### Incógnitas
 
@@ -2911,9 +2955,22 @@ podido iniciar por distancia.
 **Pasa:** todos los manejadores rechazan por distancia, como hace `Fridge`.
 **Falla:** cualquiera de ellos actúa.
 
-**Instrumentación sugerida:** en vez de parchear 21 archivos, una función compartida
-—`assertNear(player, model, maxDistance)`— y una pasada añadiéndola al principio de cada
-manejador. Es un **cambio de código**, así que queda registrado aquí y no aplicado; se
+:::tip Esa función ya existe en el repositorio
+
+`ToolPlacementServer.server.luau` tiene `canUsePlacedModel(player, model)`, que comprueba
+tipo, contenedor esperado, etiqueta de `CollectionService`, propiedad, personaje vivo **y
+distancia**, y con la que empiezan sus cuatro manejadores.
+
+Es exactamente la forma de la solución que este plan propone. Está escrita, funciona, y es
+privada a ese archivo. Extraerla a un módulo compartido es bastante menos trabajo que
+escribirla desde cero, y da además un criterio único de umbral —hoy conviven 18 en el
+cliente, 20 en `Bed` y 30 aquí.
+
+:::
+
+**Instrumentación sugerida:** en vez de parchear 21 archivos, extraer la función que ya
+existe —`canUsePlacedModel`— a un módulo compartido, y una pasada añadiéndola al principio de
+cada manejador. Es un **cambio de código**, así que queda registrado aquí y no aplicado; se
 menciona porque la forma de la solución explica por qué el problema existe: hoy no hay
 dónde ponerla.
 
@@ -3431,9 +3488,14 @@ caída inmediata. Eso lo hace difícil de correlacionar con su causa.
 
 #### Incógnitas
 
-- Si `GlobalDataStore:GetData` y `DeleteData` traen su propio reintento interno. No se ha
-  leído `GlobalDataStore` (ver **U-008**); si lo tienen, hay reintentos anidados y el
-  problema es mayor, no menor.
+- ~~Si `GlobalDataStore:GetData` y `DeleteData` traen su propio reintento interno.~~
+  **Resuelto:** no lo traen. Cada operación es un único `pcall` sin reintento y sin
+  cortacircuitos, así que este bucle es el único reintento del sistema — y sigue siendo el
+  único sin techo. Ver [Persistencia fuera de DataKit](../systems/global-storage.md).
+- **Añadido tras leer `GlobalDataStore`:** este bucle puede dispararse **sin que el DataStore
+  falle**. Si el borrado colisiona con una escritura sobre la misma clave, `DeleteData`
+  devuelve `nil` sin haber borrado, el bucle lo lee como fallo y reintenta. Ver
+  [BUG-CANDIDATE-033](#bug-candidate-033).
 - Cuántos marcos de pila aguanta Luau aquí. A un reintento cada 3 segundos, alcanzar el
   límite lleva horas: la consecuencia realista es el consumo sostenido, no el desbordamiento.
 
@@ -3706,6 +3768,366 @@ propio personaje — que es también la información necesaria para decidir si s
 comprueba.
 
 
+## BUG-CANDIDATE-032
+
+### Una condición de trabajo mal escrita permite la acción en silencio
+
+**Sistema:** Trabajos · **Clasificación:** Observación / Requiere verificación en ejecución
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/JobSystem/init.luau`, el bucle de condicionales
+dentro de `Interaccion`; `Core/…/Shared/JobSystem/ConditionsUses.luau`
+**Documentación relacionada:** [Trabajos → El escalón que sí conviene conocer](../systems/jobs.md#el-escalón-que-sí-conviene-conocer)
+
+#### Comportamiento observado — HECHO
+
+El modelo declara sus condiciones en un atributo, y cada una se busca por nombre compuesto y
+se llama de inmediato:
+
+```lua
+local condicionalTag = string.split(getMetatable.model:GetAttribute('conditional') or 'NoConditional', ",")
+for _, condicional in condicionalTag do
+	local modifi = EliminarEspacios(condicional)
+	if modifi then
+		if not condicionales[string.format("%s_%s", modifi, Key)](getMetatable, Player) then
+			return warn(modifi)
+		end
+	end
+end
+```
+
+No se comprueba que la clave exista antes de invocarla. Lo que impide el error es todo el
+contenido de `ConditionsUses`, que son doce líneas:
+
+```lua
+local module = {}
+...
+setmetatable(module, {__index = function() return function() return true end end})
+
+function module:NoSignalClient_SetFinishLocation()
+	return IsClient
+end
+
+return module
+```
+
+Cualquier clave desconocida devuelve una función que devuelve `true`.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El respaldo es **necesario** para el caso normal. Cuando un modelo no declara nada, el valor
+por defecto es `'NoConditional'`, y sin el metatable habría que escribir
+`NoConditional_trabajar`, `NoConditional_renunciar`, `NoConditional_Preparar`… una entrada
+por cada método de cada trabajo. La solución es razonable.
+
+El coste es que **el valor por defecto ante lo desconocido es permitir**, y no hay forma de
+distinguir «esta acción no tiene condiciones» de «la condición está mal escrita»:
+
+| Situación | Qué ocurre |
+|---|---|
+| Modelo sin atributo `conditional` | `NoConditional_X` → permitido. Correcto |
+| Condición escrita bien | Se evalúa la función real |
+| Condición **con una errata** | → permitido, sin aviso |
+| Condición correcta, método equivocado | → permitido, sin aviso |
+| Condición nueva declarada en el modelo antes de implementarla | → permitido, sin aviso |
+
+Las tres últimas filas son el problema, y ninguna deja rastro: no hay `warn`, no hay error,
+no hay nada en el registro. La guarda simplemente no está.
+
+#### Teoría — TEORÍA
+
+Hoy el alcance es mínimo: existe una sola condición real,
+`NoSignalClient_SetFinishLocation`, usada por `CajasTransport`, que la declara en dos sitios
+con la cadena literal `"NoSignalClient"`. Si esa cadena se escribiera mal en uno de los dos,
+`SetFinishLocation` pasaría a aceptarse desde el cliente sin restricción, y nada lo diría.
+
+El riesgo real es de crecimiento: es el escalón donde este sistema pondrá sus reglas de
+negocio —«solo si estás trabajando», «solo si llevas una caja»—, y cada una que se añada
+hereda el mismo modo de fallo. Es la misma forma que
+[BUG-CANDIDATE-001](#bug-candidate-001) para el chat de voz: fallar abierto cuando no se
+sabe.
+
+Merece registrarse precisamente porque el resto del sistema es de lo mejor del repositorio.
+La lista blanca de métodos es explícita, corta y se aplica expulsando a quien la burla. El
+escalón de al lado hace lo contrario ante lo desconocido.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `condicionales[...]` se indexa y se llama en la misma expresión, sin comprobar existencia |
+| 2 | El `__index` del metatable devuelve una función que devuelve `true` para **cualquier** clave |
+| 3 | Solo existe una condición real implementada |
+| 4 | El nombre compuesto es `"<condición>_<método>"`, así que una errata en **cualquiera** de los dos lados cae en el respaldo |
+| 5 | No hay ningún `warn` en la ruta del respaldo |
+| 6 | La lista blanca de métodos, en el mismo bucle, sí falla cerrado y además expulsa |
+
+#### Incógnitas
+
+- Si el respaldo permisivo fue deliberado o es un efecto colateral de querer evitar el
+  error. El comentario no existe, así que es una pregunta para quien lo escribió.
+- Cuántas condiciones piensa añadir el equipo. Con una, esto es una nota; con quince, es
+  una fuente de fallos silenciosos.
+
+#### Escenario de ejemplo
+
+Alguien añade una condición «solo el que está trabajando puede entregar la caja» y la
+declara en el modelo como `"EstaTrabajando"`, pero implementa
+`module:EstaTrabajando_Entregar` cuando el método se llama `GiveBox`. La condición nunca se
+evalúa. La entrega funciona para todos, la prueba manual pasa —porque el caso normal
+también funciona— y nadie se entera hasta que alguien la explota.
+
+**Comportamiento esperado:** una condición declarada y no encontrada debería avisar, o
+denegar.
+**Comportamiento posible:** se permite en silencio.
+
+#### Plan de verificación — *Ejecución*
+
+1. En un place de pruebas, pon el atributo `conditional` de un modelo de trabajo a un valor
+   inventado, por ejemplo `"NoExiste"`.
+2. Usa ese trabajo con normalidad.
+3. Comprueba si funciona y si aparece algo en el registro del servidor.
+4. Repite con `"NoSignalClient"` bien escrito sobre `SetFinishLocation` y confirma que la
+   condición real **sí** rechaza desde el servidor.
+5. Repite con `"NoSignalCliente"` —una letra de más— y comprueba si vuelve a permitirse.
+
+**Pasa:** el paso 2 se rechaza o al menos avisa; el paso 5 se comporta como el 4.
+**Falla:** los pasos 2 y 5 funcionan sin dejar rastro.
+
+**Instrumentación sugerida:** que el `__index` avise en vez de callar. Devolver la misma
+función permisiva y además hacer `warn` con la clave buscada mantendría el comportamiento
+actual y convertiría cada errata en algo visible en el registro. Es un **cambio de código**,
+así que queda registrado aquí y no aplicado.
+
+
+## BUG-CANDIDATE-033
+
+### Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva
+
+**Sistema:** Persistencia · **Clasificación:** Posible bug / Requiere pruebas de concurrencia
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerStorage/GlobalDataStore/init.luau` — `GetData`,
+`UpdateData`, `SetData`, `DeleteData`, y la tabla `AsyncInProcess`
+**Documentación relacionada:** [Persistencia fuera de DataKit](../systems/global-storage.md#la-deduplicación-de-operaciones-en-vuelo)
+
+#### Comportamiento observado — HECHO
+
+Las cuatro operaciones evitan solaparse sobre la misma clave con un `BindableEvent`
+guardado bajo `"<NameType>:<key>"`. La tabla declara cuatro espacios:
+
+```lua
+AsyncInProcess = {
+	Set = {},
+	Update = {},
+	Get = {},
+	Delete = {},
+},
+```
+
+y **las cuatro operaciones usan `AsyncInProcess.Get`**. Las otras tres tablas no aparecen en
+ninguna línea del archivo.
+
+Compartir un espacio sería correcto —una escritura debería esperar a una lectura en curso de
+la misma clave— si todas estuvieran de acuerdo en qué transporta la señal. No lo están:
+
+| Operación | Al terminar dispara | En contención hace |
+|---|---|---|
+| `GetData` | `bin:Fire(n, s)` — con resultado | `local n,s = process:Wait()` → **usa el resultado ajeno** |
+| `DeleteData` | `bin:Fire(n, s)` — con resultado | `return process:Wait()` → **devuelve el resultado ajeno** |
+| `SetData` | `bin:Fire()` — **sin argumentos** | `process:Wait()` y luego **reintenta lo suyo** |
+| `UpdateData` | `bin:Fire()` — **sin argumentos** | `process:Wait()` y luego **reintenta lo suyo** |
+
+#### Por qué esto puede ser un problema — HECHO
+
+Dos operaciones emiten carga útil y dos no; dos consumen la carga y dos reintentan. Cuando
+las que se cruzan son del mismo tipo, todo cuadra. Cuando no, no:
+
+| Colisión sobre la misma clave | Qué pasa |
+|---|---|
+| `DeleteData` espera a un `SetData` o `UpdateData` | `process:Wait()` devuelve **nada**. `DeleteData` devuelve `nil` y **el borrado nunca se intenta** |
+| `GetData` espera a un `SetData` o `UpdateData` | `process:Wait()` devuelve nada → `n` es `nil` → **informa de fallo sin haber leído** |
+| `SetData` o `UpdateData` esperan a un `GetData` o `DeleteData` | Reintentan lo suyo. Correcto |
+| Dos del mismo tipo | Correcto |
+
+La primera fila es la que importa: **un borrado que devuelve `nil` no ha borrado nada y no
+dice que haya fallado.** `nil` no es `false`; quien lo interprete como «hecho» dejará el dato
+en su sitio para siempre.
+
+`SetData` y `UpdateData` demuestran la forma correcta —esperar y reintentar la operación
+propia— así que la asimetría parece un olvido, no una decisión.
+
+#### Teoría — TEORÍA
+
+`DeleteData` es la única de las cuatro que no reintenta lo suyo tras esperar. Basta con que
+una escritura sobre la misma clave esté en vuelo para que un borrado se pierda en silencio.
+
+Hay un efecto encadenado con [BUG-CANDIDATE-029](#bug-candidate-029): `Paint:Remove` reintenta
+el borrado indefinidamente mientras `DeleteData` no devuelva éxito. Si el borrado colisiona
+con una escritura, devuelve `nil` —falso para el bucle— y `Paint` reintenta. Es decir, ese
+bucle infinito puede dispararse **sin que el DataStore falle en absoluto**, solo por
+contención. Es un camino de activación que aquella entrada no contemplaba.
+
+Lo que acota todo esto: las claves son por entidad —un GUID por cuadro, un identificador por
+canción— así que dos operaciones distintas sobre la **misma** clave a la vez no es lo
+habitual. La probabilidad es baja; el mecanismo es seguro.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `AsyncInProcess` declara cuatro tablas y solo se usa `Get`, en las cuatro operaciones |
+| 2 | `GetData` y `DeleteData` hacen `bin:Fire(n, s)`; `SetData` y `UpdateData` hacen `bin:Fire()` |
+| 3 | `DeleteData` en contención hace `return process:Wait()` sin volver a intentar |
+| 4 | `SetData` y `UpdateData` en contención sí reintentan, lo que enseña la forma prevista |
+| 5 | `nil` y `false` no se distinguen en la mayoría de los sitios que consumen estos valores |
+| 6 | `GlobalDataStore` no tiene reintento propio ni cortacircuitos, así que nada de esto se corrige después |
+
+#### Incógnitas
+
+- Cuántos consumidores tratan `nil` como fallo y cuántos como éxito. Solo se ha leído el de
+  `Paint`, que lo trata como fallo — y por eso reintenta sin fin.
+- Si hay alguna clave compartida de verdad entre varios jugadores a la vez. Las de karaoke
+  van por canción; la lista de palabras clave de `BusquedaMusicas` podría no ir por entidad,
+  y no se ha leído.
+- Si `bin:Fire()` sin argumentos entrega `nil` o no entrega nada a `Wait()`. A efectos de
+  `local n, s = process:Wait()` es lo mismo, pero conviene confirmarlo en Studio.
+
+#### Escenario de ejemplo
+
+Un jugador borra un cuadro justo mientras otro sistema guarda algo sobre esa misma clave.
+`DeleteData` espera, devuelve `nil` y no borra. `Paint:Remove` lo lee como fallo y entra en
+su bucle de reintentos, que no tiene techo. El cuadro ya desapareció de la lista del jugador
+—eso ocurre antes— pero el dato sigue en el DataStore, y un hilo lo reintenta cada tres
+segundos indefinidamente.
+
+**Comportamiento esperado:** el borrado espera a la escritura en curso y **entonces se
+ejecuta**, como hace `SetData`.
+**Comportamiento posible:** devuelve `nil` sin ejecutarse.
+
+#### Plan de verificación — *Concurrencia*, *Persistencia*
+
+1. En un place de pruebas, lanza en paralelo sobre la misma clave un `SetData` con un dato
+   grande —para que tarde— y, medio segundo después, un `DeleteData`.
+2. Anota lo que devuelve el `DeleteData`.
+3. Lee la clave después y comprueba si el dato sigue ahí.
+4. Repite invirtiendo el orden (`DeleteData` primero, `SetData` después) y comprueba que ese
+   sentido sí funciona.
+5. Repite con `GetData` colisionando con un `SetData` y mira si informa de fallo pese a que
+   el dato existe.
+
+**Pasa:** el borrado se ejecuta tras esperar, y devuelve `true`.
+**Falla:** devuelve `nil` y el dato sigue en el DataStore.
+
+**Instrumentación sugerida:** hacer que las cuatro operaciones disparen la misma forma de
+señal —`bin:Fire(n, s)` en todas— y que las cuatro reintenten lo suyo tras esperar, como ya
+hacen `SetData` y `UpdateData`. Es un **cambio de código**, así que queda registrado aquí y
+no aplicado; se menciona porque la simetría es la explicación más corta de qué falta.
+
+
+## BUG-CANDIDATE-034
+
+### Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado
+
+**Sistema:** Karaoke · **Clasificación:** Confirmado por análisis estático — **latente**
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja hoy · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/Shared/Karaoke/KaraokeTV/init.luau`, el bucle final de
+`module:Works`
+**Documentación relacionada:** [Karaoke → Despacho por nombre de remote](../systems/karaoke.md#despacho-por-nombre-de-remote)
+
+#### Comportamiento observado — HECHO
+
+El bucle que ata los remotes de `Televisiones/Instance` tiene dos ramas. La de
+`RemoteEvent` conecta bien. La de `RemoteFunction` no ata nada:
+
+```lua
+if Remotes:IsA('RemoteEvent') then
+	local EventActive = IsClient and Remotes.OnClientEvent or Remotes.OnServerEvent
+	table.insert(self.actives, EventActive:Connect(function(...) FuncionesTV[Remotes.Name](self, ...) end))
+elseif Remotes:IsA('RemoteFunction') then
+	local EventActive = IsClient and Remotes.OnClientInvoke or Remotes.OnServerInvoke
+	EventActive = function(...) return FuncionesTV[Remotes.Name](self, ...) end
+end
+```
+
+La segunda rama declara una **variable local** con el valor actual de `OnServerInvoke` —que
+es `nil`— y acto seguido **reasigna esa variable local**. La propiedad del `RemoteFunction`
+no se toca en ningún momento.
+
+Compárese con la rama de arriba, que sí funciona porque `Connect` es un **método** del
+objeto que devuelve `OnServerEvent`: la referencia local basta. Con `OnServerInvoke`, que es
+una **propiedad que hay que escribir**, la referencia local no sirve de nada.
+
+La forma correcta sería `Remotes.OnServerInvoke = function(...) ... end`.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Hoy **no rompe nada**, y conviene decirlo con claridad: los siete remotes de
+`Televisiones/Instance` son `RemoteEvent`. Se ha comprobado uno por uno en sus
+`.model.json`:
+
+| Remote | `className` |
+|---|---|
+| `AddedSong`, `RemovedSong`, `SetOwner`, `Skip`, `init`, `listening`, `reproducir` | `RemoteEvent` |
+
+La rama muerta no se ejecuta nunca. Es un fallo **latente**, del mismo tipo que
+[BUG-CANDIDATE-015](#bug-candidate-015) —desactivado por un booleano— y
+[BUG-CANDIDATE-016](#bug-candidate-016) —el manejador es un stub—.
+
+Lo que lo hace digno de registrarse es **cómo va a fallar**. Este sistema está construido
+para que añadir una función sea añadir un remote con el nombre del método: no hay lista que
+tocar, el bucle lo recoge solo. Quien añada un `RemoteFunction` seguirá esa convención,
+comprobará que el nombre coincide con su función en `FunctActionsTV`, y verá que el cliente
+se queda colgado esperando —o recibe *«OnServerInvoke has not been set»`*— sin ningún indicio
+de por qué. El bucle que debería atarlo está ahí, se ejecuta, y no hace nada.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `EventActive` se declara `local` y se reasigna; la propiedad del remote no se escribe |
+| 2 | La rama de `RemoteEvent` funciona porque `Connect` es un método, no una propiedad |
+| 3 | El valor inicial que se asigna a la local es `Remotes.OnServerInvoke`, que en ese momento es `nil` — leerlo no tiene ningún propósito |
+| 4 | Los siete `.model.json` de esa carpeta declaran `RemoteEvent`, así que la rama está muerta hoy |
+| 5 | La convención del sistema —añade un remote con el nombre del método y listo— es justo lo que llevará a alguien a caer en esto |
+
+#### Incógnitas
+
+- Si alguna vez hubo un `RemoteFunction` ahí y se quitó por «no funcionaba». No hay forma de
+  saberlo desde el árbol actual.
+- Si el cliente se queda colgado indefinidamente o recibe error. Roblox lanza
+  *«OnServerInvoke has not been set»* al invocar, pero conviene confirmarlo.
+
+#### Escenario de ejemplo
+
+Alguien añade `GetQueue` como `RemoteFunction` para que el cliente consulte la cola de
+canciones, y escribe `module:GetQueue(Player, Model)` en `FunctActionsTV`. Todo sigue la
+convención del sistema. Al invocarlo desde el cliente no pasa nada. El nombre coincide, la
+función existe, el bucle recorre la carpeta y encuentra el remote — y aun así no está atado.
+
+**Comportamiento esperado:** el `RemoteFunction` queda atado a su método, igual que los
+eventos.
+**Comportamiento posible:** se queda sin `OnServerInvoke`, en silencio.
+
+#### Plan de verificación — *Funcional*
+
+1. En un place de pruebas, añade un `RemoteFunction` llamado `Prueba` bajo
+   `Events/Karaoke/Televisiones/Instance`.
+2. Añade `function module:Prueba() return true end` a `FunctActionsTV`.
+3. Invócalo desde el cliente.
+4. Observa si devuelve, se cuelga o lanza error.
+5. Cambia la línea a `Remotes.OnServerInvoke = function(...) ... end` y repite, para confirmar
+   que ese es el arreglo.
+
+**Pasa:** el paso 3 devuelve `true`.
+**Falla:** se cuelga o lanza *«OnServerInvoke has not been set»*.
+
+**Instrumentación sugerida:** ninguna. El diagnóstico está cerrado y el arreglo es una línea.
+Lo único que hay que decidir es si se corrige ahora o cuando alguien lo necesite — y el
+argumento para hacerlo ahora es que la persona que lo necesite no tendrá ninguna pista.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -3729,7 +4151,8 @@ completa.
 | `Collections` (moneda) | Sí | Leído entero: la pasada de seguridad (BUG-CANDIDATE-015), la ruta de persistencia (BUG-CANDIDATE-008) y la escritura silenciosa de `Give` (BUG-CANDIDATE-019) |
 | `RoleService`, `EventCommands`, `ReferralCommands` | **En parte** | Solo la ruta de autorización, para la pasada de seguridad |
 | `machines/Machine`, `machines/PopTheLock` | **En parte** | Solo las rutas de enlace y de premio |
-| `GlobalDataStore`, `GiftInbox` | **No** | Ambos usan DataStoreService fuera de DataKit |
+| `GiftInbox` | Sí | Cierra **U-008** |
+| `GlobalDataStore/init` | En parte | Las cuatro operaciones y la deduplicación; no la rama paginada de `OrderedDataStore` |
 | `Shared/Stores`: `init`, `HouseAdded`, `ColorTexture` | Sí | Los trece manejadores de remotes y el ciclo de `content` |
 | `Shared/Stores`: `Compras` | En parte | Solo `Comprar` y la forma general |
 | `Shared/Stores`: `DecorFuncs/` (3 archivos), `DecorsPlayer` | Sí | La colocación y el índice por jugador |
@@ -3746,11 +4169,17 @@ completa.
 | `ToolPlacementServer`, `Client/inventory/`, `ToolUseManagge` | **No** | En cola |
 | `Karaoke/init.luau` | Sí | |
 | `RevisarCanciones`, `CrearCancion` | En parte | El modelo de administración, los manejadores y sus guardas; no la paginación ni el editor |
-| `KaraokeTV/`, `BusquedaMusicas` | **No** | En cola |
+| `KaraokeTV/` (3 archivos) | En parte | Registro de televisores, despacho de remotes y sus guardas |
+| `BusquedaMusicas` | **No** | En cola |
 | `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
 | `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
 | Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
-| `JobSystem`, `ToolPlacementServer`, `BuildingSystem`, `KaraokeTV` | **No** | En cola, por ese orden |
+| `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
+| `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
+| `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
+| `BuildingSystem` | Su papel, sí | Es interfaz de cliente sin remotes propios; su UI no se ha leído |
+| `GiftHandler.server.luau` | Sí | La ruta de regalos y `ProcessReceipt` |
+| `BusquedaMusicas` | **No** | En cola |
 | Sistemas de juego (~420 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 

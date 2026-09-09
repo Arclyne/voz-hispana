@@ -15,19 +15,20 @@ explica qué hace el juego con él, y la referencia de API lleva los detalles.
 adaptadores de `DataKit`. Los dos de fuera son `GlobalDataStore/init.luau` y
 `WorldSystem/GiftInbox.luau`.
 
-:::info DataKit se documenta solo — este proyecto no lo documenta
+:::tip Si vienes a entender **qué es DataKit y cómo funciona**, empieza por aquí
 
-`DataKit` es un paquete externo instalado con wally y **trae su propia documentación
-Moonwave**, escrita por sus autores: `@class` en `DataKit`, `Store`, `Profile`, `Lease`,
-`Health`, `Mutex`, `Signal`, `Inbox`, `BaseStore` y `Adapters`. Su `init.luau` declara
-además cuál es su superficie pública y qué es interno.
+[DataKit — qué hace y quién lo usa](./datakit.md) explica el problema que resuelve, el
+mecanismo (lease + fence durable), las dos políticas de conflicto y qué sistema usa cada
+identidad, con diagramas.
 
-Esa documentación se publica tal cual en la [Referencia de API](/api/DataKit) de este
-sitio, sin que este proyecto la haya escrito ni la modifique. **No se duplica aquí.**
+`DataKit` es además un paquete externo instalado con wally, con **su propio sitio de
+documentación**: [arclyne.github.io/data-kit](https://arclyne.github.io/data-kit/). Ahí está
+el contrato de cada función. Sus clases aparecen también en la
+[Referencia de API](/api/DataKit) de este sitio, porque las anotaciones viajan con el
+código, pero la fuente canónica es la suya.
 
-Lo que sí es responsabilidad de esta documentación, y es lo que encontrarás en esta
-página: qué identidades declara Voz Hispana, con qué políticas, quién escribe cada una y
-qué pasa cuando falla. Para el contrato de cada función, sigue los enlaces `/api/`.
+Esta página se queda con lo que es responsabilidad de Voz Hispana: qué identidades declara,
+con qué políticas, quién escribe cada una y qué pasa cuando falla.
 
 :::
 
@@ -247,16 +248,21 @@ que algo vuelva a preguntar. Documentado, deliberado, y conviene saberlo antes d
 
 ## Otra persistencia fuera de DataKit
 
-**HECHO.** Dos módulos usan `DataStoreService` directamente y **aún no están
-analizados**:
+**HECHO.** Dos módulos usan `DataStoreService` directamente. **No duplican las garantías de
+DataKit**, y los motivos son distintos:
 
-| Módulo | Nota |
+| Módulo | Por qué está fuera |
 |---|---|
-| `Core/ServerStorage/GlobalDataStore/init.luau` | 335 líneas. Viene con `ReadMe.server.luau` y `Testeo_GlobalDataStore.luau`. |
-| `Core/ServerStorage/WorldSystem/GiftInbox.luau` | 2,4 KB. Se llama como un buzón, pero es distinto de `DataKit.Inbox`. |
+| `WorldSystem/GiftInbox.luau` | **A propósito.** DataKit da un solo escritor por lease, y regalar es escribir sobre la identidad de **otro** jugador, que puede estar desconectado. `UpdateAsync` aporta la atomicidad que hace falta ahí |
+| `ServerStorage/GlobalDataStore/init.luau` | Capa propia anterior, para karaoke y cuadros. Usa `OrderedDataStore` con paginación para las listas de valoración, que DataKit no cubre |
 
-Si duplican las garantías de `DataKit`, o si existen para un caso que este no cubre, es
-una pregunta abierta para la Fase 3.
+`GiftInbox` explica su propia existencia en un comentario de cabecera, y el razonamiento se
+sostiene. `GlobalDataStore`, en cambio, **no tiene reintentos ni cortacircuitos**: cada
+operación es un `pcall` y ya. Nada equivalente a [`Health`](/api/Health).
+
+Ambos están documentados en
+[Persistencia fuera de DataKit](../systems/global-storage.md), que cierra la incógnita
+**U-008**.
 
 ## Implementación relacionada
 

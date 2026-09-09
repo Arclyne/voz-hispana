@@ -10,7 +10,7 @@ __pycache__/
 /build/
 /.moonwave-warmup/
 
-# macOS Finder metadata. Two are already tracked (./.DS_Store and src/.DS_Store);
-# they are left alone rather than deleted, since removing them is a change to the
-# repository rather than to this documentation project.
+# Metadatos del Finder de macOS. Los dos que estaban versionados (./.DS_Store y
+# src/.DS_Store) se quitaron del control de versiones a peticion del propietario
+# del repositorio; esta regla evita que vuelvan.
 .DS_Store

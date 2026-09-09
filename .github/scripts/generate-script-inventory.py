@@ -82,6 +82,10 @@ ANALYSED |= {
     t("Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/init.luau"),
     t("Core/ServerScriptService/ServerScripts/AnimationSystem/init.server.luau"),
     t("Core/ServerScriptService/ServerScripts/Quests/QuestMain.server.luau"),
+    t("Core/ReplicatedStorage/Shared/JobSystem/init.luau"),
+    t("Core/ReplicatedStorage/Shared/JobSystem/ConditionsUses.luau"),
+    t("Core/ServerStorage/WorldSystem/GiftInbox.luau"),
+    t("Core/ServerStorage/GlobalDataStore/ReadMe.server.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -106,6 +110,13 @@ PARTIAL = {
     t("Core/ServerScriptService/ServerScripts/machines/init.server.luau"),
     t("Core/ServerScriptService/ServerScripts/cooking/CookingStation.luau"),
     t("Core/ServerScriptService/ServerScripts/cooking/CuttingBoard.server.luau"),
+    t("Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/init.luau"),
+    t("Core/ServerStorage/GlobalDataStore/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/ToolPlacementServer.server.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/FunctActionsTV.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/TV/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/GiftHandler.server.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",

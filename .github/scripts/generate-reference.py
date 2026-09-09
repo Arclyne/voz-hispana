@@ -107,7 +107,19 @@ title: Remotes y bindables
 
 # Remotes y bindables
 
+:::caution Este censo es un suelo, no un total
+
+Cuenta lo **declarado** como `.model.json` de Rojo. Un sistema que cree sus remotes en
+ejecución con `Instance.new` no aparece aquí. Se conoce al menos un caso:
+[Trabajos](../systems/jobs.md#los-remotes-no-están-declarados-se-crean-en-ejecución) fabrica
+cuatro `RemoteEvent` al arrancar el servidor, y su carpeta `Events/Jobs/` solo contiene un
+`.gitkeep`.
+
+:::
+
 Todos los `RemoteEvent`, `RemoteFunction`, `BindableEvent` y `BindableFunction` declarados
+
+
 en este repositorio, con la ruta del DataModel que ocupan en tiempo de ejecución.
 
 Se **declaran como archivos `.model.json` de Rojo**, no se crean en código, así que esta
