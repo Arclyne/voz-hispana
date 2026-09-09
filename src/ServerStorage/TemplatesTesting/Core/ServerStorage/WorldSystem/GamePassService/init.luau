@@ -5,6 +5,37 @@ local ShopInfo = require(ReplicatedStorage:WaitForChild("ShopInfo"))
 local PlayerDataService = require(script.Parent:WaitForChild("PlayerDataService"))
 local GamePassRewards = require(script:WaitForChild("GamePassRewards"))
 
+--[=[
+	Gamepasses persistidos en el perfil del jugador, declarados en `ShopInfo`.
+
+	:::info Hay **dos** sistemas de gamepass en este juego
+
+	Este y `Shared/Monetization`. No se conocen entre sí y no comparten datos:
+
+	| | `GamePassService` | `Shared/Monetization` |
+	|---|---|---|
+	| Qué pases conoce | Los de `ShopInfo` con `Type == "GamePass"` | Tres, escritos a fuego |
+	| Dónde guarda la propiedad | `data.gamePasses`, **persistido** | Una tabla en memoria que se borra al salir |
+	| Superficie remota | **Ninguna** | Cinco `RemoteEvent` |
+
+	Un pase declarado en `ShopInfo` no lo ve `Monetization`, y viceversa. Quien añada uno
+	nuevo tiene que saber en cuál va.
+
+	:::
+
+	**No tiene remotes.** Solo se le llega por dos caminos, y los dos verifican contra
+	Roblox antes de conceder: `syncFromRoblox`, que llama a `UserOwnsGamePassAsync` por cada
+	pase de la tienda al entrar el jugador, y el evento `PromptGamePassPurchaseFinished`,
+	que además exige que el id esté declarado en `ShopInfo`.
+
+	`grant` es idempotente por partida doble: comprueba `table.find` antes de insertar, y aun
+	así vuelve a llamar a `GamePassRewards.ensure`, que decide por su cuenta si faltaba
+	entregar algo. Devuelve el resultado de `store:save("Manual")`, así que quien llama sabe
+	si quedó persistido.
+
+	@class GamePassService
+	@server
+]=]
 local GamePassService = {}
 
 local shopPassIds: { number } = {}

@@ -1,92 +1,92 @@
 ---
 sidebar_position: 4
-title: Entry flow
+title: Flujo de entrada
 ---
 
-# Entering a house
+# Entrar en una casa
 
-This page traces one player from "I want to go to this house" to "I am standing in it",
-and names the script and function behind every step.
+Esta página sigue a un jugador desde «quiero ir a esta casa» hasta «estoy dentro», y
+nombra el script y la función detrás de cada paso.
 
-The generic reservation mechanism — the two registries, the atomic staging claim, the
-concurrency guarantees — is in
-[Architecture → Reserved servers](../../architecture/reserved-servers.md). This page is the
-housing-specific path through it.
+El mecanismo genérico de reserva —los dos registros, la reclamación de staging atómica,
+las garantías de concurrencia— está en
+[Arquitectura → Servidores reservados](../../architecture/reserved-servers.md). Esta
+página es el camino específico de las casas a través de él.
 
-## Full path
+## Camino completo
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant C as Client
+    participant C as Cliente
     participant WM as WorldManager<br/>(lobby)
     participant HI as HousesInfo
     participant P as Profiles.World
     participant ML as MemoryStore<br/>DataKitLeases
     participant TS as TeleportService
-    participant PWI as PlayerWorld_Init<br/>(house server)
+    participant PWI as PlayerWorld_Init<br/>(servidor de casa)
     participant WSV as WorldService
     participant SP as ServerPresence
     participant MM as ModeratorManager
 
     C->>WM: JoinServer:InvokeServer("12345_playaRoom")
-    WM->>WM: typeof(serverKey) == "string"?
+    WM->>WM: ¿typeof(serverKey) == "string"?
     WM->>WM: parseRoomKey → 12345, "playaRoom"
     WM->>HI: HousesInfo["playaRoom"]
     HI-->>WM: roomInfo (placeId 126499097860226)
 
     WM->>WM: hostWorld(player, serverKey, roomInfo)
-    WM->>WM: getLocalStage — 30s per-server memo
+    WM->>WM: getLocalStage — memo por servidor, 30 s
     WM->>P: claimStaged(serverKey, { placeId })
     P->>ML: peek "World/12345_playaRoom"
 
-    alt already hosted
+    alt ya está hosteada
         ML-->>P: owner + meta{ placeId, accessCode }
         P-->>WM: (nil, { kind = "hosted", meta })
-    else nobody hosting — try to stage
-        P->>ML: UpdateAsync "staged/World/…" (atomic, TTL 30s)
-        ML-->>P: won
+    else nadie la hostea — intentar staging
+        P->>ML: UpdateAsync "staged/World/…" (atómico, TTL 30 s)
+        ML-->>P: ganado
         P-->>WM: (claim, nil)
         WM->>TS: ReserveServer(126499097860226)
         TS-->>WM: accessCode
         WM->>P: claim:setMeta{ placeId, accessCode }
-        WM->>P: claim:tryClaim() — republish, renew TTL
+        WM->>P: claim:tryClaim() — republica, renueva TTL
     end
 
-    WM->>WM: teleportToHost — validate meta types
+    WM->>WM: teleportToHost — valida tipos de meta
     WM->>TS: TeleportAsync(placeId, {player}, opts)<br/>ReservedServerAccessCode = accessCode<br/>TeleportData = { key, placeId, accessCode }
     WM-->>C: (true, nil)
 
-    Note over PWI: reserved server boots
-    TS->>PWI: player arrives
+    Note over PWI: arranca el servidor reservado
+    TS->>PWI: llega el jugador
     PWI->>PWI: Players.PlayerAdded:Once(onPlayerAdded)
     PWI->>PWI: extractPayload → GetJoinData().TeleportData
-    PWI->>PWI: parseRoomKey, HousesInfo check
+    PWI->>PWI: parseRoomKey, comprobación en HousesInfo
     PWI->>P: hasRoom(12345, "playaRoom")<br/>WorldsPlayer.read → data.rooms
     PWI->>PWI: resolveAccessCode(key, tpAccessCode)
     PWI->>WSV: WorldService.start{ serverKey, ownerId, displayName, accessCode }
-    WSV->>ML: claim lease "World/12345_playaRoom"<br/>meta = { placeId, jobId, accessCode }
+    WSV->>ML: reclama lease "World/12345_playaRoom"<br/>meta = { placeId, jobId, accessCode }
     WSV-->>PWI: store
     PWI->>WSV: store:awaitReady()
     PWI->>PWI: canHostWorld(player)
     PWI->>PWI: ServerInfo.ServerKey / status = "pending"
     PWI->>SP: ServerPresence.new{...}:Start()
-    SP->>SP: first successful registry write, status "ready"
+    SP->>SP: primera escritura correcta en el registro, status "ready"
     SP->>PWI: OnStarted → ServerInfo.status = "ready"<br/>isStarted.Started = true
-    PWI->>MM: (status change observed)
+    PWI->>MM: (observa el cambio de status)
     MM->>MM: sweepKickCurrent + sweepAccessAll
 ```
 
-## Step by step
+## Paso a paso
 
-### 1. The client asks
+### 1. El cliente pide
 
-**FACT.** The only thing a client sends is a `serverKey` string. It never sends a
-`placeId` and never sends an `accessCode`.
+**HECHO.** Lo único que envía el cliente es una cadena `serverKey`. Nunca envía un
+`placeId` ni un `accessCode`.
 
-### 2. `WorldManager` classifies the key
+### 2. `WorldManager` clasifica la clave
 
-**FACT.** `JoinServerFunc.OnServerInvoke` decides what kind of destination this is:
+**HECHO.** `JoinServerFunc.OnServerInvoke` decide qué tipo de destino es:
 
 ```lua
 local _userId, roomName = parseRoomKey(serverKey)
@@ -97,20 +97,20 @@ if roomInfo then
 end
 ```
 
-If the key does not resolve to a room in `HousesInfo`, it falls through to the presence
-directory and is treated as a public server or an event — see
-[Architecture → Reserved servers](../../architecture/reserved-servers.md).
+Si la clave no resuelve a una room de `HousesInfo`, cae al directorio de presencia y se
+trata como servidor público o evento — ver
+[Arquitectura → Servidores reservados](../../architecture/reserved-servers.md).
 
-### 3. Stage, reserve, publish
+### 3. Staging, reserva y publicación
 
-**FACT.** `hostWorld` runs the three-way decision described in the sequence above. The
-critical ordering, and the reason for it, is stated in `DataKit`'s own source: the
-`ReserveServer` call happens **outside** the MemoryStore transform, because doing it inside
-was the bug in the previous system.
+**HECHO.** `hostWorld` ejecuta la decisión a tres bandas descrita en la secuencia de
+arriba. El orden crítico, y su razón, están enunciados en el propio código de `DataKit`:
+la llamada a `ReserveServer` ocurre **fuera** del transform de MemoryStore, porque hacerlo
+dentro era el bug del sistema anterior.
 
 ### 4. Teleport
 
-**FACT.** `teleportToHost` validates the host metadata before trusting it:
+**HECHO.** `teleportToHost` valida la metadata del anfitrión antes de fiarse de ella:
 
 ```lua
 if typeof(meta) ~= "table" or typeof(meta.placeId) ~= "number" or typeof(meta.accessCode) ~= "string" then
@@ -118,7 +118,7 @@ if typeof(meta) ~= "table" or typeof(meta.placeId) ~= "number" or typeof(meta.ac
 end
 ```
 
-and then builds the options:
+y entonces construye las opciones:
 
 ```lua
 local teleportOptions = Instance.new("TeleportOptions")
@@ -126,12 +126,12 @@ teleportOptions.ReservedServerAccessCode = meta.accessCode
 teleportOptions:SetTeleportData({ key = serverKey, placeId = meta.placeId, accessCode = meta.accessCode })
 ```
 
-**FACT.** `safeTeleport` retries `TeleportAsync` up to 3 times, 0.5 s apart, each in a
-`pcall`.
+**HECHO.** `safeTeleport` reintenta `TeleportAsync` hasta 3 veces, con 0,5 s entre
+intentos, cada uno dentro de un `pcall`.
 
-### 5. The house server boots
+### 5. Arranca el servidor de casa
 
-**FACT.** `PlayerWorld_Init` initialises from the **first** player only:
+**HECHO.** `PlayerWorld_Init` se inicializa a partir del **primer** jugador y solo de él:
 
 ```lua
 for _, player in Players:GetPlayers() do
@@ -141,7 +141,7 @@ end
 Players.PlayerAdded:Once(onPlayerAdded)
 ```
 
-and `onPlayerAdded` guards against double initialisation:
+y `onPlayerAdded` protege contra doble inicialización:
 
 ```lua
 if booting or presence then
@@ -149,14 +149,14 @@ if booting or presence then
 end
 ```
 
-**INFERENCE.** The loop over `Players:GetPlayers()` handles the case where a player is
-already present by the time the script is enabled — which is likely in a reserved server,
-since the server exists *because* someone is teleporting into it.
+**INFERENCIA.** El bucle sobre `Players:GetPlayers()` cubre el caso en que ya haya un
+jugador presente cuando el script se activa — algo probable en un servidor reservado, ya
+que el servidor existe *porque* alguien se está teletransportando a él.
 
-### 6. Ownership is verified at the destination
+### 6. La propiedad se verifica en el destino
 
-**FACT.** Before doing anything else, the house server checks that the user named in the
-key actually owns the room:
+**HECHO.** Antes de nada, el servidor de casa comprueba que el usuario nombrado en la clave
+posee realmente la room:
 
 ```lua
 local function hasRoom(userId: number, roomName: string): (boolean, boolean)
@@ -169,17 +169,18 @@ local function hasRoom(userId: number, roomName: string): (boolean, boolean)
 end
 ```
 
-The two return values are distinguished deliberately: *"the read failed"* and *"the read
-succeeded and they do not own it"* produce different messages.
+Los dos valores de retorno se distinguen a propósito: *«la lectura falló»* y *«la lectura
+funcionó y no la posee»* producen mensajes distintos.
 
-**INFERENCE — this is the real authorisation boundary for opening a house.** A forged
-`serverKey` naming someone else's room reaches the destination and is rejected there, with
-everyone kicked. It cannot create or open a house that does not belong to the named owner.
+**INFERENCIA — esta es la frontera de autorización real para abrir una casa.** Una
+`serverKey` falsificada que nombre la room de otra persona llega al destino y se rechaza
+allí, expulsando a todos. No puede crear ni abrir una casa que no pertenezca al dueño
+nombrado.
 
-### 7. Presence and readiness
+### 7. Presencia y disponibilidad
 
-**FACT.** The house publishes itself with `hostingType = "room"` and a payload that
-includes its own `accessCode`:
+**HECHO.** La casa se publica con `hostingType = "room"` y un contenido que incluye su
+propio `accessCode`:
 
 ```lua
 info.code = WorldService.getAccessCode()
@@ -195,50 +196,51 @@ info.serverType = data.settings.ServerType
 info.status = "ready"
 ```
 
-**FACT — `code` never reaches a client.** `ServerDirectory.toPublicEntry` builds the
-client-facing shape field by field and does not include `code` or `jobId`. The source
-states the rule for events in the same terms, and `getActiveEvent` repeats it:
+**HECHO — el `code` nunca llega a un cliente.** `ServerDirectory.toPublicEntry` construye
+la forma que ve el cliente campo a campo y no incluye `code` ni `jobId`. El código enuncia
+la regla en los mismos términos para los eventos, y `getActiveEvent` la repite:
 
 ```lua
 -- Deliberadamente NO expone `code` ni `jobId`: el accessCode del servidor reservado se
 -- resuelve server-side en JoinServer y nunca viaja al cliente.
 ```
 
-### 8. Everyone else
+### 8. Todos los demás
 
-**FACT.** Only the first player goes through `canHostWorld`. Every player — including that
-first one — is then continuously governed by `ModeratorManager`. See
-[Permissions](./permissions.md).
+**HECHO.** Solo el primer jugador pasa por `canHostWorld`. Después, todos los jugadores
+—incluido ese primero— quedan bajo el control continuo de `ModeratorManager`. Ver
+[Permisos](./permissions.md).
 
-## Guests and non-owners
+## Invitados y no propietarios
 
-**FACT.** There is no separate guest entry path. A guest uses the same
-`JoinServer(serverKey)` call with the owner's key. Two outcomes follow from the state of
-the lease:
+**HECHO.** No hay una ruta de entrada separada para invitados. Un invitado usa la misma
+llamada `JoinServer(serverKey)` con la clave del dueño. Del estado del lease se derivan dos
+desenlaces:
 
-| State | What happens |
+| Estado | Qué ocurre |
 |---|---|
-| The house is **already hosted** | `claimStaged` returns `kind = "hosted"`; the guest is teleported into the **existing** instance with the owner's `accessCode`. |
-| The house is **closed** | The guest stages and reserves it themselves, and `PlayerWorld_Init` boots with the *guest* as `hostPlayer`. `canHostWorld` then decides whether that is allowed. |
+| La casa **ya está hosteada** | `claimStaged` devuelve `kind = "hosted"`; al invitado se le teletransporta a la instancia **existente** con el `accessCode` del dueño. |
+| La casa está **cerrada** | El invitado hace el staging y la reserva él mismo, y `PlayerWorld_Init` arranca con el *invitado* como `hostPlayer`. `canHostWorld` decide entonces si eso está permitido. |
 
-**INFERENCE — a guest can open someone else's house.** `hasRoom` checks that the *owner*
-named in the key owns the room; it does not require the arriving player to be the owner.
-`canHostWorld` is what gates it: the owner always passes, a banned player is refused, and
-on a `private` house a non-owner needs a role of at least `guest` (46) or must be a Roblox
-friend of the owner. On a `public` house, **any** player may open it.
+**INFERENCIA — un invitado puede abrir la casa de otro.** `hasRoom` comprueba que el
+*dueño* nombrado en la clave posee la room; no exige que el jugador que llega sea el dueño.
+`canHostWorld` es lo que lo controla: el dueño siempre pasa, un jugador baneado se rechaza,
+y en una casa `private` un no-dueño necesita rol de al menos `guest` (46) o ser amigo de
+Roblox del dueño. En una casa `public`, **cualquier** jugador puede abrirla.
 
-That is a coherent design for a social game — public houses are meant to be visitable
-whether or not the owner is online — but it is worth stating explicitly, because it means
-a house can be running with its owner absent. See [Permissions](./permissions.md).
+Es un diseño coherente para un juego social —las casas públicas están pensadas para
+visitarse esté o no el dueño conectado—, pero conviene decirlo explícitamente, porque
+implica que una casa puede estar funcionando con su dueño ausente. Ver
+[Permisos](./permissions.md).
 
-## Related implementation
+## Implementación relacionada
 
-| Step | Code |
+| Paso | Código |
 |---|---|
-| 1–2 classify | `WorldManager.server.luau`, `JoinServerFunc.OnServerInvoke`, `parseRoomKey` |
-| 3 stage / reserve | `WorldManager.server.luau`, `hostWorld`, `reserveAccessCode`, `waitForStagedHost`; [`Store.claimStaged`](/api/Store) |
+| 1–2 clasificar | `WorldManager.server.luau`, `JoinServerFunc.OnServerInvoke`, `parseRoomKey` |
+| 3 staging / reserva | `WorldManager.server.luau`, `hostWorld`, `reserveAccessCode`, `waitForStagedHost`; [`Store.claimStaged`](/api/Store) |
 | 4 teleport | `WorldManager.server.luau`, `teleportToHost`, `safeTeleport` |
-| 5 boot | `PlayerWorld_Init.lua.server.luau`, `onPlayerAdded`, `extractPayload`, `init` |
-| 6 ownership | `PlayerWorld_Init.lua.server.luau`, `hasRoom` |
-| 7 presence | `PlayerWorld_Init.lua.server.luau`, `getHouseRefreshPayload`, `onHouseStarted`; [`ServerPresence`](/api/ServerPresence) |
-| 8 access control | `ModeratorManager.server.luau`, `canPlayerEnter` |
+| 5 arranque | `PlayerWorld_Init.lua.server.luau`, `onPlayerAdded`, `extractPayload`, `init` |
+| 6 propiedad | `PlayerWorld_Init.lua.server.luau`, `hasRoom` |
+| 7 presencia | `PlayerWorld_Init.lua.server.luau`, `getHouseRefreshPayload`, `onHouseStarted`; [`ServerPresence`](/api/ServerPresence) |
+| 8 control de acceso | `ModeratorManager.server.luau`, `canPlayerEnter` |

@@ -1,158 +1,158 @@
 ---
 sidebar_position: 6
-title: Reserved servers
+title: Servidores reservados
 ---
 
-# Reserved servers
+# Servidores reservados
 
-Voz Hispana is a multi-place game. Besides the public places, it runs **reserved
-servers** — private Roblox server instances reached with a
-`ReservedServerAccessCode` rather than a `JobId`. Two things use them: **player houses**
-and **events**.
+Voz Hispana es un juego de varios places. Además de los places públicos, corre
+**servidores reservados**: instancias privadas de servidor de Roblox a las que se llega
+con un `ReservedServerAccessCode` en vez de con un `JobId`. Dos cosas los usan: las
+**casas de jugador** y los **eventos**.
 
-This page covers the mechanism. The house *entity* — ownership, persistence, permissions —
-is covered under [Housing](../systems/housing/overview.md).
+Esta página cubre el mecanismo. La *entidad* casa —propiedad, persistencia, permisos—
+está en [Casas](../systems/housing/overview.md).
 
-## The three identities
+## Las tres identidades
 
-Everything hinges on the **server key**, a string whose *shape* determines how a server
-is reached.
+Todo gira alrededor de la **clave de servidor**, una cadena cuya *forma* determina cómo se
+alcanza el servidor.
 
-| Key shape | Produced by | `hostingType` | How a player enters |
+| Forma de la clave | La produce | `hostingType` | Cómo entra un jugador |
 |---|---|---|---|
 | `"{PlaceId}_{JobId}"` | `PublicServerInit` | `"default"` | `TeleportOptions.ServerInstanceId = jobId` |
-| `"{UserId}_{roomName}"` | The requesting client, resolved by `WorldManager` | `"room"` | `TeleportOptions.ReservedServerAccessCode` |
-| event key | `EventService` | `"event"` | `TeleportOptions.ReservedServerAccessCode` |
+| `"{UserId}_{roomName}"` | El cliente que la pide, resuelta por `WorldManager` | `"room"` | `TeleportOptions.ReservedServerAccessCode` |
+| clave del evento | `EventService` | `"event"` | `TeleportOptions.ReservedServerAccessCode` |
 
-**FACT.** `WorldManager.parseRoomKey` is what discriminates them:
+**HECHO.** `WorldManager.parseRoomKey` es lo que las discrimina:
 
 ```lua
 local userIdStr, roomName = serverKey:match("^(%d+)_(.+)$")
 ```
 
-If the key parses as `digits_name` **and** `roomName` is a key in
-`ReplicatedStorage.HousesInfo`, it is a house. `HousesInfo` currently declares
-`defaultRoom`, `playaRoom` and `VistaLujosaRoom`. A public server's key also matches
-`^(%d+)_(.+)$` — a `PlaceId` followed by a `JobId` — so the `HousesInfo` lookup, not the
-pattern, is the real discriminator.
+Si la clave casa como `dígitos_nombre` **y** `roomName` es una clave de
+`ReplicatedStorage.HousesInfo`, es una casa. `HousesInfo` declara hoy `defaultRoom`,
+`playaRoom` y `VistaLujosaRoom`. La clave de un servidor público también casa con
+`^(%d+)_(.+)$` —un `PlaceId` seguido de un `JobId`—, así que el discriminador real es la
+búsqueda en `HousesInfo`, no el patrón.
 
-## Two registries, not one
+## Dos registros, no uno
 
-This is the single most important structural fact about reserved servers here, and it is
-easy to miss: **there are two independent MemoryStore-backed registries**, written by
-different layers, with different lifetimes and different purposes.
+Este es el hecho estructural más importante sobre los servidores reservados, y es fácil
+pasarlo por alto: **hay dos registros independientes respaldados por MemoryStore**,
+escritos por capas distintas, con vidas y propósitos distintos.
 
-| | **Presence directory** | **Lease directory** |
+| | **Directorio de presencia** | **Directorio de leases** |
 |---|---|---|
-| Map name | `UserServerRegistry_Test` | `DataKitLeases` |
-| Written by | [`ServerPresence`](/api/ServerPresence) | `DataKit.Lease` |
-| Key | the server key | `World/{serverKey}`, or `staged/World/{serverKey}` |
-| TTL | 120 s | 120 s (30 s for staging) |
-| Refresh | 30 s heartbeat | 30 s heartbeat |
-| Purpose | *"what servers exist and who is in them"* — the browsable list | *"who owns this world's data right now, and how do I reach them"* |
-| Payload | players, counts, name, `placeId`, `jobId`, `accessCode`, `status` | `{ owner = jobId, meta = { placeId, jobId, accessCode } }` |
+| Nombre del mapa | `UserServerRegistry_Test` | `DataKitLeases` |
+| Lo escribe | [`ServerPresence`](/api/ServerPresence) | `DataKit.Lease` |
+| Clave | la clave de servidor | `World/{serverKey}`, o `staged/World/{serverKey}` |
+| TTL | 120 s | 120 s (30 s para el staging) |
+| Refresco | heartbeat de 30 s | heartbeat de 30 s |
+| Propósito | *«qué servidores existen y quién está dentro»* — la lista navegable | *«quién posee este mundo ahora mismo y cómo llego»* |
+| Contenido | jugadores, conteos, nombre, `placeId`, `jobId`, `accessCode`, `status` | `{ owner = jobId, meta = { placeId, jobId, accessCode } }` |
 
-**INFERENCE.** The lease directory is authoritative for *reachability of a house*; the
-presence directory is authoritative for *browsing*. Reservation decisions read the lease
-directory, never the presence directory — `WorldManager.hostWorld` never calls
-`ServerPresence.SafeGet`, and `JoinServerFunc` only falls through to the presence
-directory when the key is **not** a house.
+**INFERENCIA.** El directorio de leases es la autoridad sobre *la alcanzabilidad de una
+casa*; el de presencia lo es sobre *navegar*. Las decisiones de reserva leen el de leases,
+nunca el de presencia — `WorldManager.hostWorld` no llama jamás a
+`ServerPresence.SafeGet`, y `JoinServerFunc` solo cae al directorio de presencia cuando la
+clave **no** es una casa.
 
-## Entering a house
+## Entrar en una casa
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant C as Client
-    participant WM as WorldManager (lobby server)
+    participant C as Cliente
+    participant WM as WorldManager (lobby)
     participant P as Profiles.World<br/>(DataKit)
     participant ML as MemoryStore<br/>DataKitLeases
     participant TS as TeleportService
 
     C->>WM: JoinServer:InvokeServer(serverKey)
     WM->>WM: parseRoomKey → userId, roomName
-    WM->>WM: HousesInfo[roomName] → roomInfo (else: not a house)
+    WM->>WM: HousesInfo[roomName] → roomInfo (si no: no es una casa)
 
-    WM->>WM: getLocalStage(serverKey)  — per-server memo, TTL 30s
-    alt this server already staged this key
-        WM->>TS: teleport with the memoised accessCode
+    WM->>WM: getLocalStage(serverKey) — memo por servidor, TTL 30 s
+    alt este servidor ya hizo staging de esta clave
+        WM->>TS: teleport con el accessCode memorizado
     else
         WM->>P: claimStaged(serverKey, { placeId })
         P->>ML: peek "World/{key}"
-        alt already hosted
+        alt ya está hosteada
             ML-->>P: owner + meta
             P-->>WM: (nil, { kind = "hosted", meta })
-            WM->>TS: TeleportAsync with meta.accessCode
-        else
-            P->>ML: UpdateAsync "staged/World/{key}" (atomic, TTL 30s)
-            alt we won the staging claim
-                ML-->>P: claimed
+            WM->>TS: TeleportAsync con meta.accessCode
+        else nadie la hostea — intentar staging
+            P->>ML: UpdateAsync "staged/World/{key}" (atómico, TTL 30 s)
+            alt ganamos la reclamación de staging
+                ML-->>P: reclamado
                 P-->>WM: (lease, nil)
                 WM->>TS: ReserveServer(roomInfo.placeId)
                 TS-->>WM: accessCode
                 WM->>P: claim:setMeta{ placeId, accessCode }
-                WM->>P: claim:tryClaim()   — republish meta, renew TTL
-                WM->>TS: TeleportAsync with accessCode
-            else another lobby is staging
+                WM->>P: claim:tryClaim() — republica meta, renueva TTL
+                WM->>TS: TeleportAsync con accessCode
+            else otro lobby está haciendo staging
                 ML-->>P: owner + meta
                 P-->>WM: (nil, { kind = "staged", meta })
-                WM->>WM: waitForStagedHost — poll peekStaged, 10 × 1s
-                WM->>TS: TeleportAsync with the winner's accessCode
+                WM->>WM: waitForStagedHost — sondea peekStaged, 10 × 1 s
+                WM->>TS: TeleportAsync con el accessCode del ganador
             end
         end
     end
 ```
 
-### Why `ReserveServer` is called outside the transform
+### Por qué `ReserveServer` se llama fuera del transform
 
-**FACT.** The `DataKit.Store.claimStaged` documentation states this explicitly:
+**HECHO.** La documentación de `DataKit.Store.claimStaged` lo dice explícitamente:
 
 > llama `TeleportService:ReserveServer` AHORA (fuera de todo transform — reservar dentro
 > de un `UpdateAsync` era el bug del sistema viejo)
 
-The staging claim is a `MemoryStore UpdateAsync` whose transform only decides ownership.
-The actual `ReserveServer` web call happens **after** the transform returns, then the
-resulting code is published with `setMeta` + `tryClaim` (which republishes the meta and
-renews the TTL, because reserving may have taken a while).
+La reclamación de staging es un `UpdateAsync` de MemoryStore cuyo transform solo decide la
+propiedad. La llamada web real a `ReserveServer` ocurre **después** de que el transform
+retorne, y el código resultante se publica con `setMeta` + `tryClaim` (que republica la
+meta y renueva el TTL, porque reservar puede haber tardado).
 
-**INFERENCE.** This is why the staging TTL is short (30 s) but renewable: it is sized to
-cover one `ReserveServer` round-trip plus a teleport, not a whole session.
+**INFERENCIA.** Por eso el TTL de staging es corto (30 s) pero renovable: está dimensionado
+para cubrir una ida y vuelta de `ReserveServer` más un teleport, no una sesión entera.
 
-## Concurrency: two players opening the same house at once
+## Concurrencia: dos jugadores abriendo la misma casa a la vez
 
-This is the scenario the design is explicitly built around, and the answer is: **it is
-guarded, in two layers.**
+Este es el escenario alrededor del cual está construido el diseño, y la respuesta es:
+**está protegido, en dos capas.**
 
 ```mermaid
 flowchart TD
-    A["Two lobbies both see<br/>House 123 as unhosted"] --> B["Both call Profiles.World.claimStaged"]
-    B --> C["MemoryStore UpdateAsync on<br/>staged/World/{key} — ATOMIC"]
-    C --> D["Exactly one transform sees old == nil<br/>and returns a record"]
-    D --> E["Winner: reserves, publishes accessCode, teleports"]
-    D --> F["Loser: gets kind = 'staged' + owner"]
-    F --> G["waitForStagedHost polls peekStaged<br/>up to 10 × 1s"]
-    G --> H{"accessCode visible?"}
-    H -- yes --> I["Teleports to the SAME reserved instance"]
-    H -- no --> J["Returns false, 'Server is pending'"]
+    A["Dos lobbies ven a la vez<br/>la Casa 123 como no hosteada"] --> B["Ambos llaman a Profiles.World.claimStaged"]
+    B --> C["UpdateAsync de MemoryStore sobre<br/>staged/World/{key} — ATÓMICO"]
+    C --> D["Exactamente un transform ve old == nil<br/>y devuelve un registro"]
+    D --> E["Ganador: reserva, publica accessCode, teletransporta"]
+    D --> F["Perdedor: recibe kind = 'staged' + owner"]
+    F --> G["waitForStagedHost sondea peekStaged<br/>hasta 10 × 1 s"]
+    G --> H{"¿accessCode visible?"}
+    H -- sí --> I["Teletransporta a la MISMA instancia reservada"]
+    H -- no --> J["Devuelve false, 'Server is pending'"]
 
-    E --> K["Reserved server boots,<br/>PlayerWorld_Init claims World/{key}"]
+    E --> K["Arranca el servidor reservado,<br/>PlayerWorld_Init reclama World/{key}"]
     I --> K
 
-    L["Residual race:<br/>a real host wins between the<br/>hosted-check and the staging claim"] --> M["Second instance boots too"]
-    M --> N["Its Store has onConflict = 'deny'<br/>→ _resolveOwnership fires onDenied"]
-    N --> O["convergeToOwner teleports its players<br/>to the true host, 3 attempts"]
-    O --> P{"teleport succeeded?"}
-    P -- yes --> Q["One house, one instance"]
-    P -- no --> R["Players kicked:<br/>'This world is already hosted…'"]
+    L["Carrera residual:<br/>un anfitrión real gana entre la<br/>comprobación de hosted y el claim de staging"] --> M["Arranca también una segunda instancia"]
+    M --> N["Su Store tiene onConflict = 'deny'<br/>→ _resolveOwnership dispara onDenied"]
+    N --> O["convergeToOwner teletransporta a sus jugadores<br/>al anfitrión verdadero, 3 intentos"]
+    O --> P{"¿el teleport tuvo éxito?"}
+    P -- sí --> Q["Una casa, una instancia"]
+    P -- no --> R["Jugadores expulsados:<br/>'This world is already hosted…'"]
 
     style C fill:#2d4a2d,stroke:#6a6,color:#fff
     style N fill:#2d4a2d,stroke:#6a6,color:#fff
 ```
 
-### Layer 1 — atomic staging claim
+### Capa 1 — reclamación de staging atómica
 
-**FACT.** `Lease.tryClaim` is a single `MemoryStore UpdateAsync` whose transform only
-writes when the key is free or already ours:
+**HECHO.** `Lease.tryClaim` es un único `UpdateAsync` de MemoryStore cuyo transform solo
+escribe si la clave está libre o ya es nuestra:
 
 ```lua
 local ok, result = pcall(self._map.UpdateAsync, self._map, self.Id, function(old: Record?): Record?
@@ -163,102 +163,108 @@ local ok, result = pcall(self._map.UpdateAsync, self._map, self.Id, function(old
 end, self._ttl)
 ```
 
-`UpdateAsync` on a MemoryStore hash map is a compare-and-set: returning `nil` from the
-transform aborts the write. Exactly one of two concurrent callers can win.
+`UpdateAsync` sobre un hash map de MemoryStore es un compare-and-set: devolver `nil` desde
+el transform aborta la escritura. Exactamente uno de dos llamantes concurrentes puede
+ganar.
 
-### Layer 2 — deny-and-converge
+### Capa 2 — denegar y converger
 
-**FACT.** `DataKit`'s own documentation states that layer 1 is not sufficient on its own,
-and names the residual window:
+**HECHO.** La propia documentación de `DataKit` afirma que la capa 1 no basta por sí sola,
+y nombra la ventana residual:
 
 > La ventana entre el chequeo de "hosted" y el claim de staging no es atómica; si un host
 > gana justo en medio, la instancia reservada se auto-deniega al cargar (`onConflict deny`)
 > y converge por teleport — el mecanismo existente absorbe la carrera.
 
-**FACT.** `Profiles.World` is defined with `onConflict = "deny"`. When a second house
-instance boots and finds the lease already held, `Store._resolveOwnership` fires
-`onDenied(owner, ownerMeta)`. `PlayerWorld_Init` handles it by cleaning up its presence
-and calling `convergeToOwner`, which teleports everyone to the real host's `accessCode`
-(3 attempts, 0.5 s apart) and kicks them with an explanatory message only if that fails.
-It also connects `Players.PlayerAdded` so that anyone arriving at the doomed instance
-afterwards is forwarded too.
+**HECHO.** `Profiles.World` está definido con `onConflict = "deny"`. Cuando una segunda
+instancia de casa arranca y encuentra el lease ya tomado, `Store._resolveOwnership`
+dispara `onDenied(owner, ownerMeta)`. `PlayerWorld_Init` lo maneja limpiando su presencia
+y llamando a `convergeToOwner`, que teletransporta a todos al `accessCode` del anfitrión
+real (3 intentos, con 0,5 s entre ellos) y solo los expulsa con un mensaje explicativo si
+eso falla. También conecta `Players.PlayerAdded` para reenviar igualmente a quien llegue
+después a la instancia condenada.
 
-**Assessment — INFERENCE, stated as such:** the double-reservation scenario in the
-project brief *is* addressed. The atomic staging claim prevents the common case, and the
-deny-and-converge path absorbs the narrow residual window. What static reading cannot
-establish is whether the *convergence* itself always succeeds under load — that is a
-runtime question, recorded as
-[BUG-CANDIDATE-004](../testing/verification-plan.md#bug-candidate-004), with a
-multiplayer test plan.
+**Valoración — INFERENCIA, declarada como tal:** el escenario de doble reserva del
+enunciado *sí* está atendido. La reclamación de staging atómica evita el caso común, y la
+ruta de denegar-y-converger absorbe la estrecha ventana residual. Lo que la lectura
+estática no puede establecer es si la *convergencia* siempre tiene éxito bajo carga; eso
+es una pregunta de ejecución, registrada como
+[BUG-CANDIDATE-004](../testing/verification-plan.md#bug-candidate-004), con un plan de
+prueba multijugador.
 
-### The per-server memo
+### El memo por servidor
 
-**FACT.** `WorldManager` also keeps `localStages`, a plain Lua table with a 30-second
-`LOCAL_STAGE_TTL`, keyed by server key. It short-circuits repeated requests **from the
-same lobby server** before any MemoryStore call. It is a cost optimisation inside one
-server, not a distributed lock; the MemoryStore claim is what actually arbitrates.
+**HECHO.** `WorldManager` mantiene además `localStages`, una tabla Lua plana con un
+`LOCAL_STAGE_TTL` de 30 segundos, indexada por clave de servidor. Cortocircuita peticiones
+repetidas **desde el mismo servidor de lobby** antes de cualquier llamada a MemoryStore. Es
+una optimización de coste dentro de un servidor, no un candado distribuido; quien arbitra
+de verdad es la reclamación en MemoryStore.
 
-**OBSERVATION.** `localStages[serverKey] = { expires = … }` is written *before*
-`claimStaged` and left in place with `meta = nil` while staging is in flight. A second
-request arriving in that window takes the `localStage.meta == nil` branch and polls
-`waitForStagedHost` instead of racing. Entries are cleared on the failure paths and on
-expiry, but there is no periodic sweep, so a key whose request never returns keeps its
-entry until 30 s of wall-clock have passed — bounded, and by construction not a leak.
+**OBSERVACIÓN.** `localStages[serverKey] = { expires = … }` se escribe *antes* de
+`claimStaged` y se deja con `meta = nil` mientras el staging está en vuelo. Una segunda
+petición que llegue en esa ventana toma la rama `localStage.meta == nil` y sondea
+`waitForStagedHost` en vez de competir. Las entradas se limpian en las rutas de fallo y al
+expirar, pero no hay barrido periódico, así que una clave cuya petición nunca retorne
+conserva su entrada hasta que pasen 30 s de reloj — acotado, y por construcción no es una
+fuga.
 
-## Reaching a house that no longer has a server
+## Llegar a una casa que ya no tiene servidor
 
-**FACT.** The lease record lives in MemoryStore with a 120 s TTL, refreshed every 30 s by
-the owning house server's heartbeat. When that server dies:
+**HECHO.** El registro del lease vive en MemoryStore con un TTL de 120 s, refrescado cada
+30 s por el heartbeat del servidor de casa que lo posee. Cuando ese servidor muere:
 
-- **Graceful shutdown** — `BindToClose` → `presence:Cleanup()` → `OnCleanup` →
-  `WorldService.destroy()` → `store:close()`, which releases the lease.
-- **Abrupt death** — nothing runs. The lease is not released, but it is also not
-  refreshed, so MemoryStore expires it within 120 s on its own.
+- **Apagado ordenado** — `BindToClose` → `presence:Cleanup()` → `OnCleanup` →
+  `WorldService.destroy()` → `store:close()`, que libera el lease.
+- **Muerte abrupta** — no corre nada. El lease no se libera, pero tampoco se refresca, así
+  que MemoryStore lo hace expirar solo en 120 s.
 
-**INFERENCE.** This is the answer to *"how is a stale server reference detected?"*: it is
-not detected, it is **prevented from persisting**. The system does not store a permanent
-`HouseId → ReservedServerCode` mapping that could go stale. The mapping *is* the lease,
-and the lease's liveness is its TTL. `Lease`'s own comment states the intent:
+**INFERENCIA.** Esta es la respuesta a *«¿cómo se detecta una referencia obsoleta a un
+servidor?»*: no se detecta, se **impide que persista**. El sistema no guarda un mapeo
+permanente `HouseId → ReservedServerCode` que pudiera quedarse obsoleto. El mapeo *es* el
+lease, y la vigencia del lease es su TTL. El propio comentario de `Lease` declara la
+intención:
 
 > El TTL da la liveness: si el dueño deja de refrescar (crash), la key expira sola y otro
 > server puede reclamarla —sin chequeos de tiempo cross-server—.
 
-**THEORY — requires lifecycle verification.** Inside the window between a server's death
-and its lease expiring (up to 120 s), `claimStaged` still reports `kind = "hosted"` with
-the dead server's `accessCode`. A player would be teleported with a
-`ReservedServerAccessCode` for an instance that no longer exists.
+**TEORÍA — requiere verificación de ciclo de vida.** Dentro de la ventana entre la muerte
+de un servidor y la expiración de su lease (hasta 120 s), `claimStaged` sigue reportando
+`kind = "hosted"` con el `accessCode` del servidor muerto. Un jugador sería teletransportado
+con un `ReservedServerAccessCode` de una instancia que ya no existe.
 
-Roblox's documented behaviour is that teleporting with a reserved access code whose
-instance has shut down **starts a new instance** with that same code, which would make
-this benign — the new instance boots, finds the lease expired or expiring, and claims it.
-That behaviour is not established by this repository's source, so it is recorded rather
-than asserted: [BUG-CANDIDATE-005](../testing/verification-plan.md#bug-candidate-005).
+El comportamiento documentado por Roblox es que teletransportar con un código de acceso
+reservado cuya instancia se ha apagado **arranca una instancia nueva** con ese mismo
+código, lo que haría esto inocuo: la nueva instancia arranca, encuentra el lease expirado
+o expirando, y lo reclama. Ese comportamiento no lo establece el código de este
+repositorio, así que queda registrado en vez de afirmado:
+[BUG-CANDIDATE-005](../testing/verification-plan.md#bug-candidate-005).
 
-## Teleport handling
+## Manejo del teleport
 
-**OBSERVATION.** In Studio, `reserveAccessCode` returns a fabricated
-`HttpService:GenerateGUID` instead of reserving, and `safeTeleport` skips the teleport —
-but the staging write between them is *not* Studio-aware and still reaches the shared
-MemoryStore. Recorded as
+**OBSERVACIÓN.** En Studio, `reserveAccessCode` devuelve un `HttpService:GenerateGUID`
+fabricado en vez de reservar, y `safeTeleport` se salta el teleport — pero la escritura de
+staging que hay entre medias *no* es consciente de Studio y llega igualmente al MemoryStore
+compartido. Registrado como
 [BUG-CANDIDATE-006](../testing/verification-plan.md#bug-candidate-006).
 
-**FACT.** `WorldManager.safeTeleport` retries `TeleportService:TeleportAsync` up to
-`ATTEMPT_LIMIT = 3` times with `RETRY_DELAY = 0.5` s between attempts, each inside a
-`pcall`, and returns `(false, "TeleportFailed: …")` if all fail. In Studio it skips the
-teleport entirely and warns.
+**HECHO.** `WorldManager.safeTeleport` reintenta `TeleportService:TeleportAsync` hasta
+`ATTEMPT_LIMIT = 3` veces con `RETRY_DELAY = 0,5` s entre intentos, cada uno dentro de un
+`pcall`, y devuelve `(false, "TeleportFailed: …")` si todos fallan. En Studio se salta el
+teleport por completo y avisa.
 
-**FACT.** The `TeleportData` payload sent to a house is exactly:
+**HECHO.** El `TeleportData` que se envía a una casa es exactamente:
 
 ```lua
 { key = serverKey, placeId = meta.placeId, accessCode = meta.accessCode }
 ```
 
-and the receiving side reads it in `PlayerWorld_Init.extractPayload` via
-`player:GetJoinData().TeleportData`, requiring `tpData.key` to be a string. In Studio it
-substitutes `("%i_defaultRoom"):format(player.UserId)`.
+y el lado receptor lo lee en `PlayerWorld_Init.extractPayload` vía
+`player:GetJoinData().TeleportData`, exigiendo que `tpData.key` sea una cadena. En Studio
+sustituye por `("%i_defaultRoom"):format(player.UserId)`.
 
-**FACT.** `JoinWorldFunc` — travel to a *public* place — maps a client-supplied string
-key through a server-side table and refuses anything not in it:
+**HECHO.** `JoinWorldFunc` —viajar a un place *público*— traduce una cadena suministrada
+por el cliente a través de una tabla del lado servidor y rechaza cualquier cosa que no
+esté en ella:
 
 ```lua
 local PlaceKeyToPlaceId: {[string]: number} = {
@@ -269,31 +275,32 @@ local PlaceKeyToPlaceId: {[string]: number} = {
 }
 ```
 
-**INFERENCE — security.** The client never supplies a `PlaceId` or an `accessCode`.
-It supplies a key; the server resolves it. For events the source states this as a rule:
-*"El code sale del registro de MemoryStore, nunca del cliente."* The one value the client
-does control is `serverKey` in `JoinServer`, and what that can address is bounded by
-`HousesInfo` and by what exists in the registries.
+**INFERENCIA — seguridad.** El cliente nunca suministra un `PlaceId` ni un `accessCode`.
+Suministra una clave; el servidor la resuelve. Para los eventos el código lo declara como
+regla: *«El code sale del registro de MemoryStore, nunca del cliente.»* El único valor que
+el cliente sí controla es `serverKey` en `JoinServer`, y lo que eso puede direccionar está
+acotado por `HousesInfo` y por lo que exista en los registros.
 
-**OBSERVATION — worth verifying, not a defect claim.** `JoinServerFunc` does not check
-that the *requesting* player is allowed into the house before teleporting them. The
-permission check (`canHostWorld`) runs on the **house server**, against the first player
-to arrive. A player teleported into a house they may not enter is therefore rejected at
-the destination rather than at the source. That is a coherent design — the destination is
-the only place that has the world data loaded — but the user-visible consequence differs
-(a teleport then a kick, rather than a refusal), and permissions for *non-first* players
-are a separate question examined under
-[Housing → Permissions](../systems/housing/permissions.md).
+**OBSERVACIÓN — conviene verificarlo, no es una acusación de defecto.** `JoinServerFunc`
+no comprueba que el jugador *que pide* tenga permiso para entrar en la casa antes de
+teletransportarlo. La comprobación de permisos (`canHostWorld`) corre en el **servidor de
+casa**, contra el primer jugador que llega. A un jugador teletransportado a una casa en la
+que no puede entrar se le rechaza en el destino, no en el origen. Es un diseño coherente
+—el destino es el único sitio que tiene cargados los datos del mundo—, pero la
+consecuencia visible para el usuario es distinta (un teleport y luego una expulsión, en
+vez de un rechazo), y los permisos para los jugadores *que no son el primero* son una
+cuestión aparte que se examina en
+[Casas → Permisos](../systems/housing/permissions.md).
 
-## Related implementation
+## Implementación relacionada
 
-| Step | Code |
+| Paso | Código |
 |---|---|
-| Key parsing | `WorldManager.server.luau`, `parseRoomKey`; `PlayerWorld_Init`, `parseRoomKey` |
-| Staging claim | `DataKit/Store.luau`, `Store.claimStaged`; `DataKit/Lease.luau`, `Lease.tryClaim` |
-| Reservation | `WorldManager.server.luau`, `reserveAccessCode` |
-| Teleport with retry | `WorldManager.server.luau`, `safeTeleport`, `teleportToHost` |
-| Losing-lobby poll | `WorldManager.server.luau`, `waitForStagedHost` |
-| Destination bootstrap | `PlayerWorld_Init.lua.server.luau`, `init` |
-| Deny + converge | `PlayerWorld_Init.lua.server.luau`, `convergeToOwner`; `DataKit/Store.luau`, `Store._resolveOwnership` |
-| Public-place travel | `WorldManager.server.luau`, `JoinWorldFunc.OnServerInvoke` |
+| Análisis de la clave | `WorldManager.server.luau`, `parseRoomKey`; `PlayerWorld_Init`, `parseRoomKey` |
+| Reclamación de staging | `DataKit/Store.luau`, `Store.claimStaged`; `DataKit/Lease.luau`, `Lease.tryClaim` |
+| Reserva | `WorldManager.server.luau`, `reserveAccessCode` |
+| Teleport con reintentos | `WorldManager.server.luau`, `safeTeleport`, `teleportToHost` |
+| Sondeo del lobby perdedor | `WorldManager.server.luau`, `waitForStagedHost` |
+| Arranque en destino | `PlayerWorld_Init.lua.server.luau`, `init` |
+| Denegar + converger | `PlayerWorld_Init.lua.server.luau`, `convergeToOwner`; `DataKit/Store.luau`, `Store._resolveOwnership` |
+| Viaje a place público | `WorldManager.server.luau`, `JoinWorldFunc.OnServerInvoke` |

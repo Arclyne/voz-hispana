@@ -21,22 +21,23 @@
 local Players = game:GetService("Players")
 
 --[=[
-	Deferred fan-out for `Players.PlayerAdded`.
+	Reparto diferido de `Players.PlayerAdded`.
 
-	Template scripts are imported at runtime by `ImportTemplates.server.luau` and are
-	only enabled afterwards by `InitScripts.server.luau`. A script that connects to
-	`Players.PlayerAdded` directly can therefore miss players who joined while the
-	import was still running. This module keeps its own connection from the moment it
-	is first required, remembers which players it has already announced, and replays
-	that announcement to listeners that register later.
+	Los scripts de plantilla los importa en ejecución `ImportTemplates.server.luau` y
+	solo después los activa `InitScripts.server.luau`. Por eso, un script que se conecte
+	directamente a `Players.PlayerAdded` puede perderse a los jugadores que entraron
+	mientras la importación seguía en curso. Este módulo mantiene su propia conexión
+	desde el momento en que se le hace `require` por primera vez, recuerda a qué
+	jugadores ya ha anunciado, y reproduce ese anuncio para los listeners que se
+	registren más tarde.
 
-	Callbacks are invoked through `task.defer` and wrapped in `pcall`, so one failing
-	listener neither blocks nor breaks the others.
+	Los callbacks se invocan con `task.defer` y envueltos en `pcall`, así que un listener
+	que falle ni bloquea ni rompe a los demás.
 
-	The module is required from both sides. On the server it announces every player.
-	On the client `Players.PlayerAdded` fires for *all* players, so client-context
-	consumers filter for `Players.LocalPlayer` themselves — this module does not do
-	that filtering for them.
+	El módulo se usa desde ambos lados. En el servidor anuncia a todos los jugadores. En
+	el cliente `Players.PlayerAdded` dispara para *todos* los jugadores, así que los
+	consumidores de contexto cliente filtran por `Players.LocalPlayer` ellos mismos:
+	este módulo no hace ese filtrado por ellos.
 
 	@class PlayerInit
 ]=]
@@ -83,15 +84,15 @@ end
 -- API: registra un listener. Cuando se registre, se ejecutará inmediatamente
 -- para los jugadores que ya están inicializados.
 --[=[
-	Registers a per-player callback.
+	Registra un callback por jugador.
 
-	The callback runs once for every player who joins from this point on, and
-	immediately (deferred) for every player already present and already announced.
-	It never runs twice for the same player through this module.
+	El callback se ejecuta una vez por cada jugador que entre a partir de este momento, y
+	de inmediato (de forma diferida) por cada jugador ya presente y ya anunciado. A través
+	de este módulo nunca se ejecuta dos veces para el mismo jugador.
 
-	@param callback (player: Player) -> () -- invoked once per player
-	@return () -> () -- call to deactivate this listener
-	@error "PlayerInit.Connect expects a function" -- raised when `callback` is not a function
+	@param callback (player: Player) -> () -- se invoca una vez por jugador
+	@return () -> () -- llámalo para desactivar este listener
+	@error "PlayerInit.Connect expects a function" -- se lanza cuando `callback` no es una función
 ]=]
 function PlayerInit.Connect(callback)
 	assert(type(callback) == "function", "PlayerInit.Connect expects a function")

@@ -1,1764 +1,1765 @@
 ---
 sidebar_position: 1
-title: Script inventory
+title: Inventario de scripts
 ---
 
-# Script inventory
+# Inventario de scripts
 
-Every inspectable `.luau` file in the repository, with the DataModel path it occupies at
-runtime and how far this documentation project has got with it.
+Todos los archivos `.luau` inspeccionables del repositorio, con la ruta del DataModel que
+ocupan en ejecución y hasta dónde ha llegado este proyecto de documentación con cada uno.
 
-Two columns exist because the filename lies about both:
+Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
-* **Runtime path** — the template import moves everything out of
-  `ServerStorage/TemplatesTesting/<Template>/<Service>/` into `<Service>`. See
-  [Initialization](../architecture/initialization.md).
-* **Context** — `RunContext` from the sibling `.meta.json` overrides the `.server.luau` /
-  `.client.luau` suffix. A blank cell means no `RunContext` is set, so the suffix decides.
+* **Ruta en ejecución** — la importación de plantillas saca todo de
+  `ServerStorage/TemplatesTesting/<Plantilla>/<Servicio>/` hacia `<Servicio>`. Ver
+  [Inicialización](../architecture/initialization.md).
+* **Contexto** — el `RunContext` del `.meta.json` hermano manda sobre el sufijo
+  `.server.luau` / `.client.luau`. Una celda vacía significa que no hay `RunContext`, así
+  que decide el sufijo.
 
-**Disabled** marks a script that ships switched off and is enabled later — by
-`InitScripts` on the server, or by something outside this repository on the client
+**Desactivado** marca un script que se distribuye apagado y se activa después: por
+`InitScripts` en el servidor, o por algo ajeno a este repositorio en el cliente
 ([BUG-CANDIDATE-007](../testing/verification-plan.md#bug-candidate-007)).
 
-## Status
+## Estado
 
-| Status | Meaning | Count |
+| Estado | Significado | Cantidad |
 |---|---|---|
-| **Documented** | Read in full and annotated with Moonwave by this project | 2 |
-| Analyzed | Read in full; its behaviour is described somewhere on this site | 27 |
-| Analyzed (partly) | Read in the parts that mattered for a specific question | 3 |
-| Pending | Not yet read | 520 |
+| **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 57 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 20 |
+| Pendiente | Aún sin leer | 467 |
 
-**Total: 552 files, 80,441 lines.**
+**Total: 552 archivos, 80,608 líneas.**
 
-## Outside the templates
+## Fuera de las plantillas
 
-8 files, 583 lines, 5 read.
+8 archivos, 621 líneas, 5 leídos.
 
 <details>
-<summary><code>src/ReplicatedStorage/</code> — 2 file(s) — 2/2 read</summary>
+<summary><code>src/ReplicatedStorage/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `InitAfterTemplates.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.InitAfterTemplates` | Analyzed |
-| `PlayerInit.luau` | ModuleScript | — | — | 122 | `ReplicatedStorage.PlayerInit` | **Documented** |
+| `InitAfterTemplates.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.InitAfterTemplates` | **Documentado** |
+| `PlayerInit.luau` | ModuleScript | — | — | 123 | `ReplicatedStorage.PlayerInit` | **Documentado** |
 
 </details>
 
 <details>
-<summary><code>src/ReplicatedStorage/Client/</code> — 1 file(s) — 1/1 read</summary>
+<summary><code>src/ReplicatedStorage/Client/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `visualsManager.server.luau` | Script | Client | yes | 49 | `ReplicatedStorage.Client.visualsManager.server` | Analyzed |
+| `visualsManager.server.luau` | Script | Client | yes | 49 | `ReplicatedStorage.Client.visualsManager.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerScriptService/</code> — 2 file(s) — 2/2 read</summary>
+<summary><code>src/ServerScriptService/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ImportTemplates.server.luau` | Script | — | — | 144 | `ServerScriptService.ImportTemplates.server` | Analyzed |
-| `InitScripts.server.luau` | Script | — | — | 56 | `ServerScriptService.InitScripts.server` | Analyzed |
+| `ImportTemplates.server.luau` | Script | — | — | 144 | `ServerScriptService.ImportTemplates.server` | Analizado |
+| `InitScripts.server.luau` | Script | — | — | 56 | `ServerScriptService.InitScripts.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/Templates/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/Templates/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `SettingsTemplate.luau` | ModuleScript | — | — | 28 | `ServerStorage.Templates.SettingsTemplate` | Pending |
-| `TemplateJob.luau` | ModuleScript | — | — | 97 | `ServerStorage.Templates.TemplateJob` | Pending |
-| `TemplateUIS.luau` | ModuleScript | — | — | 44 | `ServerStorage.Templates.TemplateUIS` | Pending |
+| `SettingsTemplate.luau` | ModuleScript | — | — | 28 | `ServerStorage.Templates.SettingsTemplate` | Pendiente |
+| `TemplateJob.luau` | ModuleScript | — | — | 97 | `ServerStorage.Templates.TemplateJob` | Pendiente |
+| `TemplateUIS.luau` | ModuleScript | — | — | 44 | `ServerStorage.Templates.TemplateUIS` | Pendiente |
 
 </details>
 
-## `Core` template
+## Plantilla `Core`
 
-530 files, 76,176 lines, 21 read.
+530 archivos, 76,305 líneas, 74 leídos.
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 file(s) — 2/6 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BannersConfig.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.BannersConfig` | Pending |
-| `DancesInfo.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.DancesInfo` | Pending |
-| `GeneralConfiguration.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.GeneralConfiguration` | Analyzed |
-| `HousesInfo.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.HousesInfo` | Analyzed |
-| `ShopInfo.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.ShopInfo` | Pending |
-| `ShopSettings.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.ShopSettings` | Pending |
+| `BannersConfig.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.BannersConfig` | Pendiente |
+| `DancesInfo.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.DancesInfo` | Pendiente |
+| `GeneralConfiguration.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.GeneralConfiguration` | Analizado |
+| `HousesInfo.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.HousesInfo` | Analizado |
+| `ShopInfo.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.ShopInfo` | Pendiente |
+| `ShopSettings.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.ShopSettings` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Food/Kitchen/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Food/Kitchen/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Notas_Creacion_Plato.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Assets.Tools.Food.Kitchen.Notas_Creacion_Plato.server` | Pending |
+| `Notas_Creacion_Plato.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Assets.Tools.Food.Kitchen.Notas_Creacion_Plato.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Ballon/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Ballon/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MainTool.client.luau` | LocalScript | — | yes | 78 | `ReplicatedStorage.Assets.Tools.Toys.Ballon.MainTool.client` | Pending |
+| `MainTool.client.luau` | LocalScript | — | yes | 78 | `ReplicatedStorage.Assets.Tools.Toys.Ballon.MainTool.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/BigPotion/MainTool/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/BigPotion/MainTool/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.client.luau` | LocalScript | — | yes | 59 | `ReplicatedStorage.Assets.Tools.Toys.BigPotion.MainTool.init.client` | Pending |
+| `init.client.luau` | LocalScript | — | yes | 59 | `ReplicatedStorage.Assets.Tools.Toys.BigPotion.MainTool.init.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Cannon/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Cannon/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MainTool.client.luau` | LocalScript | — | yes | 203 | `ReplicatedStorage.Assets.Tools.Toys.Cannon.MainTool.client` | Pending |
+| `MainTool.client.luau` | LocalScript | — | yes | 203 | `ReplicatedStorage.Assets.Tools.Toys.Cannon.MainTool.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/GloveGun/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/GloveGun/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MainTool.client.luau` | LocalScript | — | yes | 75 | `ReplicatedStorage.Assets.Tools.Toys.GloveGun.MainTool.client` | Pending |
+| `MainTool.client.luau` | LocalScript | — | yes | 75 | `ReplicatedStorage.Assets.Tools.Toys.GloveGun.MainTool.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/MiniPotion/MainTool/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/MiniPotion/MainTool/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.client.luau` | LocalScript | — | yes | 62 | `ReplicatedStorage.Assets.Tools.Toys.MiniPotion.MainTool.init.client` | Pending |
+| `init.client.luau` | LocalScript | — | yes | 62 | `ReplicatedStorage.Assets.Tools.Toys.MiniPotion.MainTool.init.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SlimeBomb/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SlimeBomb/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `LocalScript.client.luau` | LocalScript | — | yes | 29 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.LocalScript.client` | Pending |
-| `Script.server.luau` | Script | — | yes | 347 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.Script.server` | Pending |
+| `LocalScript.client.luau` | LocalScript | — | yes | 29 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.LocalScript.client` | Pendiente |
+| `Script.server.luau` | Script | — | yes | 347 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.Script.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SpyJetpack/MainTool/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SpyJetpack/MainTool/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.client.luau` | LocalScript | — | yes | 304 | `ReplicatedStorage.Assets.Tools.Toys.SpyJetpack.MainTool.init.client` | Pending |
+| `init.client.luau` | LocalScript | — | yes | 304 | `ReplicatedStorage.Assets.Tools.Toys.SpyJetpack.MainTool.init.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Walkie/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Walkie/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `LocalScript.client.luau` | LocalScript | — | yes | 93 | `ReplicatedStorage.Assets.Tools.Toys.Walkie.LocalScript.client` | Pending |
+| `LocalScript.client.luau` | LocalScript | — | yes | 93 | `ReplicatedStorage.Assets.Tools.Toys.Walkie.LocalScript.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/</code> — 19 file(s) — 2/19 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/</code> — 19 archivo(s) — 3/19 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Attributes.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.Attributes` | Pending |
-| `BusquedaSettings.luau` | ModuleScript | — | — | 210 | `ReplicatedStorage.Client.BusquedaSettings` | Pending |
-| `CreatePath.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.CreatePath` | Pending |
-| `DesingData.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.DesingData` | Pending |
-| `Disconnects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Client.Disconnects` | Pending |
-| `Event.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Client.Event` | Pending |
-| `InsertService.luau` | ModuleScript | — | — | 120 | `ReplicatedStorage.Client.InsertService` | Pending |
-| `MainPS.server.luau` | Script | Client | yes | 94 | `ReplicatedStorage.Client.MainPS.server` | Analyzed |
-| `Math.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.Math` | Pending |
-| `NametagMicClient.server.luau` | Script | Client | yes | 259 | `ReplicatedStorage.Client.NametagMicClient.server` | Pending |
-| `PaintActives.luau` | ModuleScript | — | — | 3 | `ReplicatedStorage.Client.PaintActives` | Pending |
-| `PlayerManager.server.luau` | Script | Client | yes | 59 | `ReplicatedStorage.Client.PlayerManager.server` | Analyzed |
-| `Posicionamientos.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Client.Posicionamientos` | Pending |
-| `SettingsInfo.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.SettingsInfo` | Pending |
-| `SurfacePlacer.server.luau` | Script | Client | yes | 63 | `ReplicatedStorage.Client.SurfacePlacer.server` | Pending |
-| `UiManager.server.luau` | Script | Client | yes | 166 | `ReplicatedStorage.Client.UiManager.server` | Pending |
-| `messagesManager.server.luau` | Script | Client | yes | 79 | `ReplicatedStorage.Client.messagesManager.server` | Pending |
-| `stats.server.luau` | Script | Client | yes | 69 | `ReplicatedStorage.Client.stats.server` | Pending |
-| `topbar.server.luau` | Script | Client | yes | 282 | `ReplicatedStorage.Client.topbar.server` | Pending |
+| `Attributes.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.Attributes` | Pendiente |
+| `BusquedaSettings.luau` | ModuleScript | — | — | 210 | `ReplicatedStorage.Client.BusquedaSettings` | Pendiente |
+| `CreatePath.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.CreatePath` | Pendiente |
+| `DesingData.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Client.DesingData` | Pendiente |
+| `Disconnects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Client.Disconnects` | Pendiente |
+| `Event.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Client.Event` | Pendiente |
+| `InsertService.luau` | ModuleScript | — | — | 120 | `ReplicatedStorage.Client.InsertService` | Pendiente |
+| `MainPS.server.luau` | Script | Client | yes | 94 | `ReplicatedStorage.Client.MainPS.server` | Analizado |
+| `Math.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.Math` | Pendiente |
+| `NametagMicClient.server.luau` | Script | Client | yes | 259 | `ReplicatedStorage.Client.NametagMicClient.server` | Pendiente |
+| `PaintActives.luau` | ModuleScript | — | — | 3 | `ReplicatedStorage.Client.PaintActives` | Pendiente |
+| `PlayerManager.server.luau` | Script | Client | yes | 59 | `ReplicatedStorage.Client.PlayerManager.server` | Analizado |
+| `Posicionamientos.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Client.Posicionamientos` | Analizado (en parte) |
+| `SettingsInfo.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.SettingsInfo` | Pendiente |
+| `SurfacePlacer.server.luau` | Script | Client | yes | 63 | `ReplicatedStorage.Client.SurfacePlacer.server` | Pendiente |
+| `UiManager.server.luau` | Script | Client | yes | 166 | `ReplicatedStorage.Client.UiManager.server` | Pendiente |
+| `messagesManager.server.luau` | Script | Client | yes | 79 | `ReplicatedStorage.Client.messagesManager.server` | Pendiente |
+| `stats.server.luau` | Script | Client | yes | 69 | `ReplicatedStorage.Client.stats.server` | Pendiente |
+| `topbar.server.luau` | Script | Client | yes | 282 | `ReplicatedStorage.Client.topbar.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Animator/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Animator/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 166 | `ReplicatedStorage.Client.Animator.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 166 | `ReplicatedStorage.Client.Animator.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ClickDetectorHandler/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ClickDetectorHandler/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MouseAction.luau` | ModuleScript | — | — | 9 | `ReplicatedStorage.Client.ClickDetectorHandler.MouseAction` | Pending |
-| `init.server.luau` | Script | Client | yes | 176 | `ReplicatedStorage.Client.ClickDetectorHandler.init.server` | Pending |
+| `MouseAction.luau` | ModuleScript | — | — | 9 | `ReplicatedStorage.Client.ClickDetectorHandler.MouseAction` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 176 | `ReplicatedStorage.Client.ClickDetectorHandler.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/CodeExamples/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/CodeExamples/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MicStatusExample.server.luau` | Script | Client | yes | 118 | `ReplicatedStorage.Client.CodeExamples.MicStatusExample.server` | Pending |
+| `MicStatusExample.server.luau` | Script | Client | yes | 118 | `ReplicatedStorage.Client.CodeExamples.MicStatusExample.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/EconomySystem/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/EconomySystem/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Collections.luau` | ModuleScript | — | — | 176 | `ReplicatedStorage.Client.EconomySystem.Collections` | Pending |
+| `Collections.luau` | ModuleScript | — | — | 176 | `ReplicatedStorage.Client.EconomySystem.Collections` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ProgressBarStarter/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ProgressBarStarter/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ProgressBarController.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.ProgressBarStarter.ProgressBarController` | Pending |
-| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.ProgressBarStarter.init.server` | Pending |
+| `ProgressBarController.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.ProgressBarStarter.ProgressBarController` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.ProgressBarStarter.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/QuestClient/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/QuestClient/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `QuestClient.server.luau` | Script | Client | yes | 205 | `ReplicatedStorage.Client.QuestClient.QuestClient.server` | Pending |
-| `QuestPickableClient.server.luau` | Script | Client | yes | 97 | `ReplicatedStorage.Client.QuestClient.QuestPickableClient.server` | Pending |
+| `QuestClient.server.luau` | Script | Client | yes | 205 | `ReplicatedStorage.Client.QuestClient.QuestClient.server` | Pendiente |
+| `QuestPickableClient.server.luau` | Script | Client | yes | 97 | `ReplicatedStorage.Client.QuestClient.QuestPickableClient.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Ragdoll/</code> — 4 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/Ragdoll/</code> — 4 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `GettingUpAssist.server.luau` | Script | Client | yes | 32 | `ReplicatedStorage.Client.Ragdoll.GettingUpAssist.server` | Pending |
-| `RToRagdoll.server.luau` | Script | Client | yes | 28 | `ReplicatedStorage.Client.Ragdoll.RToRagdoll.server` | Pending |
-| `RagdollAtHighSpeeds.server.luau` | Script | Client | yes | 44 | `ReplicatedStorage.Client.Ragdoll.RagdollAtHighSpeeds.server` | Pending |
-| `RagdollRemote.server.luau` | Script | Client | yes | 34 | `ReplicatedStorage.Client.Ragdoll.RagdollRemote.server` | Pending |
+| `GettingUpAssist.server.luau` | Script | Client | yes | 32 | `ReplicatedStorage.Client.Ragdoll.GettingUpAssist.server` | Pendiente |
+| `RToRagdoll.server.luau` | Script | Client | yes | 28 | `ReplicatedStorage.Client.Ragdoll.RToRagdoll.server` | Pendiente |
+| `RagdollAtHighSpeeds.server.luau` | Script | Client | yes | 44 | `ReplicatedStorage.Client.Ragdoll.RagdollAtHighSpeeds.server` | Pendiente |
+| `RagdollRemote.server.luau` | Script | Client | yes | 34 | `ReplicatedStorage.Client.Ragdoll.RagdollRemote.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ReferralClient/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/ReferralClient/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ReferralClient.server.luau` | Script | Client | yes | 683 | `ReplicatedStorage.Client.ReferralClient.ReferralClient.server` | Pending |
+| `ReferralClient.server.luau` | Script | Client | yes | 683 | `ReplicatedStorage.Client.ReferralClient.ReferralClient.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/RouletteUIStarter/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/RouletteUIStarter/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `RouletteUIController.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Client.RouletteUIStarter.RouletteUIController` | Pending |
-| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.RouletteUIStarter.init.server` | Pending |
+| `RouletteUIController.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Client.RouletteUIStarter.RouletteUIController` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 2 | `ReplicatedStorage.Client.RouletteUIStarter.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/ClientDataManager/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/ClientDataManager/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Channel.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.Channel` | Pending |
-| `init.client.luau` | LocalScript | — | yes | 10 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.init.client` | Pending |
+| `Channel.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.Channel` | Pendiente |
+| `init.client.luau` | LocalScript | — | yes | 10 | `ReplicatedStorage.Client.WorldSystem.ClientDataManager.init.client` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/Modules/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/WorldSystem/Modules/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `InventoryController.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Client.WorldSystem.Modules.InventoryController` | Pending |
+| `InventoryController.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Client.WorldSystem.Modules.InventoryController` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/animation/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/animation/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.server.luau` | Script | Client | yes | 109 | `ReplicatedStorage.Client.animation.init.server` | Pending |
+| `init.server.luau` | Script | Client | yes | 109 | `ReplicatedStorage.Client.animation.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/cooking/</code> — 7 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/cooking/</code> — 7 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Blender.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Client.cooking.Blender` | Pending |
-| `CookingInteractable.luau` | ModuleScript | — | — | 179 | `ReplicatedStorage.Client.cooking.CookingInteractable` | Pending |
-| `CuttingBoard.luau` | ModuleScript | — | — | 195 | `ReplicatedStorage.Client.cooking.CuttingBoard` | Pending |
-| `Microwave.luau` | ModuleScript | — | — | 124 | `ReplicatedStorage.Client.cooking.Microwave` | Pending |
-| `Oven.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Client.cooking.Oven` | Pending |
-| `Stove.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.cooking.Stove` | Pending |
-| `init.server.luau` | Script | Client | yes | 20 | `ReplicatedStorage.Client.cooking.init.server` | Pending |
+| `Blender.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Client.cooking.Blender` | Pendiente |
+| `CookingInteractable.luau` | ModuleScript | — | — | 179 | `ReplicatedStorage.Client.cooking.CookingInteractable` | Pendiente |
+| `CuttingBoard.luau` | ModuleScript | — | — | 195 | `ReplicatedStorage.Client.cooking.CuttingBoard` | Pendiente |
+| `Microwave.luau` | ModuleScript | — | — | 124 | `ReplicatedStorage.Client.cooking.Microwave` | Pendiente |
+| `Oven.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Client.cooking.Oven` | Pendiente |
+| `Stove.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.cooking.Stove` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 20 | `ReplicatedStorage.Client.cooking.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/</code> — 34 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/</code> — 34 archivo(s) — 1/34 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BarraBartender.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Client.interactable.BarraBartender` | Pending |
-| `Bath.luau` | ModuleScript | — | — | 72 | `ReplicatedStorage.Client.interactable.Bath` | Pending |
-| `Bed.luau` | ModuleScript | — | — | 152 | `ReplicatedStorage.Client.interactable.Bed` | Pending |
-| `Bin.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.interactable.Bin` | Pending |
-| `ButtonVipMoney.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.interactable.ButtonVipMoney` | Pending |
-| `CajasWork.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.CajasWork` | Pending |
-| `Chair.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Chair` | Pending |
-| `ClassicDoor.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Client.interactable.ClassicDoor` | Pending |
-| `Computer.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Client.interactable.Computer` | Pending |
-| `CuadrosPaint.luau` | ModuleScript | — | — | 147 | `ReplicatedStorage.Client.interactable.CuadrosPaint` | Pending |
-| `DoorSalaKaraoke.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Client.interactable.DoorSalaKaraoke` | Pending |
-| `DoubleBed.luau` | ModuleScript | — | — | 252 | `ReplicatedStorage.Client.interactable.DoubleBed` | Pending |
-| `Fridge.luau` | ModuleScript | — | — | 719 | `ReplicatedStorage.Client.interactable.Fridge` | Pending |
-| `IdleToggle.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Client.interactable.IdleToggle` | Pending |
-| `Interruptor.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Client.interactable.Interruptor` | Pending |
-| `Lamp.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Lamp` | Pending |
-| `MusicPlayer.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.MusicPlayer` | Pending |
-| `NightClub.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Client.interactable.NightClub` | Pending |
-| `NpcDialog.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.Client.interactable.NpcDialog` | Pending |
-| `Paint.luau` | ModuleScript | — | — | 251 | `ReplicatedStorage.Client.interactable.Paint` | Pending |
-| `Pee.luau` | ModuleScript | — | — | 79 | `ReplicatedStorage.Client.interactable.Pee` | Pending |
-| `Piano.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.Piano` | Pending |
-| `PlaceTool.luau` | ModuleScript | — | — | 59 | `ReplicatedStorage.Client.interactable.PlaceTool` | Pending |
-| `PurchaseGamepass.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Client.interactable.PurchaseGamepass` | Pending |
-| `QuestPickable.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.interactable.QuestPickable` | Pending |
-| `Shower.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Client.interactable.Shower` | Pending |
-| `SmokeMachine.luau` | ModuleScript | — | — | 74 | `ReplicatedStorage.Client.interactable.SmokeMachine` | Pending |
-| `Stores.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Stores` | Pending |
-| `Toilet.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Client.interactable.Toilet` | Pending |
-| `ToolInteractable.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.interactable.ToolInteractable` | Pending |
-| `Washbasin.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Washbasin` | Pending |
-| `Weight.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.Weight` | Pending |
-| `init.server.luau` | Script | Client | yes | 20 | `ReplicatedStorage.Client.interactable.init.server` | Pending |
-| `test.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.test` | Pending |
+| `BarraBartender.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Client.interactable.BarraBartender` | Pendiente |
+| `Bath.luau` | ModuleScript | — | — | 72 | `ReplicatedStorage.Client.interactable.Bath` | Pendiente |
+| `Bed.luau` | ModuleScript | — | — | 152 | `ReplicatedStorage.Client.interactable.Bed` | Pendiente |
+| `Bin.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.interactable.Bin` | Pendiente |
+| `ButtonVipMoney.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.interactable.ButtonVipMoney` | Pendiente |
+| `CajasWork.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.CajasWork` | Pendiente |
+| `Chair.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Chair` | Pendiente |
+| `ClassicDoor.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Client.interactable.ClassicDoor` | Pendiente |
+| `Computer.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Client.interactable.Computer` | Pendiente |
+| `CuadrosPaint.luau` | ModuleScript | — | — | 147 | `ReplicatedStorage.Client.interactable.CuadrosPaint` | Pendiente |
+| `DoorSalaKaraoke.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Client.interactable.DoorSalaKaraoke` | Pendiente |
+| `DoubleBed.luau` | ModuleScript | — | — | 252 | `ReplicatedStorage.Client.interactable.DoubleBed` | Pendiente |
+| `Fridge.luau` | ModuleScript | — | — | 719 | `ReplicatedStorage.Client.interactable.Fridge` | Pendiente |
+| `IdleToggle.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Client.interactable.IdleToggle` | Pendiente |
+| `Interruptor.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Client.interactable.Interruptor` | Pendiente |
+| `Lamp.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Lamp` | Pendiente |
+| `MusicPlayer.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.MusicPlayer` | Pendiente |
+| `NightClub.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Client.interactable.NightClub` | Pendiente |
+| `NpcDialog.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.Client.interactable.NpcDialog` | Pendiente |
+| `Paint.luau` | ModuleScript | — | — | 251 | `ReplicatedStorage.Client.interactable.Paint` | Pendiente |
+| `Pee.luau` | ModuleScript | — | — | 79 | `ReplicatedStorage.Client.interactable.Pee` | Pendiente |
+| `Piano.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.Piano` | Pendiente |
+| `PlaceTool.luau` | ModuleScript | — | — | 59 | `ReplicatedStorage.Client.interactable.PlaceTool` | Pendiente |
+| `PurchaseGamepass.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Client.interactable.PurchaseGamepass` | Pendiente |
+| `QuestPickable.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.interactable.QuestPickable` | Pendiente |
+| `Shower.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Client.interactable.Shower` | Pendiente |
+| `SmokeMachine.luau` | ModuleScript | — | — | 74 | `ReplicatedStorage.Client.interactable.SmokeMachine` | Pendiente |
+| `Stores.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Stores` | Pendiente |
+| `Toilet.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Client.interactable.Toilet` | Pendiente |
+| `ToolInteractable.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.interactable.ToolInteractable` | Pendiente |
+| `Washbasin.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Washbasin` | Pendiente |
+| `Weight.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.Weight` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 20 | `ReplicatedStorage.Client.interactable.init.server` | Analizado |
+| `test.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.test` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/DiscoBall/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/DiscoBall/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Laser.server.luau` | Script | Client | yes | 86 | `ReplicatedStorage.Client.interactable.DiscoBall.Laser.server` | Pending |
-| `init.luau` | ModuleScript | — | — | 157 | `ReplicatedStorage.Client.interactable.DiscoBall.init` | Pending |
+| `Laser.server.luau` | Script | Client | yes | 86 | `ReplicatedStorage.Client.interactable.DiscoBall.Laser.server` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 157 | `ReplicatedStorage.Client.interactable.DiscoBall.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Display/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Display/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `VideoPlayer.luau` | ModuleScript | — | — | 88 | `ReplicatedStorage.Client.interactable.Display.VideoPlayer` | Pending |
-| `Videos.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Client.interactable.Display.Videos` | Pending |
-| `init.luau` | ModuleScript | — | — | 167 | `ReplicatedStorage.Client.interactable.Display.init` | Pending |
+| `VideoPlayer.luau` | ModuleScript | — | — | 88 | `ReplicatedStorage.Client.interactable.Display.VideoPlayer` | Pendiente |
+| `Videos.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Client.interactable.Display.Videos` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 167 | `ReplicatedStorage.Client.interactable.Display.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 438 | `ReplicatedStorage.Client.interactable.Interactable.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 438 | `ReplicatedStorage.Client.interactable.Interactable.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 95 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 95 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 273 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 273 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/UI/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/UI/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 121 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.UI.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 121 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.UI.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/CustomPrompt/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/CustomPrompt/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 128 | `ReplicatedStorage.Client.interactable.Interactable.CustomPrompt.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 128 | `ReplicatedStorage.Client.interactable.Interactable.CustomPrompt.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Player/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Player/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Tijeras.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Client.interactable.Player.Tijeras` | Pending |
-| `init.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Client.interactable.Player.init` | Pending |
+| `Tijeras.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Client.interactable.Player.Tijeras` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Client.interactable.Player.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Treadmill/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Treadmill/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Treadmill.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Treadmill.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `InventoryWheel.luau` | ModuleScript | — | — | 343 | `ReplicatedStorage.Client.inventory.InventoryWheel` | Pending |
-| `init.server.luau` | Script | Client | yes | 334 | `ReplicatedStorage.Client.inventory.init.server` | Pending |
+| `InventoryWheel.luau` | ModuleScript | — | — | 343 | `ReplicatedStorage.Client.inventory.InventoryWheel` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 334 | `ReplicatedStorage.Client.inventory.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 65 | `ReplicatedStorage.Client.inventory.InventoryList.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 65 | `ReplicatedStorage.Client.inventory.InventoryList.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/InventoryItem/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/inventory/InventoryList/InventoryItem/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 170 | `ReplicatedStorage.Client.inventory.InventoryList.InventoryItem.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 170 | `ReplicatedStorage.Client.inventory.InventoryList.InventoryItem.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/</code> — 5 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/</code> — 5 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Client.machines.MachineFactory` | Pending |
-| `MachinePrompt.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.machines.MachinePrompt` | Pending |
-| `Pong.luau` | ModuleScript | — | — | 184 | `ReplicatedStorage.Client.machines.Pong` | Pending |
-| `init.server.luau` | Script | Client | yes | 133 | `ReplicatedStorage.Client.machines.init.server` | Pending |
-| `machineUtil.luau` | ModuleScript | — | — | 70 | `ReplicatedStorage.Client.machines.machineUtil` | Pending |
+| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Client.machines.MachineFactory` | Pendiente |
+| `MachinePrompt.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.machines.MachinePrompt` | Pendiente |
+| `Pong.luau` | ModuleScript | — | — | 184 | `ReplicatedStorage.Client.machines.Pong` | Pendiente |
+| `init.server.luau` | Script | Client | yes | 133 | `ReplicatedStorage.Client.machines.init.server` | Pendiente |
+| `machineUtil.luau` | ModuleScript | — | — | 70 | `ReplicatedStorage.Client.machines.machineUtil` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Basketball/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Basketball/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Prediction.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Client.machines.Basketball.Prediction` | Pending |
-| `init.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.machines.Basketball.init` | Pending |
+| `Prediction.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Client.machines.Basketball.Prediction` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.machines.Basketball.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/PopTheLock/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/PopTheLock/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Controller.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Client.machines.PopTheLock.Controller` | Pending |
-| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Client.machines.PopTheLock.init` | Pending |
+| `Controller.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Client.machines.PopTheLock.Controller` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Client.machines.PopTheLock.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Roulette/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Roulette/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 163 | `ReplicatedStorage.Client.machines.Roulette.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 163 | `ReplicatedStorage.Client.machines.Roulette.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Stacker/</code> — 5 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/Stacker/</code> — 5 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Board.luau` | ModuleScript | — | — | 197 | `ReplicatedStorage.Client.machines.Stacker.Board` | Pending |
-| `Controller.luau` | ModuleScript | — | — | 225 | `ReplicatedStorage.Client.machines.Stacker.Controller` | Pending |
-| `Figure.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Client.machines.Stacker.Figure` | Pending |
-| `idle.luau` | ModuleScript | — | — | 62 | `ReplicatedStorage.Client.machines.Stacker.idle` | Pending |
-| `init.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.machines.Stacker.init` | Pending |
+| `Board.luau` | ModuleScript | — | — | 197 | `ReplicatedStorage.Client.machines.Stacker.Board` | Pendiente |
+| `Controller.luau` | ModuleScript | — | — | 225 | `ReplicatedStorage.Client.machines.Stacker.Controller` | Pendiente |
+| `Figure.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Client.machines.Stacker.Figure` | Pendiente |
+| `idle.luau` | ModuleScript | — | — | 62 | `ReplicatedStorage.Client.machines.Stacker.idle` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Client.machines.Stacker.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/ToyMachine/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/machines/ToyMachine/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Client.machines.ToyMachine.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Client.machines.ToyMachine.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/notificationsManager/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/notificationsManager/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.server.luau` | Script | Client | yes | 223 | `ReplicatedStorage.Client.notificationsManager.init.server` | Pending |
-| `statsNotifications.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.notificationsManager.statsNotifications` | Pending |
+| `init.server.luau` | Script | Client | yes | 223 | `ReplicatedStorage.Client.notificationsManager.init.server` | Pendiente |
+| `statsNotifications.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.notificationsManager.statsNotifications` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `debug.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Kinetic.debug` | Pending |
-| `init.luau` | ModuleScript | — | — | 338 | `ReplicatedStorage.Kinetic.init` | Pending |
-| `types.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Kinetic.types` | Pending |
+| `debug.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Kinetic.debug` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 338 | `ReplicatedStorage.Kinetic.init` | Pendiente |
+| `types.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Kinetic.types` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/animatable/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/animatable/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `adapters.luau` | ModuleScript | — | — | 169 | `ReplicatedStorage.Kinetic.animatable.adapters` | Pending |
-| `color.luau` | ModuleScript | — | — | 87 | `ReplicatedStorage.Kinetic.animatable.color` | Pending |
-| `init.luau` | ModuleScript | — | — | 77 | `ReplicatedStorage.Kinetic.animatable.init` | Pending |
+| `adapters.luau` | ModuleScript | — | — | 169 | `ReplicatedStorage.Kinetic.animatable.adapters` | Pendiente |
+| `color.luau` | ModuleScript | — | — | 87 | `ReplicatedStorage.Kinetic.animatable.color` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 77 | `ReplicatedStorage.Kinetic.animatable.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/constants/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/constants/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `configs.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Kinetic.constants.configs` | Pending |
-| `easings.luau` | ModuleScript | — | — | 150 | `ReplicatedStorage.Kinetic.constants.easings` | Pending |
-| `init.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Kinetic.constants.init` | Pending |
+| `configs.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Kinetic.constants.configs` | Pendiente |
+| `easings.luau` | ModuleScript | — | — | 150 | `ReplicatedStorage.Kinetic.constants.easings` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Kinetic.constants.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/core/</code> — 5 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/core/</code> — 5 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `AnimationConfig.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Kinetic.core.AnimationConfig` | Pending |
-| `Controller.luau` | ModuleScript | — | — | 835 | `ReplicatedStorage.Kinetic.core.Controller` | Pending |
-| `FrameLoop.luau` | ModuleScript | — | — | 146 | `ReplicatedStorage.Kinetic.core.FrameLoop` | Pending |
-| `Interpolation.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Kinetic.core.Interpolation` | Pending |
-| `SpringValue.luau` | ModuleScript | — | — | 758 | `ReplicatedStorage.Kinetic.core.SpringValue` | Pending |
+| `AnimationConfig.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Kinetic.core.AnimationConfig` | Pendiente |
+| `Controller.luau` | ModuleScript | — | — | 835 | `ReplicatedStorage.Kinetic.core.Controller` | Pendiente |
+| `FrameLoop.luau` | ModuleScript | — | — | 146 | `ReplicatedStorage.Kinetic.core.FrameLoop` | Pendiente |
+| `Interpolation.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Kinetic.core.Interpolation` | Pendiente |
+| `SpringValue.luau` | ModuleScript | — | — | 758 | `ReplicatedStorage.Kinetic.core.SpringValue` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/orchestration/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/orchestration/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Transition.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Kinetic.orchestration.Transition` | Pending |
-| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Kinetic.orchestration.init` | Pending |
+| `Transition.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Kinetic.orchestration.Transition` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Kinetic.orchestration.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/targets/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/targets/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `instance.luau` | ModuleScript | — | — | 183 | `ReplicatedStorage.Kinetic.targets.instance` | Pending |
+| `instance.luau` | ModuleScript | — | — | 183 | `ReplicatedStorage.Kinetic.targets.instance` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/util/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/util/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Completion.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Kinetic.util.Completion` | Pending |
-| `Signal.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Kinetic.util.Signal` | Pending |
-| `timeGuard.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Kinetic.util.timeGuard` | Pending |
+| `Completion.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Kinetic.util.Completion` | Pendiente |
+| `Signal.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Kinetic.util.Signal` | Pendiente |
+| `timeGuard.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Kinetic.util.timeGuard` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/</code> — 44 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/</code> — 44 archivo(s) — 3/44 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `AddValues.luau` | ModuleScript | — | — | 59 | `ReplicatedStorage.Shared.AddValues` | Pending |
-| `AdjustBoxFrame.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Shared.AdjustBoxFrame` | Pending |
-| `AnimationButtons.luau` | ModuleScript | — | — | 299 | `ReplicatedStorage.Shared.AnimationButtons` | Pending |
-| `AreaSystem.luau` | ModuleScript | — | — | 148 | `ReplicatedStorage.Shared.AreaSystem` | Pending |
-| `AssetsToPreload.luau` | ModuleScript | — | — | 14 | `ReplicatedStorage.Shared.AssetsToPreload` | Pending |
-| `BreakDown.luau` | ModuleScript | — | — | 86 | `ReplicatedStorage.Shared.BreakDown` | Pending |
-| `ButtonMotion.luau` | ModuleScript | — | — | 420 | `ReplicatedStorage.Shared.ButtonMotion` | Pending |
-| `CardSlots.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.CardSlots` | Pending |
-| `Carousel.luau` | ModuleScript | — | — | 354 | `ReplicatedStorage.Shared.Carousel` | Pending |
-| `CircularBuffer.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.CircularBuffer` | Pending |
-| `Clock.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Clock` | Pending |
-| `CollisionModule.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.CollisionModule` | Pending |
-| `Commands.luau` | ModuleScript | — | — | 127 | `ReplicatedStorage.Shared.Commands` | Pending |
-| `GuiScaleManager.luau` | ModuleScript | — | — | 106 | `ReplicatedStorage.Shared.GuiScaleManager` | Pending |
-| `InfoCoins.luau` | ModuleScript | — | — | 10 | `ReplicatedStorage.Shared.InfoCoins` | Pending |
-| `InputPlayer.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Shared.InputPlayer` | Pending |
-| `KeyGenerator.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Shared.KeyGenerator` | Pending |
-| `MovedScrollButton.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.MovedScrollButton` | Pending |
-| `MovingPlayers.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Shared.MovingPlayers` | Pending |
-| `NetworkTimer.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.NetworkTimer` | Pending |
-| `ObjectCache.luau` | ModuleScript | — | — | 174 | `ReplicatedStorage.Shared.ObjectCache` | Pending |
-| `PrettyPrint.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.PrettyPrint` | Pending |
-| `Running.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Running` | Pending |
-| `RutaCreate.luau` | ModuleScript | — | — | 135 | `ReplicatedStorage.Shared.RutaCreate` | Pending |
-| `SellHousePrompt.luau` | ModuleScript | — | — | 289 | `ReplicatedStorage.Shared.SellHousePrompt` | Pending |
-| `ShopHighlight.luau` | ModuleScript | — | — | 377 | `ReplicatedStorage.Shared.ShopHighlight` | Pending |
-| `Signal.luau` | ModuleScript | — | — | 432 | `ReplicatedStorage.Shared.Signal` | Pending |
-| `SignalsGame.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.SignalsGame` | Pending |
-| `SizeManager.luau` | ModuleScript | — | — | 165 | `ReplicatedStorage.Shared.SizeManager` | Pending |
-| `SmoothShiftLock.luau` | ModuleScript | — | — | 232 | `ReplicatedStorage.Shared.SmoothShiftLock` | Pending |
-| `SoundManager.luau` | ModuleScript | — | — | 230 | `ReplicatedStorage.Shared.SoundManager` | Pending |
-| `Spring.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Spring` | Pending |
-| `ToolUseManagge.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.ToolUseManagge` | Pending |
-| `Trove.luau` | ModuleScript | — | — | 612 | `ReplicatedStorage.Shared.Trove` | Pending |
-| `UpdatingCountText.luau` | ModuleScript | — | — | 136 | `ReplicatedStorage.Shared.UpdatingCountText` | Pending |
-| `VoiceModulator.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Shared.VoiceModulator` | Pending |
-| `attach.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.attach` | Pending |
-| `basketUtil.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.basketUtil` | Pending |
-| `bindToTag.luau` | ModuleScript | — | — | 24 | `ReplicatedStorage.Shared.bindToTag` | Pending |
-| `lerp.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.lerp` | Pending |
-| `makeClientPart.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.makeClientPart` | Pending |
-| `promptText.luau` | ModuleScript | — | — | 53 | `ReplicatedStorage.Shared.promptText` | Pending |
-| `showExitButton.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.showExitButton` | Pending |
-| `textScaler.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.textScaler` | Pending |
+| `AddValues.luau` | ModuleScript | — | — | 59 | `ReplicatedStorage.Shared.AddValues` | Analizado (en parte) |
+| `AdjustBoxFrame.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Shared.AdjustBoxFrame` | Pendiente |
+| `AnimationButtons.luau` | ModuleScript | — | — | 299 | `ReplicatedStorage.Shared.AnimationButtons` | Pendiente |
+| `AreaSystem.luau` | ModuleScript | — | — | 148 | `ReplicatedStorage.Shared.AreaSystem` | Pendiente |
+| `AssetsToPreload.luau` | ModuleScript | — | — | 14 | `ReplicatedStorage.Shared.AssetsToPreload` | Pendiente |
+| `BreakDown.luau` | ModuleScript | — | — | 86 | `ReplicatedStorage.Shared.BreakDown` | Analizado |
+| `ButtonMotion.luau` | ModuleScript | — | — | 420 | `ReplicatedStorage.Shared.ButtonMotion` | Pendiente |
+| `CardSlots.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.CardSlots` | Pendiente |
+| `Carousel.luau` | ModuleScript | — | — | 354 | `ReplicatedStorage.Shared.Carousel` | Pendiente |
+| `CircularBuffer.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.CircularBuffer` | Pendiente |
+| `Clock.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Clock` | Pendiente |
+| `CollisionModule.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.CollisionModule` | Pendiente |
+| `Commands.luau` | ModuleScript | — | — | 127 | `ReplicatedStorage.Shared.Commands` | Pendiente |
+| `GuiScaleManager.luau` | ModuleScript | — | — | 106 | `ReplicatedStorage.Shared.GuiScaleManager` | Pendiente |
+| `InfoCoins.luau` | ModuleScript | — | — | 10 | `ReplicatedStorage.Shared.InfoCoins` | Pendiente |
+| `InputPlayer.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Shared.InputPlayer` | Pendiente |
+| `KeyGenerator.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Shared.KeyGenerator` | Pendiente |
+| `MovedScrollButton.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.MovedScrollButton` | Pendiente |
+| `MovingPlayers.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Shared.MovingPlayers` | Pendiente |
+| `NetworkTimer.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.NetworkTimer` | Pendiente |
+| `ObjectCache.luau` | ModuleScript | — | — | 174 | `ReplicatedStorage.Shared.ObjectCache` | Pendiente |
+| `PrettyPrint.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.PrettyPrint` | Pendiente |
+| `Running.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Running` | Pendiente |
+| `RutaCreate.luau` | ModuleScript | — | — | 135 | `ReplicatedStorage.Shared.RutaCreate` | Pendiente |
+| `SellHousePrompt.luau` | ModuleScript | — | — | 289 | `ReplicatedStorage.Shared.SellHousePrompt` | Pendiente |
+| `ShopHighlight.luau` | ModuleScript | — | — | 377 | `ReplicatedStorage.Shared.ShopHighlight` | Pendiente |
+| `Signal.luau` | ModuleScript | — | — | 432 | `ReplicatedStorage.Shared.Signal` | Pendiente |
+| `SignalsGame.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.SignalsGame` | Pendiente |
+| `SizeManager.luau` | ModuleScript | — | — | 165 | `ReplicatedStorage.Shared.SizeManager` | Pendiente |
+| `SmoothShiftLock.luau` | ModuleScript | — | — | 232 | `ReplicatedStorage.Shared.SmoothShiftLock` | Pendiente |
+| `SoundManager.luau` | ModuleScript | — | — | 230 | `ReplicatedStorage.Shared.SoundManager` | Pendiente |
+| `Spring.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Spring` | Pendiente |
+| `ToolUseManagge.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.ToolUseManagge` | Pendiente |
+| `Trove.luau` | ModuleScript | — | — | 612 | `ReplicatedStorage.Shared.Trove` | Pendiente |
+| `UpdatingCountText.luau` | ModuleScript | — | — | 136 | `ReplicatedStorage.Shared.UpdatingCountText` | Pendiente |
+| `VoiceModulator.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Shared.VoiceModulator` | Pendiente |
+| `attach.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.attach` | Pendiente |
+| `basketUtil.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.basketUtil` | Pendiente |
+| `bindToTag.luau` | ModuleScript | — | — | 24 | `ReplicatedStorage.Shared.bindToTag` | Analizado |
+| `lerp.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.lerp` | Pendiente |
+| `makeClientPart.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.makeClientPart` | Pendiente |
+| `promptText.luau` | ModuleScript | — | — | 53 | `ReplicatedStorage.Shared.promptText` | Pendiente |
+| `showExitButton.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.showExitButton` | Pendiente |
+| `textScaler.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.textScaler` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 234 | `ReplicatedStorage.Shared.BartenderSystem.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 234 | `ReplicatedStorage.Shared.BartenderSystem.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/Instance/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/Instance/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ActionsBartender.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.BartenderSystem.Instance.ActionsBartender` | Pending |
-| `init.luau` | ModuleScript | — | — | 549 | `ReplicatedStorage.Shared.BartenderSystem.Instance.init` | Pending |
+| `ActionsBartender.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.BartenderSystem.Instance.ActionsBartender` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 549 | `ReplicatedStorage.Shared.BartenderSystem.Instance.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/ComprasTablero/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/ComprasTablero/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Settings.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Shared.ComprasTablero.Settings` | Pending |
-| `init.luau` | ModuleScript | — | — | 378 | `ReplicatedStorage.Shared.ComprasTablero.init` | Pending |
+| `Settings.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Shared.ComprasTablero.Settings` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 378 | `ReplicatedStorage.Shared.ComprasTablero.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Cooldown/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Cooldown/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `CooldownManager.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Shared.Cooldown.CooldownManager` | Pending |
-| `CooldownShared.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Cooldown.CooldownShared` | Pending |
+| `CooldownManager.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Shared.Cooldown.CooldownManager` | Pendiente |
+| `CooldownShared.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Cooldown.CooldownShared` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/DialogModule/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/DialogModule/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 405 | `ReplicatedStorage.Shared.DialogModule.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 405 | `ReplicatedStorage.Shared.DialogModule.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Dialogs/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Dialogs/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `FrameShop.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Dialogs.FrameShop` | Pending |
-| `KaraokeRoomRent.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Dialogs.KaraokeRoomRent` | Pending |
+| `FrameShop.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Dialogs.FrameShop` | Pendiente |
+| `KaraokeRoomRent.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Dialogs.KaraokeRoomRent` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/FastCastRedux/</code> — 6 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/FastCastRedux/</code> — 6 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ActiveCast.luau` | ModuleScript | — | — | 770 | `ReplicatedStorage.Shared.FastCastRedux.ActiveCast` | Pending |
-| `Signal.luau` | ModuleScript | — | — | 153 | `ReplicatedStorage.Shared.FastCastRedux.Signal` | Pending |
-| `Table.luau` | ModuleScript | — | — | 108 | `ReplicatedStorage.Shared.FastCastRedux.Table` | Pending |
-| `TypeDefinitions.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Shared.FastCastRedux.TypeDefinitions` | Pending |
-| `TypeMarshaller.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.FastCastRedux.TypeMarshaller` | Pending |
-| `init.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Shared.FastCastRedux.init` | Pending |
+| `ActiveCast.luau` | ModuleScript | — | — | 770 | `ReplicatedStorage.Shared.FastCastRedux.ActiveCast` | Pendiente |
+| `Signal.luau` | ModuleScript | — | — | 153 | `ReplicatedStorage.Shared.FastCastRedux.Signal` | Pendiente |
+| `Table.luau` | ModuleScript | — | — | 108 | `ReplicatedStorage.Shared.FastCastRedux.Table` | Pendiente |
+| `TypeDefinitions.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Shared.FastCastRedux.TypeDefinitions` | Pendiente |
+| `TypeMarshaller.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.FastCastRedux.TypeMarshaller` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Shared.FastCastRedux.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/</code> — 4 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/</code> — 4 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Disconnects.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.GuideService.Disconnects` | Pending |
-| `QuitarEspacios.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.GuideService.QuitarEspacios` | Pending |
-| `READ ME.client.luau` | LocalScript | — | yes | 121 | `ReplicatedStorage.Shared.GuideService.READ ME.client` | Pending |
-| `init.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Shared.GuideService.init` | Pending |
+| `Disconnects.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.GuideService.Disconnects` | Pendiente |
+| `QuitarEspacios.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.GuideService.QuitarEspacios` | Pendiente |
+| `READ ME.client.luau` | LocalScript | — | yes | 121 | `ReplicatedStorage.Shared.GuideService.READ ME.client` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Shared.GuideService.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.GuideService.PageController.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.GuideService.PageController.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/InterfaceController/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/InterfaceController/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.GuideService.PageController.InterfaceController.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.GuideService.PageController.InterfaceController.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/VerificacionPages/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/PageController/VerificacionPages/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Changed.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.GuideService.PageController.VerificacionPages.Changed` | Pending |
-| `init.luau` | ModuleScript | — | — | 65 | `ReplicatedStorage.Shared.GuideService.PageController.VerificacionPages.init` | Pending |
+| `Changed.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.GuideService.PageController.VerificacionPages.Changed` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 65 | `ReplicatedStorage.Shared.GuideService.PageController.VerificacionPages.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/Server/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/GuideService/Server/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Rewards.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.GuideService.Server.Rewards` | Pending |
-| `init.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.GuideService.Server.init` | Pending |
+| `Rewards.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.GuideService.Server.Rewards` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.GuideService.Server.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/</code> — 6 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/</code> — 6 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Attribute.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.Icon.Attribute` | Pending |
-| `Reference.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Icon.Reference` | Pending |
-| `Types.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.Icon.Types` | Pending |
-| `Utility.luau` | ModuleScript | — | — | 462 | `ReplicatedStorage.Shared.Icon.Utility` | Pending |
-| `VERSION.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Icon.VERSION` | Pending |
-| `init.luau` | ModuleScript | — | — | 1253 | `ReplicatedStorage.Shared.Icon.init` | Pending |
+| `Attribute.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.Icon.Attribute` | Pendiente |
+| `Reference.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Icon.Reference` | Pendiente |
+| `Types.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.Icon.Types` | Pendiente |
+| `Utility.luau` | ModuleScript | — | — | 462 | `ReplicatedStorage.Shared.Icon.Utility` | Pendiente |
+| `VERSION.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Icon.VERSION` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 1253 | `ReplicatedStorage.Shared.Icon.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Elements/</code> — 8 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Elements/</code> — 8 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Caption.luau` | ModuleScript | — | — | 316 | `ReplicatedStorage.Shared.Icon.Elements.Caption` | Pending |
-| `Container.luau` | ModuleScript | — | — | 215 | `ReplicatedStorage.Shared.Icon.Elements.Container` | Pending |
-| `Dropdown.luau` | ModuleScript | — | — | 315 | `ReplicatedStorage.Shared.Icon.Elements.Dropdown` | Pending |
-| `Indicator.luau` | ModuleScript | — | — | 91 | `ReplicatedStorage.Shared.Icon.Elements.Indicator` | Pending |
-| `Menu.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.Shared.Icon.Elements.Menu` | Pending |
-| `Notice.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Shared.Icon.Elements.Notice` | Pending |
-| `Selection.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Icon.Elements.Selection` | Pending |
-| `Widget.luau` | ModuleScript | — | — | 437 | `ReplicatedStorage.Shared.Icon.Elements.Widget` | Pending |
+| `Caption.luau` | ModuleScript | — | — | 316 | `ReplicatedStorage.Shared.Icon.Elements.Caption` | Pendiente |
+| `Container.luau` | ModuleScript | — | — | 215 | `ReplicatedStorage.Shared.Icon.Elements.Container` | Pendiente |
+| `Dropdown.luau` | ModuleScript | — | — | 315 | `ReplicatedStorage.Shared.Icon.Elements.Dropdown` | Pendiente |
+| `Indicator.luau` | ModuleScript | — | — | 91 | `ReplicatedStorage.Shared.Icon.Elements.Indicator` | Pendiente |
+| `Menu.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.Shared.Icon.Elements.Menu` | Pendiente |
+| `Notice.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Shared.Icon.Elements.Notice` | Pendiente |
+| `Selection.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Icon.Elements.Selection` | Pendiente |
+| `Widget.luau` | ModuleScript | — | — | 437 | `ReplicatedStorage.Shared.Icon.Elements.Widget` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Gamepad.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.Shared.Icon.Features.Gamepad` | Pending |
-| `Overflow.luau` | ModuleScript | — | — | 360 | `ReplicatedStorage.Shared.Icon.Features.Overflow` | Pending |
+| `Gamepad.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.Shared.Icon.Features.Gamepad` | Pendiente |
+| `Overflow.luau` | ModuleScript | — | — | 360 | `ReplicatedStorage.Shared.Icon.Features.Overflow` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/Themes/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/Themes/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Classic.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Icon.Features.Themes.Classic` | Pending |
-| `Default.luau` | ModuleScript | — | — | 75 | `ReplicatedStorage.Shared.Icon.Features.Themes.Default` | Pending |
-| `init.luau` | ModuleScript | — | — | 353 | `ReplicatedStorage.Shared.Icon.Features.Themes.init` | Pending |
+| `Classic.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Icon.Features.Themes.Classic` | Pendiente |
+| `Default.luau` | ModuleScript | — | — | 75 | `ReplicatedStorage.Shared.Icon.Features.Themes.Default` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 353 | `ReplicatedStorage.Shared.Icon.Features.Themes.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Packages/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Packages/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `GoodSignal.luau` | ModuleScript | — | — | 182 | `ReplicatedStorage.Shared.Icon.Packages.GoodSignal` | Pending |
-| `Janitor.luau` | ModuleScript | — | — | 322 | `ReplicatedStorage.Shared.Icon.Packages.Janitor` | Pending |
+| `GoodSignal.luau` | ModuleScript | — | — | 182 | `ReplicatedStorage.Shared.Icon.Packages.GoodSignal` | Pendiente |
+| `Janitor.luau` | ModuleScript | — | — | 322 | `ReplicatedStorage.Shared.Icon.Packages.Janitor` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/</code> — 4 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/</code> — 4 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Bartender.luau` | ModuleScript | — | — | 447 | `ReplicatedStorage.Shared.JobSystem.Bartender` | Pending |
-| `ConditionsUses.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.JobSystem.ConditionsUses` | Pending |
-| `LimpiarPiso.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Shared.JobSystem.LimpiarPiso` | Pending |
-| `init.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Shared.JobSystem.init` | Pending |
+| `Bartender.luau` | ModuleScript | — | — | 447 | `ReplicatedStorage.Shared.JobSystem.Bartender` | Pendiente |
+| `ConditionsUses.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.JobSystem.ConditionsUses` | Pendiente |
+| `LimpiarPiso.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Shared.JobSystem.LimpiarPiso` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Shared.JobSystem.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 245 | `ReplicatedStorage.Shared.JobSystem.ButtonMoney.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 245 | `ReplicatedStorage.Shared.JobSystem.ButtonMoney.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/CajasTransport/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/CajasTransport/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 261 | `ReplicatedStorage.Shared.JobSystem.CajasTransport.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 261 | `ReplicatedStorage.Shared.JobSystem.CajasTransport.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Shared.Karaoke.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Shared.Karaoke.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/</code> — 3 archivo(s) — 1/3 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Attributes.luau` | ModuleScript | — | — | 83 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Attributes` | Pending |
-| `Generos.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Generos` | Pending |
-| `init.luau` | ModuleScript | — | — | 869 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.init` | Pending |
+| `Attributes.luau` | ModuleScript | — | — | 83 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Attributes` | Pendiente |
+| `Generos.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Generos` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 869 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `FunctActionsTV.luau` | ModuleScript | — | — | 223 | `ReplicatedStorage.Shared.Karaoke.KaraokeTV.FunctActionsTV` | Pending |
-| `init.luau` | ModuleScript | — | — | 309 | `ReplicatedStorage.Shared.Karaoke.KaraokeTV.init` | Pending |
+| `FunctActionsTV.luau` | ModuleScript | — | — | 223 | `ReplicatedStorage.Shared.Karaoke.KaraokeTV.FunctActionsTV` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 309 | `ReplicatedStorage.Shared.Karaoke.KaraokeTV.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/TV/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/TV/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 420 | `ReplicatedStorage.Shared.Karaoke.KaraokeTV.TV.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 420 | `ReplicatedStorage.Shared.Karaoke.KaraokeTV.TV.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/</code> — 3 archivo(s) — 1/3 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `AttributesRequerest.luau` | ModuleScript | — | — | 11 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.AttributesRequerest` | Pending |
-| `Script.server.luau` | Script | — | yes | 75 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.Script.server` | Pending |
-| `init.luau` | ModuleScript | — | — | 1111 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.init` | Pending |
+| `AttributesRequerest.luau` | ModuleScript | — | — | 11 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.AttributesRequerest` | Pendiente |
+| `Script.server.luau` | Script | — | yes | 75 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.Script.server` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 1111 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Monetization/</code> — 4 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Monetization/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Beneficios.luau` | ModuleScript | — | — | 18 | `ReplicatedStorage.Shared.Monetization.Beneficios` | Pending |
-| `MainModule.luau` | ModuleScript | — | — | 73 | `ReplicatedStorage.Shared.Monetization.MainModule` | Pending |
-| `MarkAdded.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Monetization.MarkAdded` | Pending |
-| `init.luau` | ModuleScript | — | — | 335 | `ReplicatedStorage.Shared.Monetization.init` | Pending |
+| `Beneficios.luau` | ModuleScript | — | — | 18 | `ReplicatedStorage.Shared.Monetization.Beneficios` | Analizado |
+| `MainModule.luau` | ModuleScript | — | — | 73 | `ReplicatedStorage.Shared.Monetization.MainModule` | Analizado |
+| `MarkAdded.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Monetization.MarkAdded` | Analizado |
+| `init.luau` | ModuleScript | — | — | 335 | `ReplicatedStorage.Shared.Monetization.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Actions.luau` | ModuleScript | — | — | 100 | `ReplicatedStorage.Shared.NPC_Custom.Actions` | Pending |
-| `init.luau` | ModuleScript | — | — | 105 | `ReplicatedStorage.Shared.NPC_Custom.init` | Pending |
+| `Actions.luau` | ModuleScript | — | — | 100 | `ReplicatedStorage.Shared.NPC_Custom.Actions` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 105 | `ReplicatedStorage.Shared.NPC_Custom.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/Instance/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/Instance/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `CustomizeSettings.luau` | ModuleScript | — | — | 24 | `ReplicatedStorage.Shared.NPC_Custom.Instance.CustomizeSettings` | Pending |
-| `FormatPathNpc.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.NPC_Custom.Instance.FormatPathNpc` | Pending |
-| `init.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.NPC_Custom.Instance.init` | Pending |
+| `CustomizeSettings.luau` | ModuleScript | — | — | 24 | `ReplicatedStorage.Shared.NPC_Custom.Instance.CustomizeSettings` | Pendiente |
+| `FormatPathNpc.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.NPC_Custom.Instance.FormatPathNpc` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.NPC_Custom.Instance.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Countries.luau` | ModuleScript | — | — | 209 | `ReplicatedStorage.Shared.Nametag.Countries` | Pending |
-| `LevelStyler.luau` | ModuleScript | — | — | 164 | `ReplicatedStorage.Shared.Nametag.LevelStyler` | Pending |
-| `MicStatus.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Nametag.MicStatus` | Pending |
+| `Countries.luau` | ModuleScript | — | — | 209 | `ReplicatedStorage.Shared.Nametag.Countries` | Pendiente |
+| `LevelStyler.luau` | ModuleScript | — | — | 164 | `ReplicatedStorage.Shared.Nametag.LevelStyler` | Pendiente |
+| `MicStatus.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Nametag.MicStatus` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/GroupRoles/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/GroupRoles/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Nametag.GroupRoles.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Nametag.GroupRoles.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Observers/</code> — 6 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Observers/</code> — 6 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Observers.init` | Pending |
-| `observeAttribute.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Shared.Observers.observeAttribute` | Pending |
-| `observeCharacter.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Observers.observeCharacter` | Pending |
-| `observePlayer.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Observers.observePlayer` | Pending |
-| `observeProperty.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.Observers.observeProperty` | Pending |
-| `observeTag.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.Observers.observeTag` | Pending |
+| `init.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Observers.init` | Pendiente |
+| `observeAttribute.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Shared.Observers.observeAttribute` | Pendiente |
+| `observeCharacter.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Observers.observeCharacter` | Pendiente |
+| `observePlayer.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Observers.observePlayer` | Pendiente |
+| `observeProperty.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.Observers.observeProperty` | Pendiente |
+| `observeTag.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.Observers.observeTag` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Create/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Create/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Paint.Create.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Paint.Create.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `SplitRespectingBrackets.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.SplitRespectingBrackets` | Pending |
-| `init.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.init` | Pending |
+| `SplitRespectingBrackets.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.SplitRespectingBrackets` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Paint.FormatPinturaData.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 101 | `ReplicatedStorage.Shared.Paint.Load.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 101 | `ReplicatedStorage.Shared.Paint.Load.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/LoadFrame/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Load/LoadFrame/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Frames.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.Frames` | Pending |
-| `init.luau` | ModuleScript | — | — | 235 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.init` | Pending |
+| `Frames.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.Frames` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 235 | `ReplicatedStorage.Shared.Paint.Load.LoadFrame.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Paint/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/Paint/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `PaletteColor.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Shared.Paint.Paint.PaletteColor` | Pending |
-| `Save.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Shared.Paint.Paint.Save` | Pending |
-| `init.luau` | ModuleScript | — | — | 507 | `ReplicatedStorage.Shared.Paint.Paint.init` | Pending |
+| `PaletteColor.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Shared.Paint.Paint.PaletteColor` | Pendiente |
+| `Save.luau` | ModuleScript | — | — | 161 | `ReplicatedStorage.Shared.Paint.Paint.Save` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 507 | `ReplicatedStorage.Shared.Paint.Paint.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/ServerClient/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Paint/ServerClient/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Marcos.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Shared.Paint.ServerClient.Marcos.server` | Pending |
-| `init.luau` | ModuleScript | — | — | 737 | `ReplicatedStorage.Shared.Paint.ServerClient.init` | Pending |
+| `Marcos.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Shared.Paint.ServerClient.Marcos.server` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 737 | `ReplicatedStorage.Shared.Paint.ServerClient.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PartCache/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PartCache/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Table.luau` | ModuleScript | — | — | 107 | `ReplicatedStorage.Shared.PartCache.Table` | Pending |
-| `init.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.PartCache.init` | Pending |
+| `Table.luau` | ModuleScript | — | — | 107 | `ReplicatedStorage.Shared.PartCache.Table` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.PartCache.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Promise/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Promise/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 2068 | `ReplicatedStorage.Shared.Promise.init` | Pending |
-| `init.spec.luau` | ModuleScript | — | — | 1844 | `ReplicatedStorage.Shared.Promise.init.spec` | Pending |
+| `init.luau` | ModuleScript | — | — | 2068 | `ReplicatedStorage.Shared.Promise.init` | Pendiente |
+| `init.spec.luau` | ModuleScript | — | — | 1844 | `ReplicatedStorage.Shared.Promise.init.spec` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PrompBuy/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PrompBuy/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.PrompBuy.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.PrompBuy.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Quests/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Quests/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `QuestConfig.luau` | ModuleScript | — | — | 221 | `ReplicatedStorage.Shared.Quests.QuestConfig` | Pending |
-| `QuestShared.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Quests.QuestShared` | Pending |
+| `QuestConfig.luau` | ModuleScript | — | — | 221 | `ReplicatedStorage.Shared.Quests.QuestConfig` | Pendiente |
+| `QuestShared.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Quests.QuestShared` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Referrals/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Referrals/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ProgressRing.luau` | ModuleScript | — | — | 114 | `ReplicatedStorage.Shared.Referrals.ProgressRing` | Pending |
-| `ReferralConfig.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.Referrals.ReferralConfig` | Pending |
-| `ReferralShared.luau` | ModuleScript | — | — | 309 | `ReplicatedStorage.Shared.Referrals.ReferralShared` | Pending |
+| `ProgressRing.luau` | ModuleScript | — | — | 114 | `ReplicatedStorage.Shared.Referrals.ProgressRing` | Pendiente |
+| `ReferralConfig.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.Referrals.ReferralConfig` | Pendiente |
+| `ReferralShared.luau` | ModuleScript | — | — | 309 | `ReplicatedStorage.Shared.Referrals.ReferralShared` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `None.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.None` | Pending |
-| `Types.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.Types` | Pending |
-| `init.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.Sift.init` | Pending |
+| `None.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.None` | Pendiente |
+| `Types.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.Types` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.Sift.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Array/</code> — 48 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Array/</code> — 48 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `at.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Array.at` | Pending |
-| `concat.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Array.concat` | Pending |
-| `concatDeep.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.concatDeep` | Pending |
-| `copy.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.copy` | Pending |
-| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.copyDeep` | Pending |
-| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.count` | Pending |
-| `create.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.create` | Pending |
-| `difference.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.difference` | Pending |
-| `differenceSymmetric.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.differenceSymmetric` | Pending |
-| `equals.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equals` | Pending |
-| `equalsDeep.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equalsDeep` | Pending |
-| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.every` | Pending |
-| `filter.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.filter` | Pending |
-| `find.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.find` | Pending |
-| `findLast.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.findLast` | Pending |
-| `findWhere.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.findWhere` | Pending |
-| `findWhereLast.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.findWhereLast` | Pending |
-| `first.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.first` | Pending |
-| `flatten.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Shared.Sift.Array.flatten` | Pending |
-| `freeze.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.freeze` | Pending |
-| `freezeDeep.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.freezeDeep` | Pending |
-| `includes.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.includes` | Pending |
-| `init.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Sift.Array.init` | Pending |
-| `insert.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.insert` | Pending |
-| `is.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Array.is` | Pending |
-| `last.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.last` | Pending |
-| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.map` | Pending |
-| `pop.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.pop` | Pending |
-| `push.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.push` | Pending |
-| `reduce.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.reduce` | Pending |
-| `reduceRight.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.Sift.Array.reduceRight` | Pending |
-| `removeIndex.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.removeIndex` | Pending |
-| `removeIndices.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Array.removeIndices` | Pending |
-| `removeValue.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.removeValue` | Pending |
-| `removeValues.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.removeValues` | Pending |
-| `reverse.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Array.reverse` | Pending |
-| `set.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.set` | Pending |
-| `shift.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.shift` | Pending |
-| `shuffle.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.shuffle` | Pending |
-| `slice.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.slice` | Pending |
-| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.some` | Pending |
-| `sort.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.sort` | Pending |
-| `splice.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.splice` | Pending |
-| `toSet.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.toSet` | Pending |
-| `unshift.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.unshift` | Pending |
-| `update.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Shared.Sift.Array.update` | Pending |
-| `zip.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.zip` | Pending |
-| `zipAll.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Array.zipAll` | Pending |
+| `at.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Array.at` | Pendiente |
+| `concat.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Array.concat` | Pendiente |
+| `concatDeep.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.concatDeep` | Pendiente |
+| `copy.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.copy` | Pendiente |
+| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.copyDeep` | Pendiente |
+| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.count` | Pendiente |
+| `create.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.create` | Pendiente |
+| `difference.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.difference` | Pendiente |
+| `differenceSymmetric.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.differenceSymmetric` | Pendiente |
+| `equals.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equals` | Pendiente |
+| `equalsDeep.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equalsDeep` | Pendiente |
+| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.every` | Pendiente |
+| `filter.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.filter` | Pendiente |
+| `find.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.find` | Pendiente |
+| `findLast.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.findLast` | Pendiente |
+| `findWhere.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.findWhere` | Pendiente |
+| `findWhereLast.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.findWhereLast` | Pendiente |
+| `first.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.first` | Pendiente |
+| `flatten.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Shared.Sift.Array.flatten` | Pendiente |
+| `freeze.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.freeze` | Pendiente |
+| `freezeDeep.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.freezeDeep` | Pendiente |
+| `includes.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.includes` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Sift.Array.init` | Pendiente |
+| `insert.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.insert` | Pendiente |
+| `is.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Array.is` | Pendiente |
+| `last.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.last` | Pendiente |
+| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.map` | Pendiente |
+| `pop.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.pop` | Pendiente |
+| `push.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.push` | Pendiente |
+| `reduce.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.reduce` | Pendiente |
+| `reduceRight.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.Sift.Array.reduceRight` | Pendiente |
+| `removeIndex.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.removeIndex` | Pendiente |
+| `removeIndices.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Array.removeIndices` | Pendiente |
+| `removeValue.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.removeValue` | Pendiente |
+| `removeValues.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.removeValues` | Pendiente |
+| `reverse.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Array.reverse` | Pendiente |
+| `set.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.set` | Pendiente |
+| `shift.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.shift` | Pendiente |
+| `shuffle.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.shuffle` | Pendiente |
+| `slice.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.slice` | Pendiente |
+| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.some` | Pendiente |
+| `sort.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.sort` | Pendiente |
+| `splice.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.splice` | Pendiente |
+| `toSet.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.toSet` | Pendiente |
+| `unshift.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.unshift` | Pendiente |
+| `update.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Shared.Sift.Array.update` | Pendiente |
+| `zip.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.zip` | Pendiente |
+| `zipAll.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Array.zipAll` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Dictionary/</code> — 30 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Dictionary/</code> — 30 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `copy.luau` | ModuleScript | — | — | 20 | `ReplicatedStorage.Shared.Sift.Dictionary.copy` | Pending |
-| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Dictionary.copyDeep` | Pending |
-| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Dictionary.count` | Pending |
-| `entries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.entries` | Pending |
-| `equals.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equals` | Pending |
-| `equalsDeep.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equalsDeep` | Pending |
-| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.every` | Pending |
-| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Dictionary.filter` | Pending |
-| `flatten.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Dictionary.flatten` | Pending |
-| `flip.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.flip` | Pending |
-| `freeze.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.freeze` | Pending |
-| `freezeDeep.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Dictionary.freezeDeep` | Pending |
-| `fromArrays.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.fromArrays` | Pending |
-| `fromEntries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.fromEntries` | Pending |
-| `has.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Dictionary.has` | Pending |
-| `includes.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.includes` | Pending |
-| `init.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Dictionary.init` | Pending |
-| `keys.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.keys` | Pending |
-| `map.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Sift.Dictionary.map` | Pending |
-| `merge.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Shared.Sift.Dictionary.merge` | Pending |
-| `mergeDeep.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.Sift.Dictionary.mergeDeep` | Pending |
-| `removeKey.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKey` | Pending |
-| `removeKeys.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKeys` | Pending |
-| `removeValue.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValue` | Pending |
-| `removeValues.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValues` | Pending |
-| `set.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.set` | Pending |
-| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.some` | Pending |
-| `update.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Sift.Dictionary.update` | Pending |
-| `values.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.values` | Pending |
-| `withKeys.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.withKeys` | Pending |
+| `copy.luau` | ModuleScript | — | — | 20 | `ReplicatedStorage.Shared.Sift.Dictionary.copy` | Pendiente |
+| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Dictionary.copyDeep` | Pendiente |
+| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Dictionary.count` | Pendiente |
+| `entries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.entries` | Pendiente |
+| `equals.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equals` | Pendiente |
+| `equalsDeep.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equalsDeep` | Pendiente |
+| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.every` | Pendiente |
+| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Dictionary.filter` | Pendiente |
+| `flatten.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Dictionary.flatten` | Pendiente |
+| `flip.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.flip` | Pendiente |
+| `freeze.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.freeze` | Pendiente |
+| `freezeDeep.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Dictionary.freezeDeep` | Pendiente |
+| `fromArrays.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.fromArrays` | Pendiente |
+| `fromEntries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.fromEntries` | Pendiente |
+| `has.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Dictionary.has` | Pendiente |
+| `includes.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.includes` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Dictionary.init` | Pendiente |
+| `keys.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.keys` | Pendiente |
+| `map.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Sift.Dictionary.map` | Pendiente |
+| `merge.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Shared.Sift.Dictionary.merge` | Pendiente |
+| `mergeDeep.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.Sift.Dictionary.mergeDeep` | Pendiente |
+| `removeKey.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKey` | Pendiente |
+| `removeKeys.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKeys` | Pendiente |
+| `removeValue.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValue` | Pendiente |
+| `removeValues.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValues` | Pendiente |
+| `set.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.set` | Pendiente |
+| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.some` | Pendiente |
+| `update.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Sift.Dictionary.update` | Pendiente |
+| `values.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.values` | Pendiente |
+| `withKeys.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.withKeys` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Set/</code> — 16 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Set/</code> — 16 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `add.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Set.add` | Pending |
-| `copy.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.Sift.Set.copy` | Pending |
-| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Set.count` | Pending |
-| `delete.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.delete` | Pending |
-| `difference.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Set.difference` | Pending |
-| `differenceSymmetric.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.differenceSymmetric` | Pending |
-| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.filter` | Pending |
-| `fromArray.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Set.fromArray` | Pending |
-| `has.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Shared.Sift.Set.has` | Pending |
-| `init.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.init` | Pending |
-| `intersection.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Set.intersection` | Pending |
-| `isSubset.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Set.isSubset` | Pending |
-| `isSuperset.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Set.isSuperset` | Pending |
-| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.map` | Pending |
-| `merge.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.merge` | Pending |
-| `toArray.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Set.toArray` | Pending |
+| `add.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Set.add` | Pendiente |
+| `copy.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.Sift.Set.copy` | Pendiente |
+| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Set.count` | Pendiente |
+| `delete.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.delete` | Pendiente |
+| `difference.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Set.difference` | Pendiente |
+| `differenceSymmetric.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.differenceSymmetric` | Pendiente |
+| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.filter` | Pendiente |
+| `fromArray.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Set.fromArray` | Pendiente |
+| `has.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Shared.Sift.Set.has` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.init` | Pendiente |
+| `intersection.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Set.intersection` | Pendiente |
+| `isSubset.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Set.isSubset` | Pendiente |
+| `isSuperset.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Set.isSuperset` | Pendiente |
+| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.map` | Pendiente |
+| `merge.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.merge` | Pendiente |
+| `toArray.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Set.toArray` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Util/</code> — 4 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Util/</code> — 4 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `equalObjects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Util.equalObjects` | Pending |
-| `func.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Sift.Util.func` | Pending |
-| `init.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.Sift.Util.init` | Pending |
-| `isEmpty.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Sift.Util.isEmpty` | Pending |
+| `equalObjects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Util.equalObjects` | Pendiente |
+| `func.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Sift.Util.func` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.Sift.Util.init` | Pendiente |
+| `isEmpty.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Sift.Util.isEmpty` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 archivo(s) — 6/6 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Added.luau` | ModuleScript | — | — | 205 | `ReplicatedStorage.Shared.Stores.Added` | Pending |
-| `ColorTexture.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Stores.ColorTexture` | Pending |
-| `Compras.luau` | ModuleScript | — | — | 487 | `ReplicatedStorage.Shared.Stores.Compras` | Pending |
-| `DecorsPlayer.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.Stores.DecorsPlayer` | Pending |
-| `HouseAdded.luau` | ModuleScript | — | — | 297 | `ReplicatedStorage.Shared.Stores.HouseAdded` | Pending |
-| `init.luau` | ModuleScript | — | — | 992 | `ReplicatedStorage.Shared.Stores.init` | Pending |
+| `Added.luau` | ModuleScript | — | — | 205 | `ReplicatedStorage.Shared.Stores.Added` | Analizado |
+| `ColorTexture.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Stores.ColorTexture` | Analizado |
+| `Compras.luau` | ModuleScript | — | — | 487 | `ReplicatedStorage.Shared.Stores.Compras` | Analizado (en parte) |
+| `DecorsPlayer.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.Stores.DecorsPlayer` | Analizado |
+| `HouseAdded.luau` | ModuleScript | — | — | 297 | `ReplicatedStorage.Shared.Stores.HouseAdded` | Analizado |
+| `init.luau` | ModuleScript | — | — | 992 | `ReplicatedStorage.Shared.Stores.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 117 | `ReplicatedStorage.Shared.Stores.DecorFuncs.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 117 | `ReplicatedStorage.Shared.Stores.DecorFuncs.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Collitions.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.Collitions` | Pending |
-| `init.luau` | ModuleScript | — | — | 341 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.init` | Pending |
+| `Collitions.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.Collitions` | Analizado |
+| `init.luau` | ModuleScript | — | — | 341 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Tutorials/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Tutorials/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ParametrosGuideClaim.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Tutorials.ParametrosGuideClaim` | Pending |
-| `ParametrosTutorialBienvenida.luau` | ModuleScript | — | — | 139 | `ReplicatedStorage.Shared.Tutorials.ParametrosTutorialBienvenida` | Pending |
+| `ParametrosGuideClaim.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Tutorials.ParametrosGuideClaim` | Pendiente |
+| `ParametrosTutorialBienvenida.luau` | ModuleScript | — | — | 139 | `ReplicatedStorage.Shared.Tutorials.ParametrosTutorialBienvenida` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/machines/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/machines/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `roulettePrizes.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Shared.machines.roulettePrizes` | Pending |
-| `rouletteUtil.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.machines.rouletteUtil` | Pending |
+| `roulettePrizes.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Shared.machines.roulettePrizes` | Pendiente |
+| `rouletteUtil.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.machines.rouletteUtil` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/pong/</code> — 4 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/pong/</code> — 4 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Ball.luau` | ModuleScript | — | — | 559 | `ReplicatedStorage.Shared.pong.Ball` | Pending |
-| `Input.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.pong.Input` | Pending |
-| `Paddle.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.pong.Paddle` | Pending |
-| `createPongSession.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.pong.createPongSession` | Pending |
+| `Ball.luau` | ModuleScript | — | — | 559 | `ReplicatedStorage.Shared.pong.Ball` | Pendiente |
+| `Input.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.pong.Input` | Pendiente |
+| `Paddle.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.pong.Paddle` | Pendiente |
+| `createPongSession.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.pong.createPongSession` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/Data/Main/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/Data/Main/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `PlayerGamesFetcher.luau` | ModuleScript | — | — | 112 | `ServerScriptService.Data.Main.PlayerGamesFetcher` | Pending |
-| `init.server.luau` | Script | — | yes | 393 | `ServerScriptService.Data.Main.init.server` | Pending |
+| `PlayerGamesFetcher.luau` | ModuleScript | — | — | 112 | `ServerScriptService.Data.Main.PlayerGamesFetcher` | Analizado (en parte) |
+| `init.server.luau` | Script | — | yes | 393 | `ServerScriptService.Data.Main.init.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 file(s) — 6/20 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 10/20 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `EventBootstrap.server.luau` | Script | — | yes | 34 | `ServerScriptService.ServerScripts.EventBootstrap.server` | Pending |
-| `EventCommands.server.luau` | Script | — | yes | 180 | `ServerScriptService.ServerScripts.EventCommands.server` | Pending |
-| `FavoriteService.server.luau` | Script | Server | yes | 55 | `ServerScriptService.ServerScripts.FavoriteService.server` | Pending |
-| `GiftHandler.server.luau` | Script | Server | yes | 355 | `ServerScriptService.ServerScripts.GiftHandler.server` | Pending |
-| `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Pending |
-| `MicManagerServer.server.luau` | Script | Server | yes | 197 | `ServerScriptService.ServerScripts.MicManagerServer.server` | Pending |
-| `NametagServer.server.luau` | Script | Server | yes | 513 | `ServerScriptService.ServerScripts.NametagServer.server` | Pending |
-| `PlayerDataInit.server.luau` | Script | Server | yes | 42 | `ServerScriptService.ServerScripts.PlayerDataInit.server` | Pending |
-| `PlayerDataReplicator.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.PlayerDataReplicator.server` | Analyzed |
-| `PlaytimeRewardSystem.server.luau` | Script | — | yes | 107 | `ServerScriptService.ServerScripts.PlaytimeRewardSystem.server` | Pending |
-| `ServerDirectory.server.luau` | Script | Server | yes | 432 | `ServerScriptService.ServerScripts.ServerDirectory.server` | Analyzed |
-| `ShopServerSystem.server.luau` | Script | Server | yes | 310 | `ServerScriptService.ServerScripts.ShopServerSystem.server` | Analyzed (partly) |
-| `ToolPlacementServer.server.luau` | Script | Server | yes | 881 | `ServerScriptService.ServerScripts.ToolPlacementServer.server` | Pending |
-| `ToolsServer.server.luau` | Script | — | yes | 989 | `ServerScriptService.ServerScripts.ToolsServer.server` | Pending |
-| `WalkieServer.server.luau` | Script | Server | yes | 148 | `ServerScriptService.ServerScripts.WalkieServer.server` | Pending |
-| `WorldManager.server.luau` | Script | Server | yes | 228 | `ServerScriptService.ServerScripts.WorldManager.server` | Analyzed |
-| `WorldsBrowser.server.luau` | Script | Server | yes | 140 | `ServerScriptService.ServerScripts.WorldsBrowser.server` | Analyzed |
-| `collisions.server.luau` | Script | Server | yes | 37 | `ServerScriptService.ServerScripts.collisions.server` | Pending |
-| `fireExcept.luau` | ModuleScript | — | — | 11 | `ServerScriptService.ServerScripts.fireExcept` | Pending |
-| `playerManager.server.luau` | Script | — | yes | 208 | `ServerScriptService.ServerScripts.playerManager.server` | Analyzed |
+| `EventBootstrap.server.luau` | Script | — | yes | 34 | `ServerScriptService.ServerScripts.EventBootstrap.server` | Analizado |
+| `EventCommands.server.luau` | Script | — | yes | 180 | `ServerScriptService.ServerScripts.EventCommands.server` | Analizado (en parte) |
+| `FavoriteService.server.luau` | Script | Server | yes | 55 | `ServerScriptService.ServerScripts.FavoriteService.server` | Pendiente |
+| `GiftHandler.server.luau` | Script | Server | yes | 355 | `ServerScriptService.ServerScripts.GiftHandler.server` | Pendiente |
+| `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Pendiente |
+| `MicManagerServer.server.luau` | Script | Server | yes | 197 | `ServerScriptService.ServerScripts.MicManagerServer.server` | Pendiente |
+| `NametagServer.server.luau` | Script | Server | yes | 513 | `ServerScriptService.ServerScripts.NametagServer.server` | Pendiente |
+| `PlayerDataInit.server.luau` | Script | Server | yes | 42 | `ServerScriptService.ServerScripts.PlayerDataInit.server` | Analizado |
+| `PlayerDataReplicator.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.PlayerDataReplicator.server` | Analizado |
+| `PlaytimeRewardSystem.server.luau` | Script | — | yes | 107 | `ServerScriptService.ServerScripts.PlaytimeRewardSystem.server` | Pendiente |
+| `ServerDirectory.server.luau` | Script | Server | yes | 432 | `ServerScriptService.ServerScripts.ServerDirectory.server` | Analizado |
+| `ShopServerSystem.server.luau` | Script | Server | yes | 310 | `ServerScriptService.ServerScripts.ShopServerSystem.server` | Analizado (en parte) |
+| `ToolPlacementServer.server.luau` | Script | Server | yes | 881 | `ServerScriptService.ServerScripts.ToolPlacementServer.server` | Pendiente |
+| `ToolsServer.server.luau` | Script | — | yes | 989 | `ServerScriptService.ServerScripts.ToolsServer.server` | Analizado (en parte) |
+| `WalkieServer.server.luau` | Script | Server | yes | 148 | `ServerScriptService.ServerScripts.WalkieServer.server` | Pendiente |
+| `WorldManager.server.luau` | Script | Server | yes | 228 | `ServerScriptService.ServerScripts.WorldManager.server` | Analizado |
+| `WorldsBrowser.server.luau` | Script | Server | yes | 140 | `ServerScriptService.ServerScripts.WorldsBrowser.server` | Analizado |
+| `collisions.server.luau` | Script | Server | yes | 37 | `ServerScriptService.ServerScripts.collisions.server` | Pendiente |
+| `fireExcept.luau` | ModuleScript | — | — | 11 | `ServerScriptService.ServerScripts.fireExcept` | Pendiente |
+| `playerManager.server.luau` | Script | — | yes | 208 | `ServerScriptService.ServerScripts.playerManager.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/AnimationSystem/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/AnimationSystem/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `AnimationManager.luau` | ModuleScript | — | — | 73 | `ServerScriptService.ServerScripts.AnimationSystem.AnimationManager` | Pending |
-| `init.server.luau` | Script | Server | yes | 104 | `ServerScriptService.ServerScripts.AnimationSystem.init.server` | Pending |
+| `AnimationManager.luau` | ModuleScript | — | — | 73 | `ServerScriptService.ServerScripts.AnimationSystem.AnimationManager` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 104 | `ServerScriptService.ServerScripts.AnimationSystem.init.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Quests/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Quests/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `QuestMain.server.luau` | Script | — | yes | 75 | `ServerScriptService.ServerScripts.Quests.QuestMain.server` | Pending |
-| `QuestService.luau` | ModuleScript | — | — | 347 | `ServerScriptService.ServerScripts.Quests.QuestService` | Pending |
+| `QuestMain.server.luau` | Script | — | yes | 75 | `ServerScriptService.ServerScripts.Quests.QuestMain.server` | Analizado |
+| `QuestService.luau` | ModuleScript | — | — | 347 | `ServerScriptService.ServerScripts.Quests.QuestService` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Quests/Pickables/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Quests/Pickables/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `QuestPickableService.luau` | ModuleScript | — | — | 316 | `ServerScriptService.ServerScripts.Quests.Pickables.QuestPickableService` | Pending |
+| `QuestPickableService.luau` | ModuleScript | — | — | 316 | `ServerScriptService.ServerScripts.Quests.Pickables.QuestPickableService` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Ragdoll/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Ragdoll/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `DisableJointsWhenFalling.server.luau` | Script | — | yes | 63 | `ServerScriptService.ServerScripts.Ragdoll.DisableJointsWhenFalling.server` | Pending |
-| `PhysicallySimulatedUpperBody.server.luau` | Script | — | yes | 47 | `ServerScriptService.ServerScripts.Ragdoll.PhysicallySimulatedUpperBody.server` | Pending |
+| `DisableJointsWhenFalling.server.luau` | Script | — | yes | 63 | `ServerScriptService.ServerScripts.Ragdoll.DisableJointsWhenFalling.server` | Pendiente |
+| `PhysicallySimulatedUpperBody.server.luau` | Script | — | yes | 47 | `ServerScriptService.ServerScripts.Ragdoll.PhysicallySimulatedUpperBody.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Referrals/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Referrals/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ReferralCommands.server.luau` | Script | — | yes | 333 | `ServerScriptService.ServerScripts.Referrals.ReferralCommands.server` | Pending |
-| `ReferralMain.server.luau` | Script | — | yes | 233 | `ServerScriptService.ServerScripts.Referrals.ReferralMain.server` | Pending |
+| `ReferralCommands.server.luau` | Script | — | yes | 333 | `ServerScriptService.ServerScripts.Referrals.ReferralCommands.server` | Pendiente |
+| `ReferralMain.server.luau` | Script | — | yes | 233 | `ServerScriptService.ServerScripts.Referrals.ReferralMain.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/ToolModelGenerator/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/ToolModelGenerator/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Settings.luau` | ModuleScript | — | — | 32 | `ServerScriptService.ServerScripts.ToolModelGenerator.Settings` | Pending |
-| `init.server.luau` | Script | Server | yes | 170 | `ServerScriptService.ServerScripts.ToolModelGenerator.init.server` | Pending |
+| `Settings.luau` | ModuleScript | — | — | 32 | `ServerScriptService.ServerScripts.ToolModelGenerator.Settings` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 170 | `ServerScriptService.ServerScripts.ToolModelGenerator.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `CookingStation.luau` | ModuleScript | — | — | 270 | `ServerScriptService.ServerScripts.cooking.CookingStation` | Pending |
+| `CookingStation.luau` | ModuleScript | — | — | 270 | `ServerScriptService.ServerScripts.cooking.CookingStation` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/interactables/</code> — 5 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/interactables/</code> — 5 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Blender.server.luau` | Script | Server | yes | 54 | `ServerScriptService.ServerScripts.cooking.interactables.Blender.server` | Pending |
-| `CuttingBoard.server.luau` | Script | Server | yes | 113 | `ServerScriptService.ServerScripts.cooking.interactables.CuttingBoard.server` | Pending |
-| `Microwave.server.luau` | Script | Server | yes | 233 | `ServerScriptService.ServerScripts.cooking.interactables.Microwave.server` | Pending |
-| `Oven.server.luau` | Script | Server | yes | 72 | `ServerScriptService.ServerScripts.cooking.interactables.Oven.server` | Pending |
-| `Stove.server.luau` | Script | Server | yes | 93 | `ServerScriptService.ServerScripts.cooking.interactables.Stove.server` | Pending |
+| `Blender.server.luau` | Script | Server | yes | 54 | `ServerScriptService.ServerScripts.cooking.interactables.Blender.server` | Pendiente |
+| `CuttingBoard.server.luau` | Script | Server | yes | 113 | `ServerScriptService.ServerScripts.cooking.interactables.CuttingBoard.server` | Pendiente |
+| `Microwave.server.luau` | Script | Server | yes | 233 | `ServerScriptService.ServerScripts.cooking.interactables.Microwave.server` | Pendiente |
+| `Oven.server.luau` | Script | Server | yes | 72 | `ServerScriptService.ServerScripts.cooking.interactables.Oven.server` | Pendiente |
+| `Stove.server.luau` | Script | Server | yes | 93 | `ServerScriptService.ServerScripts.cooking.interactables.Stove.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/</code> — 21 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/</code> — 21 archivo(s) — 4/21 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BarraBartender.server.luau` | Script | Server | yes | 24 | `ServerScriptService.ServerScripts.interactable.BarraBartender.server` | Pending |
-| `Bath.server.luau` | Script | Server | yes | 41 | `ServerScriptService.ServerScripts.interactable.Bath.server` | Pending |
-| `Bin.server.luau` | Script | Server | yes | 17 | `ServerScriptService.ServerScripts.interactable.Bin.server` | Pending |
-| `ClassicDoor.server.luau` | Script | Server | yes | 151 | `ServerScriptService.ServerScripts.interactable.ClassicDoor.server` | Pending |
-| `CuadrosPaint.server.luau` | Script | Server | yes | 11 | `ServerScriptService.ServerScripts.interactable.CuadrosPaint.server` | Pending |
-| `DiscoBall.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.DiscoBall.server` | Pending |
-| `Display.server.luau` | Script | Server | yes | 31 | `ServerScriptService.ServerScripts.interactable.Display.server` | Pending |
-| `Fridge.server.luau` | Script | Server | yes | 137 | `ServerScriptService.ServerScripts.interactable.Fridge.server` | Pending |
-| `Lamp.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.interactable.Lamp.server` | Pending |
-| `MusicPlayer.server.luau` | Script | Server | yes | 17 | `ServerScriptService.ServerScripts.interactable.MusicPlayer.server` | Pending |
-| `NpcDialog.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.NpcDialog.server` | Pending |
-| `Paint.server.luau` | Script | Server | yes | 19 | `ServerScriptService.ServerScripts.interactable.Paint.server` | Pending |
-| `Pee.server.luau` | Script | Server | yes | 222 | `ServerScriptService.ServerScripts.interactable.Pee.server` | Pending |
-| `Seat.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.Seat.server` | Pending |
-| `Shower.server.luau` | Script | Server | yes | 68 | `ServerScriptService.ServerScripts.interactable.Shower.server` | Pending |
-| `SmokeMachine.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.SmokeMachine.server` | Pending |
-| `Tijeras.server.luau` | Script | Server | yes | 153 | `ServerScriptService.ServerScripts.interactable.Tijeras.server` | Pending |
-| `Toilet.server.luau` | Script | Server | yes | 98 | `ServerScriptService.ServerScripts.interactable.Toilet.server` | Pending |
-| `Treadmill.server.luau` | Script | Server | yes | 64 | `ServerScriptService.ServerScripts.interactable.Treadmill.server` | Pending |
-| `Washbasin.server.luau` | Script | Server | yes | 49 | `ServerScriptService.ServerScripts.interactable.Washbasin.server` | Pending |
-| `Weight.server.luau` | Script | Server | yes | 38 | `ServerScriptService.ServerScripts.interactable.Weight.server` | Pending |
+| `BarraBartender.server.luau` | Script | Server | yes | 24 | `ServerScriptService.ServerScripts.interactable.BarraBartender.server` | Pendiente |
+| `Bath.server.luau` | Script | Server | yes | 41 | `ServerScriptService.ServerScripts.interactable.Bath.server` | Pendiente |
+| `Bin.server.luau` | Script | Server | yes | 17 | `ServerScriptService.ServerScripts.interactable.Bin.server` | Analizado |
+| `ClassicDoor.server.luau` | Script | Server | yes | 151 | `ServerScriptService.ServerScripts.interactable.ClassicDoor.server` | Pendiente |
+| `CuadrosPaint.server.luau` | Script | Server | yes | 11 | `ServerScriptService.ServerScripts.interactable.CuadrosPaint.server` | Analizado |
+| `DiscoBall.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.DiscoBall.server` | Pendiente |
+| `Display.server.luau` | Script | Server | yes | 31 | `ServerScriptService.ServerScripts.interactable.Display.server` | Analizado |
+| `Fridge.server.luau` | Script | Server | yes | 137 | `ServerScriptService.ServerScripts.interactable.Fridge.server` | Pendiente |
+| `Lamp.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.interactable.Lamp.server` | Pendiente |
+| `MusicPlayer.server.luau` | Script | Server | yes | 17 | `ServerScriptService.ServerScripts.interactable.MusicPlayer.server` | Analizado |
+| `NpcDialog.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.NpcDialog.server` | Pendiente |
+| `Paint.server.luau` | Script | Server | yes | 19 | `ServerScriptService.ServerScripts.interactable.Paint.server` | Pendiente |
+| `Pee.server.luau` | Script | Server | yes | 222 | `ServerScriptService.ServerScripts.interactable.Pee.server` | Pendiente |
+| `Seat.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.Seat.server` | Pendiente |
+| `Shower.server.luau` | Script | Server | yes | 68 | `ServerScriptService.ServerScripts.interactable.Shower.server` | Pendiente |
+| `SmokeMachine.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.SmokeMachine.server` | Pendiente |
+| `Tijeras.server.luau` | Script | Server | yes | 153 | `ServerScriptService.ServerScripts.interactable.Tijeras.server` | Pendiente |
+| `Toilet.server.luau` | Script | Server | yes | 98 | `ServerScriptService.ServerScripts.interactable.Toilet.server` | Pendiente |
+| `Treadmill.server.luau` | Script | Server | yes | 64 | `ServerScriptService.ServerScripts.interactable.Treadmill.server` | Pendiente |
+| `Washbasin.server.luau` | Script | Server | yes | 49 | `ServerScriptService.ServerScripts.interactable.Washbasin.server` | Pendiente |
+| `Weight.server.luau` | Script | Server | yes | 38 | `ServerScriptService.ServerScripts.interactable.Weight.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/Bed/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/Bed/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Bed.luau` | ModuleScript | — | — | 186 | `ServerScriptService.ServerScripts.interactable.Bed.Bed` | Pending |
-| `init.server.luau` | Script | Server | yes | 20 | `ServerScriptService.ServerScripts.interactable.Bed.init.server` | Pending |
+| `Bed.luau` | ModuleScript | — | — | 186 | `ServerScriptService.ServerScripts.interactable.Bed.Bed` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 20 | `ServerScriptService.ServerScripts.interactable.Bed.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/DoubleBed/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/DoubleBed/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `DoubleBed.luau` | ModuleScript | — | — | 255 | `ServerScriptService.ServerScripts.interactable.DoubleBed.DoubleBed` | Pending |
-| `init.server.luau` | Script | Server | yes | 23 | `ServerScriptService.ServerScripts.interactable.DoubleBed.init.server` | Pending |
+| `DoubleBed.luau` | ModuleScript | — | — | 255 | `ServerScriptService.ServerScripts.interactable.DoubleBed.DoubleBed` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 23 | `ServerScriptService.ServerScripts.interactable.DoubleBed.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.server.luau` | Script | Server | yes | 95 | `ServerScriptService.ServerScripts.inventory.init.server` | Pending |
+| `init.server.luau` | Script | Server | yes | 95 | `ServerScriptService.ServerScripts.inventory.init.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/InventoryManager/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/InventoryManager/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `DefaultTools.luau` | ModuleScript | — | — | 53 | `ServerScriptService.ServerScripts.inventory.InventoryManager.DefaultTools` | Pending |
-| `init.luau` | ModuleScript | — | — | 561 | `ServerScriptService.ServerScripts.inventory.InventoryManager.init` | Pending |
+| `DefaultTools.luau` | ModuleScript | — | — | 53 | `ServerScriptService.ServerScripts.inventory.InventoryManager.DefaultTools` | Analizado |
+| `init.luau` | ModuleScript | — | — | 561 | `ServerScriptService.ServerScripts.inventory.InventoryManager.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/machines/</code> — 10 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/machines/</code> — 10 archivo(s) — 3/10 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Basketball.luau` | ModuleScript | — | — | 92 | `ServerScriptService.ServerScripts.machines.Basketball` | Pending |
-| `Machine.luau` | ModuleScript | — | — | 86 | `ServerScriptService.ServerScripts.machines.Machine` | Pending |
-| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ServerScriptService.ServerScripts.machines.MachineFactory` | Pending |
-| `Pong.luau` | ModuleScript | — | — | 388 | `ServerScriptService.ServerScripts.machines.Pong` | Pending |
-| `PopTheLock.luau` | ModuleScript | — | — | 55 | `ServerScriptService.ServerScripts.machines.PopTheLock` | Pending |
-| `Roulette.luau` | ModuleScript | — | — | 177 | `ServerScriptService.ServerScripts.machines.Roulette` | Pending |
-| `Stacker.luau` | ModuleScript | — | — | 50 | `ServerScriptService.ServerScripts.machines.Stacker` | Pending |
-| `ToyMachine.luau` | ModuleScript | — | — | 158 | `ServerScriptService.ServerScripts.machines.ToyMachine` | Pending |
-| `init.server.luau` | Script | Server | yes | 186 | `ServerScriptService.ServerScripts.machines.init.server` | Pending |
-| `oldPong.luau` | ModuleScript | — | — | 114 | `ServerScriptService.ServerScripts.machines.oldPong` | Pending |
+| `Basketball.luau` | ModuleScript | — | — | 92 | `ServerScriptService.ServerScripts.machines.Basketball` | Pendiente |
+| `Machine.luau` | ModuleScript | — | — | 86 | `ServerScriptService.ServerScripts.machines.Machine` | Analizado (en parte) |
+| `MachineFactory.luau` | ModuleScript | — | — | 26 | `ServerScriptService.ServerScripts.machines.MachineFactory` | Pendiente |
+| `Pong.luau` | ModuleScript | — | — | 388 | `ServerScriptService.ServerScripts.machines.Pong` | Pendiente |
+| `PopTheLock.luau` | ModuleScript | — | — | 55 | `ServerScriptService.ServerScripts.machines.PopTheLock` | Analizado (en parte) |
+| `Roulette.luau` | ModuleScript | — | — | 177 | `ServerScriptService.ServerScripts.machines.Roulette` | Pendiente |
+| `Stacker.luau` | ModuleScript | — | — | 50 | `ServerScriptService.ServerScripts.machines.Stacker` | Pendiente |
+| `ToyMachine.luau` | ModuleScript | — | — | 158 | `ServerScriptService.ServerScripts.machines.ToyMachine` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 186 | `ServerScriptService.ServerScripts.machines.init.server` | Analizado (en parte) |
+| `oldPong.luau` | ModuleScript | — | — | 114 | `ServerScriptService.ServerScripts.machines.oldPong` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/stats/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/stats/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Stats.luau` | ModuleScript | — | — | 71 | `ServerScriptService.ServerScripts.stats.Stats` | Pending |
-| `Timer.luau` | ModuleScript | — | — | 56 | `ServerScriptService.ServerScripts.stats.Timer` | Pending |
-| `init.server.luau` | Script | Server | yes | 84 | `ServerScriptService.ServerScripts.stats.init.server` | Pending |
+| `Stats.luau` | ModuleScript | — | — | 71 | `ServerScriptService.ServerScripts.stats.Stats` | Pendiente |
+| `Timer.luau` | ModuleScript | — | — | 56 | `ServerScriptService.ServerScripts.stats.Timer` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 84 | `ServerScriptService.ServerScripts.stats.init.server` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BusquedaMusicas.luau` | ModuleScript | — | — | 455 | `ServerStorage.BusquedaMusicas` | Pending |
-| `SoundInfo.luau` | ModuleScript | — | — | 37 | `ServerStorage.SoundInfo` | Pending |
+| `BusquedaMusicas.luau` | ModuleScript | — | — | 455 | `ServerStorage.BusquedaMusicas` | Pendiente |
+| `SoundInfo.luau` | ModuleScript | — | — | 37 | `ServerStorage.SoundInfo` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/</code> — 9 file(s) — 7/9 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/</code> — 9 archivo(s) — 7/9 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BaseStore.luau` | ModuleScript | — | — | 330 | `ServerStorage.DataKit.BaseStore` | Analyzed (partly) |
-| `Health.luau` | ModuleScript | — | — | 82 | `ServerStorage.DataKit.Health` | Analyzed |
-| `Inbox.luau` | ModuleScript | — | — | 71 | `ServerStorage.DataKit.Inbox` | Pending |
-| `Lease.luau` | ModuleScript | — | — | 254 | `ServerStorage.DataKit.Lease` | Analyzed |
-| `Mutex.luau` | ModuleScript | — | — | 62 | `ServerStorage.DataKit.Mutex` | Analyzed |
-| `Profile.luau` | ModuleScript | — | — | 149 | `ServerStorage.DataKit.Profile` | Analyzed |
-| `Signal.luau` | ModuleScript | — | — | 56 | `ServerStorage.DataKit.Signal` | Pending |
-| `Store.luau` | ModuleScript | — | — | 1237 | `ServerStorage.DataKit.Store` | Analyzed (partly) |
-| `init.luau` | ModuleScript | — | — | 56 | `ServerStorage.DataKit.init` | Analyzed |
+| `BaseStore.luau` | ModuleScript | — | — | 330 | `ServerStorage.DataKit.BaseStore` | Analizado (en parte) |
+| `Health.luau` | ModuleScript | — | — | 82 | `ServerStorage.DataKit.Health` | Analizado |
+| `Inbox.luau` | ModuleScript | — | — | 71 | `ServerStorage.DataKit.Inbox` | Pendiente |
+| `Lease.luau` | ModuleScript | — | — | 254 | `ServerStorage.DataKit.Lease` | Analizado |
+| `Mutex.luau` | ModuleScript | — | — | 62 | `ServerStorage.DataKit.Mutex` | Analizado |
+| `Profile.luau` | ModuleScript | — | — | 149 | `ServerStorage.DataKit.Profile` | Analizado |
+| `Signal.luau` | ModuleScript | — | — | 56 | `ServerStorage.DataKit.Signal` | Pendiente |
+| `Store.luau` | ModuleScript | — | — | 1237 | `ServerStorage.DataKit.Store` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 56 | `ServerStorage.DataKit.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Adapters/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Adapters/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Types.luau` | ModuleScript | — | — | 62 | `ServerStorage.DataKit.Adapters.Types` | Pending |
-| `init.luau` | ModuleScript | — | — | 46 | `ServerStorage.DataKit.Adapters.init` | Pending |
+| `Types.luau` | ModuleScript | — | — | 62 | `ServerStorage.DataKit.Adapters.Types` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 46 | `ServerStorage.DataKit.Adapters.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Util/</code> — 5 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/DataKit/Util/</code> — 5 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `capitalize.luau` | ModuleScript | — | — | 14 | `ServerStorage.DataKit.Util.capitalize` | Pending |
-| `deepCopy.luau` | ModuleScript | — | — | 26 | `ServerStorage.DataKit.Util.deepCopy` | Pending |
-| `deepEquals.luau` | ModuleScript | — | — | 31 | `ServerStorage.DataKit.Util.deepEquals` | Pending |
-| `reconcile.luau` | ModuleScript | — | — | 27 | `ServerStorage.DataKit.Util.reconcile` | Pending |
-| `retry.luau` | ModuleScript | — | — | 41 | `ServerStorage.DataKit.Util.retry` | Pending |
+| `capitalize.luau` | ModuleScript | — | — | 14 | `ServerStorage.DataKit.Util.capitalize` | Pendiente |
+| `deepCopy.luau` | ModuleScript | — | — | 26 | `ServerStorage.DataKit.Util.deepCopy` | Pendiente |
+| `deepEquals.luau` | ModuleScript | — | — | 31 | `ServerStorage.DataKit.Util.deepEquals` | Pendiente |
+| `reconcile.luau` | ModuleScript | — | — | 27 | `ServerStorage.DataKit.Util.reconcile` | Pendiente |
+| `retry.luau` | ModuleScript | — | — | 41 | `ServerStorage.DataKit.Util.retry` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/GlobalDataStore/</code> — 3 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/GlobalDataStore/</code> — 3 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ReadMe.server.luau` | Script | Server | — | 60 | `ServerStorage.GlobalDataStore.ReadMe.server` | Pending |
-| `Testeo_GlobalDataStore.luau` | ModuleScript | — | — | 164 | `ServerStorage.GlobalDataStore.Testeo_GlobalDataStore` | Pending |
-| `init.luau` | ModuleScript | — | — | 335 | `ServerStorage.GlobalDataStore.init` | Pending |
+| `ReadMe.server.luau` | Script | Server | — | 60 | `ServerStorage.GlobalDataStore.ReadMe.server` | Pendiente |
+| `Testeo_GlobalDataStore.luau` | ModuleScript | — | — | 164 | `ServerStorage.GlobalDataStore.Testeo_GlobalDataStore` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 335 | `ServerStorage.GlobalDataStore.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/RoleService/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/RoleService/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `RolesGroup.luau` | ModuleScript | — | — | 16 | `ServerStorage.RoleService.RolesGroup` | Pending |
-| `init.luau` | ModuleScript | — | — | 117 | `ServerStorage.RoleService.init` | Pending |
+| `RolesGroup.luau` | ModuleScript | — | — | 16 | `ServerStorage.RoleService.RolesGroup` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 135 | `ServerStorage.RoleService.init` | **Documentado** |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 file(s) — 3/8 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 7/8 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `EventService.luau` | ModuleScript | — | — | 456 | `ServerStorage.WorldSystem.EventService` | Pending |
-| `GiftInbox.luau` | ModuleScript | — | — | 89 | `ServerStorage.WorldSystem.GiftInbox` | Pending |
-| `PlayerDataReplicator.luau` | ModuleScript | — | — | 555 | `ServerStorage.WorldSystem.PlayerDataReplicator` | Pending |
-| `PlayerDataService.luau` | ModuleScript | — | — | 90 | `ServerStorage.WorldSystem.PlayerDataService` | Pending |
-| `PlayerSchema.luau` | ModuleScript | — | — | 126 | `ServerStorage.WorldSystem.PlayerSchema` | Analyzed |
-| `Profiles.luau` | ModuleScript | — | — | 296 | `ServerStorage.WorldSystem.Profiles` | Analyzed |
-| `ReferralService.luau` | ModuleScript | — | — | 1244 | `ServerStorage.WorldSystem.ReferralService` | Pending |
-| `ServerPresence.luau` | ModuleScript | — | — | 361 | `ServerStorage.WorldSystem.ServerPresence` | **Documented** |
+| `EventService.luau` | ModuleScript | — | — | 456 | `ServerStorage.WorldSystem.EventService` | Analizado |
+| `GiftInbox.luau` | ModuleScript | — | — | 89 | `ServerStorage.WorldSystem.GiftInbox` | Pendiente |
+| `PlayerDataReplicator.luau` | ModuleScript | — | — | 555 | `ServerStorage.WorldSystem.PlayerDataReplicator` | Analizado |
+| `PlayerDataService.luau` | ModuleScript | — | — | 116 | `ServerStorage.WorldSystem.PlayerDataService` | **Documentado** |
+| `PlayerSchema.luau` | ModuleScript | — | — | 151 | `ServerStorage.WorldSystem.PlayerSchema` | **Documentado** |
+| `Profiles.luau` | ModuleScript | — | — | 320 | `ServerStorage.WorldSystem.Profiles` | **Documentado** |
+| `ReferralService.luau` | ModuleScript | — | — | 1244 | `ServerStorage.WorldSystem.ReferralService` | Analizado |
+| `ServerPresence.luau` | ModuleScript | — | — | 366 | `ServerStorage.WorldSystem.ServerPresence` | **Documentado** |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/GamePassService/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/GamePassService/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `GamePassRewards.luau` | ModuleScript | — | — | 60 | `ServerStorage.WorldSystem.GamePassService.GamePassRewards` | Pending |
-| `init.luau` | ModuleScript | — | — | 131 | `ServerStorage.WorldSystem.GamePassService.init` | Pending |
+| `GamePassRewards.luau` | ModuleScript | — | — | 60 | `ServerStorage.WorldSystem.GamePassService.GamePassRewards` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 162 | `ServerStorage.WorldSystem.GamePassService.init` | **Documentado** |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/StarterGui/</code> — 1 file(s) — 1/1 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/StarterGui/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `LocalScript.client.luau` | LocalScript | — | yes | 26 | `StarterGui.LocalScript.client` | Analyzed |
+| `LocalScript.client.luau` | LocalScript | — | yes | 26 | `StarterGui.LocalScript.client` | Analizado |
 
 </details>
 
-## `GameWorlds` template
+## Plantilla `GameWorlds`
 
-1 files, 68 lines, 1 read.
+1 archivos, 68 líneas, 1 leídos.
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/GameWorlds/ServerScriptService/ServerScripts/</code> — 1 file(s) — 1/1 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/GameWorlds/ServerScriptService/ServerScripts/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `PublicServerInit.lua.server.luau` | Script | — | yes | 68 | `ServerScriptService.ServerScripts.PublicServerInit.lua.server` | Analyzed |
+| `PublicServerInit.lua.server.luau` | Script | — | yes | 68 | `ServerScriptService.ServerScripts.PublicServerInit.lua.server` | Analizado |
 
 </details>
 
-## `PlayerHouses` template
+## Plantilla `PlayerHouses`
 
-5 files, 864 lines, 5 read.
+5 archivos, 864 líneas, 5 leídos.
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/PlayerHouses/ReplicatedStorage/</code> — 1 file(s) — 1/1 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/PlayerHouses/ReplicatedStorage/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `RolesInfo.luau` | ModuleScript | — | — | 10 | `ReplicatedStorage.RolesInfo` | Analyzed |
+| `RolesInfo.luau` | ModuleScript | — | — | 10 | `ReplicatedStorage.RolesInfo` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/PlayerHouses/ServerScriptService/</code> — 4 file(s) — 4/4 read</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/PlayerHouses/ServerScriptService/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ModeratorManager.server.luau` | Script | — | yes | 156 | `ServerScriptService.ModeratorManager.server` | Analyzed |
-| `PlayerWorld_Init.lua.server.luau` | Script | — | yes | 291 | `ServerScriptService.PlayerWorld_Init.lua.server` | Analyzed |
-| `WorldDataReplicator.server.luau` | Script | — | yes | 241 | `ServerScriptService.WorldDataReplicator.server` | Analyzed |
-| `WorldService.luau` | ModuleScript | — | — | 166 | `ServerScriptService.WorldService` | Analyzed |
+| `ModeratorManager.server.luau` | Script | — | yes | 156 | `ServerScriptService.ModeratorManager.server` | Analizado |
+| `PlayerWorld_Init.lua.server.luau` | Script | — | yes | 291 | `ServerScriptService.PlayerWorld_Init.lua.server` | Analizado |
+| `WorldDataReplicator.server.luau` | Script | — | yes | 241 | `ServerScriptService.WorldDataReplicator.server` | Analizado |
+| `WorldService.luau` | ModuleScript | — | — | 166 | `ServerScriptService.WorldService` | Analizado |
 
 </details>
 
-## `BuildingSystem` template
+## Plantilla `BuildingSystem`
 
-8 files, 2,750 lines, 0 read.
+8 archivos, 2,750 líneas, 0 leídos.
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/</code> — 2 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/</code> — 2 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ColorFormat.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.ColorFormat` | Pending |
-| `init.luau` | ModuleScript | — | — | 151 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.init` | Pending |
+| `ColorFormat.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.ColorFormat` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 151 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Color/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Color/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 291 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Color.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 291 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Color.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/DesingFrame/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/DesingFrame/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 494 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.DesingFrame.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 494 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.DesingFrame.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/FurnitureFrame/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/FurnitureFrame/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 325 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.FurnitureFrame.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 325 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.FurnitureFrame.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/Inventory/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/Inventory/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.Inventory.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.Inventory.init` | Pendiente |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/MoveAndPlaceent/</code> — 1 file(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/MoveAndPlaceent/</code> — 1 archivo(s)</summary>
 
-| File | Kind | Context | Disabled | Lines | Runtime path | Status |
+| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 1065 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.MoveAndPlaceent.init` | Pending |
+| `init.luau` | ModuleScript | — | — | 1065 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.MoveAndPlaceent.init` | Pendiente |
 
 </details>

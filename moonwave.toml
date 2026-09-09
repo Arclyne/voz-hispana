@@ -1,54 +1,106 @@
-# Moonwave configuration — Voz Hispana technical documentation
+# Configuración de Moonwave — documentación técnica de Voz Hispana
 #
-# Two layers live in the same site:
-#   * docs/   — conceptual engineering documentation (Markdown + Mermaid)
-#   * /api/   — Moonwave API reference extracted from `--[=[ ... ]=]` comments in src/
+# La documentación está escrita en español, igual que los comentarios del código.
 #
-# Build and dev must be given the same --code paths the workflow uses; see
-# DOC_CODE_PATHS in .github/workflows/docs.yml and the note further down.
+# El sitio tiene dos capas:
+#   * docs/   — documentación conceptual de ingeniería (Markdown + Mermaid)
+#   * /api/   — referencia de API extraída de los comentarios `--[=[ ... ]=]` en src/
+#
+# `build` y `dev` necesitan las mismas rutas --code que usa el workflow; ver
+# DOC_CODE_PATHS en .github/workflows/docs.yml y la nota de más abajo.
 #
 #   npx moonwave build --code src/ReplicatedStorage \
 #                             src/ServerStorage/TemplatesTesting/Core/ServerStorage
 #
-# Plain `--code src` does NOT work: the extractor aborts on pre-existing comments
-# elsewhere in the tree.
+# `--code src` a secas NO funciona: el extractor aborta por comentarios que ya
+# existían en otras partes del árbol.
 
 title = "Voz Hispana"
 gitRepoUrl = "https://github.com/arclyne/voz-hispana"
 gitSourceBranch = "main"
 
-# The API reference is scoped: the Documentation workflow passes `--code` paths
-# rather than all of `src/`, because Moonwave's extractor aborts on pre-existing
-# `---` separator comments elsewhere in the tree. The rationale and the current
-# paths live in .github/workflows/docs.yml (DOC_CODE_PATHS).
+# La referencia de API está acotada: el workflow pasa rutas `--code` concretas en
+# vez de todo `src/`, porque el extractor de Moonwave aborta por comentarios `---`
+# preexistentes en otras zonas del árbol. El motivo y las rutas actuales están en
+# .github/workflows/docs.yml (DOC_CODE_PATHS).
 
-# `classOrder` is intentionally not set yet. It is added once the full set of
-# `@class` annotations exists (Phase 4), so that the sidebar groups classes by
-# system instead of alphabetically. Setting it early would break the build the
-# moment it named a class that does not exist.
+# `classOrder` agrupa la barra lateral por sistema en vez de alfabéticamente.
+#
+# CUIDADO: nombrar aquí una clase que no exista rompe el build. Cada nombre de
+# esta lista tiene que corresponder a una anotación `@class` real dentro de las
+# rutas DOC_CODE_PATHS del workflow. Si añades o quitas una clase, actualiza esto
+# a la vez.
+#
+# Para comprobarlo antes de subir nada:
+#   grep -rh '@class ' src/ReplicatedStorage \
+#       src/ServerStorage/TemplatesTesting/Core/ServerStorage --include='*.luau'
+#
+# El bloque de DataKit es aparte a propósito: es un paquete externo instalado con
+# wally que trae su propia documentación, escrita por sus autores. Este proyecto
+# no la toca. Ver docs/architecture/persistence.md.
+
+[[classOrder]]
+section = "Arranque"
+classes = ["InitAfterTemplates", "PlayerInit"]
+
+[[classOrder]]
+section = "Datos del jugador"
+classes = ["PlayerDataService", "PlayerSchema", "Profiles"]
+
+[[classOrder]]
+section = "Mundos y casas"
+classes = ["ServerPresence"]
+
+[[classOrder]]
+section = "Roles y monetización"
+classes = ["RoleService", "GamePassService"]
+
+[[classOrder]]
+section = "DataKit (paquete externo)"
+classes = [
+    "DataKit",
+    "Profile",
+    "Store",
+    "BaseStore",
+    "Lease",
+    "Mutex",
+    "Health",
+    "Inbox",
+    "Signal",
+    "Adapters",
+    "Types",
+    "Util",
+    "capitalize",
+]
 
 [home]
 enabled = true
 includeReadme = false
 
 [[home.features]]
-title = "Architecture"
-description = "How a server boots, how templates are imported, and how players and characters are initialised."
+title = "Arquitectura"
+description = "Cómo arranca un servidor, cómo se importan las plantillas y cómo se inicializan jugadores y personajes."
 
 [[home.features]]
-title = "Systems"
-description = "Housing and reserved servers, persistence, networking, and the gameplay systems built on top of them."
+title = "Sistemas"
+description = "Casas y servidores reservados, persistencia, red y los sistemas de juego construidos encima."
 
 [[home.features]]
-title = "Verification"
-description = "Recorded inconsistencies, the theory behind each one, and a reproducible plan to confirm or dismiss it."
+title = "Verificación"
+description = "Inconsistencias registradas, la teoría detrás de cada una y un plan reproducible para confirmarla o descartarla."
 
 [docusaurus]
 title = "Voz Hispana"
-tagline = "Technical documentation"
+tagline = "Documentación técnica"
 url = "https://arclyne.github.io"
 baseUrl = "/voz-hispana/"
 onBrokenLinks = "throw"
+
+# El sitio está en español: esto traduce también las cadenas del tema
+# (Anterior/Siguiente, buscador, «En esta página», etc.).
+[docusaurus.i18n]
+defaultLocale = "es"
+locales = ["es"]
 
 # Mermaid rendering is NOT configured here on purpose.
 #
@@ -68,12 +120,12 @@ title = "Voz Hispana"
 
 [[navbar.items]]
 to = "docs/intro"
-label = "Documentation"
+label = "Documentación"
 position = "left"
 
 [[navbar.items]]
 to = "api/"
-label = "API Reference"
+label = "Referencia de API"
 position = "left"
 
 [[navbar.items]]
@@ -83,4 +135,4 @@ position = "right"
 
 [footer]
 style = "dark"
-copyright = "Voz Hispana — engineering documentation generated with Moonwave."
+copyright = "Voz Hispana — documentación de ingeniería generada con Moonwave."

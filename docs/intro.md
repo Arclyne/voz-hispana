@@ -1,98 +1,111 @@
 ---
 sidebar_position: 1
-title: Introduction
+title: Introducción
 ---
 
-# Voz Hispana — Engineering Documentation
+# Voz Hispana — Documentación de ingeniería
 
-This site documents the Voz Hispana Roblox project **as it is actually written**, not as
-it might ideally be designed. Every statement here is derived from source in this
-repository. Where the source cannot settle a question, the page says so explicitly
-rather than guessing.
+Este sitio documenta el proyecto Voz Hispana **tal y como está escrito**, no como podría
+estar diseñado idealmente. Cada afirmación se deriva del código de este repositorio.
+Donde el código no basta para resolver una duda, la página lo dice explícitamente en vez
+de rellenar el hueco.
 
-## How to read this site
+## Cómo leer este sitio
 
-The documentation is layered. Each layer narrows the scope of the one above it:
+La documentación está por capas. Cada una acota el alcance de la anterior:
 
 ```
-PROJECT  →  ARCHITECTURE  →  LIFECYCLES  →  SYSTEMS  →  FLOWS  →  SCRIPTS  →  MODULES  →  FUNCTIONS
+PROYECTO  →  ARQUITECTURA  →  CICLOS DE VIDA  →  SISTEMAS  →  FLUJOS  →  SCRIPTS  →  MÓDULOS  →  FUNCIONES
 ```
 
-| Layer | Section |
+| Capa | Sección |
 |---|---|
-| Architecture & lifecycles | **Architecture** |
-| Systems and their flows | **Systems** |
-| Per-script and per-asset reference | **Reference** |
-| Public module APIs | **API Reference** (Moonwave, extracted from source comments) |
-| Suspected defects and how to test them | **Verification** |
+| Arquitectura y ciclos de vida | **Arquitectura** |
+| Sistemas y sus flujos | **Sistemas** |
+| Referencia por script y por asset | **Referencia** |
+| APIs públicas de los módulos | **Referencia de API** (Moonwave, extraída de los comentarios del código) |
+| Defectos sospechados y cómo probarlos | **Verificación** |
 
-Use the sidebar to navigate; the sections above appear there as they are written.
+Usa la barra lateral para navegar; las secciones aparecen ahí a medida que se escriben.
 
-:::note What the API Reference covers
+:::note Qué cubre la Referencia de API
 
-Moonwave extracts it from `--[=[ ]=]` comments in the Luau sources, but **not from all
-of them**. It is scoped to `ReplicatedStorage` and to
-`ServerStorage/TemplatesTesting/Core/ServerStorage` — the paths that carry annotated
-classes today: `PlayerInit`, `ServerPresence`, and the `DataKit` package.
+Moonwave la extrae de los comentarios `--[=[ ]=]` del código Luau, pero **no de todos**.
+Está acotada a `ReplicatedStorage` y a
+`ServerStorage/TemplatesTesting/Core/ServerStorage`. Ahí hay hoy **21 clases anotadas**,
+agrupadas por sistema en la barra lateral:
 
-Much of `Core/ReplicatedStorage` predates this project and uses `---` lines as visual
-separators, which Moonwave's extractor reads as malformed doc comments and refuses to
-build on. Bringing those files in would mean editing comments in about fifteen files —
-several of them vendored third-party libraries — which is a larger change than the
-documentation it would unlock. The scope widens as more systems are documented.
+| Sección | Clases |
+|---|---|
+| Arranque | `InitAfterTemplates`, `PlayerInit` |
+| Datos del jugador | `PlayerDataService`, `PlayerSchema`, `Profiles` |
+| Mundos y casas | `ServerPresence` |
+| Roles y monetización | `RoleService`, `GamePassService` |
+| DataKit (paquete externo) | Sus trece clases |
 
-Everything outside that scope is still covered by the conceptual documentation; it just
-has no generated API page.
+`DataKit` es un caso aparte: es un paquete externo instalado con wally que **ya viene
+documentado por sus autores**. Sus once clases aparecen en la referencia sin que este
+proyecto haya escrito ni tocado una línea de ellas, y la documentación conceptual no las
+duplica — solo describe cómo las usa Voz Hispana. Ver
+[Persistencia](./architecture/persistence.md).
+
+Buena parte de `Core/ReplicatedStorage` es anterior a este proyecto y usa líneas `---`
+como separadores visuales, que el extractor de Moonwave lee como comentarios de
+documentación mal formados y se niega a compilar. Meter esos archivos supondría editar
+comentarios en unos quince ficheros —varios de ellos librerías de terceros—, un cambio
+mayor que la documentación que desbloquearía. El alcance se amplía a medida que se
+documentan más sistemas.
+
+Todo lo que queda fuera sigue cubierto por la documentación conceptual; simplemente no
+tiene página de API generada.
 
 :::
 
-## What this project is, structurally
+## Qué es este proyecto, estructuralmente
 
-Voz Hispana is **not** a single Roblox place with a single script tree. Three facts
-shape everything else:
+Voz Hispana **no** es un único place de Roblox con un único árbol de scripts. Hay tres
+hechos que condicionan todo lo demás:
 
-1. **The committed source tree is mostly a set of *templates*, not the live game.**
-   `src/ServerScriptService/ImportTemplates.server.luau` pulls three published Roblox
-   assets at runtime with `InsertService:LoadAsset` and merges them into the live
-   services. What is committed under `src/ServerStorage/TemplatesTesting/` are
-   *local overrides* of those assets, used in place of the published versions when
-   present. See **Architecture → Initialization**.
+1. **El código versionado es en su mayoría un conjunto de *plantillas*, no el juego en
+   marcha.** `src/ServerScriptService/ImportTemplates.server.luau` descarga en tiempo de
+   ejecución tres assets publicados de Roblox con `InsertService:LoadAsset` y los fusiona
+   dentro de los servicios vivos. Lo que hay bajo `src/ServerStorage/TemplatesTesting/`
+   son *overrides locales* de esos assets, que se usan en lugar de las versiones
+   publicadas cuando existen. Ver **Arquitectura → Inicialización**.
 
-2. **Most scripts ship disabled and are switched on after the import finishes.**
-   104 of the 170 `.meta.json` files set `Disabled: true`.
-   `src/ServerScriptService/InitScripts.server.luau` walks the DataModel after the
-   templates land and re-enables them.
+2. **La mayoría de los scripts se distribuyen desactivados y se encienden después de la
+   importación.** 104 de los 170 archivos `.meta.json` ponen `Disabled: true`.
+   `src/ServerScriptService/InitScripts.server.luau` recorre el DataModel cuando las
+   plantillas ya han llegado y los reactiva.
 
-3. **The game spans multiple places.** A player's house runs in a *reserved server* of a
-   different `PlaceId` (declared in `ReplicatedStorage/HousesInfo`), reached through
-   `TeleportService`. The lobby, karaoke, arcade and donation places are separate
-   `PlaceId`s too. See [Housing](./systems/housing/overview.md).
+3. **El juego abarca varios places.** La casa de un jugador corre en un *servidor
+   reservado* de otro `PlaceId` (declarado en `ReplicatedStorage/HousesInfo`), al que se
+   llega con `TeleportService`. El lobby, el karaoke, el arcade y el place de donaciones
+   son `PlaceId` distintos también. Ver [Casas](./systems/housing/overview.md).
 
-Because of (1), a reader who only greps `src/` will misjudge what runs where. Because of
-(2), a script's file suffix does not tell you whether it is enabled — or even whether it
-runs on the client. **Architecture → Initialization** states the rules that actually
-apply.
+Por (1), quien solo haga grep en `src/` se equivocará sobre qué corre dónde. Por (2), el
+sufijo del archivo no dice si un script está activado — ni siquiera si corre en el
+cliente. **Arquitectura → Inicialización** explica las reglas que aplican de verdad.
 
-## Conventions used throughout
+## Convenciones usadas en todo el sitio
 
-Claims are tagged so the reader always knows how much weight they carry:
+Las afirmaciones van etiquetadas para que se sepa siempre cuánto peso tienen:
 
-| Tag | Meaning |
+| Etiqueta | Significado |
 |---|---|
-| **FACT** | Directly visible in source in this repository. |
-| **INFERENCE** | A reasonable conclusion drawn from several places in the source. |
-| **THEORY** | A hypothesis about runtime behaviour that static reading cannot settle. |
-| **UNKNOWN** | Cannot be determined from the available source at all. |
+| **HECHO** | Visible directamente en el código de este repositorio. |
+| **INFERENCIA** | Conclusión razonable a partir de varias partes del código. |
+| **TEORÍA** | Hipótesis sobre el comportamiento en ejecución que la lectura estática no puede resolver. |
+| **DESCONOCIDO** | No se puede determinar en absoluto con el código disponible. |
 
-Suspected defects are never called bugs. They are recorded as
-`BUG-CANDIDATE-XXX` entries with a classification, the evidence behind them, what
-remains unknown, and a reproducible plan to confirm or dismiss them. See
-**Verification**.
+Los defectos sospechados nunca se llaman bugs. Se registran como entradas
+`BUG-CANDIDATE-XXX` con su clasificación, la evidencia que las sostiene, lo que sigue sin
+saberse, y un plan reproducible para confirmarlas o descartarlas. Ver **Verificación**.
 
-## Not inspectable from this repository
+## Lo que no es inspeccionable desde este repositorio
 
-320 `.rbxm` files are binary and their contents cannot be read. Several of them matter a
-great deal — notably `src/StarterPlayer/StarterPlayerScripts.rbxm` and
-`src/StarterPlayer/StarterCharacterScripts.rbxm`, which may hold the real client entry
-points. Pages that depend on them state the gap instead of filling it. The full list is
-in [Binary assets](./reference/binary-assets.md).
+320 archivos `.rbxm` son binarios y su contenido no se puede leer. Varios importan mucho
+—en particular `src/StarterPlayer/StarterPlayerScripts.rbxm` y
+`src/StarterPlayer/StarterCharacterScripts.rbxm`, que podrían contener los puntos de
+entrada reales del cliente. Las páginas que dependen de ellos declaran el hueco en vez de
+rellenarlo. La lista completa está en [Assets binarios](./reference/binary-assets.md).

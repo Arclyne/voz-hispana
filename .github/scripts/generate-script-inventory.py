@@ -1,4 +1,4 @@
-"""Regenerate the script inventory under docs/reference/.
+"""Regenera el inventario de scripts en docs/reference/.
 
 These pages are generated, not hand-written: they are a mechanical census of the
 repository, and hand-maintaining them would guarantee they drift. Re-run this
@@ -47,15 +47,75 @@ ANALYSED |= {
     t("PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau"),
     t("PlayerHouses/ServerScriptService/ModeratorManager.server.luau"),
     t("PlayerHouses/ReplicatedStorage/RolesInfo.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerDataService.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau"),
+    t("Core/ServerScriptService/ServerScripts/PlayerDataInit.server.luau"),
+    t("Core/ReplicatedStorage/Client/EconomySystem/Collections.luau"),
+    t("Core/ServerStorage/WorldSystem/EventService.luau"),
+    t("Core/ServerScriptService/ServerScripts/EventBootstrap.server.luau"),
+    t("Core/ServerStorage/WorldSystem/ReferralService.luau"),
+    t("Core/ServerScriptService/Data/Main/init.server.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/HouseAdded.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/ColorTexture.luau"),
+    t("Core/ReplicatedStorage/Shared/BreakDown.luau"),
+    t("Core/ReplicatedStorage/Shared/Monetization/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Monetization/MainModule.luau"),
+    t("Core/ReplicatedStorage/Shared/Monetization/MarkAdded.luau"),
+    t("Core/ReplicatedStorage/Shared/Monetization/Beneficios.luau"),
+    t("Core/ServerStorage/WorldSystem/GamePassService/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorsPlayer.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/Collitions.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/Added.luau"),
+    t("Core/ReplicatedStorage/Client/interactable/init.server.luau"),
+    t("Core/ReplicatedStorage/Shared/bindToTag.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/MusicPlayer.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/Bin.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/CuadrosPaint.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/Display.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/inventory/init.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/inventory/InventoryManager/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/inventory/InventoryManager/DefaultTools.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/AnimationSystem/init.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/Quests/QuestMain.server.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
     t("Core/ServerStorage/DataKit/BaseStore.luau"),
     t("Core/ServerScriptService/ServerScripts/ShopServerSystem.server.luau"),
+    t("Core/ServerStorage/RoleService/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/machines/Machine.luau"),
+    t("Core/ServerScriptService/ServerScripts/machines/PopTheLock.luau"),
+    t("Core/ServerScriptService/ServerScripts/EventCommands.server.luau"),
+    t("Core/ReplicatedStorage/Shared/AddValues.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/Compras.luau"),
+    t("Core/ServerStorage/WorldSystem/GamePassService/GamePassRewards.luau"),
+    t("Core/ServerScriptService/Data/Main/PlayerGamesFetcher.luau"),
+    t("Core/ServerStorage/SoundInfo.luau"),
+    t("Core/ReplicatedStorage/Client/Posicionamientos.luau"),
+    t("Core/ReplicatedStorage/Client/interactable/Interactable/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/ToolsServer.server.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Paint/ServerClient/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/Quests/QuestService.luau"),
+    t("Core/ServerScriptService/ServerScripts/machines/init.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/cooking/CookingStation.luau"),
+    t("Core/ServerScriptService/ServerScripts/cooking/CuttingBoard.server.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
+    "src/ReplicatedStorage/InitAfterTemplates.luau",
     t("Core/ServerStorage/WorldSystem/ServerPresence.luau"),
+    t("Core/ServerStorage/WorldSystem/Profiles.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerDataService.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerSchema.luau"),
+    t("Core/ServerStorage/RoleService/init.luau"),
+    t("Core/ServerStorage/WorldSystem/GamePassService/init.luau"),
 }
 
 def meta_for(p):
@@ -92,52 +152,53 @@ for dp, _, fn in os.walk(ROOT):
         lines = sum(1 for _ in open(p, encoding="utf-8", errors="replace"))
         rt, tmpl = runtime_path(p)
         if p in DOCUMENTED:
-            status = "**Documented**"
+            status = "**Documentado**"
         elif p in ANALYSED:
-            status = "Analyzed"
+            status = "Analizado"
         elif p in PARTIAL:
-            status = "Analyzed (partly)"
+            status = "Analizado (en parte)"
         else:
-            status = "Pending"
+            status = "Pendiente"
         rows.append(dict(path=p, kind=kind, ctx=ctx, disabled=disabled,
                          lines=lines, rt=rt, tmpl=tmpl, status=status))
 
 counts = collections.Counter(r["status"] for r in rows)
 out = ["""---
 sidebar_position: 1
-title: Script inventory
+title: Inventario de scripts
 ---
 
-# Script inventory
+# Inventario de scripts
 
-Every inspectable `.luau` file in the repository, with the DataModel path it occupies at
-runtime and how far this documentation project has got with it.
+Todos los archivos `.luau` inspeccionables del repositorio, con la ruta del DataModel que
+ocupan en ejecución y hasta dónde ha llegado este proyecto de documentación con cada uno.
 
-Two columns exist because the filename lies about both:
+Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
-* **Runtime path** — the template import moves everything out of
-  `ServerStorage/TemplatesTesting/<Template>/<Service>/` into `<Service>`. See
-  [Initialization](../architecture/initialization.md).
-* **Context** — `RunContext` from the sibling `.meta.json` overrides the `.server.luau` /
-  `.client.luau` suffix. A blank cell means no `RunContext` is set, so the suffix decides.
+* **Ruta en ejecución** — la importación de plantillas saca todo de
+  `ServerStorage/TemplatesTesting/<Plantilla>/<Servicio>/` hacia `<Servicio>`. Ver
+  [Inicialización](../architecture/initialization.md).
+* **Contexto** — el `RunContext` del `.meta.json` hermano manda sobre el sufijo
+  `.server.luau` / `.client.luau`. Una celda vacía significa que no hay `RunContext`, así
+  que decide el sufijo.
 
-**Disabled** marks a script that ships switched off and is enabled later — by
-`InitScripts` on the server, or by something outside this repository on the client
+**Desactivado** marca un script que se distribuye apagado y se activa después: por
+`InitScripts` en el servidor, o por algo ajeno a este repositorio en el cliente
 ([BUG-CANDIDATE-007](../testing/verification-plan.md#bug-candidate-007)).
 
-## Status
+## Estado
 
-| Status | Meaning | Count |
+| Estado | Significado | Cantidad |
 |---|---|---|
 """]
 for label, meaning in [
-    ("**Documented**", "Read in full and annotated with Moonwave by this project"),
-    ("Analyzed", "Read in full; its behaviour is described somewhere on this site"),
-    ("Analyzed (partly)", "Read in the parts that mattered for a specific question"),
-    ("Pending", "Not yet read"),
+    ("**Documentado**", "Leído entero y anotado con Moonwave por este proyecto"),
+    ("Analizado", "Leído entero; su comportamiento se describe en alguna página del sitio"),
+    ("Analizado (en parte)", "Leído solo en las partes relevantes para una pregunta concreta"),
+    ("Pendiente", "Aún sin leer"),
 ]:
     out.append(f"| {label} | {meaning} | {counts.get(label, 0)} |\n")
-out.append(f"\n**Total: {len(rows)} files, {sum(r['lines'] for r in rows):,} lines.**\n")
+out.append(f"\n**Total: {len(rows)} archivos, {sum(r['lines'] for r in rows):,} líneas.**\n")
 
 order = ["(root)", "Core", "GameWorlds", "PlayerHouses", "BuildingSystem"]
 by_tmpl = collections.defaultdict(list)
@@ -148,20 +209,20 @@ for tmpl in order + sorted(k for k in by_tmpl if k not in order):
     if tmpl not in by_tmpl:
         continue
     group = by_tmpl[tmpl]
-    label = "Outside the templates" if tmpl == "(root)" else f"`{tmpl}` template"
-    done = sum(1 for r in group if r["status"] != "Pending")
-    out.append(f"\n## {label}\n\n{len(group)} files, "
-               f"{sum(r['lines'] for r in group):,} lines, {done} read.\n")
+    label = "Fuera de las plantillas" if tmpl == "(root)" else f"Plantilla `{tmpl}`"
+    done = sum(1 for r in group if r["status"] != "Pendiente")
+    out.append(f"\n## {label}\n\n{len(group)} archivos, "
+               f"{sum(r['lines'] for r in group):,} líneas, {done} leídos.\n")
     by_dir = collections.defaultdict(list)
     for r in group:
         by_dir[os.path.dirname(r["path"])].append(r)
     for d in sorted(by_dir):
         entries = by_dir[d]
-        read = sum(1 for r in entries if r["status"] != "Pending")
-        badge = f" — {read}/{len(entries)} read" if read else ""
-        out.append(f"\n<details>\n<summary><code>{d}/</code> — {len(entries)} file(s)"
+        read = sum(1 for r in entries if r["status"] != "Pendiente")
+        badge = f" — {read}/{len(entries)} leídos" if read else ""
+        out.append(f"\n<details>\n<summary><code>{d}/</code> — {len(entries)} archivo(s)"
                    f"{badge}</summary>\n\n")
-        out.append("| File | Kind | Context | Disabled | Lines | Runtime path | Status |\n"
+        out.append("| Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |\n"
                    "|---|---|---|---|---|---|---|\n")
         for r in sorted(entries, key=lambda x: x["path"]):
             out.append(f"| `{os.path.basename(r['path'])}` | {r['kind']} | {r['ctx'] or '—'} "

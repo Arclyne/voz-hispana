@@ -1,13 +1,13 @@
 ---
 sidebar_position: 3
-title: Persistence
+title: Persistencia
 ---
 
-# House persistence
+# Persistencia de una casa
 
-## What is stored, and where
+## Qué se guarda, y dónde
 
-**FACT.** A house's durable state is a `World` profile, declared in
+**HECHO.** El estado duradero de una casa es un perfil `World`, declarado en
 `Core/ServerStorage/WorldSystem/Profiles.luau`:
 
 ```lua
@@ -34,38 +34,55 @@ Profiles.World = DataKit.Profile.define("World", {
 })
 ```
 
-| Section | Shape | Written by |
+| Sección | Forma | La escribe |
 |---|---|---|
-| `settings` | `{ OwnerId: number, Name: string, ServerType: "public" \| "private" }` | `WorldService.start` (first boot), `WorldDataReplicator` (`SetWorldName`, `togglePrivacity`) |
+| `settings` | `{ OwnerId: number, Name: string, ServerType: "public" \| "private" }` | `WorldService.start` (primer arranque), `WorldDataReplicator` (`SetWorldName`, `togglePrivacity`) |
 | `roles` | `{ [userIdString]: number }` | `WorldDataReplicator` (`SetUserRole`) |
 | `bans` | `{ [userIdString]: true }` | `WorldDataReplicator` (`SetBan`) |
-| `content` | `{}` in the template | **UNKNOWN** — no writer found in the reviewed source |
+| `content` | `{}` en la plantilla | `Shared/Stores` — `SetDecorPlayer` escribe `content.Objects`, `HouseAdded.ChangeDesing` escribe `content.Desing` |
 
-**UNKNOWN.** `content` is declared and never touched by any script read so far. The
-`BuildingSystem` template is the obvious candidate — it has a construction UI and
-furniture placement — but that has not been analysed, so no claim is made here.
+**HECHO.** `content` guarda dos cosas, y las dos las escribe el sistema de mobiliario:
 
-## Four storage locations
+| Sub-clave | Qué contiene | Escritor |
+|---|---|---|
+| `Objects` | Un registro por mueble colocado, con su `UnniqueKey` y el `OwnerPlace` de quien lo puso | `Stores/init.luau`, `SetDecorPlayer` → `UpdateData` |
+| `Desing` | Color y material por `[carpeta][modelo]` de la estructura de la casa | `Stores/HouseAdded.luau`, `module:ChangeDesing` |
 
-**FACT.** A single house touches four distinct stores:
+Lo lee de vuelta `Stores/init.luau`, en `SetStore`, cuando el servidor de la casa arranca
+y `DataBaseLoaded` dispara: reconstruye cada mueble y vuelve a aplicar cada color.
 
-| Store | Backend | Key | Contents | Lifetime |
+:::note Una hipótesis anterior, corregida
+
+Una versión previa de esta página apuntaba a la plantilla `BuildingSystem` como escritor
+probable, por eliminación, y lo etiquetaba como **DESCONOCIDO**. Al leer `Shared/Stores`
+resultó ser otro sistema. Se deja anotado porque es exactamente para lo que sirve marcar
+una hipótesis como tal.
+
+:::
+
+Ver [Tiendas y decoración](../stores.md).
+
+## Cuatro ubicaciones de almacenamiento
+
+**HECHO.** Una sola casa toca cuatro almacenes distintos:
+
+| Almacén | Backend | Clave | Contenido | Vida |
 |---|---|---|---|---|
-| `World` profile | DataStore | `{userId}_{room}` | `settings`, `roles`, `bans`, `content` | Permanent |
-| `WorldCard` | DataStore | same | `{ name, ownerId, serverType }` | Permanent, rewritten on save |
-| `DataKitLeases` | MemoryStore | `World/{key}` | `{ owner = jobId, meta = { placeId, jobId, accessCode } }` | 120 s TTL, refreshed every 30 s |
-| `UserServerRegistry_Test` | MemoryStore | `{key}` | Player list, counts, name, `placeId`, `jobId`, `accessCode`, `status` | 120 s TTL, refreshed every 30 s |
+| perfil `World` | DataStore | `{userId}_{room}` | `settings`, `roles`, `bans`, `content` | Permanente |
+| `WorldCard` | DataStore | la misma | `{ name, ownerId, serverType }` | Permanente, reescrita al guardar |
+| `DataKitLeases` | MemoryStore | `World/{key}` | `{ owner = jobId, meta = { placeId, jobId, accessCode } }` | TTL 120 s, refrescado cada 30 s |
+| `UserServerRegistry_Test` | MemoryStore | `{key}` | Lista de jugadores, conteos, nombre, `placeId`, `jobId`, `accessCode`, `status` | TTL 120 s, refrescado cada 30 s |
 
-**INFERENCE.** The two DataStore entries are the house; the two MemoryStore entries are
-the *server currently hosting* it. Nothing durable ever points at a server — which is
-exactly why a stale server reference cannot outlive its TTL. See
-[Architecture → Reserved servers](../../architecture/reserved-servers.md).
+**INFERENCIA.** Las dos entradas de DataStore son la casa; las dos de MemoryStore son *el
+servidor que la aloja ahora*. Nada duradero apunta jamás a un servidor — que es
+exactamente por lo que una referencia obsoleta a un servidor no puede sobrevivir a su TTL.
+Ver [Arquitectura → Servidores reservados](../../architecture/reserved-servers.md).
 
-## First boot: how a house comes into existence
+## Primer arranque: cómo llega a existir una casa
 
-**FACT.** There is no "create house" operation. A house's `World` profile is created
-implicitly, by `DataKit` reconciling the template over an empty load. `WorldService.start`
-then fills in the two fields the template cannot know:
+**HECHO.** No hay operación de «crear casa». El perfil `World` de una casa se crea
+implícitamente, cuando `DataKit` reconcilia la plantilla sobre una carga vacía.
+`WorldService.start` rellena entonces los dos campos que la plantilla no puede conocer:
 
 ```lua
 store:update(function(data)
@@ -77,10 +94,10 @@ store:update(function(data)
 end)
 ```
 
-**FACT.** The `OwnerId == 0` guard makes this a one-time initialisation: on every later
-boot the fields are already set and the update is a no-op.
+**HECHO.** La guarda `OwnerId == 0` convierte esto en una inicialización de una sola vez:
+en cada arranque posterior los campos ya están puestos y el update no hace nada.
 
-**FACT.** `displayName` comes from `PlayerWorld_Init.getRoomDisplayName`:
+**HECHO.** `displayName` viene de `PlayerWorld_Init.getRoomDisplayName`:
 
 ```lua
 local success, playerName = pcall(function()
@@ -93,42 +110,42 @@ else
 end
 ```
 
-**OBSERVATION.** If `GetNameFromUserIdAsync` fails on the house's **very first** boot, the
-house is permanently named `"default Name"` — the `OwnerId == 0` guard means the
-initialisation never runs again, so a later successful lookup cannot correct it. The owner
-can still rename it through `SetWorldName`. Recorded as
+**OBSERVACIÓN.** Si `GetNameFromUserIdAsync` falla en el **primerísimo** arranque de la
+casa, la casa se llama permanentemente `"default Name"` — la guarda `OwnerId == 0` hace que
+la inicialización no vuelva a correr, así que una búsqueda posterior con éxito no puede
+corregirlo. El dueño todavía puede renombrarla con `SetWorldName`. Registrado como
 [BUG-CANDIDATE-009](../../testing/verification-plan.md#bug-candidate-009).
 
 ```mermaid
 stateDiagram-v2
-    [*] --> NeverOpened: player owns the room,<br/>no World profile written yet
-    NeverOpened --> Initialising: first house server boots,<br/>WorldService.start
-    Initialising --> Live: OwnerId and Name set,<br/>store saved
+    [*] --> NuncaAbierta: el jugador posee la room,<br/>aún no hay perfil World escrito
+    NuncaAbierta --> Inicializando: arranca el primer servidor de casa,<br/>WorldService.start
+    Inicializando --> Viva: OwnerId y Name puestos,<br/>store guardado
 
-    Live --> Hosted: a house server holds<br/>the World/{key} lease
-    Hosted --> Live: server shuts down,<br/>lease released or expired
-    Live --> Hosted: reopened later
+    Viva --> Hosteada: un servidor de casa tiene<br/>el lease World/{key}
+    Hosteada --> Viva: el servidor se apaga,<br/>lease liberado o expirado
+    Viva --> Hosteada: reabierta más tarde
 
-    Hosted --> Hosted: settings / roles / bans edited,<br/>autosave every 300s
+    Hosteada --> Hosteada: se editan settings / roles / bans,<br/>autoguardado cada 300 s
 
-    note right of NeverOpened
-        WorldsBrowser shows it using the
-        static HousesInfo name — there is
-        no WorldCard yet.
+    note right of NuncaAbierta
+        WorldsBrowser la muestra con el
+        nombre estático de HousesInfo:
+        todavía no existe WorldCard.
     end note
 
-    note right of Live
-        The house exists and is browsable
-        from its WorldCard. Nothing in the
-        reviewed source ever deletes it.
+    note right of Viva
+        La casa existe y es navegable desde
+        su WorldCard. Nada en el código
+        revisado la borra jamás.
     end note
 ```
 
-## The card
+## La tarjeta
 
-**FACT.** The `WorldCard` projection lets a lobby show a **closed** house's real name and
-privacy without loading the profile or taking its lease. `WorldsBrowser` uses exactly this
-fallback:
+**HECHO.** La proyección `WorldCard` permite a un lobby mostrar el nombre real y la
+privacidad de una casa **cerrada** sin cargar el perfil ni tomar su lease.
+`WorldsBrowser` usa exactamente ese fallback:
 
 ```lua
 local card = Profiles.World.readCard(serverKey)
@@ -136,24 +153,24 @@ name = card and card.name
 serverType = card and card.serverType
 ```
 
-**INFERENCE.** The card is written by `DataKit` when the store saves
-(`_syncProjections` runs after a successful save). So a card reflects the house as of its
-last save, not as of now — for a house that is currently hosted, the browser prefers the
-live directory entry anyway, so the staleness only ever applies to closed houses whose
-name changed in the final moments before shutdown.
+**INFERENCIA.** La tarjeta la escribe `DataKit` cuando el store guarda
+(`_syncProjections` corre tras un guardado con éxito). Así que una tarjeta refleja la casa
+tal como estaba en su último guardado, no ahora mismo — para una casa que esté hosteada el
+navegador prefiere de todos modos la entrada del directorio vivo, así que la obsolescencia
+solo aplica a casas cerradas cuyo nombre cambió en los últimos instantes antes del apagado.
 
-## When a house is saved
+## Cuándo se guarda una casa
 
-**FACT.**
+**HECHO.**
 
-| Trigger | Path |
+| Disparador | Ruta |
 |---|---|
-| Autosave | `Store._heartbeat`, every 300 s by default |
-| Any administrative edit | `WorldService.update` → `store:update` marks dirty; persisted by the next save |
-| Graceful shutdown | `BindToClose` → `presence:Cleanup()` → `OnCleanup` → `WorldService.destroy()` → `store:close()` |
-| Denied host | `onDenied` → `presence:Cleanup()` → same chain |
+| Autoguardado | `Store._heartbeat`, cada 300 s por defecto |
+| Cualquier edición administrativa | `WorldService.update` → `store:update` marca sucio; se persiste en el siguiente guardado |
+| Apagado ordenado | `BindToClose` → `presence:Cleanup()` → `OnCleanup` → `WorldService.destroy()` → `store:close()` |
+| Anfitrión denegado | `onDenied` → `presence:Cleanup()` → la misma cadena |
 
-**FACT.** `WorldService.destroy` is idempotent:
+**HECHO.** `WorldService.destroy` es idempotente:
 
 ```lua
 function WorldService.destroy()
@@ -164,8 +181,8 @@ function WorldService.destroy()
 end
 ```
 
-**FACT.** `PlayerWorld_Init`'s `BindToClose` covers both the initialised and
-uninitialised cases:
+**HECHO.** El `BindToClose` de `PlayerWorld_Init` cubre tanto el caso inicializado como el
+no inicializado:
 
 ```lua
 game:BindToClose(function()
@@ -177,14 +194,14 @@ game:BindToClose(function()
 end)
 ```
 
-**INFERENCE.** The `else` branch matters for a server that reserved and booted but never
-reached `presence` — for example one denied during `awaitReady`. It still closes the store
-rather than leaving the lease to expire.
+**INFERENCIA.** La rama `else` importa para un servidor que reservó y arrancó pero nunca
+llegó a tener `presence` — por ejemplo uno denegado durante `awaitReady`. Aun así cierra el
+store en vez de dejar que el lease expire.
 
-## Change replication
+## Replicación de cambios
 
-**FACT.** `WorldService` does not push raw store changes. It diffs by section and fires
-only what actually changed:
+**HECHO.** `WorldService` no propaga cambios en crudo del store. Hace diff por sección y
+dispara solo lo que realmente cambió:
 
 ```lua
 local function fireChangedSections(data: any)
@@ -198,51 +215,53 @@ local function fireChangedSections(data: any)
 end
 ```
 
-with the mapping:
+con el mapeo:
 
-| Signal name | Section |
+| Nombre de la señal | Sección |
 |---|---|
 | `WorldSettingsStore` | `settings` |
 | `WorldRolesStore` | `roles` |
 | `WorldBansStore` | `bans` |
 | `WorldContentStore` | `content` |
 
-Two consumers subscribe: `WorldDataReplicator` (replicates to privileged clients) and
-`ModeratorManager` (re-evaluates who may stay). See [Permissions](./permissions.md).
+Se suscriben dos consumidores: `WorldDataReplicator` (replica a clientes privilegiados) y
+`ModeratorManager` (reevalúa quién puede quedarse). Ver [Permisos](./permissions.md).
 
-**FACT.** Every value crossing this boundary is `deepCopy`ed — both into `lastSections`
-and into the fired payload — so a consumer cannot mutate the store's live data by holding
-onto what it received. `WorldService.get()` likewise returns a `deepCopy`.
+**HECHO.** Todo valor que cruza esta frontera pasa por `deepCopy` —tanto al entrar en
+`lastSections` como en el contenido disparado—, así que un consumidor no puede mutar los
+datos vivos del store guardándose lo que recibió. `WorldService.get()` también devuelve un
+`deepCopy`.
 
-## Concurrency
+## Concurrencia
 
-**FACT.** `Profiles.World` uses `onConflict = "deny"`, which means: never steal a live
-house from another server. Combined with the `DataKit` lease, exactly one server may write
-a house at a time, and a challenger converges to the owner rather than fighting it.
+**HECHO.** `Profiles.World` usa `onConflict = "deny"`, que significa: no robar nunca una
+casa viva a otro servidor. Junto con el lease de `DataKit`, exactamente un servidor puede
+escribir una casa a la vez, y un aspirante converge hacia el dueño en vez de pelearse con
+él.
 
-This is covered in full, with the two-layer guard against simultaneous opens, in
-[Architecture → Reserved servers](../../architecture/reserved-servers.md).
+Está cubierto por completo, con la protección de dos capas contra aperturas simultáneas,
+en [Arquitectura → Servidores reservados](../../architecture/reserved-servers.md).
 
-## What is never deleted
+## Lo que nunca se borra
 
-**FACT.** No code in the reviewed source deletes a `World` profile or a `WorldCard`.
-Selling, abandoning or resetting a house is not expressible.
+**HECHO.** Ningún código del árbol revisado borra un perfil `World` ni una `WorldCard`.
+Vender, abandonar o resetear una casa no es expresable.
 
-**INFERENCE.** A house record therefore persists for the lifetime of the DataStore, whether
-or not the owner still owns the room. If a room were ever removed from a player's `rooms`,
-the house's data would remain and would be reachable again the moment the room was
-re-acquired — with its old name, roles and bans intact. No code path removes entries from
-`rooms` either, so this is currently unreachable; it is recorded as a property of the
-design, not as a defect.
+**INFERENCIA.** Un registro de casa persiste por tanto durante toda la vida del DataStore,
+siga o no el dueño poseyendo la room. Si alguna vez se quitara una room de los `rooms` de
+un jugador, los datos de la casa seguirían ahí y volverían a ser alcanzables en cuanto la
+room se readquiriese — con su nombre, roles y baneos antiguos intactos. Tampoco hay
+ninguna ruta de código que quite entradas de `rooms`, así que esto es hoy inalcanzable; se
+registra como propiedad del diseño, no como defecto.
 
-## Related implementation
+## Implementación relacionada
 
-| Concern | Code |
+| Aspecto | Código |
 |---|---|
-| Profile declaration | `Core/ServerStorage/WorldSystem/Profiles.luau`, `Profiles.World` |
-| Store wrapper | `PlayerHouses/ServerScriptService/WorldService.luau` |
-| First-boot initialisation | `WorldService.start` |
-| Section diffing | `WorldService`, `fireChangedSections` |
-| Card projection | `Profiles.World`'s `card.project`; `DataKit/Store.luau`, `readCard` |
-| Save / close | [`Store`](/api/Store) — `save`, `close`, `_heartbeat` |
+| Declaración del perfil | `Core/ServerStorage/WorldSystem/Profiles.luau`, `Profiles.World` |
+| Envoltorio del store | `PlayerHouses/ServerScriptService/WorldService.luau` |
+| Inicialización de primer arranque | `WorldService.start` |
+| Diff por secciones | `WorldService`, `fireChangedSections` |
+| Proyección de tarjeta | `card.project` de `Profiles.World`; `DataKit/Store.luau`, `readCard` |
+| Guardar / cerrar | [`Store`](/api/Store) — `save`, `close`, `_heartbeat` |
 | Lease | [`Lease`](/api/Lease) |

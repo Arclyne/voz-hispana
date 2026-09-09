@@ -5,6 +5,30 @@ local DataKit = require(script.Parent.Parent.DataKit)
 local PlayerSchema = require(script.Parent.PlayerSchema)
 local ReferralConfig = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Referrals"):WaitForChild("ReferralConfig"))
 
+--[=[
+	Declara las cuatro identidades persistentes del juego.
+
+	Todo lo que sobrevive a una sesión pasa por aquí. Cada entrada es un
+	[`Profile`](/api/Profile) de DataKit: un nombre, una plantilla, y una política de
+	conflicto. La política es la decisión de diseño importante, y no es la misma en todas:
+
+	| Perfil | Clave | `onConflict` | Por qué |
+	|---|---|---|---|
+	| `WorldsPlayer` | `tostring(userId)` | por defecto (`"steal"`) | Un jugador **se mueve** entre servidores. La sesión anterior está muerta, así que tomar el relevo es seguro. |
+	| `World` | `"{userId}_{room}"` | `"deny"` | Una casa hospedada **está viva** en otro servidor, con gente dentro. No se roba: el aspirante converge hacia el dueño. |
+	| `Event` | id del evento | `"deny"` | Mismo motivo que una casa. |
+	| `ReferralCode` | el código, en mayúsculas | `"deny"` | Un código lo posee una sola identidad. |
+
+	`WorldsPlayer` declara además `maxMessages = 2000` y un manejador `onMessage`, que es lo
+	que sostiene la entrega idempotente de las ventas de cuadros y de las recompensas de
+	invitación. El tope está razonado en el propio código: sin él, alguien con muchos
+	invitados que pase semanas sin entrar acumularía un mensaje por cada uno.
+
+	`World` declara una proyección `card` —`{ name, ownerId, serverType }`— que es lo que lee
+	el navegador de casas sin tener que cargar el perfil entero.
+
+	@class Profiles
+]=]
 local Profiles = {}
 
 -- Pasado el tope se descartan los mas viejos. Un youtuber que este semanas sin

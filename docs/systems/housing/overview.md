@@ -1,89 +1,90 @@
 ---
 sidebar_position: 1
-title: Overview
+title: Resumen
 ---
 
-# Housing — overview
+# Casas — resumen
 
-:::tip A house is not a house server
+:::tip Una casa no es un servidor de casa
 
-The single most important distinction in this system. A **house** is a persistent record
-that can live for months. A **house server** is a reserved Roblox server instance that may
-live for minutes. They have different identities, different storage, different lifetimes
-and different failure modes.
+La distinción más importante de este sistema. Una **casa** es un registro persistente que
+puede vivir meses. Un **servidor de casa** es una instancia de servidor reservado de
+Roblox que puede vivir minutos. Tienen identidades distintas, almacenamiento distinto,
+vidas distintas y modos de fallo distintos.
 
-| | House | House server |
+| | Casa | Servidor de casa |
 |---|---|---|
-| What it is | A `World` profile in a DataStore | A reserved Roblox server instance |
-| Identity | `"{ownerUserId}_{roomName}"` | A `ReservedServerAccessCode` |
-| Lifetime | Indefinite | From first teleport to last player leaving |
-| Where it lives | DataStore, via `DataKit` | Roblox infrastructure |
-| Who can write it | Exactly one server, enforced by a distributed lease | — |
-| Disappears when | Never (nothing deletes it) | Roblox reclaims the instance |
+| Qué es | Un perfil `World` en un DataStore | Una instancia de servidor reservado de Roblox |
+| Identidad | `"{ownerUserId}_{roomName}"` | Un `ReservedServerAccessCode` |
+| Vida | Indefinida | Del primer teleport a la salida del último jugador |
+| Dónde vive | DataStore, vía `DataKit` | Infraestructura de Roblox |
+| Quién puede escribirla | Exactamente un servidor, garantizado por un lease distribuido | — |
+| Desaparece cuando | Nunca (nada la borra) | Roblox recupera la instancia |
 
-The pages in this section keep the two apart deliberately. When a page says "the house",
-it means the record; when it says "the house server", it means the instance.
+Las páginas de esta sección mantienen ambas cosas separadas a propósito. Cuando una
+página dice «la casa», habla del registro; cuando dice «el servidor de casa», habla de la
+instancia.
 
 :::
 
-## What the system does
+## Qué hace el sistema
 
-A player owns one or more **rooms** (house designs). Each room the player owns is a
-distinct house with its own name, privacy setting, role list, ban list and contents.
-Opening a house reserves a Roblox server on the place that room's design lives on, and
-teleports the player there. Other players can find that house through a browser and join
-it if the permissions allow.
+Un jugador posee una o más **rooms** (diseños de casa). Cada room que posee es una casa
+distinta, con su propio nombre, ajuste de privacidad, lista de roles, lista de baneos y
+contenido. Abrir una casa reserva un servidor de Roblox en el place donde vive el diseño
+de esa room, y teletransporta al jugador allí. Otros jugadores pueden encontrar esa casa
+desde un navegador y entrar si los permisos lo permiten.
 
-## Components
+## Componentes
 
-| Component | Path | Runs on | Role |
+| Componente | Ruta | Corre en | Papel |
 |---|---|---|---|
-| `WorldManager` | `Core/…/ServerScripts/WorldManager.server.luau` | Any place | Resolves `JoinServer` / `JoinWorld`; stages, reserves and teleports |
-| `ServerPresence` | `Core/ServerStorage/WorldSystem/ServerPresence.luau` | Any place | Publishes this server to the browsable directory |
-| `ServerDirectory` | `Core/…/ServerScripts/ServerDirectory.server.luau` | Any place | Maintains a cache of the directory; serves friend / most-played / own-house / active-event queries |
-| `WorldsBrowser` | `Core/…/ServerScripts/WorldsBrowser.server.luau` | Any place | Player search, and "which houses does this user have" |
-| `ShopServerSystem` | `Core/…/ServerScripts/ShopServerSystem.server.luau` | Any place | Sells house designs from a rotating shop |
-| `PlayerDataReplicator` | `Core/…/ServerScripts/PlayerDataReplicator.server.luau` | Any place | Serves `GetHouses`, `GetSlots`; sells house **slots** |
-| `Profiles` | `Core/ServerStorage/WorldSystem/Profiles.luau` | Any place | Declares the `World` and `WorldsPlayer` profiles |
-| `PlayerWorld_Init` | `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` | **House place only** | Boots the house server from `TeleportData` |
-| `WorldService` | `PlayerHouses/ServerScriptService/WorldService.luau` | **House place only** | Singleton wrapper over the house's `Store` |
-| `WorldDataReplicator` | `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` | **House place only** | Administration remotes; replicates settings/roles/bans to privileged players |
-| `ModeratorManager` | `PlayerHouses/ServerScriptService/ModeratorManager.server.luau` | **House place only** | Enforces bans and privacy for *every* player, continuously |
-| `HousesInfo` | `Core/ReplicatedStorage/HousesInfo.luau` | Shared | The catalogue: room name → `placeId`, display name, price |
-| `RolesInfo` | `PlayerHouses/ReplicatedStorage/RolesInfo.luau` | Shared | The role ladder |
+| `WorldManager` | `Core/…/ServerScripts/WorldManager.server.luau` | Cualquier place | Resuelve `JoinServer` / `JoinWorld`; hace staging, reserva y teletransporta |
+| `ServerPresence` | `Core/ServerStorage/WorldSystem/ServerPresence.luau` | Cualquier place | Publica este servidor en el directorio navegable |
+| `ServerDirectory` | `Core/…/ServerScripts/ServerDirectory.server.luau` | Cualquier place | Mantiene una caché del directorio; sirve consultas de amigos, más jugados, casas propias y evento activo |
+| `WorldsBrowser` | `Core/…/ServerScripts/WorldsBrowser.server.luau` | Cualquier place | Búsqueda de jugadores, y «qué casas tiene este usuario» |
+| `ShopServerSystem` | `Core/…/ServerScripts/ShopServerSystem.server.luau` | Cualquier place | Vende diseños de casa desde una tienda rotatoria |
+| `PlayerDataReplicator` | `Core/…/ServerScripts/PlayerDataReplicator.server.luau` | Cualquier place | Sirve `GetHouses`, `GetSlots`; vende **espacios** de casa |
+| `Profiles` | `Core/ServerStorage/WorldSystem/Profiles.luau` | Cualquier place | Declara los perfiles `World` y `WorldsPlayer` |
+| `PlayerWorld_Init` | `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` | **Solo place de casa** | Arranca el servidor de casa a partir del `TeleportData` |
+| `WorldService` | `PlayerHouses/ServerScriptService/WorldService.luau` | **Solo place de casa** | Envoltorio singleton sobre el `Store` de la casa |
+| `WorldDataReplicator` | `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` | **Solo place de casa** | Remotes de administración; replica ajustes/roles/baneos a jugadores privilegiados |
+| `ModeratorManager` | `PlayerHouses/ServerScriptService/ModeratorManager.server.luau` | **Solo place de casa** | Aplica baneos y privacidad a *todos* los jugadores, de forma continua |
+| `HousesInfo` | `Core/ReplicatedStorage/HousesInfo.luau` | Compartido | El catálogo: nombre de room → `placeId`, nombre visible, precio |
+| `RolesInfo` | `PlayerHouses/ReplicatedStorage/RolesInfo.luau` | Compartido | La escala de roles |
 
-## Architecture
+## Arquitectura
 
 ```mermaid
 flowchart TB
-    subgraph LOBBY["Any place — lobby, karaoke, arcade…"]
+    subgraph LOBBY["Cualquier place — lobby, karaoke, arcade…"]
         WM["WorldManager<br/>JoinServer / JoinWorld"]
         SD["ServerDirectory<br/>serversCache"]
         WB["WorldsBrowser<br/>getPlayerHouses"]
-        SS["ShopServerSystem<br/>buy a house design"]
+        SS["ShopServerSystem<br/>comprar un diseño de casa"]
         PDR["PlayerDataReplicator<br/>GetHouses / BuySlot"]
     end
 
-    subgraph HOUSE["PlayerHouses place — reserved server"]
-        PWI["PlayerWorld_Init<br/>boot from TeleportData"]
-        WSV["WorldService<br/>the World store"]
-        WDR["WorldDataReplicator<br/>settings / roles / bans"]
-        MM["ModeratorManager<br/>continuous access enforcement"]
+    subgraph HOUSE["Place PlayerHouses — servidor reservado"]
+        PWI["PlayerWorld_Init<br/>arranque desde TeleportData"]
+        WSV["WorldService<br/>el store World"]
+        WDR["WorldDataReplicator<br/>ajustes / roles / baneos"]
+        MM["ModeratorManager<br/>control de acceso continuo"]
         SP2["ServerPresence"]
     end
 
-    subgraph STORE["Storage"]
-        WP[("WorldsPlayer profile<br/>rooms, slots, favorites")]
-        WD[("World profile<br/>settings, roles, bans, content")]
+    subgraph STORE["Almacenamiento"]
+        WP[("perfil WorldsPlayer<br/>rooms, slots, favoritos")]
+        WD[("perfil World<br/>settings, roles, bans, content")]
         WC[("WorldCard<br/>name, ownerId, serverType")]
         LEASE[("MemoryStore DataKitLeases<br/>World/{key}, staged/World/{key}")]
         REG[("MemoryStore UserServerRegistry_Test")]
     end
 
-    SS -->|"grants a room"| WP
-    PDR -->|"reads rooms, sells slots"| WP
-    WB -->|"reads rooms"| WP
-    WB -->|"card fallback for closed houses"| WC
+    SS -->|"concede una room"| WP
+    PDR -->|"lee rooms, vende slots"| WP
+    WB -->|"lee rooms"| WP
+    WB -->|"fallback de tarjeta para casas cerradas"| WC
     WB -->|"BindableFunction GetOwnerServers"| SD
     SD -->|"ListItemsAsync + MessagingService"| REG
 
@@ -92,37 +93,38 @@ flowchart TB
 
     PWI --> WSV
     WSV --> WD
-    WSV -->|"card projection on save"| WC
-    WSV -->|"lease with placeId + accessCode"| LEASE
+    WSV -->|"proyección de tarjeta al guardar"| WC
+    WSV -->|"lease con placeId + accessCode"| LEASE
     PWI --> SP2
     SP2 --> REG
     WDR --> WSV
     MM --> WSV
 ```
 
-## The two halves
+## Las dos mitades
 
-**INFERENCE.** The system splits cleanly along one line: *what can be answered without
-loading the house*, and *what cannot*.
+**INFERENCIA.** El sistema se parte limpiamente por una línea: *qué se puede responder sin
+cargar la casa*, y *qué no*.
 
-| Answerable anywhere | Only on the house server |
+| Respondible desde cualquier sitio | Solo en el servidor de casa |
 |---|---|
-| Which rooms does a player own (`WorldsPlayer.rooms`) | The house's current name, roles, bans, contents |
-| Is a house open right now, and how full (presence directory) | Changing any of those |
-| A closed house's name and privacy (the `WorldCard` projection) | Enforcing bans and privacy on players inside |
-| How to reach an open house (the lease's `meta`) | |
+| Qué rooms posee un jugador (`WorldsPlayer.rooms`) | El nombre, roles, baneos y contenido actuales de la casa |
+| Si una casa está abierta ahora y cuán llena (directorio de presencia) | Cambiar cualquiera de esas cosas |
+| El nombre y la privacidad de una casa cerrada (la proyección `WorldCard`) | Aplicar baneos y privacidad a quienes están dentro |
+| Cómo llegar a una casa abierta (la `meta` del lease) | |
 
-The `WorldCard` is what makes a browser affordable: listing a player's six houses costs
-six small card reads, not six full profile loads with six lease claims.
+La `WorldCard` es lo que hace asequible un navegador: listar las seis casas de un jugador
+cuesta seis lecturas pequeñas de tarjeta, no seis cargas completas de perfil con seis
+reclamaciones de lease.
 
-## Where to go next
+## A dónde ir ahora
 
-| Question | Page |
+| Pregunta | Página |
 |---|---|
-| How is a house identified, bought and owned? | [Identity and ownership](./identity.md) |
-| What is stored, where, and when is it written? | [Persistence](./persistence.md) |
-| What happens from "player clicks join" to "house server ready"? | [Entry flow](./entry-flow.md) |
-| What happens while it runs, and when the last player leaves? | [Server lifecycle](./server-lifecycle.md) |
-| Who can enter, and who can administer? | [Permissions](./permissions.md) |
-| What happens when something fails? | [Error handling](./error-handling.md) |
-| The reservation mechanism in general | [Architecture → Reserved servers](../../architecture/reserved-servers.md) |
+| ¿Cómo se identifica, se compra y se posee una casa? | [Identidad y propiedad](./identity.md) |
+| ¿Qué se guarda, dónde, y cuándo se escribe? | [Persistencia](./persistence.md) |
+| ¿Qué pasa desde que el jugador pulsa entrar hasta que el servidor está listo? | [Flujo de entrada](./entry-flow.md) |
+| ¿Qué pasa mientras corre, y cuando sale el último jugador? | [Ciclo de vida del servidor](./server-lifecycle.md) |
+| ¿Quién puede entrar, y quién puede administrar? | [Permisos](./permissions.md) |
+| ¿Qué pasa cuando algo falla? | [Manejo de errores](./error-handling.md) |
+| El mecanismo de reserva en general | [Arquitectura → Servidores reservados](../../architecture/reserved-servers.md) |

@@ -1,56 +1,57 @@
 ---
 sidebar_position: 5
-title: Server lifecycle
+title: Ciclo de vida del servidor
 ---
 
-# House server lifecycle
+# Ciclo de vida del servidor de casa
 
-The life of the **reserved server instance**, from the reservation that creates it to the
-shutdown that removes it from the directory. For the persistent house record, see
-[Persistence](./persistence.md).
+La vida de la **instancia de servidor reservado**, desde la reserva que la crea hasta el
+apagado que la quita del directorio. Para el registro persistente de la casa, ver
+[Persistencia](./persistence.md).
 
-## States
+## Estados
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Reserved: TeleportService:ReserveServer<br/>(from a lobby, not this server)
-    Reserved --> Booting: first player teleports in
-    Booting --> Uninitialised: no player has arrived yet
+    [*] --> Reservado: TeleportService:ReserveServer<br/>(desde un lobby, no desde este servidor)
+    Reservado --> Arrancando: se teletransporta el primer jugador
+    Arrancando --> SinInicializar: todavía no ha llegado ningún jugador
 
-    Uninitialised --> Validating: PlayerAdded:Once → onPlayerAdded
-    Validating --> Failed: invalid key / unknown room /<br/>owner does not own the room /<br/>WorldsPlayer read failed
-    Validating --> Claiming: checks passed
+    SinInicializar --> Validando: PlayerAdded:Once → onPlayerAdded
+    Validando --> Fallido: clave inválida / room desconocida /<br/>el dueño no posee la room /<br/>falló la lectura de WorldsPlayer
+    Validando --> Reclamando: comprobaciones superadas
 
-    Claiming --> Denied: lease already held<br/>(onConflict "deny")
-    Claiming --> Pending: lease acquired,<br/>ServerInfo.status = "pending"
+    Reclamando --> Denegado: el lease ya está tomado<br/>(onConflict "deny")
+    Reclamando --> Pendiente: lease adquirido,<br/>ServerInfo.status = "pending"
 
-    Denied --> Converging: convergeToOwner
-    Converging --> [*]: players teleported to the real host
-    Converging --> Failed: 3 teleport attempts exhausted
+    Denegado --> Convergiendo: convergeToOwner
+    Convergiendo --> [*]: jugadores enviados al anfitrión real
+    Convergiendo --> Fallido: agotados los 3 intentos de teleport
 
-    Pending --> Ready: first registry write succeeds<br/>status = "ready", isStarted = true
-    Ready --> Ready: refresh 30s, autosave 300s,<br/>admin edits, players join and leave
+    Pendiente --> Listo: primera escritura correcta en el registro<br/>status = "ready", isStarted = true
+    Listo --> Listo: refresco 30 s, autoguardado 300 s,<br/>ediciones de admin, entradas y salidas
 
-    Ready --> Closing: BindToClose
-    Pending --> Closing: BindToClose
-    Failed --> [*]: KickAll
-    Closing --> [*]: lease released, registry entry removed,<br/>status = "closed"
+    Listo --> Cerrando: BindToClose
+    Pendiente --> Cerrando: BindToClose
+    Fallido --> [*]: KickAll
+    Cerrando --> [*]: lease liberado, entrada del registro eliminada,<br/>status = "closed"
 ```
 
-## Reserved but never joined
+## Reservado pero sin nadie que entre
 
-**FACT.** `PlayerWorld_Init` does nothing at server start. Its only entry points are the
-loop over already-present players and `Players.PlayerAdded:Once`.
+**HECHO.** `PlayerWorld_Init` no hace nada al arrancar el servidor. Sus únicos puntos de
+entrada son el bucle sobre los jugadores ya presentes y `Players.PlayerAdded:Once`.
 
-**INFERENCE.** A reserved server that boots and receives nobody — because the teleport
-failed after the reservation succeeded, say — never initialises, never claims a lease,
-never registers, and never saves. It is inert until Roblox reclaims it. The staging lease
-that produced its `accessCode` expires 30 seconds after its last renewal, so the house
-returns to "closed" and can be opened again cleanly.
+**INFERENCIA.** Un servidor reservado que arranca y al que no llega nadie —porque el
+teleport falló después de que la reserva tuviera éxito, por ejemplo— nunca se inicializa,
+nunca reclama un lease, nunca se registra y nunca guarda. Queda inerte hasta que Roblox lo
+recupera. El lease de staging que produjo su `accessCode` expira 30 segundos después de su
+última renovación, así que la casa vuelve a estar «cerrada» y se puede abrir de nuevo
+limpiamente.
 
-## Ready
+## Listo
 
-**FACT.** Two attributes mark readiness, and they are set together in `onHouseStarted`:
+**HECHO.** Dos atributos marcan la disponibilidad, y se ponen juntos en `onHouseStarted`:
 
 ```lua
 local function onHouseStarted()
@@ -60,90 +61,93 @@ local function onHouseStarted()
 end
 ```
 
-`OnStarted` is invoked by `ServerPresence.RefreshNow` only on the **first** successful
-registry write, and only while `ServerInfo.status` still reads `"pending"` — so it fires
-exactly once.
+`ServerPresence.RefreshNow` invoca `OnStarted` solo en la **primera** escritura correcta en
+el registro, y solo mientras `ServerInfo.status` siga valiendo `"pending"` — así que se
+dispara exactamente una vez.
 
-**FACT.** Both `ReplicatedStorage.ServerInfo` and `ReplicatedStorage.isStarted` are
-replicated `Configuration` instances, so clients can observe readiness without a remote.
+**HECHO.** Tanto `ReplicatedStorage.ServerInfo` como `ReplicatedStorage.isStarted` son
+instancias `Configuration` replicadas, así que los clientes pueden observar la
+disponibilidad sin un remote.
 
-### Who waits on `status == "ready"`
+### Quién espera a `status == "ready"`
 
-**FACT.** Two server scripts gate themselves on it, and they do it differently:
+**HECHO.** Dos scripts de servidor se controlan con eso, y lo hacen de forma distinta:
 
-| Script | Pattern |
+| Script | Patrón |
 |---|---|
-| `ModeratorManager` | Checks the **current value first**, and only if it is not yet `"ready"` connects to `GetAttributeChangedSignal` |
-| `WorldDataReplicator` | Connects to `GetAttributeChangedSignal` **only** — it never checks the current value |
+| `ModeratorManager` | Comprueba **primero el valor actual**, y solo si aún no es `"ready"` se conecta a `GetAttributeChangedSignal` |
+| `WorldDataReplicator` | Se conecta **solo** a `GetAttributeChangedSignal` — nunca comprueba el valor actual |
 
-**OBSERVATION.** The asymmetry is visible in the same template, between two files, one of
-which handles the already-ready case and one of which does not. If `WorldDataReplicator` is
-enabled after the status attribute has already become `"ready"`, its
-`replicationWired` block never runs: no initial push of settings/roles/bans to privileged
-clients, and no subscription to `WorldService.OnStoreUpdated`.
+**OBSERVACIÓN.** La asimetría se ve en la misma plantilla, entre dos archivos, uno de los
+cuales maneja el caso «ya está listo» y el otro no. Si `WorldDataReplicator` se activa
+después de que el atributo ya haya pasado a `"ready"`, su bloque `replicationWired` no
+corre nunca: ni el envío inicial de ajustes/roles/baneos a los clientes privilegiados, ni
+la suscripción a `WorldService.OnStoreUpdated` que los mantiene al día.
 
-Whether that ordering can actually occur depends on the enable sweep in
-[`InitScripts`](../../architecture/initialization.md) racing the first player's arrival —
-and in a reserved house server the first player is arriving *as the server boots*, which is
-precisely when the window is widest. Recorded as
+Que ese orden pueda darse depende de que el barrido de activación de
+[`InitScripts`](../../architecture/initialization.md) compita con la llegada del primer
+jugador — y en un servidor de casa reservado el primer jugador está llegando *mientras el
+servidor arranca*, que es justo cuando la ventana es más ancha. Registrado como
 [BUG-CANDIDATE-010](../../testing/verification-plan.md#bug-candidate-010).
 
-## While running
+## Mientras corre
 
-**FACT.** The recurring work in a live house server:
+**HECHO.** El trabajo recurrente en un servidor de casa vivo:
 
-| Work | Mechanism | Cadence |
+| Trabajo | Mecanismo | Cadencia |
 |---|---|---|
-| Registry refresh | `ServerPresence` on `Heartbeat` | 30 s, or 2 s after a player joins/leaves |
-| Lease keepalive | `DataKit.Lease` on `Heartbeat` | 30 s (TTL 120 s) |
-| Store autosave | `Store._heartbeat` | 300 s |
-| Access re-evaluation | `WorldService.OnStoreUpdated` → `ModeratorManager` | On every settings/roles/bans change |
-| Privileged replication | `WorldService.OnStoreUpdated` → `WorldDataReplicator.pushStore` | On every settings/roles/bans change |
+| Refresco del registro | `ServerPresence` sobre `Heartbeat` | 30 s, o 2 s tras una entrada/salida |
+| Keepalive del lease | `DataKit.Lease` sobre `Heartbeat` | 30 s (TTL 120 s) |
+| Autoguardado del store | `Store._heartbeat` | 300 s |
+| Reevaluación de acceso | `WorldService.OnStoreUpdated` → `ModeratorManager` | En cada cambio de settings/roles/bans |
+| Replicación privilegiada | `WorldService.OnStoreUpdated` → `WorldDataReplicator.pushStore` | En cada cambio de settings/roles/bans |
 
-**FACT.** The registry payload is rebuilt from scratch on every refresh by
-`getHouseRefreshPayload`, so the advertised name, privacy, player list and count follow the
-live store rather than a cached copy. If `WorldService.get()` returns `nil` — the store is
-not ready — it returns the previous payload unchanged.
+**HECHO.** El contenido del registro se reconstruye desde cero en cada refresco con
+`getHouseRefreshPayload`, así que el nombre, la privacidad, la lista de jugadores y el
+conteo anunciados siguen al store vivo en vez de a una copia cacheada. Si
+`WorldService.get()` devuelve `nil` —el store no está listo— devuelve el contenido anterior
+sin cambios.
 
-## A player leaves
+## Sale un jugador
 
-**FACT.** `ServerPresence` connects `Players.PlayerRemoving` to `RequestRefresh`, which
-pulls the next registry write forward to 2 seconds out. The departure therefore reaches the
-directory within about 2 seconds rather than up to 30.
+**HECHO.** `ServerPresence` conecta `Players.PlayerRemoving` a `RequestRefresh`, que
+adelanta la siguiente escritura al registro a 2 segundos vista. Así la salida llega al
+directorio en unos 2 segundos en vez de en hasta 30.
 
-**FACT.** Nothing else in the housing path runs on `PlayerRemoving`. The house's state is
-not per-player, so there is nothing per-player to tear down.
+**HECHO.** Nada más en la ruta de casas corre en `PlayerRemoving`. El estado de la casa no
+es por jugador, así que no hay nada por jugador que desmontar.
 
-## The last player leaves
+## Sale el último jugador
 
-This is the case the brief asks about specifically, and the answer is: **nothing housing-specific
-happens.**
+Este es el caso por el que el enunciado pregunta específicamente, y la respuesta es: **no
+pasa nada específico de las casas.**
 
-**FACT.** There is no "last player" handler anywhere in the housing source. No
-`#Players:GetPlayers() == 0` check, no idle timer, no explicit shutdown.
+**HECHO.** No hay ningún manejador de «último jugador» en el código de casas. Ni una
+comprobación `#Players:GetPlayers() == 0`, ni un temporizador de inactividad, ni un apagado
+explícito.
 
-**INFERENCE.** The sequence is therefore:
+**INFERENCIA.** La secuencia es por tanto:
 
-1. The last player leaves. `RequestRefresh` fires; the registry entry is rewritten with an
-   empty player list and `playerCount = 0`.
-2. The server keeps running, refreshing its lease and its registry entry, holding the
-   house's data, for as long as Roblox keeps it alive.
-3. Roblox eventually shuts down the empty server on its own schedule.
-4. `BindToClose` runs, and the shutdown path below executes.
+1. Sale el último jugador. Se dispara `RequestRefresh`; la entrada del registro se
+   reescribe con lista de jugadores vacía y `playerCount = 0`.
+2. El servidor sigue corriendo, refrescando su lease y su entrada del registro, y
+   sosteniendo los datos de la casa, mientras Roblox lo mantenga vivo.
+3. Roblox acaba apagando el servidor vacío según su propio criterio.
+4. Corre `BindToClose`, y se ejecuta la ruta de apagado de más abajo.
 
-**INFERENCE — a consequence worth naming.** Between steps 1 and 3 the house is still
-*hosted*: it holds the lease, and it is still in the directory with a player count of zero.
-A player rejoining in that window is teleported into the same still-running instance,
-which is the desired outcome. The empty server is not a leak — it is what makes an instant
-rejoin work.
+**INFERENCIA — una consecuencia que conviene nombrar.** Entre los pasos 1 y 3 la casa
+sigue *hosteada*: mantiene el lease, y sigue en el directorio con cero jugadores. Un
+jugador que vuelva a entrar en esa ventana se teletransporta a la misma instancia todavía
+en marcha, que es el resultado deseado. El servidor vacío no es una fuga: es lo que hace
+que volver a entrar sea instantáneo.
 
-**UNKNOWN.** How long Roblox keeps an empty reserved server alive. That is Roblox
-infrastructure behaviour, not a property of this code, and it determines the size of the
-window above.
+**DESCONOCIDO.** Cuánto tiempo mantiene Roblox vivo un servidor reservado vacío. Eso es
+comportamiento de la infraestructura de Roblox, no una propiedad de este código, y
+determina el tamaño de la ventana anterior.
 
-## Shutdown
+## Apagado
 
-**FACT.**
+**HECHO.**
 
 ```lua
 game:BindToClose(function()
@@ -155,26 +159,26 @@ game:BindToClose(function()
 end)
 ```
 
-`presence:Cleanup()` performs, in order:
+`presence:Cleanup()` hace, en este orden:
 
 ```mermaid
 flowchart TD
-    A["BindToClose fires"] --> B{"presence exists?"}
-    B -- no --> Z["WorldService.destroy()<br/>→ store:close() → lease released"]
-    B -- yes --> C["disconnect the Heartbeat connection"]
-    C --> D["disconnect PlayerAdded / PlayerRemoving"]
+    A["Se dispara BindToClose"] --> B{"¿existe presence?"}
+    B -- no --> Z["WorldService.destroy()<br/>→ store:close() → lease liberado"]
+    B -- sí --> C["desconecta la conexión de Heartbeat"]
+    C --> D["desconecta PlayerAdded / PlayerRemoving"]
     D --> E["OnCleanup → onHouseCleanup"]
     E --> F["isStarted.Started = false"]
     F --> G["WorldService.destroy()<br/>→ store:close()"]
-    G --> H["store saves, releases World/{key} lease"]
-    H --> I["safeRemove registry entry<br/>(6 retries, abandoned on throttle)"]
-    I --> J["publish UserServerRegistryClosed"]
+    G --> H["el store guarda y libera el lease World/{key}"]
+    H --> I["safeRemove de la entrada del registro<br/>(6 reintentos, se abandona si hay throttle)"]
+    I --> J["publica UserServerRegistryClosed"]
     J --> K["ServerInfo.status = 'closed'"]
 
     style D fill:#2d4a2d,stroke:#6a6,color:#fff
 ```
 
-**FACT — step D is load-bearing**, and the source says why:
+**HECHO — el paso D es determinante**, y el código dice por qué:
 
 ```lua
 -- Guardadas para poder soltarlas en Cleanup. Si sobreviven al cierre, el jugador que sale
@@ -182,51 +186,51 @@ flowchart TD
 -- en el directorio hasta que expira su TTL.
 ```
 
-Without disconnecting first, the `PlayerRemoving` events fired as the server empties during
-shutdown would request a refresh that rewrites the entry deleted in step I.
+Sin desconectar primero, los `PlayerRemoving` que se disparan mientras el servidor se vacía
+durante el apagado pedirían un refresco que reescribiría la entrada borrada en el paso I.
 
-**FACT.** The order also matters for the lease: `OnCleanup` closes the store (releasing
-`World/{key}`) **before** the registry entry is removed. So the house becomes re-openable
-slightly before it stops being advertised, rather than the other way round.
+**HECHO.** El orden importa también para el lease: `OnCleanup` cierra el store (liberando
+`World/{key}`) **antes** de que se elimine la entrada del registro. Así, la casa pasa a ser
+reabrible un poco antes de dejar de estar anunciada, y no al revés.
 
-## After an abrupt death
+## Tras una muerte abrupta
 
-**FACT.** If the process dies without `BindToClose` completing:
+**HECHO.** Si el proceso muere sin que `BindToClose` llegue a completarse:
 
-| Entry | What happens |
+| Entrada | Qué ocurre |
 |---|---|
-| `DataKitLeases` → `World/{key}` | Not released. Expires on its own within 120 s. |
-| `UserServerRegistry_Test` → `{key}` | Not removed. Expires on its own within 120 s. |
-| `World` profile | Loses any changes since the last save — at most one 300-second autosave interval. |
-| `WorldCard` | Same. |
+| `DataKitLeases` → `World/{key}` | No se libera. Expira sola en 120 s. |
+| `UserServerRegistry_Test` → `{key}` | No se elimina. Expira sola en 120 s. |
+| perfil `World` | Pierde los cambios desde el último guardado — como mucho un intervalo de autoguardado de 300 s. |
+| `WorldCard` | Lo mismo. |
 
-**INFERENCE.** The TTLs are the recovery mechanism. Nothing needs to detect the death or
-clean up after it; both entries are self-expiring, and the fence in the durable envelope
-prevents a resurrected writer from clobbering a newer owner. See
-[Architecture → Persistence](../../architecture/persistence.md).
+**INFERENCIA.** Los TTL son el mecanismo de recuperación. Nada necesita detectar la muerte
+ni limpiar después; ambas entradas expiran solas, y la valla del sobre durable impide que
+un escritor resucitado pise a un dueño más nuevo. Ver
+[Arquitectura → Persistencia](../../architecture/persistence.md).
 
-**THEORY.** Within that window the house still reports as hosted, and a joining player is
-sent to a dead `accessCode`. Recorded as
+**TEORÍA.** Dentro de esa ventana la casa sigue reportando estar hosteada, y a un jugador
+que entre se le envía a un `accessCode` muerto. Registrado como
 [BUG-CANDIDATE-005](../../testing/verification-plan.md#bug-candidate-005).
 
-## Reopening
+## Reapertura
 
-**FACT.** There is no reopen path distinct from the open path. A closed house is one whose
-`World/{key}` lease is absent, so `claimStaged` finds nothing hosted, stages, reserves a
-fresh server, and boots it. The new server loads the same `World` profile by the same key,
-and `WorldService.start`'s `OwnerId == 0` guard means it does **not** re-initialise the
-name.
+**HECHO.** No hay una ruta de reapertura distinta de la de apertura. Una casa cerrada es
+aquella cuyo lease `World/{key}` no existe, así que `claimStaged` no encuentra nada
+hosteado, hace staging, reserva un servidor nuevo y lo arranca. El servidor nuevo carga el
+mismo perfil `World` con la misma clave, y la guarda `OwnerId == 0` de `WorldService.start`
+hace que **no** se reinicialice el nombre.
 
-**INFERENCE — this is why there is no stale-reference detection.** There is no stored
-mapping to invalidate. Reachability *is* the lease, and liveness *is* its TTL.
+**INFERENCIA — por esto no hay detección de referencias obsoletas.** No hay ningún mapeo
+guardado que invalidar. La alcanzabilidad *es* el lease, y la vigencia *es* su TTL.
 
-## Related implementation
+## Implementación relacionada
 
-| Concern | Code |
+| Aspecto | Código |
 |---|---|
-| Boot | `PlayerWorld_Init.lua.server.luau`, `onPlayerAdded`, `init` |
-| Readiness | `PlayerWorld_Init`, `onHouseStarted`; [`ServerPresence:RefreshNow`](/api/ServerPresence) |
-| Payload | `PlayerWorld_Init`, `getHouseRefreshPayload` |
-| Cleanup | `PlayerWorld_Init`, `onHouseCleanup`; [`ServerPresence:Cleanup`](/api/ServerPresence) |
-| Store close | `WorldService.luau`, `destroy`; [`Store.close`](/api/Store) |
-| Deny / converge | `PlayerWorld_Init`, `convergeToOwner`; [`Store`](/api/Store) `_resolveOwnership` |
+| Arranque | `PlayerWorld_Init.lua.server.luau`, `onPlayerAdded`, `init` |
+| Disponibilidad | `PlayerWorld_Init`, `onHouseStarted`; [`ServerPresence:RefreshNow`](/api/ServerPresence) |
+| Contenido del registro | `PlayerWorld_Init`, `getHouseRefreshPayload` |
+| Limpieza | `PlayerWorld_Init`, `onHouseCleanup`; [`ServerPresence:Cleanup`](/api/ServerPresence) |
+| Cierre del store | `WorldService.luau`, `destroy`; [`Store.close`](/api/Store) |
+| Denegar / converger | `PlayerWorld_Init`, `convergeToOwner`; [`Store`](/api/Store) `_resolveOwnership` |

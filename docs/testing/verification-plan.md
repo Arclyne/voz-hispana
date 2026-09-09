@@ -1,85 +1,167 @@
 ---
 sidebar_position: 1
-title: Verification plan
+title: Plan de verificación
 ---
 
-# Verification plan
+# Plan de verificación
 
-This page records things that **look wrong or unproven** in the source, together with the
-evidence for each and a reproducible plan to settle it.
+Esta página registra las cosas que **parecen incorrectas o no están probadas** en el
+código, junto con la evidencia de cada una y un plan reproducible para resolverlas.
 
-:::danger Nothing here is a confirmed bug
+:::danger Nada de esto es un bug confirmado
 
-Every entry is a hypothesis with evidence, not a defect report. Several of them will turn
-out to be correct-by-design once run. **No code has been changed** to address anything on
-this page; that is out of scope for this documentation project by instruction.
+Cada entrada es una hipótesis con evidencia, no un informe de defecto. Varias resultarán
+ser correctas por diseño en cuanto se ejecuten. **No se ha cambiado ningún código** para
+atender nada de esta página; eso queda fuera del alcance de este proyecto de documentación
+por indicación expresa.
 
 :::
 
-## How to read an entry
+## Cómo leer una entrada
 
-| Field | Meaning |
+| Campo | Significado |
 |---|---|
-| **Classification** | See the taxonomy below. |
-| **Verification status** | `Unverified` until someone runs the plan. |
-| **Severity if confirmed** | The impact *assuming* the theory holds. Not a claim that it does. |
-| **Confidence** | How likely the theory is to hold, given static reading alone. |
-| **Observed behaviour** | What the code demonstrably does. Always **FACT**. |
-| **Theory** | What might happen at runtime. Always **THEORY**. |
-| **Unknowns** | What static reading cannot settle. |
+| **Clasificación** | Ver la taxonomía de abajo. |
+| **Estado de verificación** | `Sin verificar` hasta que alguien ejecute el plan. |
+| **Gravedad si se confirma** | El impacto *suponiendo* que la teoría se sostenga. No es una afirmación de que se sostenga. |
+| **Confianza** | Cuán probable es que la teoría se sostenga, solo con lectura estática. |
+| **Comportamiento observado** | Lo que el código hace de forma demostrable. Siempre **HECHO**. |
+| **Teoría** | Lo que podría pasar en ejecución. Siempre **TEORÍA**. |
+| **Incógnitas** | Lo que la lectura estática no puede resolver. |
 
-### Classification taxonomy
+### Taxonomía de clasificación
 
-`Observation` · `Possible Bug` · `Likely Bug` · `Confirmed by Static Analysis` ·
-`Requires Runtime Verification` · `Requires Integration Testing` ·
-`Requires Multiplayer Testing` · `Requires Concurrency Testing` ·
-`Requires Lifecycle Testing` · `Requires Persistence Testing` ·
-`Requires Failure Injection` · `Requires Security Testing`
+`Observación` · `Posible bug` · `Bug probable` · `Confirmado por análisis estático` ·
+`Requiere verificación en ejecución` · `Requiere pruebas de integración` ·
+`Requiere pruebas multijugador` · `Requiere pruebas de concurrencia` ·
+`Requiere pruebas de ciclo de vida` · `Requiere pruebas de persistencia` ·
+`Requiere inyección de fallos` · `Requiere pruebas de seguridad`
 
-### Test types
+### Tipos de prueba
 
-`Functional` · `Integration` · `Multiplayer` · `Concurrency` · `Lifecycle` ·
-`Persistence` · `Failure Recovery` · `Teleport` · `Security` · `Load`
+`Funcional` · `Integración` · `Multijugador` · `Concurrencia` · `Ciclo de vida` ·
+`Persistencia` · `Recuperación ante fallos` · `Teleport` · `Seguridad` · `Carga`
 
-:::note Roblox Studio is not available in this environment
+:::note Roblox Studio no está disponible en este entorno
 
-Nothing on this page has been executed. Each plan is written to be run by hand in Studio
-or in a live test place.
+Nada de esta página se ha ejecutado. Cada plan está escrito para correrlo a mano en Studio
+o en un place de pruebas.
 
 :::
 
-## Index
+## Índice
 
-| ID | Title | System | Classification | Severity if confirmed | Confidence |
+| ID | Título | Sistema | Clasificación | Gravedad si se confirma | Confianza |
 |---|---|---|---|---|---|
-| [001](#bug-candidate-001) | Voice-chat gate fails open when the Roblox check errors | Bootstrap | Observation / Requires Failure Injection | Low | High |
-| [002](#bug-candidate-002) | Presence entry can outlive its server by up to the TTL | World System | Possible Bug / Requires Lifecycle Testing | Medium | Medium |
-| [003](#bug-candidate-003) | A failed respawn leaves the player with no character and nothing retries | Character | Possible Bug / Requires Failure Injection | Medium | Medium |
-| [004](#bug-candidate-004) | Convergence after a denied host may strand players | Housing | Possible Bug / Requires Multiplayer Testing | High | Low |
-| [005](#bug-candidate-005) | Teleport with an access code whose instance has already shut down | Housing | Requires Teleport Testing | Medium | Low |
-| [006](#bug-candidate-006) | A Studio session can publish a fake access code to the live registry | Housing | Likely Bug / Requires Integration Testing | High | Medium |
-| [007](#bug-candidate-007) | The client script loader is not in this repository | Client | Observation / Requires Runtime Verification | — | High |
-| [008](#bug-candidate-008) | A purchase grants the item before it charges for it | Housing / Economy | Possible Bug / Requires Failure Injection | Medium | Medium |
-| [009](#bug-candidate-009) | A first-boot name lookup failure names the house permanently | Housing | Possible Bug / Requires Failure Injection | Low | High |
-| [010](#bug-candidate-010) | `WorldDataReplicator` misses an already-`ready` server | Housing | Likely Bug / Requires Lifecycle Testing | Medium | Medium |
-| [011](#bug-candidate-011) | The `moderator` role cannot moderate | Housing | Likely Bug / Confirmed by Static Analysis | Medium | High |
-| [012](#bug-candidate-012) | House roles, settings and bans are readable by any occupant | Housing | Observation / Requires Security Testing | Low | High |
-| [013](#bug-candidate-013) | A house server with no `TeleportData` strands its player silently | Housing | Possible Bug / Requires Runtime Verification | Medium | Medium |
-| [014](#bug-candidate-014) | A shared secret and a proxy host are hardcoded in a committed source file | Housing / Security | Confirmed by Static Analysis | High | High |
+| [001](#bug-candidate-001) | El control de chat de voz falla abierto cuando la comprobación de Roblox da error | Arranque | Observación / Requiere inyección de fallos | Baja | Alta |
+| [002](#bug-candidate-002) | Una entrada de presencia puede sobrevivir a su servidor hasta el TTL | World System | Posible bug / Requiere pruebas de ciclo de vida | Media | Media |
+| [003](#bug-candidate-003) | Un respawn fallido deja al jugador sin personaje y nada reintenta | Character | Posible bug / Requiere inyección de fallos | Media | Media |
+| [004](#bug-candidate-004) | La convergencia tras un anfitrión denegado puede dejar tirados a los jugadores | Casas | Posible bug / Requiere pruebas multijugador | Alta | Baja |
+| [005](#bug-candidate-005) | Teleport con un código de acceso cuya instancia ya se apagó | Casas | Requiere pruebas de teleport | Media | Baja |
+| [006](#bug-candidate-006) | Una sesión de Studio puede publicar un código de acceso falso en el registro real | Casas | Bug probable / Requiere pruebas de integración | Alta | Media |
+| [007](#bug-candidate-007) | El cargador de scripts del cliente no está en este repositorio | Cliente | Observación / Requiere verificación en ejecución | — | Alta |
+| [008](#bug-candidate-008) | Una compra concede el artículo antes de cobrarlo, y por una ruta de persistencia distinta | Casas / Economía | Bug probable / Requiere pruebas de persistencia | Media | **Alta** |
+| [009](#bug-candidate-009) | Un fallo al resolver el nombre en el primer arranque bautiza la casa para siempre | Casas | Posible bug / Requiere inyección de fallos | Baja | Alta |
+| [010](#bug-candidate-010) | `WorldDataReplicator` se pierde un servidor que ya está `ready` | Casas | Bug probable / Requiere pruebas de ciclo de vida | Media | Media |
+| [011](#bug-candidate-011) | El rol `moderator` no puede moderar | Casas | Bug probable / Confirmado por análisis estático | Media | Alta |
+| [012](#bug-candidate-012) | Roles, ajustes y baneos de una casa los puede leer cualquier ocupante | Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [013](#bug-candidate-013) | Un servidor de casa sin `TeleportData` deja tirado a su jugador en silencio | Casas | Posible bug / Requiere verificación en ejecución | Media | Media |
+| [014](#bug-candidate-014) | Un secreto compartido y un host proxy están escritos a fuego en cuatro archivos, uno de ellos replicado al cliente | Infraestructura / Seguridad | Confirmado por análisis estático | **Crítica** | Alta |
+| [015](#bug-candidate-015) | Un solo booleano separa la economía de escrituras arbitrarias del cliente | Economía / Seguridad | Observación / Requiere pruebas de seguridad | Crítica | Alta |
+| [016](#bug-candidate-016) | Las máquinas aceptan del cliente el valor de la recompensa sin validarlo | Máquinas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Alta |
+| [017](#bug-candidate-017) | Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto | Administración / Seguridad | Observación / Requiere verificación en ejecución | Baja | Alta |
+| [018](#bug-candidate-018) | Salir durante la carga deja el registro sucio y rompe la reconexión al mismo servidor | Datos del jugador / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
+| [019](#bug-candidate-019) | Donar a un jugador que aún no ha cargado destruye la moneda | Economía / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
+| [020](#bug-candidate-020) | El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual | Tiendas / Casas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Media |
+| [021](#bug-candidate-021) | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
+| [022](#bug-candidate-022) | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
+| [023](#bug-candidate-023) | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [024](#bug-candidate-024) | `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
+| [025](#bug-candidate-025) | La distancia de interacción la comprueba solo el cliente | Interactuables | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [026](#bug-candidate-026) | El globo está implementado entero y ningún jugador lo recibe nunca | Inventario | Bug probable / Confirmado por análisis estático | Baja | **Muy alta** |
+| [027](#bug-candidate-027) | `ToolsServer` reparenta y manipula las `Instance` que le diga el cliente | Herramientas / Seguridad | Bug probable / Requiere pruebas de seguridad | Alta | Alta |
+| [028](#bug-candidate-028) | Tres cargadores de moderación comprueban que haya un administrador conectado, no que quien llama lo sea | Karaoke / Seguridad | Posible bug / Requiere pruebas de seguridad | Baja | Alta |
+| [029](#bug-candidate-029) | Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos | Cuadros | Posible bug / Requiere inyección de fallos | Media | Alta |
+| [030](#bug-candidate-030) | El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos | Cuadros / Seguridad | Posible bug / Requiere pruebas de seguridad | Media | Alta |
+| [031](#bug-candidate-031) | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
+
+### Entradas de seguridad
+
+Las que tratan superficie de ataque en vez de corrección funcional. Se escriben en el mismo
+formato que el resto: teoría con justificación, no acusaciones.
+
+| ID | Vector | Estado hoy |
+|---|---|---|
+| [012](#bug-candidate-012) | Lectura de roles y baneos de una casa sin comprobación de permisos, por dos sistemas distintos | **Explotable hoy**, impacto bajo |
+| [014](#bug-candidate-014) | Secreto compartido en cuatro archivos —uno replicado al cliente—, proxy en HTTP plano, remote sin límite de frecuencia | **Expuesto hoy**, recuperable desde el cliente |
+| [015](#bug-candidate-015) | Escritura arbitraria de moneda desde el cliente | **Latente** — desactivado por un booleano |
+| [016](#bug-candidate-016) | Valor de recompensa suministrado por el cliente | **Latente** — el manejador de premio es un stub |
+| [017](#bug-candidate-017) | Ventana de revocación de privilegios de administrador | **Presente hoy**, impacto bajo |
+| [020](#bug-candidate-020) | Dato de tamaño arbitrario, controlado por el cliente, persistido en el perfil de una casa ajena | **Presente hoy**, impacto por determinar |
+| [022](#bug-candidate-022) | Id de asset suministrado por el cliente, sin comprobación de propiedad | **Explotable hoy** si un `EnumItem` viaja por el remote |
+| [023](#bug-candidate-023) | Colocación con autoridad de cliente en casa ajena | **Explotable hoy**, impacto de vandalismo |
+| [024](#bug-candidate-024) | `SoundId` y modelo suministrados por el cliente, sin moderación | **Explotable hoy**, acotado por las restricciones de audio de Roblox |
+| [025](#bug-candidate-025) | Reglas de interacción solo en el cliente en 21 de 25 manejadores | **Explotable hoy**, impacto bajo |
+| [027](#bug-candidate-027) | Reparentado arbitrario de `Instance` desde un remote | **Explotable hoy**, control sobre el mundo compartido |
+| [028](#bug-candidate-028) | Guarda de autorización que mira al servidor en vez de al llamante | **Explotable hoy**, pero sin fuga de datos: el llamante acaba expulsado |
+| [030](#bug-candidate-030) | Amplificación de red: una llamada del cliente difunde a todos, sin límite de frecuencia | **Explotable hoy**, sin necesidad de permisos ajenos |
+
+#### Lo que se revisó y salió limpio
+
+Registrado con el mismo cuidado, porque una lista de hallazgos sin lo revisado y correcto es
+engañosa:
+
+| Superficie | Resultado |
+|---|---|
+| Remotes de moderación de Karaoke | **Correcto, y es la postura más dura del proyecto.** Cinco de los ocho manejadores comprueban al llamante lo primero y, si no cumple, `IntenteSerAdmin` lo **expulsa** con un aviso explícito. Los baneos exigen además el rango `KaraokeSuperAdmin`. |
+| Difusión de datos de moderación | **Correcto.** `FireOnlyAdmins` recorre `AdminsActive` y `ObtenerMusica` revalida por página: la página de baneos exige superadministrador incluso en la ruta de difusión. |
+| Comandos de administración (`EventCommands`, `ReferralCommands`) | **Correcto.** Ambos comprueban `Admins:IsRole(player, "Admins")` contra un grupo de Roblox, y rechazan en silencio para no revelar la existencia del comando. |
+| `RoleService` ante fallo de `GroupService` | **Falla cerrado.** Un `pcall` fallido produce una tabla de roles vacía, no un pase libre. |
+| Precios de la tienda | **Correcto.** El precio se lee de `HousesInfo`/`DancesInfo` en el servidor; el cliente solo envía un id de artículo, que además debe estar en la rotación vigente. |
+| `accessCode` de servidores reservados | **Correcto.** Nunca viaja al cliente: `ServerDirectory.toPublicEntry` construye la respuesta campo a campo y lo omite. |
+| Destinos de teleport | **Correcto.** El cliente envía una clave, nunca un `PlaceId`; se resuelve contra `HousesInfo` o `PlaceKeyToPlaceId`. |
+| `Machine:bind` | **Correcto.** Exige que el modelo coincida y que el jugador esté en la lista de participantes de esa máquina. |
+| `SetWorldName` | **Correcto en el saneado**, con la salvedad de que el filtrado de texto falla abierto (ver [Permisos](../systems/housing/permissions.md)). |
+| Apertura de casa ajena | **Correcto.** `hasRoom` se comprueba en el destino contra el perfil del dueño; una clave falsificada no crea ni abre una casa. |
+| Precios de mobiliario y materiales | **Correcto.** `BuyStore`, `BuyDecors` y `ComprarMaterial` resuelven el precio en el servidor desde `StoreTemplates`, `verificarExistencia` y `DesingData`. El cliente solo manda un nombre. |
+| Precio vacío como compra gratis | **Correcto, y deliberado.** `Collections.requirements` devuelve la bandera `vacio`, que solo se activa dentro del bucle: una tabla de precio vacía devuelve `false` y el cobro no se da por bueno. |
+| Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
+| Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
+| Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Reclamar una misión | **Correcto, y de lo más completo del repositorio.** Lista blanca de grupos, tipo del hueco, la misión existe, no está reclamada, el progreso llega al objetivo, y la recompensa sale de la configuración del servidor. |
+| Doble reclamación de una misión | **Correcto hoy, por una propiedad frágil.** `Claimed = true` se escribe después de conceder, pero en todo el recorrido no hay un solo punto de suspensión, así que dos llamadas no se entrelazan. Añadir cualquier espera a `Collections.Give` o a `saveData` abriría la ventana. |
+| Giro de la ruleta | **Correcto.** `requestSpinRF` valida en cadena con un motivo por rechazo, comprueba el recurso **antes** de cobrarlo, y usa `CooldownManager` para el giro gratuito. |
+| Posesión de un baile | **Correcto.** Se comprueba contra la carpeta `Animations` del jugador y el intento fallido se registra con su nombre. El remote `AddAnimation` se eliminó a propósito, con el motivo anotado en el código. |
+| Consumo de ingredientes en la cocina | **Correcto.** Pasa por `InventoryManager.removeItem`, la ruta validada del inventario, no por manipulación directa. |
+| Autorización para editar un cuadro | **Correcto.** `UpdateCuadros` exige que el modelo tenga la etiqueta `Paint`/`CuadrosPaint` y que su atributo `Owner`/`InInUse` —puesto por el servidor— sea el `UserId` del llamante. |
+| Borrado de un cuadro ajeno | **Correcto.** `Remove` comprueba `Format.IsOwner` contra el dato **leído del DataStore**, no contra lo que manda el cliente, y además que no esté colgado en una casa. |
+| Pago de una venta de cuadro con el vendedor desconectado | **Correcto, y es el mejor patrón del juego para esto.** Viaja por el buzón idempotente del perfil de DataKit, con `sellerHere` para no pagar dos veces. |
+| Validación de entrada en el inventario | **Correcto, y es la referencia del proyecto.** Los cinco remotes validan tipo, entereza y rango, y `InventoryManager` **vuelve a validarlo todo** por su cuenta más la propiedad. Es el único sistema leído que valida en las dos capas. |
+| Conceder un objeto que no existe | **Correcto.** `getToolAsset` busca la `Tool` real en `Assets/Tools` antes de `addItem` y `setItemCount`. |
+| Re-conceder objetos que el jugador gastó | **Correcto, y razonado en el propio código.** La bandera `defaultsInitialised` es explícitamente preferida a «¿está vacío el inventario?», con el comentario que lo justifica. |
+| Uso de la herramienta de otro jugador | **Correcto en `Cannon` y `GloveGun`.** Ambos exigen `IsA("Tool")` y `tool.Parent == character`, y el cañón añade un cooldown de 5 s. |
+| Validación de entrada en `Fridge` | **Correcto, y es el modelo a imitar.** Comprueba que el modelo sea una `Model`, que tenga la etiqueta `Fridge` y la distancia al jugador, las tres cosas antes de actuar. |
+| `Bin` como interactuable sin modelo | **Correcto.** No acepta ninguna `Instance` del cliente: actúa sobre la `Tool` equipada, y solo si tiene el atributo `Kitchen`. |
+| Bloqueo permanente de duchas y lavabos al morir dentro | **Correcto.** `humanoid.Died:Once` libera el `Occupant`. |
+| Recolorear partes arbitrarias de un mueble | **Correcto.** Solo se aceptan partes llamadas `LightColor` o terminadas en dígito, y un valor que no sea `Color3` se sustituye por blanco. |
+| Amueblar la casa de otro como vía de transferencia de moneda | **Correcto.** Pasa por `donacion.GetState` y `donacion.Quitar`: consume el mismo tope diario de 1 000 que una donación directa. |
+| Importe de las compras en Robux | **Correcto.** `Compras.Comprar` usa `self.ProductActive`, estado de servidor, y lee el precio de `GetProduct`. |
+| Concesión de gamepasses persistidos | **Correcto.** `GamePassService` no tiene remotes. `syncFromRoblox` verifica con `UserOwnsGamePassAsync`, y la ruta de compra exige `wasPurchased` y que el id esté declarado en `ShopInfo`. |
+| Prompts de compra entrelazados | **Correcto, y deliberado.** `MarkAdded:decition` compara id e `InfoType` del prompt que se cierra contra el que se abrió, y reporta `"Closed"` si no coinciden. Los seis eventos `Prompt*Finished` están conectados, no solo los dos que el juego usa. |
 
 ---
 
 ## BUG-CANDIDATE-001
 
-### Voice-chat gate fails open when the Roblox check errors
+### El control de chat de voz falla abierto cuando la comprobación de Roblox da error
 
-**System:** Bootstrap · **Classification:** Observation / Requires Failure Injection
-**Verification status:** Unverified · **Severity if confirmed:** Low · **Confidence:** High
+**Sistema:** Arranque · **Clasificación:** Observación / Requiere inyección de fallos
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
 
-**Related code:** `src/ServerScriptService/ImportTemplates.server.luau`, `onPlayerAdded`
-**Related documentation:** [Player lifecycle](../architecture/player-lifecycle.md)
+**Código relacionado:** `src/ServerScriptService/ImportTemplates.server.luau`, `onPlayerAdded`
+**Documentación relacionada:** [Ciclo de vida del jugador](../architecture/player-lifecycle.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
 ```lua
 local success, isVoiceEnabled = pcall(function()
@@ -96,80 +178,84 @@ else
 end
 ```
 
-Three branches: voice off → kick; voice on → allow; **check errored → allow**.
+Tres ramas: voz desactivada → expulsión; voz activada → se permite; **la comprobación dio
+error → se permite**.
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-Voz Hispana is voice-chat-only by design, and this is the only place that requirement is
-enforced. The third branch admits a player whose eligibility was never established.
+Voz Hispana es exclusivo de chat de voz por diseño, y este es el único sitio donde se
+aplica ese requisito. La tercera rama admite a un jugador cuya elegibilidad nunca se llegó
+a establecer.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-During a Roblox voice-service incident, `IsVoiceEnabledForUserIdAsync` would fail for
-many players at once and the gate would admit all of them for the duration.
+Durante una incidencia del servicio de voz de Roblox,
+`IsVoiceEnabledForUserIdAsync` fallaría para muchos jugadores a la vez y la puerta los
+admitiría a todos mientras durase.
 
-#### Evidence
+#### Evidencia
 
-The source comment on the failure branch — *"quizas conviene que le hagamos kick
-tambien"* — shows the author considered kicking here and left it open. This is a
-**recorded open decision**, not an oversight, which is why it is classified as an
-Observation.
+El comentario del código en la rama de fallo —*«quizas conviene que le hagamos kick
+tambien»*— muestra que el autor consideró expulsar aquí y lo dejó abierto. Es una
+**decisión abierta registrada**, no un descuido, y por eso se clasifica como Observación.
 
-#### Unknowns
+#### Incógnitas
 
-- The real failure rate of `IsVoiceEnabledForUserIdAsync`.
-- Which behaviour the team actually wants. Failing closed during a Roblox outage would
-  make the game unplayable; failing open admits ineligible players. Both are defensible.
+- La tasa real de fallo de `IsVoiceEnabledForUserIdAsync`.
+- Qué comportamiento quiere el equipo. Fallar cerrado durante una caída de Roblox dejaría
+  el juego injugable; fallar abierto admite jugadores no elegibles. Ambas posturas son
+  defendibles.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. Roblox voice services degrade.
-2. Players join. Every `pcall` returns `false`.
-3. Every player is admitted, including players with voice chat disabled.
+1. Los servicios de voz de Roblox se degradan.
+2. Entran jugadores. Todos los `pcall` devuelven `false`.
+3. Se admite a todos, incluidos los que tienen el chat de voz desactivado.
 
-#### Expected vs possible actual behaviour
+#### Esperado frente a posible real
 
-| Expected | Possible actual |
+| Esperado | Posible real |
 |---|---|
-| Only voice-enabled players are in the game | Players without voice chat are present during the incident |
+| Solo hay jugadores con voz activada | Durante la incidencia hay jugadores sin chat de voz |
 
-#### Verification plan — *Failure Recovery*, *Functional*
+#### Plan de verificación — *Recuperación ante fallos*, *Funcional*
 
-1. In a test place, temporarily point the check at a stub that raises.
-   **Do not modify the shipped script** — copy it into a scratch place.
-2. Join with two accounts, one voice-enabled and one not.
-3. Observe that both are admitted and that the `warn` appears in the server log.
-4. Repeat with the real service to confirm the kick path still works.
+1. En un place de pruebas, apunta temporalmente la comprobación a un stub que lance error.
+   **No modifiques el script publicado**: cópialo a un place de borrador.
+2. Entra con dos cuentas, una con voz activada y otra sin ella.
+3. Observa que se admite a ambas y que el `warn` aparece en el log del servidor.
+4. Repite con el servicio real para confirmar que la ruta de expulsión sigue funcionando.
 
-**Pass:** the team confirms fail-open is the intended policy, and it is documented.
-**Fail:** fail-open is not intended — in which case this becomes a product decision, not
-a code defect to be fixed silently.
+**Pasa:** el equipo confirma que fallar abierto es la política deseada, y queda
+documentado.
+**Falla:** fallar abierto no es lo deseado — en cuyo caso esto pasa a ser una decisión de
+producto, no un defecto que arreglar en silencio.
 
-**Instrumentation suggested:** count `pcall` failures per hour with a distinct log tag, so
-the real-world frequency is known before anyone changes the policy.
+**Instrumentación sugerida:** contar los fallos de `pcall` por hora con una etiqueta de log
+propia, para conocer la frecuencia real antes de que nadie cambie la política.
 
 ---
 
 ## BUG-CANDIDATE-002
 
-### Presence entry can outlive its server by up to the TTL
+### Una entrada de presencia puede sobrevivir a su servidor hasta el TTL
 
-**System:** World System · **Classification:** Possible Bug / Requires Lifecycle Testing
-**Verification status:** Unverified · **Severity if confirmed:** Medium · **Confidence:** Medium
+**Sistema:** World System · **Clasificación:** Posible bug / Requiere pruebas de ciclo de vida
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Media
 
-**Related code:** `Core/ServerStorage/WorldSystem/ServerPresence.luau` — `Cleanup`,
+**Código relacionado:** `Core/ServerStorage/WorldSystem/ServerPresence.luau` — `Cleanup`,
 `safeRemove`, `isThrottled`
-**Related functions:** [`ServerPresence:Cleanup`](/api/ServerPresence),
+**Funciones relacionadas:** [`ServerPresence:Cleanup`](/api/ServerPresence),
 [`ServerPresence.SafeGet`](/api/ServerPresence)
-**Related documentation:** [Server lifecycle](../architecture/server-lifecycle.md)
+**Documentación relacionada:** [Ciclo de vida del servidor](../architecture/server-lifecycle.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-- The registry entry is written with `ACTIVE_TTL = 120` seconds and refreshed every 30.
-- `Cleanup` removes it, and is reached only from `game:BindToClose` (or, for houses, from
-  the `onDenied` path).
-- `safeRemove` retries up to `MAX_RETRIES = 6` with exponential backoff, but **abandons
-  the removal entirely** when MemoryStore reports throttling:
+- La entrada del registro se escribe con `ACTIVE_TTL = 120` segundos y se refresca cada 30.
+- `Cleanup` la elimina, y solo se llega desde `game:BindToClose` (o, en las casas, desde la
+  ruta `onDenied`).
+- `safeRemove` reintenta hasta `MAX_RETRIES = 6` veces con backoff exponencial, pero
+  **abandona la eliminación por completo** cuando MemoryStore reporta throttling:
 
 ```lua
 elseif isThrottled(err) then
@@ -177,67 +263,68 @@ elseif isThrottled(err) then
     warn("[ServerPresence] RemoveAsync throttled; abandono los reintentos.")
 ```
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-Between a server's death and its entry expiring, the directory advertises a server that
-no longer exists. A player who picks it from a browser is teleported to a dead `JobId`.
+Entre la muerte de un servidor y la expiración de su entrada, el directorio anuncia un
+servidor que ya no existe. A un jugador que lo elija en un navegador se le teletransporta a
+un `JobId` muerto.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-Three routes to a stale entry: `BindToClose` exceeding its window; a crash where nothing
-runs at all; or MemoryStore throttling during shutdown, where the abandonment is by
-design. In all three the entry survives until its TTL, ≤120 s.
+Tres caminos hacia una entrada obsoleta: que `BindToClose` agote su ventana; un crash en el
+que no corre nada; o throttling de MemoryStore durante el apagado, donde el abandono es por
+diseño. En los tres, la entrada sobrevive hasta su TTL, ≤120 s.
 
-#### Evidence
+#### Evidencia
 
-The TTL is what bounds the damage, and the design leans on it — see `Lease`'s comment
-that *"El TTL da la liveness"*. `ServerPresence` also disconnects its player connections
-before removing the key precisely so a late `PlayerRemoving` cannot resurrect it, which
-shows staleness was considered.
+El TTL es lo que acota el daño, y el diseño se apoya en él — ver el comentario de `Lease`
+sobre que *«El TTL da la liveness»*. `ServerPresence` además desconecta sus conexiones de
+jugador antes de eliminar la clave precisamente para que un `PlayerRemoving` tardío no
+pueda resucitarla, lo que demuestra que la obsolescencia se tuvo en cuenta.
 
-#### Unknowns
+#### Incógnitas
 
-- What Roblox does with a teleport to a `ServerInstanceId` that no longer exists — a
-  clean error the caller can present, or a poor user-facing failure.
-- Whether any consumer surfaces that failure to the player.
+- Qué hace Roblox con un teleport a un `ServerInstanceId` que ya no existe: ¿un error
+  limpio que el llamante pueda presentar, o un fallo feo de cara al usuario?
+- Si algún consumidor le muestra ese fallo al jugador.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. Two players are in a public server; it shuts down abruptly.
-2. Within 120 s a third player opens the server browser and selects it.
-3. `JoinServer` finds the entry, reads `jobId`, and calls `TeleportAsync`.
+1. Dos jugadores están en un servidor público; se apaga de forma abrupta.
+2. Antes de 120 s, un tercer jugador abre el navegador de servidores y lo selecciona.
+3. `JoinServer` encuentra la entrada, lee `jobId` y llama a `TeleportAsync`.
 
-#### Verification plan — *Lifecycle*, *Teleport*, *Failure Recovery*
+#### Plan de verificación — *Ciclo de vida*, *Teleport*, *Recuperación ante fallos*
 
-1. Start a public server; confirm its key in `UserServerRegistry_Test`.
-2. Force-close it without a graceful shutdown.
-3. Poll the map every 10 s and record when the entry disappears. Expect ≤120 s.
-4. Inside that window, have another player select that server.
-5. Record what `safeTeleport` returns and what the player sees.
-6. Repeat with a normal shutdown and confirm the entry disappears immediately.
+1. Arranca un servidor público; confirma su clave en `UserServerRegistry_Test`.
+2. Fuérzalo a cerrar sin apagado ordenado.
+3. Sondea el mapa cada 10 s y anota cuándo desaparece la entrada. Se espera ≤120 s.
+4. Dentro de esa ventana, haz que otro jugador seleccione ese servidor.
+5. Anota qué devuelve `safeTeleport` y qué ve el jugador.
+6. Repite con un apagado normal y confirma que la entrada desaparece de inmediato.
 
-**Pass:** the entry clears within the TTL, and a teleport inside the window fails with a
-message the player understands.
-**Fail:** the entry outlives the TTL, or the teleport hangs or leaves the player in a
-broken state.
+**Pasa:** la entrada se limpia dentro del TTL, y un teleport dentro de la ventana falla con
+un mensaje que el jugador entiende.
+**Falla:** la entrada sobrevive al TTL, o el teleport se cuelga o deja al jugador en un
+estado roto.
 
-**Instrumentation suggested:** log `serverKey`, `os.time()` and the outcome at the start
-and end of `Cleanup`, and log every `safeTeleport` failure with its reason.
+**Instrumentación sugerida:** registrar `serverKey`, `os.time()` y el desenlace al principio
+y al final de `Cleanup`, y registrar cada fallo de `safeTeleport` con su motivo.
 
 ---
 
 ## BUG-CANDIDATE-003
 
-### A failed respawn leaves the player with no character and nothing retries
+### Un respawn fallido deja al jugador sin personaje y nada reintenta
 
-**System:** Character · **Classification:** Possible Bug / Requires Failure Injection
-**Verification status:** Unverified · **Severity if confirmed:** Medium · **Confidence:** Medium
+**Sistema:** Character · **Clasificación:** Posible bug / Requiere inyección de fallos
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Media
 
-**Related code:** `Core/…/ServerScripts/playerManager.server.luau` — `respawnPlayer`,
+**Código relacionado:** `Core/…/ServerScripts/playerManager.server.luau` — `respawnPlayer`,
 `onCharacterAdded`
-**Related documentation:** [Character lifecycle](../architecture/character-lifecycle.md)
+**Documentación relacionada:** [Ciclo de vida del Character](../architecture/character-lifecycle.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
 ```lua
 task.delay(RESPAWN_DELAY, function()
@@ -248,92 +335,97 @@ task.delay(RESPAWN_DELAY, function()
 end)
 ```
 
-`Humanoid.Died` is connected with `:Once`, so it will not fire again for the dead
-character. `playersLoaded[player]` stays `true`, and the request path rejects a client
-`LoadCharacterRequest` while it is set.
+`Humanoid.Died` se conecta con `:Once`, así que no volverá a dispararse para el personaje
+muerto. `playersLoaded[player]` sigue en `true`, y la ruta de petición rechaza un
+`LoadCharacterRequest` del cliente mientras lo esté.
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-If `LoadCharacterAsync` throws, the failure is warned and the flag cleared, but nothing
-retries. The death handler cannot fire again, and the client's request path is closed by
-`playersLoaded`.
+Si `LoadCharacterAsync` lanza error, el fallo se avisa y se limpia el flag, pero nada
+reintenta. El manejador de muerte no puede volver a dispararse, y la ruta de petición del
+cliente está cerrada por `playersLoaded`.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-A player whose respawn call fails is stranded without a character until they rejoin.
+Un jugador cuya llamada de respawn falle se queda tirado sin personaje hasta que vuelva a
+entrar.
 
-#### Evidence
+#### Evidencia
 
-`respawnPlayer` has no retry loop. `canProcessLoadCharacterRequest` rejects when
-`playersLoaded[player]` is set, and `respawnPlayer` never clears it — only the *join*
-path clears it, and only when *its own* `LoadCharacterAsync` fails.
+`respawnPlayer` no tiene bucle de reintento.
+`canProcessLoadCharacterRequest` rechaza cuando `playersLoaded[player]` está puesto, y
+`respawnPlayer` nunca lo limpia — solo lo limpia la ruta de *entrada*, y solo cuando falla
+*su propio* `LoadCharacterAsync`.
 
-#### Unknowns
+#### Incógnitas
 
-- How often `LoadCharacterAsync` actually throws for a player still in the server.
-- Whether another system (possibly in a binary asset) also spawns characters and would
-  paper over this.
+- Con qué frecuencia lanza error `LoadCharacterAsync` para un jugador que sigue en el
+  servidor.
+- Si otro sistema (posiblemente en un asset binario) también genera personajes y taparía
+  esto.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. Player dies. `Humanoid.Died` fires once.
-2. `respawnPlayer` waits 3 s and calls `LoadCharacterAsync`, which throws.
-3. The warning is logged; `respawning` is cleared; `playersLoaded` remains `true`.
-4. The client asks for a character; `canProcessLoadCharacterRequest` rejects it as
-   "Character ya solicitado/cargado".
+1. El jugador muere. `Humanoid.Died` se dispara una vez.
+2. `respawnPlayer` espera 3 s y llama a `LoadCharacterAsync`, que lanza error.
+3. Se registra el aviso; se limpia `respawning`; `playersLoaded` sigue en `true`.
+4. El cliente pide un personaje; `canProcessLoadCharacterRequest` lo rechaza como
+   «Character ya solicitado/cargado».
 
-#### Expected vs possible actual behaviour
+#### Esperado frente a posible real
 
-| Expected | Possible actual |
+| Esperado | Posible real |
 |---|---|
-| The player respawns, perhaps after a retry | The player is stuck with no character until they rejoin |
+| El jugador reaparece, quizá tras un reintento | El jugador se queda sin personaje hasta volver a entrar |
 
-#### Verification plan — *Failure Recovery*, *Lifecycle*
+#### Plan de verificación — *Recuperación ante fallos*, *Ciclo de vida*
 
-1. In a scratch copy of the place, wrap `LoadCharacterAsync` so it throws on the first
-   respawn only.
-2. Join, die, and observe.
-3. Confirm whether a character eventually appears, and by what route.
-4. From the client, fire `LoadCharacterRequest` and confirm it is rejected.
+1. En una copia de borrador del place, envuelve `LoadCharacterAsync` para que lance error
+   solo en el primer respawn.
+2. Entra, muere y observa.
+3. Confirma si acaba apareciendo un personaje, y por qué vía.
+4. Desde el cliente, dispara `LoadCharacterRequest` y confirma que se rechaza.
 
-**Pass:** the player recovers, by retry or by another system.
-**Fail:** no character appears and the client's request is refused.
+**Pasa:** el jugador se recupera, por reintento o por otro sistema.
+**Falla:** no aparece ningún personaje y la petición del cliente se rechaza.
 
-**Instrumentation suggested:** log every `LoadCharacterAsync` failure with the player and
-the path (join vs respawn), and log rejected `LoadCharacterRequest`s with their reason —
-today two of the four rejection reasons are silent by design.
+**Instrumentación sugerida:** registrar cada fallo de `LoadCharacterAsync` con el jugador y
+la vía (entrada frente a respawn), y registrar los `LoadCharacterRequest` rechazados con su
+motivo — hoy dos de los cuatro motivos de rechazo son silenciosos por diseño.
 
 ---
 
 ## BUG-CANDIDATE-004
 
-### Convergence after a denied host may strand players
+### La convergencia tras un anfitrión denegado puede dejar tirados a los jugadores
 
-**System:** Housing · **Classification:** Possible Bug / Requires Multiplayer Testing
-**Verification status:** Unverified · **Severity if confirmed:** High · **Confidence:** Low
+**Sistema:** Casas · **Clasificación:** Posible bug / Requiere pruebas multijugador
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Baja
 
-**Related code:** `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` —
+**Código relacionado:** `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` —
 `convergeToOwner`; `DataKit/Store.luau` — `_resolveOwnership`
-**Related documentation:** [Reserved servers](../architecture/reserved-servers.md)
+**Documentación relacionada:** [Arquitectura → Servidores reservados](../architecture/reserved-servers.md)
 
-:::note Confidence is deliberately Low
+:::note La confianza es Baja a propósito
 
-The mechanism this entry questions is the *mitigation*, not a gap. The double-reservation
-race is genuinely guarded — see [Reserved servers](../architecture/reserved-servers.md).
-This entry asks only whether the last-resort path behaves well under load.
+El mecanismo que esta entrada cuestiona es la *mitigación*, no un hueco. La carrera de
+doble reserva está genuinamente protegida — ver
+[Servidores reservados](../architecture/reserved-servers.md). Esta entrada solo pregunta si
+la ruta de último recurso se comporta bien bajo carga.
 
 :::
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-When a second house instance boots for a world that is already hosted, its `Store` has
-`onConflict = "deny"`, so `_resolveOwnership` fires `onDenied(owner, ownerMeta)`.
-`PlayerWorld_Init` then:
+Cuando arranca una segunda instancia de casa para un mundo que ya está hosteado, su `Store`
+tiene `onConflict = "deny"`, así que `_resolveOwnership` dispara `onDenied(owner, ownerMeta)`.
+`PlayerWorld_Init` entonces:
 
-1. cleans up its presence;
-2. calls `convergeToOwner`, which teleports all present players to `ownerMeta.accessCode`,
-   retrying `CONVERGE_ATTEMPTS = 3` times with `CONVERGE_RETRY = 0.5` s;
-3. **kicks** everyone if all three attempts fail:
+1. limpia su presencia;
+2. llama a `convergeToOwner`, que teletransporta a todos los presentes al
+   `ownerMeta.accessCode`, reintentando `CONVERGE_ATTEMPTS = 3` veces con
+   `CONVERGE_RETRY = 0,5` s;
+3. **expulsa** a todos si los tres intentos fallan:
 
 ```lua
 for _, plr in players do
@@ -341,138 +433,142 @@ for _, plr in players do
 end
 ```
 
-It also connects `Players.PlayerAdded` so later arrivals are forwarded too.
+También conecta `Players.PlayerAdded` para reenviar también a los que lleguen después.
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-Three attempts over 1.5 s is a short budget for a teleport, and the fallback is a kick.
+Tres intentos en 1,5 s es un presupuesto corto para un teleport, y el plan B es una
+expulsión.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-Under teleport throttling, or if `ownerMeta` is stale by the time convergence runs, the
-attempts exhaust and players are kicked from a house they are entitled to enter.
+Bajo throttling de teleports, o si `ownerMeta` está desfasado cuando corre la convergencia,
+los intentos se agotan y se expulsa a jugadores que tenían derecho a entrar.
 
-#### Evidence
+#### Evidencia
 
-`convergeToOwner` returns `false` without attempting anything when `ownerMeta` is
-malformed or when `ownerMeta.accessCode == selfAccessCode`; in that case `onFailedServer`
-runs and `ServerPresence.KickAll` ejects everyone. So there are two distinct routes to a
-kick, not one.
+`convergeToOwner` devuelve `false` sin intentar nada cuando `ownerMeta` está mal formado o
+cuando `ownerMeta.accessCode == selfAccessCode`; en ese caso corre `onFailedServer` y
+`ServerPresence.KickAll` echa a todos. Hay por tanto dos rutas distintas hacia una
+expulsión, no una.
 
-#### Unknowns
+#### Incógnitas
 
-- The real success rate of `TeleportAsync` between two reserved servers under load.
-- How often the residual race actually occurs — it requires two lobbies to interleave
-  inside a window of milliseconds.
+- La tasa real de éxito de `TeleportAsync` entre dos servidores reservados bajo carga.
+- Con qué frecuencia ocurre de verdad la carrera residual: requiere que dos lobbies se
+  entrelacen dentro de una ventana de milisegundos.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. Lobby A stages house `123_playaRoom` and reserves instance X.
-2. Instance X boots and claims the lease.
-3. Lobby B's hosted-check ran *just* before X's claim, so B also stages, reserves
-   instance Y, and sends its player there.
-4. Y boots, is denied, and tries to converge its player to X.
-5. All three teleports fail.
-6. The player is kicked.
+1. El lobby A hace staging de la casa `123_playaRoom` y reserva la instancia X.
+2. La instancia X arranca y reclama el lease.
+3. La comprobación de «hosted» del lobby B corrió *justo* antes del claim de X, así que B
+   también hace staging, reserva la instancia Y y manda allí a su jugador.
+4. Y arranca, es denegada, e intenta converger su jugador hacia X.
+5. Los tres teleports fallan.
+6. Se expulsa al jugador.
 
-#### Verification plan — *Multiplayer*, *Concurrency*, *Teleport*
+#### Plan de verificación — *Multijugador*, *Concurrencia*, *Teleport*
 
-1. Two accounts in two different lobby servers, same `HouseId`, not yet hosted.
-2. Trigger `JoinServer` on both as close to simultaneously as possible; repeat 20 times,
-   varying the offset from 0 to 500 ms.
-3. For each run record: how many reserved instances were created, whether any instance
-   logged `[PlayerWorld] World already hosted`, and where each player ended up.
-4. Repeat 5 more runs with the network throttled to force teleport failures.
+1. Dos cuentas en dos servidores de lobby distintos, mismo `HouseId`, aún sin hostear.
+2. Dispara `JoinServer` en ambas lo más simultáneamente posible; repite 20 veces, variando
+   el desfase de 0 a 500 ms.
+3. Por cada ejecución anota: cuántas instancias reservadas se crearon, si alguna instancia
+   registró `[PlayerWorld] World already hosted`, y dónde acabó cada jugador.
+4. Repite 5 ejecuciones más con la red limitada para forzar fallos de teleport.
 
-**Pass:** both players always end up in the same instance; no kicks in the unthrottled
-runs.
-**Fail:** two live instances of the same house persist, or a player is kicked in an
-unthrottled run.
+**Pasa:** ambos jugadores acaban siempre en la misma instancia; ninguna expulsión en las
+ejecuciones sin limitación.
+**Falla:** persisten dos instancias vivas de la misma casa, o se expulsa a un jugador en
+una ejecución sin limitación.
 
-**Instrumentation suggested:** log `serverKey`, `game.JobId`, `accessCode` and
-`os.clock()` at every stage of `hostWorld` and at every `onDenied`, so runs can be
-correlated across servers.
+**Instrumentación sugerida:** registrar `serverKey`, `game.JobId`, `accessCode` y
+`os.clock()` en cada etapa de `hostWorld` y en cada `onDenied`, para poder correlacionar
+ejecuciones entre servidores.
 
 ---
 
 ## BUG-CANDIDATE-005
 
-### Teleport with an access code whose instance has already shut down
+### Teleport con un código de acceso cuya instancia ya se apagó
 
-**System:** Housing · **Classification:** Requires Teleport Testing
-**Verification status:** Unverified · **Severity if confirmed:** Medium · **Confidence:** Low
+**Sistema:** Casas · **Clasificación:** Requiere pruebas de teleport
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Baja
 
-**Related code:** `WorldManager.server.luau` — `teleportToHost`; `DataKit/Lease.luau`
-**Related documentation:** [Reserved servers](../architecture/reserved-servers.md)
+**Código relacionado:** `WorldManager.server.luau` — `teleportToHost`; `DataKit/Lease.luau`
+**Documentación relacionada:** [Arquitectura → Servidores reservados](../architecture/reserved-servers.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-A house's reachability is the `DataKitLeases` entry for `World/{key}`, with a 120-second
-TTL refreshed every 30 s. `store:close()` releases it on a graceful shutdown; an abrupt
-death leaves it to expire.
+La alcanzabilidad de una casa es la entrada de `DataKitLeases` para `World/{key}`, con TTL
+de 120 segundos y refresco cada 30. `store:close()` lo libera en un apagado ordenado; una
+muerte abrupta lo deja expirar.
 
-Within that window `claimStaged` returns `kind = "hosted"` and `WorldManager` teleports
-the player using the dead instance's `accessCode`.
+Dentro de esa ventana `claimStaged` devuelve `kind = "hosted"` y `WorldManager`
+teletransporta al jugador con el `accessCode` de la instancia muerta.
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-The player is sent to a reserved instance that no longer exists.
+Se envía al jugador a una instancia reservada que ya no existe.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-Roblox's documented behaviour is that teleporting with a `ReservedServerAccessCode` whose
-instance has shut down **starts a fresh instance** with that same code. If so this is
-benign: the new instance boots, finds the lease expired or expiring, and takes over.
+El comportamiento documentado por Roblox es que teletransportar con un
+`ReservedServerAccessCode` cuya instancia se ha apagado **arranca una instancia nueva** con
+ese mismo código. Si es así, esto es inocuo: la nueva instancia arranca, encuentra el lease
+expirado o expirando, y toma el relevo.
 
-This documentation does not assert that behaviour, because it is not established by this
-repository's source. That is the whole point of the entry.
+Esta documentación no afirma ese comportamiento, porque no lo establece el código de este
+repositorio. Ese es justamente el sentido de la entrada.
 
-#### Unknowns
+#### Incógnitas
 
-- Whether a shut-down reserved instance's access code is genuinely reusable.
-- What the new instance does if it boots while the *old* lease has not yet expired — it
-  would be denied and try to converge to a dead owner, which loops back into
+- Si el código de acceso de una instancia reservada apagada es realmente reutilizable.
+- Qué hace la nueva instancia si arranca mientras el lease *antiguo* aún no ha expirado:
+  sería denegada e intentaría converger hacia un dueño muerto, lo que enlaza de vuelta con
   [BUG-CANDIDATE-004](#bug-candidate-004).
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. A house server runs, then crashes without `BindToClose` completing.
-2. Within 120 s the owner tries to re-enter.
-3. `claimStaged` reports `hosted` with the dead `accessCode`.
-4. `TeleportAsync` is called with it.
+1. Un servidor de casa corre y luego crashea sin que `BindToClose` llegue a completarse.
+2. Antes de 120 s el dueño intenta volver a entrar.
+3. `claimStaged` reporta `hosted` con el `accessCode` muerto.
+4. Se llama a `TeleportAsync` con él.
 
-#### Verification plan — *Teleport*, *Lifecycle*, *Failure Recovery*
+#### Plan de verificación — *Teleport*, *Ciclo de vida*, *Recuperación ante fallos*
 
-1. Open a house; record its `accessCode` from `DataKitLeases`.
-2. Force-close the instance without a graceful shutdown.
-3. **Immediately** (well inside 120 s) have the owner re-enter.
-4. Record whether a new instance starts, whether it holds the same `accessCode`, and
-   whether it acquires the lease or is denied.
-5. Repeat starting at 130 s, after the lease has certainly expired, as the control.
+1. Abre una casa; anota su `accessCode` desde `DataKitLeases`.
+2. Fuerza el cierre de la instancia sin apagado ordenado.
+3. **De inmediato** (bien dentro de los 120 s), haz que el dueño vuelva a entrar.
+4. Anota si arranca una instancia nueva, si conserva el mismo `accessCode`, y si adquiere
+   el lease o es denegada.
+5. Repite empezando a los 130 s, cuando el lease ya ha expirado con seguridad, como
+   control.
 
-**Pass:** step 3 lands the player in a working house in both timings.
-**Fail:** step 3 errors, hangs, or produces an instance that immediately denies itself.
+**Pasa:** el paso 3 deja al jugador en una casa funcional en ambos tiempos.
+**Falla:** el paso 3 da error, se cuelga, o produce una instancia que se deniega a sí misma
+de inmediato.
 
-**Instrumentation suggested:** log `accessCode` and `game.JobId` on every house boot, and
-log the `claimStaged` outcome (`hosted` / `staged` / won / MemoryStore failure) on every
-`hostWorld`.
+**Instrumentación sugerida:** registrar `accessCode` y `game.JobId` en cada arranque de
+casa, y registrar el desenlace de `claimStaged` (`hosted` / `staged` / ganado / fallo de
+MemoryStore) en cada `hostWorld`.
 
 ---
 
 ## BUG-CANDIDATE-006
 
-### A Studio session can publish a fake access code to the live registry
+### Una sesión de Studio puede publicar un código de acceso falso en el registro real
 
-**System:** Housing · **Classification:** Likely Bug / Requires Integration Testing
-**Verification status:** Unverified · **Severity if confirmed:** High · **Confidence:** Medium
+**Sistema:** Casas · **Clasificación:** Bug probable / Requiere pruebas de integración
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Media
 
-**Related code:** `WorldManager.server.luau` — `reserveAccessCode`, `safeTeleport`,
+**Código relacionado:** `WorldManager.server.luau` — `reserveAccessCode`, `safeTeleport`,
 `hostWorld`
-**Related documentation:** [Reserved servers](../architecture/reserved-servers.md)
+**Documentación relacionada:** [Arquitectura → Servidores reservados](../architecture/reserved-servers.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-`reserveAccessCode` returns a **fabricated GUID** in Studio instead of reserving:
+`reserveAccessCode` devuelve un **GUID fabricado** en Studio en vez de reservar:
 
 ```lua
 local function reserveAccessCode(placeId: number): string?
@@ -482,7 +578,7 @@ local function reserveAccessCode(placeId: number): string?
     …
 ```
 
-`safeTeleport` also becomes a no-op in Studio:
+`safeTeleport` también se convierte en una operación vacía en Studio:
 
 ```lua
 if not RunService:IsStudio() then
@@ -493,152 +589,182 @@ end
 return true, nil
 ```
 
-But the code path **between** those two is not Studio-aware. `hostWorld` still calls
-`Profiles.World.claimStaged`, and on success still runs `claim:setMeta(meta)` and
-`claim:tryClaim()` — writes that go to **MemoryStore**, which is universe-scoped and
-shared with live servers.
+Pero la ruta de código **entre** esas dos no es consciente de Studio. `hostWorld` sigue
+llamando a `Profiles.World.claimStaged`, y si tiene éxito sigue ejecutando
+`claim:setMeta(meta)` y `claim:tryClaim()` — escrituras que van a **MemoryStore**, que es
+de ámbito universo y está compartido con los servidores reales.
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-MemoryStore and DataStore are not sandboxed per environment. A Studio session with API
-access enabled writes into the same `DataKitLeases` map that production reads.
+MemoryStore y DataStore no están aislados por entorno. Una sesión de Studio con acceso a
+API activado escribe en el mismo mapa `DataKitLeases` que lee producción.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-A developer testing in Studio stages a house key and publishes a `staged/World/{key}`
-entry whose `accessCode` is a random GUID that reserves nothing. For the staging TTL
-(30 s), a live player asking for that same house is told the world is `staged`, polls
-`peekStaged`, receives the fake code, and is teleported with a
-`ReservedServerAccessCode` that was never issued by `TeleportService`.
+Un desarrollador probando en Studio hace staging de una clave de casa y publica una entrada
+`staged/World/{key}` cuyo `accessCode` es un GUID aleatorio que no reserva nada. Durante el
+TTL de staging (30 s), a un jugador real que pida esa misma casa se le dice que el mundo
+está `staged`, sondea `peekStaged`, recibe el código falso, y se le teletransporta con un
+`ReservedServerAccessCode` que `TeleportService` nunca emitió.
 
-#### Evidence
+#### Evidencia
 
-- `reserveAccessCode` fabricates the code — **FACT**.
-- `claimStaged` writes to the real MemoryStore with no Studio guard — **FACT**, and the
-  presence of `RunService:IsStudio()` guards on either side shows the author was
-  environment-aware precisely here and did not guard this step.
-- The staging key is namespaced by profile name and id only (`staged/World/{userId}_{room}`),
-  not by environment — **FACT**.
-- `ACTIVE_MAP_NAME = "UserServerRegistry_Test"` — the `_Test` suffix suggests the
-  *presence* map is at least conventionally separated. The lease map name,
-  `DataKitLeases`, carries no such suffix.
+- `reserveAccessCode` fabrica el código — **HECHO**.
+- `claimStaged` escribe en el MemoryStore real sin ninguna guarda de Studio — **HECHO**, y
+  la presencia de guardas `RunService:IsStudio()` a ambos lados demuestra que el autor era
+  consciente del entorno precisamente aquí y no protegió este paso.
+- La clave de staging solo lleva el espacio de nombres del perfil y el id
+  (`staged/World/{userId}_{room}`), no el entorno — **HECHO**.
+- `ACTIVE_MAP_NAME = "UserServerRegistry_Test"` — el sufijo `_Test` sugiere que el mapa de
+  *presencia* está al menos separado por convención. El nombre del mapa de leases,
+  `DataKitLeases`, no lleva tal sufijo.
 
-#### Unknowns
+#### Incógnitas
 
-- Whether "Enable Studio Access to API Services" is actually on for this universe. If it
-  is off, MemoryStore calls fail in Studio and the whole scenario collapses — which is
-  why confidence is Medium and not High.
-- Whether Studio testing is ever done against the production universe rather than a
-  separate one.
+- Si «Enable Studio Access to API Services» está realmente activado para este universo. Si
+  está desactivado, las llamadas a MemoryStore fallan en Studio y el escenario entero se
+  cae — por eso la confianza es Media y no Alta.
+- Si alguna vez se prueba en Studio contra el universo de producción en vez de contra uno
+  separado.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. A developer opens the house place in Studio with API access enabled.
-2. A player joins the local session; `PlayerWorld_Init` uses the Studio fallback key
-   `"{UserId}_defaultRoom"`.
-3. In another Studio session on the lobby place, `JoinServer` is invoked for that key.
-4. `claimStaged` wins, `reserveAccessCode` returns a GUID, and it is published.
-5. Within 30 s, a live player asks for the same house and receives the fabricated code.
+1. Un desarrollador abre el place de casa en Studio con acceso a API activado.
+2. Un jugador entra en la sesión local; `PlayerWorld_Init` usa la clave de reserva de
+   Studio `"{UserId}_defaultRoom"`.
+3. En otra sesión de Studio sobre el place de lobby, se invoca `JoinServer` para esa clave.
+4. `claimStaged` gana, `reserveAccessCode` devuelve un GUID, y se publica.
+5. Antes de 30 s, un jugador real pide la misma casa y recibe el código fabricado.
 
-#### Expected vs possible actual behaviour
+#### Esperado frente a posible real
 
-| Expected | Possible actual |
+| Esperado | Posible real |
 |---|---|
-| Studio testing cannot affect live players | A live player is teleported with an access code that reserves nothing |
+| Probar en Studio no puede afectar a jugadores reales | A un jugador real se le teletransporta con un código de acceso que no reserva nada |
 
-#### Verification plan — *Integration*, *Security*, *Teleport*
+#### Plan de verificación — *Integración*, *Seguridad*, *Teleport*
 
-1. Confirm whether API access is enabled for the universe, and whether Studio testing
-   targets the production universe. **If both are no, close this entry as not applicable
-   and record that.**
-2. If yes: in Studio, invoke `JoinServer` for a house key you own. Read
-   `staged/World/{key}` from `DataKitLeases` with a separate script.
-3. Check whether an entry exists and whether its `accessCode` is a GUID rather than a
-   real reserved code.
-4. In a live server, within 30 s, request the same house and record the outcome.
+1. Confirma si el acceso a API está activado para el universo, y si las pruebas en Studio
+   apuntan al universo de producción. **Si ambas respuestas son no, cierra esta entrada
+   como no aplicable y déjalo registrado.**
+2. Si sí: en Studio, invoca `JoinServer` para una clave de casa que poseas. Lee
+   `staged/World/{key}` de `DataKitLeases` con un script aparte.
+3. Comprueba si existe una entrada y si su `accessCode` es un GUID en vez de un código
+   reservado real.
+4. En un servidor real, antes de 30 s, pide la misma casa y anota el desenlace.
 
-**Pass:** no staging entry is written from Studio, or the live request is unaffected.
-**Fail:** a fabricated code reaches a live player.
+**Pasa:** desde Studio no se escribe ninguna entrada de staging, o la petición real no se ve
+afectada.
+**Falla:** un código fabricado llega a un jugador real.
 
-**Instrumentation suggested:** log `RunService:IsStudio()`, `game.JobId` and the code's
-provenance (reserved vs generated) on every `reserveAccessCode`, so Studio-origin entries
-are identifiable in the registry.
+**Instrumentación sugerida:** registrar `RunService:IsStudio()`, `game.JobId` y la
+procedencia del código (reservado frente a generado) en cada `reserveAccessCode`, para que
+las entradas de origen Studio sean identificables en el registro.
+
+#### Ya existe un patrón mejor en este mismo repositorio
+
+`EventService` tiene exactamente la misma necesidad —poder probar en Studio, donde el
+teleport es una operación vacía— y la resuelve **sin fabricar nada**. Su comentario lo dice:
+
+```lua
+-- Puente de Studio: como ahí el teleport es no-op, `reserve()` deja la reserva anotada
+-- con TTL largo y la place reservada la levanta al darle Play. Es el equivalente a lo que
+-- hacen las casas en PlayerWorld_Init, pero sin inventar datos: usa la reserva de verdad.
+```
+
+Reserva de verdad con `ReserveServer`, y anota en un mapa aparte (`EventStudioPending`) que
+hay una reserva esperando a que alguien le dé Play. El código que llega al registro
+compartido es siempre un código real.
+
+Esto no es una propuesta de arreglo —este proyecto no cambia código— pero sí acota mucho la
+discusión: la solución ya está escrita, probada y comentada a unos pocos archivos de
+distancia. Ver [Eventos](../systems/events.md).
 
 ---
 
 ## BUG-CANDIDATE-007
 
-### The client script loader is not in this repository
+### El cargador de scripts del cliente no está en este repositorio
 
-**System:** Client · **Classification:** Observation / Requires Runtime Verification
-**Verification status:** Unverified · **Severity if confirmed:** — · **Confidence:** High
+**Sistema:** Cliente · **Clasificación:** Observación / Requiere verificación en ejecución
+**Estado:** Sin verificar · **Gravedad si se confirma:** — · **Confianza:** Alta
 
-**Related code:** `src/ServerScriptService/InitScripts.server.luau`;
+**Código relacionado:** `src/ServerScriptService/InitScripts.server.luau`;
 `Core/ReplicatedStorage/Events/GameLoad/InitScriptsRequest.model.json`
-**Related documentation:** [Client lifecycle](../architecture/client-lifecycle.md)
+**Documentación relacionada:** [Ciclo de vida del cliente](../architecture/client-lifecycle.md)
 
-This is not a suspected defect. It is a **documentation gap** recorded in the same format
-because it needs the same kind of runtime answer.
+Esto no es un defecto sospechado. Es un **hueco de documentación** registrado en el mismo
+formato porque necesita el mismo tipo de respuesta en ejecución.
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-- All 27 `RunContext = "Client"` scripts under `Core/ReplicatedStorage/Client` ship
-  `Disabled: true`.
-- `InitScripts.server.luau` explicitly skips descendants of `ReplicatedStorage.Client`.
-- No `.luau` file in this repository assigns `Enabled = true` to any `Script` or
+- Los 27 scripts con `RunContext = "Client"` de `Core/ReplicatedStorage/Client` se
+  distribuyen con `Disabled: true`.
+- `InitScripts.server.luau` excluye explícitamente los descendientes de
+  `ReplicatedStorage.Client`.
+- Ningún archivo `.luau` de este repositorio asigna `Enabled = true` a un `Script` o
   `LocalScript`.
-- A `RemoteEvent` named `InitScriptsRequest` exists under `Events/GameLoad` and is
-  referenced by **no** `.luau` file here.
-- Three of the four scripts tagged `IgnoreAutoEnable` live under
-  `ReplicatedStorage/Client` — a folder the server-side sweep already skips wholesale, so
-  the tag is redundant for the server loader and only meaningful to a *client* one.
-- The tag `IgnoreLoader`, on both bootstrap scripts, likewise has no consumer here.
+- Existe un `RemoteEvent` llamado `InitScriptsRequest` en `Events/GameLoad`, y **ningún**
+  archivo `.luau` de aquí lo referencia.
+- Tres de los cuatro scripts etiquetados `IgnoreAutoEnable` están en
+  `ReplicatedStorage/Client` — una carpeta que el barrido del servidor ya omite en bloque,
+  así que la etiqueta es redundante para el cargador del servidor y solo tiene sentido para
+  uno *de cliente*.
+- La etiqueta `IgnoreLoader`, en ambos scripts de arranque, tampoco tiene consumidor aquí.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-A client-side loader exists outside this repository — most plausibly inside
-`src/StarterPlayer/StarterPlayerScripts.rbxm` — which waits for `InitAfterTemplates`,
-enables the client scripts, honours `IgnoreAutoEnable`, and probably uses
-`InitScriptsRequest` to coordinate with the server.
+Existe un cargador del lado cliente fuera de este repositorio —lo más plausible, dentro de
+`src/StarterPlayer/StarterPlayerScripts.rbxm`— que espera a `InitAfterTemplates`, activa
+los scripts de cliente, respeta `IgnoreAutoEnable`, y probablemente usa `InitScriptsRequest`
+para coordinarse con el servidor.
 
-#### Why it matters
+#### Por qué importa
 
-Until it is confirmed, [Client lifecycle](../architecture/client-lifecycle.md) is
-incomplete by construction, and any statement about client startup order is unfounded.
+Hasta que se confirme, [Ciclo de vida del cliente](../architecture/client-lifecycle.md)
+está incompleto por construcción, y cualquier afirmación sobre el orden de arranque del
+cliente carece de fundamento.
 
-#### Verification plan — *Functional* — about two minutes
+#### Plan de verificación — *Funcional* — unos dos minutos
 
-1. Open the place in Roblox Studio.
-2. Inspect `StarterPlayer.StarterPlayerScripts` and `StarterPlayer.StarterCharacterScripts`
-   in the Explorer.
-3. Search the whole DataModel for `Enabled = true`, `InitScriptsRequest` and
+1. Abre el place en Roblox Studio.
+2. Inspecciona `StarterPlayer.StarterPlayerScripts` y
+   `StarterPlayer.StarterCharacterScripts` en el Explorador.
+3. Busca en todo el DataModel `Enabled = true`, `InitScriptsRequest` e
    `IgnoreAutoEnable`.
-4. Record every script found, with its full path and source.
+4. Anota cada script encontrado, con su ruta completa y su código.
 
-**Pass:** the loader is found and can be documented.
-**Fail:** no such loader exists — which would be a far more serious finding, since the
-client scripts would then never run, and would need its own entry.
-
----
+**Pasa:** se encuentra el cargador y se puede documentar.
+**Falla:** no existe tal cargador — lo cual sería un hallazgo bastante más grave, porque
+entonces los scripts de cliente no correrían nunca, y necesitaría su propia entrada.
 
 ---
 
 ## BUG-CANDIDATE-008
 
-### A purchase grants the item before it charges for it
+### Una compra concede el artículo antes de cobrarlo
 
-**System:** Housing / Economy · **Classification:** Possible Bug / Requires Failure Injection
-**Verification status:** Unverified · **Severity if confirmed:** Medium · **Confidence:** Medium
+**Sistema:** Casas / Economía · **Clasificación:** Bug probable / Requiere pruebas de persistencia
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
 
-**Related code:** `Core/…/ServerScripts/ShopServerSystem.server.luau`, `ProcessPurchase`;
+:::note Actualizado tras leer `Collections` y `PlayerDataReplicator`
+
+La primera versión de esta entrada dependía de que `collections.SetAmount` fallara, y por
+eso su confianza era Media. Leer la capa de datos del jugador ha resuelto esa incógnita —y
+la ha empeorado: la concesión y el cobro **no comparten ruta de persistencia**, así que no
+hace falta ningún error para abrir la ventana. Basta con el reloj.
+
+:::
+
+**Código relacionado:** `Core/…/ServerScripts/ShopServerSystem.server.luau`, `ProcessPurchase`;
 `Core/…/ServerScripts/PlayerDataReplicator.server.luau`, `buySlot`
-**Related documentation:** [Housing → Identity and ownership](../systems/housing/identity.md)
+**Documentación relacionada:** [Casas → Identidad y propiedad](../systems/housing/identity.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-Both purchase paths mutate the player's profile **before** deducting the currency.
+Las dos rutas de compra mutan el perfil del jugador **antes** de descontar la moneda.
 
-In `ProcessPurchase`:
+En `ProcessPurchase`:
 
 ```lua
 store:update(function(current)
@@ -653,82 +779,149 @@ if not RunService:IsStudio() then
 end
 ```
 
-`buySlot` has the same shape: `store:update(...)` then `collections.SetAmount(...)`.
+`buySlot` tiene la misma forma: `store:update(...)` y luego `collections.SetAmount(...)`.
 
-#### Why this may be a problem
+#### El hecho que lo cambia todo — HECHO
 
-The two writes are not atomic and are not ordered defensively. Anything that prevents the
-second from completing leaves the player owning an item they were not charged for.
+La concesión y el cobro llegan al perfil por **rutas distintas y con tiempos distintos**:
 
-#### Theory — THEORY
+| | Concesión (`rooms`) | Cobro (moneda) |
+|---|---|---|
+| Qué se escribe | `store:update` sobre el perfil | `value.Value` de un `ValueBase` bajo el `Player` |
+| Cuándo entra en el perfil | **De inmediato** | Solo cuando `PlayerDataReplicator.flush` serializa las `Instance` — **cada 60 s** (`FLUSH_INTERVAL`) o al salir |
+| Cuándo llega al DataStore | En el siguiente autoguardado del `Store` (300 s por defecto) o al cerrar | Igual, pero solo si ya pasó por un `flush` |
 
-If `collections.SetAmount` raises, yields past a server shutdown, or writes to a store
-that fails, the room stays in `rooms` — which `DataKit` will persist on its next
-autosave — while the currency is untouched.
+`rooms` **no** está en la tabla `SPEC` de `PlayerDataReplicator`, así que no se materializa
+como `Instance`: se escribe directo al perfil. `stats` sí está en `SPEC`, mapeado a
+`leaderstats`, y es donde vive la moneda. Ver [Datos del jugador](../systems/player-data.md).
 
-#### Evidence
+#### Por qué es un problema
 
-- The ordering is direct and unambiguous — **FACT**.
-- The funds check reads `value.Value` *before* the update and the deduction recomputes
-  from `tonumber(value.Value)` *after* it, so the two reads are separated by a yielding
-  call — **FACT**.
-- `buySlot` carries an explicit comment showing the author reasoned about concurrent
-  invokes (*"dos invokes simultáneos leerían el mismo `slots` y cobrarían dos veces"*) and
-  added a per-player guard, but did not reorder the grant and the charge — **FACT**. This
-  is why confidence is Medium rather than High: the concurrency angle was considered, so
-  the ordering may be a deliberate "grant first, never lose a purchase" choice.
+Las dos escrituras no son atómicas, no están ordenadas defensivamente, y —esto es lo
+nuevo— **ni siquiera viajan juntas**. Existe una ventana de hasta 60 segundos en la que el
+perfil contiene la casa concedida y todavía no el descuento.
 
-#### Unknowns
+#### Teoría — TEORÍA
 
-- Whether `collections.SetAmount` can fail. `Collections` has not been read.
-- Whether the currency lives in the same `DataKit` store as `rooms`. If it does, both
-  writes land in one save and the window is far smaller than it looks.
+Si el autoguardado del `Store` cae dentro de esa ventana y el servidor muere antes del
+siguiente `flush`, el DataStore queda con la room añadida y la moneda intacta. No hace
+falta que nada falle: basta con que los dos relojes —autoguardado a 300 s, volcado a 60 s—
+se crucen en el orden desfavorable.
 
-#### Example scenario
+El mismo razonamiento aplica a `buySlot`, donde `slots` tampoco está en `SPEC`.
 
-1. A player with exactly 4 000 Coins buys `playaRoom` for 4 000.
-2. `store:update` inserts the room; the client is told it owns it.
-3. `SetAmount` fails.
-4. The player owns the house and still has 4 000 Coins.
+#### Evidencia
 
-#### Expected vs possible actual behaviour
+- El orden es directo e inequívoco — **HECHO**.
+- La comprobación de fondos lee `value.Value` *antes* del update y el descuento recalcula
+  desde `tonumber(value.Value)` *después*, así que las dos lecturas están separadas por una
+  llamada que cede el hilo — **HECHO**.
+- `buySlot` lleva un comentario explícito que muestra que el autor razonó sobre invocaciones
+  concurrentes (*«dos invokes simultáneos leerían el mismo `slots` y cobrarían dos veces»*)
+  y añadió una guarda por jugador, pero no reordenó la concesión y el cobro — **HECHO**.
+- `rooms` y `slots` no aparecen en la tabla `SPEC`; `stats` sí, como carpeta `leaderstats` —
+  **HECHO**. Esta es la evidencia que sube la confianza a Alta: la separación de rutas es
+  estructural, no accidental.
+- `FLUSH_INTERVAL = 60` y el autoguardado por defecto de `Store` de 300 s son constantes
+  explícitas — **HECHO**.
 
-| Expected | Possible actual |
+#### El patrón correcto ya existe en este repositorio, escrito y razonado
+
+`ReferralService.ClaimReward` resuelve exactamente el mismo problema —mover valor sin
+poder perderlo ni duplicarlo— y lo hace al revés que la tienda. Su comentario lo justifica:
+
+```lua
+--[[
+	El orden importa: primero se marca como reclamado y se guarda, y solo despues
+	se da el dinero. Al reves, un fallo de guardado dejaria al jugador cobrando el
+	mismo hito una y otra vez.
+]]
+```
+
+Y el código lo cumple, incluida la parte que la tienda no hace: **comprobar que el guardado
+funcionó** antes de mover el valor.
+
+```lua
+if not store:save("referral:claim") then
+    return false, "No se pudo guardar. Intentalo otra vez."
+end
+
+giveReward(player, reward.Currency, reward.Amount)
+```
+
+`SetInviter` hace lo mismo por el mismo motivo (`store:save("referral:attributed")`, con el
+comentario *«Se persiste ya: si el servidor se cae en el proximo minuto, la invitacion no se
+pierde»*).
+
+**Esto es lo que sube la clasificación a Bug probable.** No son dos criterios defendibles
+conviviendo: es el mismo problema resuelto bien en un sitio y mal en otro, con el
+razonamiento correcto escrito a unos archivos de distancia. Ver
+[Invitaciones](../systems/referrals.md).
+
+#### Incógnitas
+
+- Con qué frecuencia el autoguardado del `Store` cae realmente dentro de la ventana. Depende
+  de la deriva entre dos temporizadores independientes y de cuándo se compre.
+- Si el equipo prefiere «conceder primero y no perder nunca una compra» como política
+  consciente. Sería defendible, pero entonces conviene decirlo, porque el coste es
+  regalar artículos de vez en cuando.
+- ~~Si `collections.SetAmount` puede fallar~~ — ya no hace falta: la ventana existe sin
+  ningún fallo.
+
+#### Escenario de ejemplo
+
+1. Un jugador con exactamente 4 000 Coins compra `playaRoom` por 4 000.
+2. `store:update` inserta la room en el perfil, de inmediato.
+3. `SetAmount` descuenta la moneda **solo en el `ValueBase`**; el perfil sigue sin saberlo.
+4. Segundos después, el autoguardado del `Store` escribe el perfil al DataStore: con la
+   casa, y con la moneda antigua.
+5. El servidor se cae antes del siguiente `flush` de 60 s.
+6. El jugador vuelve a entrar con la casa y con sus 4 000 Coins.
+
+#### Esperado frente a posible real
+
+| Esperado | Posible real |
 |---|---|
-| Either both the grant and the charge happen, or neither | The item is granted and not paid for |
+| O ocurren la concesión y el cobro, o no ocurre ninguno | El artículo se concede y no se paga |
 
-#### Verification plan — *Failure Recovery*, *Persistence*, *Functional*
+#### Plan de verificación — *Persistencia*, *Recuperación ante fallos*, *Funcional*
 
-1. Read `Client/EconomySystem/Collections.luau` first and establish where currency is
-   stored. **If it is the same `DataKit` store as `rooms`, re-assess — the window may be
-   negligible.**
-2. In a scratch place, stub `collections.SetAmount` to raise.
-3. Buy a house. Confirm whether the room appears in `rooms` and whether the currency
-   changed.
-4. Rejoin to confirm what persisted.
-5. Repeat for `buySlot`.
+El paso de lectura previa ya está hecho, y confirmó la separación de rutas. Lo que queda es
+medir la ventana:
 
-**Pass:** the grant does not persist without the charge.
-**Fail:** the player keeps the item and the currency.
+1. En un place de pruebas, baja `FLUSH_INTERVAL` a un valor alto (por ejemplo 600 s) para
+   ensanchar la ventana a propósito y hacerla observable.
+2. Compra una casa.
+3. Fuerza un guardado del `Store` sin esperar (o baja su `autosaveInterval`), y luego cierra
+   el servidor de golpe, sin apagado ordenado.
+4. Vuelve a entrar. Comprueba si tienes la casa **y** el dinero.
+5. Repite con `buySlot`.
+6. Repite con los valores por defecto (60 s / 300 s) varias veces para estimar con qué
+   frecuencia ocurre en condiciones reales.
 
-**Instrumentation suggested:** log a single purchase record — player, item, price,
-balance before, balance after — written after both operations, so a mismatch is
-detectable in aggregate.
+**Pasa:** tras el paso 4 el jugador tiene la casa y **no** el dinero, o no tiene ninguna de
+las dos cosas.
+**Falla:** tiene ambas.
+
+**Instrumentación sugerida:** registrar un único apunte de compra —jugador, artículo,
+precio, saldo antes, saldo después— escrito **dentro del mismo `store:update` que concede
+el artículo**, para que el apunte y la concesión compartan destino y se puedan cuadrar
+después. Un apunte escrito por fuera tendría el mismo problema que el cobro.
 
 ---
 
 ## BUG-CANDIDATE-009
 
-### A first-boot name lookup failure names the house permanently
+### Un fallo al resolver el nombre en el primer arranque bautiza la casa para siempre
 
-**System:** Housing · **Classification:** Possible Bug / Requires Failure Injection
-**Verification status:** Unverified · **Severity if confirmed:** Low · **Confidence:** High
+**Sistema:** Casas · **Clasificación:** Posible bug / Requiere inyección de fallos
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
 
-**Related code:** `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau`,
+**Código relacionado:** `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau`,
 `getRoomDisplayName`; `PlayerHouses/ServerScriptService/WorldService.luau`, `start`
-**Related documentation:** [Housing → Persistence](../systems/housing/persistence.md)
+**Documentación relacionada:** [Casas → Persistencia](../systems/housing/persistence.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
 ```lua
 local function getRoomDisplayName(ownerId: number, roomName: string): string
@@ -743,7 +936,7 @@ local function getRoomDisplayName(ownerId: number, roomName: string): string
 end
 ```
 
-and the value is written only once, guarded by the sentinel:
+y el valor se escribe una sola vez, protegido por el centinela:
 
 ```lua
 store:update(function(data)
@@ -755,74 +948,78 @@ store:update(function(data)
 end)
 ```
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-The initialisation is one-shot by design. A transient Roblox failure during the very first
-boot of a house is therefore written into permanent state, and no later boot corrects it.
+La inicialización es de un solo disparo por diseño. Un fallo transitorio de Roblox durante
+el primerísimo arranque de una casa queda por tanto escrito en estado permanente, y ningún
+arranque posterior lo corrige.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-A house first opened during a Roblox API hiccup is called `"default Name"` for the rest of
-its existence, in the browser and in the directory, until its owner renames it by hand.
+Una casa abierta por primera vez durante un hipo de la API de Roblox se llama
+`"default Name"` durante el resto de su existencia, en el navegador y en el directorio,
+hasta que su dueño la renombre a mano.
 
-#### Evidence
+#### Evidencia
 
-The `OwnerId == 0` guard is the whole mechanism — **FACT**. Since `OwnerId` is written in
-the same statement as `Name`, a successful boot with a failed name lookup closes the door
-on both. Confidence is High because this needs no timing coincidence: one failed call at
-one moment is enough.
+La guarda `OwnerId == 0` es todo el mecanismo — **HECHO**. Como `OwnerId` se escribe en la
+misma sentencia que `Name`, un arranque con éxito pero con la resolución de nombre fallida
+cierra la puerta a ambos. La confianza es Alta porque no hace falta ninguna coincidencia de
+tiempos: basta una llamada fallida en un momento.
 
-#### Unknowns
+#### Incógnitas
 
-- The real failure rate of `GetNameFromUserIdAsync`.
-- Whether the affected owner would notice and rename.
+- La tasa real de fallo de `GetNameFromUserIdAsync`.
+- Si el dueño afectado se daría cuenta y la renombraría.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. A player buys `VistaLujosaRoom` and opens it for the first time.
-2. `GetNameFromUserIdAsync` fails.
-3. `settings.Name` is set to `"default Name"` and `OwnerId` to the real id.
-4. Every later boot finds `OwnerId ~= 0` and skips the initialisation.
+1. Un jugador compra `VistaLujosaRoom` y la abre por primera vez.
+2. `GetNameFromUserIdAsync` falla.
+3. `settings.Name` queda en `"default Name"` y `OwnerId` con el id correcto.
+4. Todos los arranques posteriores encuentran `OwnerId ~= 0` y se saltan la inicialización.
 
-#### Expected vs possible actual behaviour
+#### Esperado frente a posible real
 
-| Expected | Possible actual |
+| Esperado | Posible real |
 |---|---|
-| The house is named `"<Owner>'s Casa Vista Lujosa"` | It is named `"default Name"` forever |
+| La casa se llama `"<Dueño>'s Casa Vista Lujosa"` | Se llama `"default Name"` para siempre |
 
-#### Verification plan — *Failure Recovery*, *Persistence*
+#### Plan de verificación — *Recuperación ante fallos*, *Persistencia*
 
-1. In a scratch place, stub `Players:GetNameFromUserIdAsync` to raise.
-2. Open a house that has never been opened before.
-3. Confirm `settings.Name == "default Name"` and `OwnerId` is correct.
-4. Remove the stub, shut down, reopen.
-5. Confirm the name is **not** corrected.
-6. Confirm `SetWorldName` still works.
+1. En un place de borrador, sustituye `Players:GetNameFromUserIdAsync` por un stub que lance
+   error.
+2. Abre una casa que no se haya abierto nunca.
+3. Confirma que `settings.Name == "default Name"` y que `OwnerId` es correcto.
+4. Quita el stub, apaga y vuelve a abrir.
+5. Confirma que el nombre **no** se corrige.
+6. Confirma que `SetWorldName` sigue funcionando.
 
-**Pass:** the name is corrected on a later boot, or the failure does not write `OwnerId`
-either.
-**Fail:** the house keeps `"default Name"` after step 5.
+**Pasa:** el nombre se corrige en un arranque posterior, o el fallo tampoco escribe
+`OwnerId`.
+**Falla:** la casa conserva `"default Name"` después del paso 5.
 
-**Instrumentation suggested:** log every first-boot initialisation with the owner id, the
-resolved name, and whether the lookup succeeded.
+**Instrumentación sugerida:** registrar cada inicialización de primer arranque con el id del
+dueño, el nombre resuelto, y si la resolución tuvo éxito.
 
 ---
 
 ## BUG-CANDIDATE-010
 
-### `WorldDataReplicator` misses an already-`ready` server
+### `WorldDataReplicator` se pierde un servidor que ya está `ready`
 
-**System:** Housing · **Classification:** Likely Bug / Requires Lifecycle Testing
-**Verification status:** Unverified · **Severity if confirmed:** Medium · **Confidence:** Medium
+**Sistema:** Casas · **Clasificación:** Bug probable / Requiere pruebas de ciclo de vida
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Media
 
-**Related code:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau`
-(bottom of file); compare `PlayerHouses/ServerScriptService/ModeratorManager.server.luau`
-**Related documentation:** [Housing → Server lifecycle](../systems/housing/server-lifecycle.md)
+**Código relacionado:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau`
+(final del archivo); compárese con
+`PlayerHouses/ServerScriptService/ModeratorManager.server.luau`
+**Documentación relacionada:** [Casas → Ciclo de vida del servidor](../systems/housing/server-lifecycle.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-`WorldDataReplicator` wires all of its replication inside a change listener, and never
-checks the current value:
+`WorldDataReplicator` cablea toda su replicación dentro de un listener de cambio, y nunca
+comprueba el valor actual:
 
 ```lua
 ServerInfo:GetAttributeChangedSignal("status"):Connect(function()
@@ -834,7 +1031,7 @@ ServerInfo:GetAttributeChangedSignal("status"):Connect(function()
 end)
 ```
 
-`ModeratorManager`, in the same folder, handles both cases:
+`ModeratorManager`, en la misma carpeta, maneja ambos casos:
 
 ```lua
 if ServerInfo:GetAttribute("status") == "ready" then
@@ -845,85 +1042,87 @@ else
 end
 ```
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-If the attribute is already `"ready"` when `WorldDataReplicator` starts, the signal never
-fires again for that transition, `replicationWired` stays `false`, and **two** things never
-happen: the initial push of settings/roles/bans to privileged clients, and the subscription
-to `WorldService.OnStoreUpdated` that keeps them current.
+Si el atributo ya vale `"ready"` cuando `WorldDataReplicator` arranca, la señal no vuelve a
+dispararse para esa transición, `replicationWired` se queda en `false`, y **dos** cosas no
+ocurren nunca: el envío inicial de ajustes/roles/baneos a los clientes privilegiados, y la
+suscripción a `WorldService.OnStoreUpdated` que los mantiene al día.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-The owner opens the house's administration UI and sees nothing — no roles, no bans, no
-settings — and changes made by others never appear. The administrative *remotes* still work,
-because they are `RemoteFunction`s bound at file scope, outside the listener. So the symptom
-is "the panel is empty" rather than "administration is broken".
+El dueño abre la interfaz de administración de la casa y no ve nada —ni roles, ni baneos, ni
+ajustes— y los cambios que hagan otros nunca aparecen. Los *remotes* administrativos siguen
+funcionando, porque son `RemoteFunction` enlazados en el ámbito del archivo, fuera del
+listener. Así que el síntoma es «el panel está vacío» y no «la administración está rota».
 
-#### Evidence
+#### Evidencia
 
-- The asymmetry between two files in the same folder solving the same problem — **FACT**,
-  and strong evidence the omission is unintentional.
-- The remotes are bound outside the listener while replication is inside it — **FACT** —
-  which is what makes the symptom partial rather than total.
-- Reachability: `WorldDataReplicator` ships `Disabled: true` and is enabled by
-  `InitScripts`, which runs `task.wait(1)` plus a full `game:GetDescendants()` walk. A
-  reserved house server boots *because* a player is teleporting into it, and
-  `PlayerWorld_Init` starts the presence layer as soon as that player arrives. The two
-  sequences overlap. **INFERENCE**, and the reason confidence is Medium rather than High —
-  the ordering is plausible but unproven.
+- La asimetría entre dos archivos de la misma carpeta resolviendo el mismo problema —
+  **HECHO**, y evidencia fuerte de que la omisión no es intencionada.
+- Los remotes se enlazan fuera del listener mientras la replicación está dentro — **HECHO** —
+  que es lo que hace el síntoma parcial en vez de total.
+- Alcanzabilidad: `WorldDataReplicator` se distribuye con `Disabled: true` y lo activa
+  `InitScripts`, que hace `task.wait(1)` más un recorrido completo de
+  `game:GetDescendants()`. Un servidor de casa reservado arranca *porque* un jugador se está
+  teletransportando a él, y `PlayerWorld_Init` arranca la capa de presencia en cuanto ese
+  jugador llega. Las dos secuencias se solapan. **INFERENCIA**, y la razón de que la
+  confianza sea Media y no Alta: el orden es plausible pero no está probado.
 
-#### Unknowns
+#### Incógnitas
 
-- Whether the enable sweep reliably completes before the first player triggers
-  `PlayerWorld_Init`, in a real reserved server.
-- Whether `GetDescendants()` ordering makes one of the two scripts consistently earlier.
+- Si el barrido de activación termina de forma fiable antes de que el primer jugador
+  dispare `PlayerWorld_Init`, en un servidor reservado real.
+- Si el orden de `GetDescendants()` hace que uno de los dos scripts vaya sistemáticamente
+  antes.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. A reserved house server boots with a player already teleporting in.
-2. `InitScripts` begins its 1-second wait.
-3. The player arrives; `PlayerWorld_Init` — already enabled — initialises, and presence
-   reports ready. `ServerInfo.status` becomes `"ready"`.
-4. `InitScripts` finishes and enables `WorldDataReplicator`.
-5. Its listener waits for a transition that has already happened.
+1. Un servidor de casa reservado arranca con un jugador ya teletransportándose.
+2. `InitScripts` empieza su espera de 1 segundo.
+3. Llega el jugador; `PlayerWorld_Init` —ya activado— inicializa, y la presencia se reporta
+   lista. `ServerInfo.status` pasa a `"ready"`.
+4. `InitScripts` termina y activa `WorldDataReplicator`.
+5. Su listener espera una transición que ya ocurrió.
 
-#### Expected vs possible actual behaviour
+#### Esperado frente a posible real
 
-| Expected | Possible actual |
+| Esperado | Posible real |
 |---|---|
-| The owner's admin panel is populated and stays current | It is empty and never updates |
+| El panel de administración del dueño se rellena y se mantiene al día | Está vacío y nunca se actualiza |
 
-#### Verification plan — *Lifecycle*, *Integration*
+#### Plan de verificación — *Ciclo de vida*, *Integración*
 
-1. Add a log line at the top of `WorldDataReplicator`, and inside its listener, recording
-   `ServerInfo:GetAttribute("status")` and `os.clock()`.
-2. Add the same at the top of `ModeratorManager` and in `onHouseStarted`.
-3. Open a house 20 times and record the ordering each time.
-4. In runs where the status was already `"ready"`, confirm whether the admin UI is
-   populated.
-5. Force the case by delaying `PlayerWorld_Init`'s enablement relative to
-   `WorldDataReplicator`'s.
+1. Añade una línea de log al principio de `WorldDataReplicator`, y dentro de su listener,
+   registrando `ServerInfo:GetAttribute("status")` y `os.clock()`.
+2. Añade lo mismo al principio de `ModeratorManager` y en `onHouseStarted`.
+3. Abre una casa 20 veces y anota el orden en cada una.
+4. En las ejecuciones donde el estado ya fuera `"ready"`, confirma si la interfaz de
+   administración se rellena.
+5. Fuerza el caso retrasando la activación de `PlayerWorld_Init` respecto a la de
+   `WorldDataReplicator`.
 
-**Pass:** replication is wired in every run.
-**Fail:** any run where the status was already `"ready"` and replication never wired.
+**Pasa:** la replicación se cablea en todas las ejecuciones.
+**Falla:** cualquier ejecución en la que el estado ya fuera `"ready"` y la replicación no se
+cableara nunca.
 
-**Instrumentation suggested:** log `replicationWired` and the observed status at
-`WorldDataReplicator` startup — one line is enough to settle this in production.
+**Instrumentación sugerida:** registrar `replicationWired` y el estado observado al arrancar
+`WorldDataReplicator` — una sola línea basta para resolver esto en producción.
 
 ---
 
 ## BUG-CANDIDATE-011
 
-### The `moderator` role cannot moderate
+### El rol `moderator` no puede moderar
 
-**System:** Housing · **Classification:** Likely Bug / Confirmed by Static Analysis
-**Verification status:** Unverified · **Severity if confirmed:** Medium · **Confidence:** High
+**Sistema:** Casas · **Clasificación:** Bug probable / Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
 
-**Related code:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau`,
+**Código relacionado:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau`,
 `canModerate`, `pushStore`
-**Related documentation:** [Housing → Permissions](../systems/housing/permissions.md)
+**Documentación relacionada:** [Casas → Permisos](../systems/housing/permissions.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
 ```lua
 local function canModerate(data: any, player: Player): boolean
@@ -934,16 +1133,16 @@ local function canModerate(data: any, player: Player): boolean
 end
 ```
 
-`RolesInfo.moderator == 48`, so a player whose role is exactly `moderator` evaluates
+`RolesInfo.moderator == 48`, así que un jugador cuyo rol sea exactamente `moderator` evalúa
 `48 > 48` → `false`.
 
-In the **same file**, replication uses `>=`:
+En el **mismo archivo**, la replicación usa `>=`:
 
 ```lua
 if role >= RolesInfo["moderator"] or data.settings.OwnerId == plr.UserId then
 ```
 
-And `ModeratorManager`'s entry check also uses `>=`:
+Y la comprobación de entrada de `ModeratorManager` también usa `>=`:
 
 ```lua
 local function hasAtLeastGuestRole(rolesMap, userId): boolean
@@ -952,92 +1151,92 @@ local function hasAtLeastGuestRole(rolesMap, userId): boolean
 end
 ```
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-Two comparisons against the same ladder, in the same file, disagree. A `moderator`
-**receives** the roles, settings and bans payloads — so the administration UI is populated
-for them — but every administrative remote refuses them.
+Dos comparaciones contra la misma escala, en el mismo archivo, no coinciden. Un `moderator`
+**recibe** los contenidos de roles, ajustes y baneos —así que la interfaz de administración
+se le rellena— pero todos los remotes administrativos lo rechazan.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-A player granted `moderator` sees a working-looking admin panel in which every action
-silently fails. `SetBan`, `SetUserRole` and `SetWorldName` return `nil` on refusal, and
-`togglePrivacity` only `warn`s server-side, so the client gets no error to display.
+A un jugador con `moderator` se le muestra un panel que parece funcional y en el que toda
+acción falla en silencio. `SetBan`, `SetUserRole` y `SetWorldName` devuelven `nil` al
+rechazar, y `togglePrivacity` solo avisa en el servidor, así que el cliente no recibe ningún
+error que mostrar.
 
-#### Evidence
+#### Evidencia
 
-- The `>` / `>=` split within one file — **FACT**. This is the core of the finding.
-- `canModerate` is *named* for the role it excludes — **FACT**.
-- `designer` (47) and `guest` (46) are also excluded, which is presumably intended; the
-  ladder only makes sense if some rung is the administrative threshold, and `moderator` is
-  the one the name points at.
+- La división `>` / `>=` dentro de un mismo archivo — **HECHO**. Es el núcleo del hallazgo.
+- `canModerate` lleva el *nombre* del rol que excluye — **HECHO**.
+- `designer` (47) y `guest` (46) también quedan excluidos, lo que presumiblemente sí es
+  intencionado; la escala solo tiene sentido si algún peldaño es el umbral administrativo, y
+  `moderator` es al que apunta el nombre.
 
-This is classified **Confirmed by Static Analysis** for the *inconsistency*, which is
-certain, and **Likely Bug** for the *intent*, which is not — the fix could equally be to
-rename the function or to move the threshold. That is a product decision.
+Se clasifica como **Confirmado por análisis estático** para la *inconsistencia*, que es
+segura, y como **Bug probable** para la *intención*, que no lo es: el arreglo podría ser
+tanto renombrar la función como mover el umbral. Eso es una decisión de producto.
 
-#### A second, related finding
+#### Un segundo hallazgo relacionado
 
-`SetUserRole` checks that the caller can moderate and that the target is not the owner. It
-does **not** check that the caller outranks the role being granted:
+`SetUserRole` comprueba que el llamante pueda moderar y que el objetivo no sea el dueño.
+**No** comprueba que el llamante supere al rol que se está concediendo:
 
 ```lua
 if targetUserId == data.settings.OwnerId then return false, "CannotEditOwner" end
 if roleName ~= "none" and RolesInfo[roleName] == nil then return false, "InvalidRole" end
 ```
 
-So an `admin` (49) may grant `coOwner` (50), to another player or to themselves. Whether
-that is intended is a product question; it is recorded here because it belongs to the same
-review of the role model.
+Así que un `admin` (49) puede conceder `coOwner` (50), a otro jugador o a sí mismo. Si es
+intencionado es una cuestión de producto; se registra aquí porque pertenece a la misma
+revisión del modelo de roles.
 
-#### Unknowns
+#### Incógnitas
 
-- Which of the two behaviours the team wants for `moderator`.
-- Whether privilege escalation from `admin` to `coOwner` is deliberate.
+- Cuál de los dos comportamientos quiere el equipo para `moderator`.
+- Si la escalada de `admin` a `coOwner` es deliberada.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. The owner grants a friend `moderator`.
-2. The friend opens the panel and sees the roles and bans lists — `pushStore` sent them.
-3. They try to ban someone. `SetBan` returns `nil`. Nothing happens, no error.
+1. El dueño concede `moderator` a un amigo.
+2. El amigo abre el panel y ve las listas de roles y baneos — `pushStore` se las envió.
+3. Intenta banear a alguien. `SetBan` devuelve `nil`. No pasa nada, sin error.
 
-#### Expected vs possible actual behaviour
+#### Esperado frente a posible real
 
-| Expected | Possible actual |
+| Esperado | Posible real |
 |---|---|
-| A `moderator` can ban and manage roles | They see the UI and every action silently fails |
+| Un `moderator` puede banear y gestionar roles | Ve la interfaz y toda acción falla en silencio |
 
-#### Verification plan — *Functional*, *Security*
+#### Plan de verificación — *Funcional*, *Seguridad*
 
-1. In a test house, grant a second account `moderator`.
-2. Confirm the admin panel is populated for them.
-3. Attempt `SetBan`, `SetUserRole`, `SetWorldName`, `togglePrivacity`. Record each result.
-4. Repeat with `admin` (49) as the control — all should succeed.
-5. As `admin`, grant `coOwner` to a third account, and to yourself. Record whether it is
-   allowed.
+1. En una casa de pruebas, concede `moderator` a una segunda cuenta.
+2. Confirma que el panel de administración se le rellena.
+3. Intenta `SetBan`, `SetUserRole`, `SetWorldName`, `togglePrivacity`. Anota cada resultado.
+4. Repite con `admin` (49) como control — deberían funcionar todos.
+5. Como `admin`, concede `coOwner` a una tercera cuenta, y a ti mismo. Anota si se permite.
 
-**Pass:** step 3 succeeds, or the panel is correctly hidden from a moderator.
-**Fail:** the panel is shown and every action is refused.
+**Pasa:** el paso 3 funciona, o el panel se le oculta correctamente a un moderador.
+**Falla:** se muestra el panel y toda acción se rechaza.
 
-**Instrumentation suggested:** log every refused administrative call with the caller's
-role and the threshold — this would surface the mismatch immediately in production.
+**Instrumentación sugerida:** registrar cada llamada administrativa rechazada con el rol del
+llamante y el umbral — eso haría aflorar el descuadre de inmediato en producción.
 
 ---
 
 ## BUG-CANDIDATE-012
 
-### House roles, settings and bans are readable by any occupant
+### Roles, ajustes y baneos de una casa los puede leer cualquier ocupante
 
-**System:** Housing · **Classification:** Observation / Requires Security Testing
-**Verification status:** Unverified · **Severity if confirmed:** Low · **Confidence:** High
+**Sistema:** Casas · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
 
-**Related code:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` —
+**Código relacionado:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` —
 `GetRolesRf`, `GetWorldSettingRF`, `GetBansRF`, `GetUserRolRF`
-**Related documentation:** [Housing → Permissions](../systems/housing/permissions.md)
+**Documentación relacionada:** [Casas → Permisos](../systems/housing/permissions.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
-The four read remotes have no permission check:
+Los cuatro remotes de lectura no tienen comprobación de permisos:
 
 ```lua
 GetRolesRf.OnServerInvoke = function(_player: Player)
@@ -1046,10 +1245,44 @@ GetRolesRf.OnServerInvoke = function(_player: Player)
 end
 ```
 
-Note `_player` — the caller is explicitly ignored. `GetWorldSettingRF` and `GetBansRF` are
-the same shape. `GetUserRolRF` accepts an arbitrary `userId` and returns that user's role.
+Nótese el `_player`: el llamante se ignora explícitamente. `GetWorldSettingRF` y `GetBansRF`
+tienen la misma forma. `GetUserRolRF` acepta un `userId` arbitrario y devuelve el rol de ese
+usuario.
 
-Meanwhile the **push** path is restricted:
+:::note Un quinto camino, hallado al leer `Shared/Stores`
+
+La tabla de roles sale también por un remote que no está en la lista de arriba y que
+pertenece a otro sistema. `HouseAdded:init` conecta `GetInfoHouse` en las dos direcciones:
+
+```lua
+local GetInfoHouse = Events:WaitForChild("GetInfoHouse")
+GetInfoHouse = Client and GetInfoHouse.OnClientEvent or GetInfoHouse.OnServerEvent
+GetInfoHouse:Connect(function(...) self:GetData(...) end)
+```
+
+Cualquier cliente puede dispararlo, y el servidor responde con la tabla completa:
+
+```lua
+local DataClient = {
+	Permisos = self.DataBaseHouse:GetStoreData("WorldRolesStore") or {},
+	Owner = tonumber(self.DataBaseHouse.OwnerId),
+	Desing = self:GetColorAndTexture(not ClientData),
+}
+Events:FindFirstChild("GetInfoHouse"):FireClient(ClientData, DataClient)
+```
+
+Además, cada cambio de roles se difunde con `FireAllClients`, sin filtrar por destinatario.
+
+Esto **eleva la confianza** de esta entrada —hay dos sistemas independientes que exponen lo
+mismo, así que no es un descuido aislado— y **amplía el trabajo de una eventual corrección**:
+cerrar los cuatro remotes de `WorldDataReplicator` no bastaría.
+
+No cambia la gravedad. Sigue siendo una fuga de metadatos de una casa hacia quien ya está
+dentro de ella.
+
+:::
+
+Mientras tanto, la ruta de **envío** sí está restringida:
 
 ```lua
 if role >= RolesInfo["moderator"] or data.settings.OwnerId == plr.UserId then
@@ -1057,63 +1290,66 @@ if role >= RolesInfo["moderator"] or data.settings.OwnerId == plr.UserId then
 end
 ```
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-The same three payloads are restricted when pushed and unrestricted when pulled. Whatever
-the push restriction was protecting is obtainable by invoking the corresponding
-`RemoteFunction` directly.
+Los mismos tres contenidos están restringidos al enviarse y sin restringir al consultarse.
+Lo que sea que protegiera la restricción de envío se puede obtener invocando directamente el
+`RemoteFunction` correspondiente.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-Any player inside a house can read its full ban list and role table — a set of user ids and
-their privilege levels. That is not sensitive in the way credentials are, but it is
-information the code demonstrably intended to restrict.
+Cualquier jugador dentro de una casa puede leer su lista completa de baneos y su tabla de
+roles — un conjunto de ids de usuario y sus niveles de privilegio. No es sensible como lo
+serían unas credenciales, pero es información que el código demostrablemente pretendía
+restringir.
 
-#### Evidence
+#### Evidencia
 
-- The asymmetry between `pushStore`'s role bar and the read remotes' absence of one —
-  **FACT**. This is why it is recorded at all: the intent to restrict is visible.
-- `_player` is named with a leading underscore, the Luau convention for a deliberately
-  unused parameter — **FACT**. So the omission is at least explicit.
+- La asimetría entre el listón de rol de `pushStore` y la ausencia de listón en los remotes
+  de lectura — **HECHO**. Por eso se registra: la intención de restringir es visible.
+- `_player` lleva guion bajo inicial, la convención de Luau para un parámetro
+  deliberadamente sin usar — **HECHO**. Así que la omisión es al menos explícita.
 
-#### Unknowns
+#### Incógnitas
 
-- Whether restricting the reads was ever intended, or whether `pushStore`'s bar exists
-  only to avoid sending payloads no one will use.
+- Si restringir las lecturas se pretendió alguna vez, o si el listón de `pushStore` existe
+  solo para no enviar contenidos que nadie va a usar.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. A player joins a public house they have no role in.
-2. From the client console, they invoke `GetBans` and `GetRoles`.
-3. They receive the complete ban list and role table.
+1. Un jugador entra en una casa pública en la que no tiene ningún rol.
+2. Desde la consola del cliente, invoca `GetBans` y `GetRoles`.
+3. Recibe la lista de baneos y la tabla de roles completas.
 
-#### Verification plan — *Security*, *Functional*
+#### Plan de verificación — *Seguridad*, *Funcional*
 
-1. Join a house as a player with no role.
-2. Invoke each of the four read remotes from the client.
-3. Record what comes back.
-4. Confirm `WorldDataUpdated` is **not** fired to that player, establishing the asymmetry.
+1. Entra en una casa como jugador sin rol.
+2. Invoca los cuatro remotes de lectura desde el cliente.
+3. Anota qué devuelve cada uno.
+4. Confirma que a ese jugador **no** se le dispara `WorldDataUpdated`, estableciendo la
+   asimetría.
 
-**Pass:** the reads are refused, or the team confirms the data is intentionally public.
-**Fail:** a role-less occupant obtains data the push path withholds.
+**Pasa:** las lecturas se rechazan, o el equipo confirma que los datos son públicos a
+propósito.
+**Falla:** un ocupante sin rol obtiene datos que la ruta de envío le niega.
 
-**Instrumentation suggested:** log the caller's role on each of the four read remotes for
-a period, to see whether role-less callers occur in practice.
+**Instrumentación sugerida:** registrar el rol del llamante en los cuatro remotes de lectura
+durante un tiempo, para ver si en la práctica hay llamantes sin rol.
 
 ---
 
 ## BUG-CANDIDATE-013
 
-### A house server with no `TeleportData` strands its player silently
+### Un servidor de casa sin `TeleportData` deja tirado a su jugador en silencio
 
-**System:** Housing · **Classification:** Possible Bug / Requires Runtime Verification
-**Verification status:** Unverified · **Severity if confirmed:** Medium · **Confidence:** Medium
+**Sistema:** Casas · **Clasificación:** Posible bug / Requiere verificación en ejecución
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Media
 
-**Related code:** `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` —
+**Código relacionado:** `PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau` —
 `extractPayload`, `onPlayerAdded`
-**Related documentation:** [Housing → Error handling](../systems/housing/error-handling.md)
+**Documentación relacionada:** [Casas → Manejo de errores](../systems/housing/error-handling.md)
 
-#### Observed behaviour — FACT
+#### Comportamiento observado — HECHO
 
 ```lua
 local function onPlayerAdded(player: Player)
@@ -1131,135 +1367,173 @@ end
 Players.PlayerAdded:Once(onPlayerAdded)
 ```
 
-`extractPayload` returns `(nil, nil)` when `GetJoinData().TeleportData` is missing or its
-`key` is not a string. There is no `else`.
+`extractPayload` devuelve `(nil, nil)` cuando falta `GetJoinData().TeleportData` o su `key`
+no es una cadena. No hay `else`.
 
-Every other failure inside `init` calls `onFailedServer`, which warns and kicks with an
-explanation. This path alone produces no warning, no kick, and no state.
+Cualquier otro fallo dentro de `init` llama a `onFailedServer`, que avisa y expulsa con una
+explicación. Solo esta ruta no produce aviso, ni expulsión, ni estado.
 
-#### Why this may be a problem
+#### Por qué puede ser un problema
 
-Two effects compound. The player is left in a server with no world data, no presence and
-no `isStarted`. And because the connection is `:Once`, it has now been **consumed** — a
-later, correctly-teleported player cannot initialise the server either.
+Se acumulan dos efectos. El jugador se queda en un servidor sin datos de mundo, sin
+presencia y sin `isStarted`. Y como la conexión es `:Once`, ya está **consumida**: un
+jugador posterior, correctamente teletransportado, tampoco podrá inicializar el servidor.
 
-#### Theory — THEORY
+#### Teoría — TEORÍA
 
-One player arriving without valid `TeleportData` permanently poisons that reserved
-instance for everyone who follows, with no log line to explain it.
+Un único jugador que llegue sin `TeleportData` válido envenena permanentemente esa instancia
+reservada para todos los que vengan detrás, sin ninguna línea de log que lo explique.
 
-#### Evidence
+#### Evidencia
 
-- `:Once` rather than `:Connect` — **FACT**. The `booting`/`presence` guards would already
-  prevent double initialisation, so `:Once` adds nothing except this consumption.
-- Every sibling failure path funnels through `onFailedServer` — **FACT**. This one does
-  not, which makes it the odd one out.
-- The loop over `Players:GetPlayers()` before the `:Once` uses `task.spawn`, so an
-  already-present player is handled in parallel — **FACT**, and it means ordering between
-  the two entry points is not deterministic.
+- `:Once` en vez de `:Connect` — **HECHO**. Las guardas `booting`/`presence` ya impedirían
+  la doble inicialización, así que `:Once` no aporta nada salvo este consumo.
+- Todas las rutas de fallo hermanas desembocan en `onFailedServer` — **HECHO**. Esta no, lo
+  que la convierte en la excepción.
+- El bucle sobre `Players:GetPlayers()` previo al `:Once` usa `task.spawn`, así que un
+  jugador ya presente se atiende en paralelo — **HECHO**, y eso implica que el orden entre
+  ambos puntos de entrada no es determinista.
 
-#### Unknowns
+#### Incógnitas
 
-- Whether a player can reach a `PlayerHouses` place without valid `TeleportData` at all.
-  `WorldManager` always sets it, so candidate routes are a direct place join, a
-  Roblox-initiated rejoin after a disconnect, or a teleport from code outside this
-  repository. **This is the question that decides whether the entry matters**, which is why
-  confidence is Medium.
-- What `GetJoinData()` returns on a Roblox-initiated rejoin into a reserved server.
+- Si un jugador puede llegar siquiera a un place de `PlayerHouses` sin `TeleportData`
+  válido. `WorldManager` siempre lo pone, así que las rutas candidatas son una entrada
+  directa al place, una reentrada iniciada por Roblox tras una desconexión, o un teleport
+  desde código fuera de este repositorio. **Esta es la pregunta que decide si la entrada
+  importa**, y por eso la confianza es Media.
+- Qué devuelve `GetJoinData()` en una reentrada iniciada por Roblox a un servidor reservado.
 
-#### Example scenario
+#### Escenario de ejemplo
 
-1. A player is teleported into a house and disconnects mid-teleport.
-2. Roblox rejoins them into the reserved instance without the original `TeleportData`.
-3. `extractPayload` returns nil; nothing happens; `:Once` is consumed.
-4. The owner arrives correctly moments later, and the server still never initialises.
+1. Un jugador se teletransporta a una casa y se desconecta a mitad del teleport.
+2. Roblox lo reintroduce en la instancia reservada sin el `TeleportData` original.
+3. `extractPayload` devuelve nil; no pasa nada; el `:Once` queda consumido.
+4. El dueño llega correctamente instantes después, y el servidor sigue sin inicializarse.
 
-#### Expected vs possible actual behaviour
+#### Esperado frente a posible real
 
-| Expected | Possible actual |
+| Esperado | Posible real |
 |---|---|
-| An invalid arrival is rejected with a message, and the server still initialises for the next valid one | The server is inert and stays inert |
+| Una llegada inválida se rechaza con un mensaje, y el servidor aún se inicializa con la siguiente válida | El servidor queda inerte y sigue inerte |
 
-#### Verification plan — *Runtime*, *Teleport*, *Failure Recovery*
+#### Plan de verificación — *Ejecución*, *Teleport*, *Recuperación ante fallos*
 
-1. Establish first whether the case is reachable: teleport into a house place **without**
-   `TeleportData` (a direct join to the reserved place, or a teleport with no data). **If
-   Roblox refuses the join outright, close this entry and record that.**
-2. If reachable, add a log line to `extractPayload`'s nil branch and confirm it is hit.
-3. Have a second, correctly-teleported player join the same instance.
-4. Record whether the server ever initialises.
-5. Repeat by disconnecting a player mid-teleport and letting Roblox rejoin them.
+1. Establece primero si el caso es alcanzable: teletranspórtate a un place de casa **sin**
+   `TeleportData` (una entrada directa al place reservado, o un teleport sin datos). **Si
+   Roblox rechaza la entrada de plano, cierra esta entrada y déjalo registrado.**
+2. Si es alcanzable, añade una línea de log a la rama nil de `extractPayload` y confirma que
+   se alcanza.
+3. Haz que un segundo jugador, correctamente teletransportado, entre en la misma instancia.
+4. Anota si el servidor llega a inicializarse alguna vez.
+5. Repite desconectando a un jugador a mitad del teleport y dejando que Roblox lo
+   reintroduzca.
 
-**Pass:** the case is unreachable, or a later valid player still initialises the server.
-**Fail:** the instance stays inert after a valid arrival.
+**Pasa:** el caso es inalcanzable, o un jugador válido posterior sí inicializa el servidor.
+**Falla:** la instancia sigue inerte tras una llegada válida.
 
-**Instrumentation suggested:** a warning in the nil branch naming the player and dumping
-`GetJoinData()`, which would make the case visible in production even before it is
-reproduced.
-
+**Instrumentación sugerida:** un aviso en la rama nil que nombre al jugador y vuelque
+`GetJoinData()`, lo que haría visible el caso en producción incluso antes de reproducirlo.
 
 ---
 
 ## BUG-CANDIDATE-014
 
-### A shared secret and a proxy host are hardcoded in a committed source file
+### Un secreto compartido y un host proxy están escritos a fuego en cuatro archivos, uno de ellos replicado al cliente
 
-**System:** Housing / Security · **Classification:** Confirmed by Static Analysis
-**Verification status:** Unverified (the *exposure* is certain; the *impact* is not)
-**Severity if confirmed:** High · **Confidence:** High
+**Sistema:** Infraestructura / Seguridad · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar (la *exposición* es segura; el *impacto* no)
+**Gravedad si se confirma:** Alta · **Confianza:** Alta
 
-**Related code:** `Core/…/ServerScripts/WorldsBrowser.server.luau`, top of file —
-the `MY_PROXY_URL` and `MY_SECRET_KEY` constants, used by `searchPlayer`
-**Related documentation:** [Housing → Identity and ownership](../systems/housing/identity.md)
+**Código relacionado:** las constantes `MY_PROXY_URL` / `PROXY_URL` y `MY_SECRET_KEY` /
+`SECRET_KEY`, al principio de cuatro archivos:
+`Core/…/ServerScripts/WorldsBrowser.server.luau`,
+`Core/…/Data/Main/PlayerGamesFetcher.luau`,
+`Core/ServerStorage/SoundInfo.luau` y
+**`Core/ReplicatedStorage/Shared/Monetization/MainModule.luau`**
+**Documentación relacionada:** [Casas → Identidad y propiedad](../systems/housing/identity.md),
+[Monetización](../systems/monetization.md)
 
-:::note The secret is not reproduced here
+:::note El secreto no se reproduce aquí
 
-This page names the file and the constants. It does not repeat the value, and neither
-should any other document. The value is in the repository and in its git history, which is
-the point of this entry.
+Esta página nombra el archivo y las constantes. No repite el valor, y ningún otro documento
+debería hacerlo. El valor está en el repositorio y en su historial de git, que es
+precisamente el motivo de esta entrada.
 
 :::
 
-#### Observed behaviour — FACT
+:::danger Ampliado tras leer Monetización — la exposición es mayor de lo registrado
 
-`WorldsBrowser.server.luau` declares, as plain string literals at the top of a committed
-file:
+La primera versión de esta entrada nombraba **un** archivo, en `ServerScriptService`. Al
+leer el sistema de monetización aparecieron **tres más**, con la misma IP y el mismo
+secreto literal, y uno de ellos está bajo `ReplicatedStorage`.
 
-- a bare-IP `http://` URL for a self-hosted proxy, described in a comment as *"Nuestro
-  servidor VPS privado (Puerto 80)"*;
-- a shared secret, sent as the `My-Secret` request header.
+Eso cambia la naturaleza del problema. Ya no es solo «un secreto en el repositorio»: es un
+secreto que **se envía a la máquina de cada jugador** con el resto del contenido replicado.
 
-`searchPlayer` then calls `HttpService:GetAsync(url, true, headers)` against that host to
-resolve a player-name search.
+:::
 
-#### Why this is a problem
+#### Comportamiento observado — HECHO
 
-Three distinct issues, in decreasing certainty:
+Cuatro archivos declaran, como literales de cadena al principio del archivo:
 
-1. **The secret is committed.** Anyone with read access to the repository — now, or at any
-   point in its history — has it. Rotating the file does not rotate the history.
-2. **The transport is plain HTTP to a bare IP.** The header travels unencrypted and the
-   host is unauthenticated, so it is interceptable and spoofable in transit.
-3. **The remote that reaches it is unthrottled.** `SearchPlayerRF.OnServerInvoke` calls
-   `searchPlayer` with the client's keyword directly, with no rate limit, no length cap and
-   no cooldown — unlike `LoadCharacterRequest`, which has a 2-second cooldown. Every invoke
-   is one outbound HTTP request to the proxy.
+- una URL `http://` con IP desnuda hacia un proxy autoalojado, descrito en un comentario
+  como *«Nuestro servidor VPS privado (Puerto 80)»* / *«Nuestro Proxy Privado»*;
+- un secreto compartido, enviado como cabecera `My-Secret` de cada petición.
 
-The keyword itself is URL-encoded with `HttpService:UrlEncode`, so query-parameter
-injection is handled.
+| Archivo | Servicio en ejecución | Para qué usa el proxy |
+|---|---|---|
+| `ServerScripts/WorldsBrowser.server.luau` | `ServerScriptService` | Buscar jugadores por nombre |
+| `Data/Main/PlayerGamesFetcher.luau` | `ServerScriptService` | Juegos y grupos de un usuario, y sus miniaturas |
+| `ServerStorage/SoundInfo.luau` | `ServerStorage` | Metadatos de audio del toolbox |
+| **`Shared/Monetization/MainModule.luau`** | **`ReplicatedStorage`** | Catálogo de artículos creados por un jugador |
 
-#### Theory — THEORY
+Los cuatro valores son **idénticos**, carácter por carácter. Rotar el secreto obliga a tocar
+los cuatro sitios; cambiar tres y olvidar uno deja el sistema roto o el secreto vivo.
 
-An attacker holding the secret can query the proxy directly, bypassing the game. If the
-proxy exposes anything beyond user search, the blast radius is larger than this one
-endpoint. Separately, a client looping `SearchPlayer` can drive traffic to the VPS at
-whatever rate the server will process, which is a denial-of-service vector against
-infrastructure the game depends on.
+#### Por qué es un problema
 
-#### Evidence
+Tres cuestiones distintas, en orden decreciente de certeza:
 
-- The literals are in the file — **FACT**.
-- `SearchPlayerRF.OnServerInvoke` has no guard of any kind — **FACT**:
+1. **Uno de los cuatro archivos se replica al cliente.**
+   `Shared/Monetization/MainModule.luau` vive bajo `ReplicatedStorage`, así que la
+   `Instance` del `ModuleScript` —y su código— llega a la máquina de cada jugador. Solo lo
+   requiere el servidor (`RecolectarInfo = not client and require(...)`), pero eso decide
+   quién lo *ejecuta*, no quién lo *recibe*.
+
+   Un `LocalScript` normal no puede leer `.Source`: Roblox lo bloquea por identidad. Un
+   ejecutor de exploits sí puede, y volcar los módulos replicados es una de sus capacidades
+   básicas. **INFERENCIA:** el secreto es recuperable por cualquier jugador con esas
+   herramientas, sin acceso al repositorio.
+2. **El secreto está versionado.** Cualquiera con acceso de lectura al repositorio —ahora, o
+   en cualquier punto de su historial— lo tiene. Rotar el archivo no rota el historial.
+3. **El transporte es HTTP plano contra una IP desnuda.** La cabecera viaja sin cifrar y el
+   host no está autenticado, así que es interceptable y suplantable en tránsito.
+4. **El remote que llega hasta ahí no tiene límite de frecuencia.**
+   `SearchPlayerRF.OnServerInvoke` llama a `searchPlayer` con la palabra clave del cliente
+   directamente, sin límite de frecuencia, sin tope de longitud y sin cooldown — a
+   diferencia de `LoadCharacterRequest`, que tiene un cooldown de 2 segundos. Cada
+   invocación es una petición HTTP saliente al proxy.
+
+La palabra clave sí se codifica con `HttpService:UrlEncode`, así que la inyección en
+parámetros de consulta está atendida.
+
+#### Teoría — TEORÍA
+
+Un atacante con el secreto puede consultar el proxy directamente, saltándose el juego. Si el
+proxy expone algo más allá de la búsqueda de usuarios, el radio de impacto es mayor que este
+único endpoint. Por separado, un cliente que ejecute `SearchPlayer` en bucle puede dirigir
+tráfico al VPS al ritmo que el servidor sea capaz de procesar, lo que es un vector de
+denegación de servicio contra infraestructura de la que el juego depende.
+
+#### Evidencia
+
+- Los literales están en los cuatro archivos, idénticos — **HECHO**.
+- `Shared/Monetization/MainModule.luau` está bajo `Core/ReplicatedStorage/` y su
+  `.meta.json` no cambia su destino: solo fija un `SourceAssetId` — **HECHO**.
+- Cuatro superficies distintas del proxy están en uso (`/users`, `/games`, `/groups`,
+  `/thumbnails`, `/catalog`, `/apis/toolbox-service`), así que el secreto no abre un solo
+  endpoint — **HECHO**.
+- `SearchPlayerRF.OnServerInvoke` no tiene guarda de ningún tipo — **HECHO**:
 
   ```lua
   SearchPlayerRF.OnServerInvoke = function(player: Player, keyword: string)
@@ -1268,65 +1542,2247 @@ infrastructure the game depends on.
   end
   ```
 
-  Note also that `keyword` is not type-checked, unlike every remote in `WorldManager`. A
-  non-string reaches `HttpService:UrlEncode`.
+  Nótese además que `keyword` no se comprueba de tipo, a diferencia de todos los remotes de
+  `WorldManager`. Un valor que no sea cadena llega hasta `HttpService:UrlEncode`.
 
-#### Unknowns
+#### Incógnitas
 
-- What else the proxy exposes, and what the secret authorises. Not knowable from this
-  repository.
-- Whether the repository is private, and who has had access to it.
-- Whether the proxy applies its own rate limiting.
+- Qué más expone el proxy, y qué autoriza el secreto. No se puede saber desde este
+  repositorio.
+- Si el repositorio es privado, y quién ha tenido acceso a él.
+- Si el proxy aplica su propio límite de frecuencia.
 
-#### Verification plan — *Security*
+#### Plan de verificación — *Seguridad*
 
-**Do not perform this against production infrastructure without the owner's explicit
-authorisation.** These steps are for the people who own the VPS.
+**No ejecutes esto contra infraestructura de producción sin autorización explícita del
+propietario.** Estos pasos son para quienes son dueños del VPS.
 
-1. Confirm the secret is present in the current `main` and in the git history.
-2. Determine the full surface the proxy exposes and what the secret grants.
-3. Review the proxy's access logs for requests not originating from Roblox servers.
-4. Measure what one client can do: invoke `SearchPlayer` in a loop and observe the
-   outbound request rate.
+1. Confirma que el secreto está presente en el `main` actual y en el historial de git.
+2. Determina la superficie completa que expone el proxy y qué concede el secreto.
+3. Revisa los logs de acceso del proxy en busca de peticiones que no procedan de servidores
+   de Roblox.
+4. Mide qué puede hacer un solo cliente: invoca `SearchPlayer` en bucle y observa el ritmo
+   de peticiones salientes.
 
-**Pass:** the secret grants nothing of value, and the proxy rate-limits independently.
-**Fail:** the secret authorises anything worth protecting, or a single client can saturate
-the proxy.
+**Pasa:** el secreto no concede nada de valor, y el proxy limita la frecuencia por su
+cuenta.
+**Falla:** el secreto autoriza algo que merezca protección, o un solo cliente puede saturar
+el proxy.
 
-#### Recommended remediation
+#### Remediación recomendada
 
-Out of scope for this documentation project — **no code has been changed** — but recorded
-so it is not lost:
+Fuera del alcance de este proyecto de documentación —**no se ha cambiado ningún código**—,
+pero se registra para que no se pierda:
 
-- Rotate the secret; assume the committed one is compromised.
-- Move it out of source into a server-side secret store, and purge it from git history.
-- Serve the proxy over HTTPS with a hostname and a valid certificate.
-- Rate-limit and type-check `SearchPlayer`, following the pattern already used by
+- Rotar el secreto; dar por comprometido el versionado.
+- Sacarlo del código a un almacén de secretos del lado servidor, y purgarlo del historial de
+  git.
+- Servir el proxy por HTTPS, con nombre de host y certificado válido.
+- Limitar la frecuencia y comprobar el tipo en `SearchPlayer`, siguiendo el patrón que ya usa
   `canProcessLoadCharacterRequest`.
 
+---
 
-## Coverage
+---
 
-What has and has not been examined, so this page is not mistaken for a full audit.
+## BUG-CANDIDATE-015
 
-| Area | Read end to end | Notes |
+### Un solo booleano separa la economía de escrituras arbitrarias del cliente
+
+**Sistema:** Economía / Seguridad · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Crítica · **Confianza:** Alta
+
+**Código relacionado:** `Core/ReplicatedStorage/Client/EconomySystem/Collections.luau`,
+final del archivo; `Core/ReplicatedStorage/Events/Collections/*`
+**Documentación relacionada:** [Red](../architecture/networking.md)
+
+:::note Hoy no es explotable
+
+El código que lo abriría está **desactivado por una constante**. Esta entrada no dice que
+el juego sea vulnerable ahora. Dice que la distancia entre el estado actual y una
+vulnerabilidad crítica es un `false` que alguien podría cambiar sin darse cuenta de lo que
+habilita.
+
+:::
+
+#### Comportamiento observado — HECHO
+
+`Collections.luau` termina con un enlazado automático de remotes a sus propias funciones:
+
+```lua
+if not IsClient and not Start and ConexionEntreServerYCliente then
+    Start = not Start
+
+    for _,remote in Events:GetChildren() do
+        if not module[remote.Name] then continue end
+        if remote:IsA('RemoteEvent') then
+            remote.OnServerEvent:Connect(module[remote.Name])
+        elseif remote:IsA('RemoteFunction') then
+            remote.OnServerInvoke = module[remote.Name]
+        end
+    end
+end
+```
+
+y arriba del archivo, en la línea 9:
+
+```lua
+local ConexionEntreServerYCliente = false
+```
+
+Los remotes existen y coinciden por nombre con funciones del módulo:
+
+| Remote | Clase | Función del módulo con ese nombre |
 |---|---|---|
-| Bootstrap (4 files) | Yes | |
-| `WorldManager`, `ServerPresence`, `Profiles` | Yes | |
-| `PlayerWorld_Init`, `WorldService`, `PublicServerInit` | Yes | |
-| `DataKit`: `init`, `Profile`, `Lease`, `Mutex`, `Health` | Yes | Already Moonwave-documented in-source |
-| `DataKit`: `Store`, `BaseStore` | Partly | Ownership, staging, save/close read; transfer and inbox not yet |
-| `playerManager`, `Client/PlayerManager` | Yes | |
-| `PlayerWorld_Init`, `WorldService`, `WorldDataReplicator`, `ModeratorManager` | Yes | The whole `PlayerHouses` template |
-| `ServerDirectory`, `WorldsBrowser` | Yes | |
-| `PlayerDataReplicator` (server script), `PlayerSchema`, `HousesInfo`, `RolesInfo`, `GeneralConfiguration` | Yes | |
-| `ShopServerSystem` | Partly | `ProcessPurchase` only; the shop rotation and `MessagingService` sync not yet |
-| `EventService`, `ReferralService` | **No** | Queued |
-| `PlayerDataService`, `WorldSystem/PlayerDataReplicator.luau` | **No** | Queued |
-| `Collections` (currency) | **No** | Needed to close BUG-CANDIDATE-008 |
-| `GlobalDataStore`, `GiftInbox` | **No** | Both use DataStoreService outside DataKit |
-| Gameplay systems (~480 files) | **No** | Queued |
-| 320 `.rbxm` binaries | **Not inspectable** | |
+| `Events/Collections/SetAmount` | `RemoteEvent` | `module.SetAmount(_, value, Amount, earned2)` |
+| `Events/Collections/Give` | `RemoteEvent` | `module.Give(Player, List, Level)` |
+| `Events/Collections/charge` | `RemoteFunction` | `module.charge(Player, List, Level)` |
+| `Events/Collections/Get` | `RemoteEvent` | *(no hay `module.Get`; el bucle lo salta)* |
 
-Absence of an entry for an area on this page means it has not been examined, **not** that
-it is clean.
+#### Por qué puede ser un problema
+
+Si esa constante pasara a `true`, el bucle enlazaría los remotes directamente a funciones
+que **no fueron escritas para recibir entrada del cliente**. En particular:
+
+- **`SetAmount`.** Su primer parámetro se llama `_` y se ignora. En un `OnServerEvent`, el
+  primer argumento es el jugador que dispara, así que el jugador cae en `_`, y `value` y
+  `Amount` vienen **del cliente**. El cuerpo hace:
+
+  ```lua
+  value.Value = math.clamp(Amount, 0, math.huge)
+  ```
+
+  Es decir: escritura arbitraria sobre cualquier `ValueBase` que el cliente pueda
+  referenciar, con cualquier valor. No hay comprobación de propiedad, ni de tipo, ni de
+  rango superior.
+
+- **`Give`.** Su firma sí empieza por `Player`, así que el jugador llegaría correctamente,
+  pero `List` y `Level` vendrían del cliente. `Give` recorre `List` sumando a cada stat
+  nombrado el valor que el propio cliente indica. Es moneda ilimitada.
+
+#### Teoría — TEORÍA
+
+Un cliente podría concederse cualquier cantidad de Coins, Gems o cualquier otro stat
+replicado, y con `SetAmount` escribir sobre `ValueBase` que ni siquiera le pertenecen. Como
+`PlayerDataReplicator` replica los stats desde y hacia el perfil persistido, el efecto sería
+además duradero, no cosmético.
+
+#### Evidencia
+
+- La constante está a `false` y es el único guardián — **HECHO**. Sin ella, el enlazado
+  ocurre sin más condiciones.
+- La coincidencia por nombre entre remotes y funciones no es casual: los cuatro remotes
+  existen y tres tienen función homónima — **HECHO**. El mecanismo estaba pensado para
+  usarse.
+- `module.SetAmount` tiene `_` como primer parámetro — **HECHO**. Eso demuestra que se
+  diseñó para llamarse desde el servidor (`SetAmount(Player, value, amount)`), no como
+  manejador de remote, donde ese hueco lo ocupa el jugador.
+- El nombre de la constante, *«ConexionEntreServerYCliente»*, indica que el autor sabía
+  exactamente qué habilitaba y decidió dejarlo apagado — **INFERENCIA**.
+
+#### Incógnitas
+
+- Por qué se dejó el código en lugar de borrarlo. Puede ser trabajo a medias, o un
+  interruptor de depuración.
+- Si alguna versión publicada de la plantilla `Core` tiene esa constante a `true`. **Este
+  repositorio solo contiene el override local**; el asset publicado es el que manda en
+  producción, y no se puede leer desde aquí. Esta incógnita es la razón de que la entrada
+  se registre en vez de descartarse.
+
+#### Escenario de ejemplo
+
+1. Alguien pone `ConexionEntreServerYCliente = true` para probar algo, o la versión
+   publicada ya lo tiene.
+2. Un cliente ejecuta
+   `ReplicatedStorage.Events.Collections.Give:FireServer({ Coins = 999999999 }, true)`.
+3. El servidor suma esa cantidad al stat `Coins` del jugador.
+4. `PlayerDataReplicator` la persiste.
+
+#### Esperado frente a posible real
+
+| Esperado | Posible real |
+|---|---|
+| La moneda solo la modifica el servidor, tras validar | Cualquier cliente fija cualquier stat al valor que quiera |
+
+#### Plan de verificación — *Seguridad*, *Integración*
+
+1. **Primero, lo que decide todo:** comprueba el valor de `ConexionEntreServerYCliente` en
+   el asset `Core` **publicado** (`137484964666215`), no en este repositorio. Si allí es
+   `false`, el riesgo es solo latente y esta entrada baja a nota de mantenimiento.
+2. En un place de pruebas aislado, pon la constante a `true`.
+3. Desde el cliente, dispara `Collections/Give` con una tabla de stats y cantidades
+   inventadas. Anota si el stat cambia.
+4. Dispara `Collections/SetAmount` con una referencia a un `ValueBase` que no pertenezca al
+   jugador. Anota si se escribe.
+5. Vuelve a entrar para comprobar si el cambio persistió.
+
+**Pasa:** con la constante a `true` los remotes siguen rechazando la entrada del cliente
+(no es el caso según la lectura del código), o la constante está a `false` en el asset
+publicado y se documenta como interruptor peligroso.
+**Falla:** el paso 3 o el 4 modifican valores.
+
+**Instrumentación sugerida:** ninguna en producción. Lo que corresponde es una comprobación
+en el proceso de publicación que falle si esa constante llega a `true`.
+
+---
+
+## BUG-CANDIDATE-016
+
+### Las máquinas aceptan del cliente el valor de la recompensa sin validarlo
+
+**Sistema:** Máquinas / Seguridad · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/machines/PopTheLock.luau`;
+`Core/…/ServerScripts/machines/Machine.luau`, `Machine:bind`
+**Documentación relacionada:** [Red](../architecture/networking.md)
+
+:::note Hoy no concede nada
+
+El manejador de premio es un stub que solo escribe en el log. Esta entrada documenta la
+**forma** del flujo, porque el valor del cliente ya llega hasta el borde de la ruta de
+recompensa y solo falta que alguien implemente el premio.
+
+:::
+
+#### Comportamiento observado — HECHO
+
+```lua
+self._machine:bind(remotes.Machines.PopTheLockFinish, function(player, tickets)
+    fireExcept(remotes.Machines.PopTheLockFinish, player, model, tickets)
+    if tickets > 0 then
+        self:_handle(player, tickets)
+    end
+    self:stop()
+end)
+```
+
+`tickets` viene íntegramente del cliente. Y el manejador de premio, hoy:
+
+```lua
+function PopTheLock:_handle(player: Player, tickets: number)
+    warn(`[pop the lock] player({player}) tickets({tickets})`)
+end
+```
+
+#### Por qué puede ser un problema
+
+Dos cosas distintas:
+
+1. **La cantidad de premio la decide el cliente.** El servidor no simula la partida, no
+   acota `tickets`, y no comprueba que el resultado sea alcanzable. El día que `_handle`
+   conceda algo, concederá lo que el cliente diga.
+2. **`tickets > 0` no comprueba el tipo.** Si un cliente envía una cadena o `nil`, la
+   comparación lanza un error de Luau («attempt to compare»), que aborta el manejador. Todos
+   los demás remotes revisados en `WorldManager` sí comprueban tipo antes de usar el valor.
+
+#### Lo que sí está bien
+
+**HECHO.** `Machine:bind` no es ingenuo:
+
+```lua
+remote.OnServerEvent:Connect(function(player, model, ...)
+    if model == self.model and table.find(self._players, player) then
+        callback(player, ...)
+    end
+end)
+```
+
+Exige que el modelo coincida con esa máquina y que el jugador esté en su lista de
+participantes. Así que un jugador cualquiera no puede disparar el premio de una máquina en
+la que no está jugando. Eso acota el problema a los participantes legítimos, no lo elimina.
+
+#### Teoría — TEORÍA
+
+Cuando se implemente el premio, un participante podrá enviar el número de tickets que
+quiera. El patrón —el cliente reporta su propia puntuación— es el mismo en el resto de
+máquinas, así que el arreglo probablemente no sea puntual sino de diseño: la puntuación
+debería derivarse en el servidor, o al menos acotarse por lo que la partida permite.
+
+#### Evidencia
+
+- `tickets` va del remote a `_handle` sin ninguna transformación — **HECHO**.
+- `_handle` es un stub — **HECHO**, y por eso la clasificación es Observación y no bug.
+- Ninguna máquina otorga moneda hoy: un `grep` de `Collections`/`SetAmount` sobre
+  `ServerScripts/machines` no devuelve nada — **HECHO**. La única que cobra es
+  `LootBoxService`, y lo hace con `Collections.charge` del lado servidor.
+
+#### Incógnitas
+
+- Si el diseño previsto es que el servidor simule la partida o que confíe en el cliente y
+  acote el resultado.
+- Si las demás máquinas (`Stacker`, `Basketball`) siguen el mismo patrón en sus finales.
+  No se han leído en detalle.
+
+#### Escenario de ejemplo
+
+1. Alguien implementa `_handle` para que conceda tickets.
+2. Un jugador entra legítimamente en la máquina.
+3. Dispara `PopTheLockFinish` con `tickets = 1e9` sin haber jugado.
+4. Recibe la recompensa completa.
+
+#### Esperado frente a posible real
+
+| Esperado | Posible real |
+|---|---|
+| El servidor decide la recompensa | El cliente la decide |
+
+#### Plan de verificación — *Seguridad*, *Funcional*
+
+1. Lee `Stacker.luau`, `Basketball/init.luau` y `Roulette.luau` y comprueba si sus rutas de
+   final tienen la misma forma. `Roulette` ya valida el modelo en `requestSpinRF`, así que
+   puede ser el patrón a seguir.
+2. En un place de pruebas, implementa `_handle` con una concesión de prueba.
+3. Únete a la máquina y dispara `PopTheLockFinish` con un valor absurdo, sin jugar.
+4. Anota si se concede.
+5. Repite enviando una cadena en vez de un número y comprueba si el manejador lanza error.
+
+**Pasa:** el servidor recalcula o acota la recompensa; un valor no numérico se rechaza
+limpiamente.
+**Falla:** se concede lo que el cliente dijo, o un valor no numérico produce un error de
+Luau.
+
+**Instrumentación sugerida:** registrar `tickets` junto con la duración de la partida en el
+servidor; una recompensa alta con una partida de cero segundos es la señal buscada.
+
+---
+
+## BUG-CANDIDATE-017
+
+### Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto
+
+**Sistema:** Administración / Seguridad · **Clasificación:** Observación / Requiere verificación en ejecución
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerStorage/RoleService/init.luau` — `PlayerAdded`,
+`IsRole`, `TimeHold`
+**Documentación relacionada:** —
+
+#### Comportamiento observado — HECHO
+
+`IsRole` no consulta a Roblox: lee una caché.
+
+```lua
+function module:IsRole(Player:Player, NameRole)
+    assert(typeof(NameRole) == "string", "Only string")
+    return self:GetInfoPlayer(Player).Roles[NameRole] or false
+end
+```
+
+y `GetInfoPlayer` → `PlayerAdded` solo refresca si la entrada es más vieja que `TimeHold`:
+
+```lua
+if not LastData or GetElapsedTime(LastData.UpdateTime) >= self.TimeHold then
+    local Sucess, DataGroup = pcall(GroupService.GetRolesInGroupAsync, GroupService, Player.UserId, self.GroupId)
+```
+
+`TimeHold = 50` segundos, y un bucle aparte llama a `Updating()` cada 10 segundos.
+
+#### Por qué puede ser un problema
+
+Quitar a alguien del rango de administrador en el grupo de Roblox no le retira los permisos
+de inmediato: sigue pasando `IsRole` hasta que su entrada de caché caduque.
+
+#### Teoría — TEORÍA
+
+Existe una ventana de hasta 50 segundos en la que un administrador recién degradado
+—posiblemente por abuso, que es justo cuando importa— conserva acceso a `EventCommands` y
+`ReferralCommands`.
+
+#### Lo que sí está bien
+
+**HECHO.** El servicio **falla cerrado**. Si `GetRolesInGroupAsync` da error, `Sucess` es
+`false` y `GetRoles(nil)` devuelve `{}`, así que el jugador queda sin roles en vez de con
+todos. Es la dirección segura.
+
+**OBSERVACIÓN.** El reverso de eso es que un fallo transitorio de `GroupService` también se
+cachea 50 segundos, así que un administrador legítimo puede quedarse sin permisos durante
+ese rato. Es una molestia de disponibilidad, no un agujero.
+
+#### Evidencia
+
+- `TimeHold = 50` y la condición de refresco son explícitos — **HECHO**.
+- `IsRole` no tiene ninguna vía para forzar un refresco — **HECHO**.
+
+#### Incógnitas
+
+- Si 50 segundos es una elección deliberada de compromiso entre cuota de `GroupService` y
+  frescura. Muy probablemente sí, dado que hay un bucle de actualización periódica.
+- Si el modelo de amenaza del equipo contempla la revocación urgente.
+
+#### Escenario de ejemplo
+
+1. Se retira a un administrador del rango en el grupo de Roblox.
+2. Dentro de los 50 segundos siguientes ejecuta un comando de evento.
+3. `IsRole` lee la caché y lo permite.
+
+#### Plan de verificación — *Seguridad*, *Ejecución*
+
+1. Con dos cuentas, una administradora, entra en un servidor.
+2. Ejecuta un comando de administración y confirma que funciona.
+3. Retira el rango en el grupo de Roblox.
+4. Vuelve a ejecutar el comando de inmediato, y luego cada 10 segundos.
+5. Anota cuándo empieza a rechazarse.
+
+**Pasa:** el rechazo llega dentro de la ventana que el equipo considere aceptable.
+**Falla:** el acceso persiste bastante más de 50 segundos, lo que indicaría que la caché no
+caduca como se espera.
+
+**Instrumentación sugerida:** registrar la antigüedad de la entrada de caché junto a cada
+comando administrativo aceptado, para conocer la frescura real en producción.
+
+
+## BUG-CANDIDATE-018
+
+### Salir durante la carga deja el registro sucio y rompe la reconexión al mismo servidor
+
+**Sistema:** Datos del jugador / Sesión · **Clasificación:** Bug probable / Requiere pruebas de ciclo de vida
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerScriptService/Data/Main/init.server.luau`, `PlayerAdded`
+(líneas 104–155) y `PlayerRemoving` (líneas 187–196)
+**Documentación relacionada:** [Data.Main](../systems/session-orchestrator.md#los-tres-estados-de-datacomplete)
+
+#### Comportamiento observado — HECHO
+
+`PlayerAdded` marca al jugador como «cargando» en su primera línea, y el resto de la
+función es una secuencia larga con varios puntos de espera:
+
+```lua
+function PlayerAdded(Player)
+	if PlayerDataReplicator.DataComplete[Player.UserId] then return end
+	PlayerDataReplicator.DataComplete[Player.UserId] = 'no complete'
+	...
+	local list, errorMessage = PlayerDataReplicator.hydrate(Player)   -- espera al DataStore
+	...
+	PlayerDataReplicator.DataComplete[Player.UserId] = list
+	PlayerDataReplicator.markReady(Player)
+	...
+end
+```
+
+`PlayerRemoving`, el manejador que limpia ese registro, **se rinde ante el valor
+transitorio**:
+
+```lua
+function PlayerRemoving(Player)
+	RequerestLoadedPlayer[Player] = nil
+	local DataComplete = PlayerDataReplicator.DataComplete[Player.UserId]
+
+	if not DataComplete or table.find({"no complete", "Guardando"}, DataComplete) then return end
+
+	PlayerDataReplicator.finalize(Player)
+	PlayerDataReplicator.DataComplete[Player.UserId] = nil
+end
+```
+
+Sale con `return` y **no borra la entrada**. `DataComplete` solo lo escribe este archivo:
+un `grep` sobre todo `src/` confirma que ningún otro script lo asigna. Nada más lo va a
+limpiar.
+
+#### Por qué esto puede ser un problema — HECHO
+
+La primera línea de `PlayerAdded` es una guarda de reentrada contra **el mismo `UserId`**,
+no contra la misma `Instance` de `Player`:
+
+```lua
+if PlayerDataReplicator.DataComplete[Player.UserId] then return end
+```
+
+Si la entrada quedó sucia, una reconexión **a esa misma instancia de servidor** entra por
+esa guarda y sale inmediatamente: no hay `hydrate`, no hay `leaderstats`, no hay
+`markReady`, y `StartClientPlayer` no se dispara nunca.
+
+#### Teoría — TEORÍA
+
+Hay dos ventanas, y la segunda es la que más daño hace.
+
+**Ventana A — salir durante `hydrate`.** El propio `hydrate` la contempla:
+
+```lua
+if not player:IsDescendantOf(game) then
+	return nil, "El jugador salio durante la carga"
+end
+```
+
+Devuelve `nil`, y la rama de error de `PlayerAdded` **sí** limpia la entrada. Esta ventana
+se cierra sola. Está anotada porque demuestra que quien escribió el código conocía el
+problema en ese punto concreto.
+
+**Ventana B — salir después de `hydrate` y antes de la línea 147.** Aquí no hay
+comprobación. La secuencia sería:
+
+1. El jugador entra; `DataComplete[userId] = "no complete"`.
+2. `hydrate` termina bien.
+3. El jugador se va. `Players.PlayerRemoving` dispara los dos manejadores; el de
+   `Data.Main` ve `"no complete"` y **se rinde**.
+4. La corrutina de `PlayerAdded` continúa y escribe `DataComplete[userId] = list`.
+5. La entrada queda como **tabla, para un jugador que ya no está**.
+
+A partir de ahí, en ese servidor:
+
+| Consecuencia | Mecanismo |
+|---|---|
+| Una reconexión no inicializa nada | La guarda de la línea 105 |
+| El apagado tarda 30 s de más | `CountDatasCompletes()` cuenta las tablas, y espera hasta agotar el tope |
+| `RevisarCanciones` y `ComprasTablero` creen que el jugador está presente | Leen `DataComplete[UserId]` por inyección |
+
+**No hay pérdida de datos.** `PlayerDataInit` conecta su propio manejador de
+`Players.PlayerRemoving` que llama a `PlayerDataService.close`, y ese camino sí cierra el
+perfil y suelta el lease pase lo que pase. Lo que se corrompe es el estado en memoria de
+la sesión, no lo guardado.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `DataComplete` solo se asigna en `Data/Main/init.server.luau`; ningún otro archivo escribe en él |
+| 2 | `PlayerRemoving` sale antes de limpiar en dos de los cuatro estados posibles |
+| 3 | La guarda de reentrada es por `UserId`, que sobrevive a la reconexión, no por `Player` |
+| 4 | `markReady` sí está protegido (`if tracked[player] ~= nil then`), lo que impide que el estado de guardado se corrompa por esta misma vía — la protección existe en `PlayerDataReplicator` pero no en `DataComplete` |
+| 5 | `hydrate` comprueba explícitamente `IsDescendantOf(game)`, prueba de que la ventana de salida durante la carga se consideró en ese punto |
+
+#### Incógnitas
+
+- Con qué frecuencia Roblox devuelve a un jugador que reconecta a **la misma** instancia de
+  servidor. Sin eso, el impacto se queda en el retraso de apagado y el estado fantasma.
+- Cuánto dura realmente la ventana B: depende de lo que tarden `PaintServer:Load`,
+  `Commands:PlayerAdded` y `AgarreTool.new`, ninguno medido.
+
+#### Escenario de ejemplo
+
+Un jugador con conexión inestable entra, su perfil carga, y pierde la conexión mientras el
+servidor todavía está montando sus cuadros. Vuelve treinta segundos después y Roblox lo
+manda al mismo servidor. Aparece en el mundo sin `leaderstats`, sin inventario y sin
+interfaz: el cliente sigue esperando un `StartClientPlayer` que ya no va a llegar.
+
+**Comportamiento esperado:** la reconexión inicializa al jugador con normalidad.
+**Comportamiento posible:** el jugador queda en un estado inerte hasta que le toque otro
+servidor.
+
+#### Plan de verificación — *Ciclo de vida*
+
+1. En un place de pruebas, añade un `task.wait(10)` **temporal** justo después de la
+   llamada a `hydrate` en `PlayerAdded`, para ensanchar la ventana B a un tamaño manejable.
+   *(Es un cambio de instrumentación para la prueba, no una corrección.)*
+2. Entra con una cuenta y cierra el cliente a los ~5 segundos.
+3. Vuelca `PlayerDataReplicator.DataComplete` desde la consola del servidor.
+4. Vuelve a entrar, forzando el mismo servidor con `TeleportService:TeleportToPlaceInstance`
+   o uniéndote desde la lista de amigos.
+5. Observa si aparecen `leaderstats` y si el cliente recibe `StartClientPlayer`.
+
+**Pasa:** tras el paso 3 `DataComplete` no contiene ninguna entrada para ese `UserId`, y la
+reconexión inicializa con normalidad.
+**Falla:** queda una entrada, y la reconexión al mismo servidor no monta nada.
+
+**Instrumentación sugerida:** un `warn` en `PlayerAdded` cuando la guarda de la línea 105
+rechaza a un jugador. En producción, ese contador diría de inmediato si esto ocurre de
+verdad y con qué frecuencia.
+
+---
+
+## BUG-CANDIDATE-019
+
+### Donar a un jugador que aún no ha cargado destruye la moneda
+
+**Sistema:** Economía / Sesión · **Clasificación:** Bug probable / Requiere pruebas de ciclo de vida
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerScriptService/Data/Main/init.server.luau`,
+`donacion.Donar`; `Core/ReplicatedStorage/Client/EconomySystem/Collections.luau`,
+`Give` y `GetValue`
+**Documentación relacionada:** [Data.Main → Donaciones](../systems/session-orchestrator.md#donaciones-entre-jugadores)
+
+#### Comportamiento observado — HECHO
+
+`donacion.Donar` cobra primero y concede después, que es el orden correcto:
+
+```lua
+if SumaTotal <= MaxAmountSend and Cobros.charge(Player, {Coins = Cantidad}, true) then
+	Cobros.Give(Receptor, {Coins = Cantidad}, true)
+	Cash:SetAttribute("AmountSending", tostring(SumaTotal))
+```
+
+La validación del receptor es esta, y solo esta:
+
+```lua
+typeof(Receptor)=="Instance" and Receptor:IsA("Player") and Receptor:IsDescendantOf(game)
+```
+
+`Cobros.Give` localiza la `Instance` de moneda del receptor con `GetValue`, y **si no la
+encuentra no hace nada**:
+
+```lua
+local stat = module.GetValue(Player, NameStats)
+if stat then
+	... module.SetAmount(...)
+end
+-- sin rama else, sin valor de retorno, sin aviso
+```
+
+`GetValue` busca dentro de las carpetas de `Index` —`leaderstats` entre ellas— que **solo
+existen después de `hydrate`**. Un jugador que acaba de entrar aparece en `Players` y pasa
+las tres comprobaciones de `Donar` mucho antes de tener esas carpetas.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El cobro y la concesión no comparten condición de éxito:
+
+| | Cobro (`charge`) | Concesión (`Give`) |
+|---|---|---|
+| Sobre quién | El emisor, ya cargado por definición (si no, `Donar` habría fallado antes al indexar `leaderstats`) | El receptor, que puede estar a medio cargar |
+| Si la `Instance` no existe | `requirements` falla → devuelve `nil` → no se cobra | No hace nada, en silencio |
+| Valor de retorno | `true` o `nil` | ninguno |
+
+El resultado se comprueba en un lado y no en el otro. `Donar` nunca mira lo que devolvió
+`Give`, porque `Give` no devuelve nada.
+
+#### Teoría — TEORÍA
+
+Donar a un jugador que todavía está cargando **destruye la moneda**: sale de la cuenta del
+emisor, no entra en la del receptor, y además consume presupuesto del tope diario. Ambas
+partes ven la notificación de éxito, porque las notificaciones se envían
+incondicionalmente después:
+
+```lua
+Cobros.Give(Receptor, {Coins = Cantidad}, true)
+Cash:SetAttribute("AmountSending", tostring(SumaTotal))
+SentNotification(Player, "Server", `Has donado ${Cantidad} al jugador {Receptor.DisplayName}`, ...)
+SentNotification(Receptor, "Server", `El jugador {Player.DisplayName} te ha donado ${Cantidad}`, ...)
+return
+```
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `Give` no tiene rama `else` cuando `stat` es `nil`, ni valor de retorno |
+| 2 | `Donar` no comprueba el resultado de `Give` — no podría, aunque quisiera |
+| 3 | `GetValue` depende de carpetas que crea `hydrate`, no de la presencia del jugador |
+| 4 | Las notificaciones de éxito se emiten sin condicionar al resultado |
+| 5 | El mismo patrón de escritura silenciosa aparece en `SetAmount`, que ignora la llamada si `value` o `Amount` son falsos |
+
+#### Incógnitas
+
+- Cómo elige el cliente al receptor. Si la interfaz solo lista jugadores con datos cargados,
+  la ventana se estrecha mucho, pero un cliente modificado puede enviar cualquier `Player`
+  igualmente: la validación del servidor es la única que cuenta.
+- Si `Index` incluye alguna carpeta que exista antes de `hydrate`. No se ha leído completa.
+
+#### Escenario de ejemplo
+
+Dos amigos entran a la vez. Uno carga primero, abre el panel de donaciones, ve al otro en
+la lista y le manda 500 Coins. El receptor todavía está montando su árbol de datos. El
+emisor ve «Has donado 500», el receptor ve «te ha donado 500», y los 500 no existen en
+ninguna parte.
+
+**Comportamiento esperado:** o la donación llega, o se rechaza y no se cobra.
+**Comportamiento posible:** se cobra, no llega, y ambos reciben confirmación de éxito.
+
+#### Plan de verificación — *Ciclo de vida*, *Funcional*
+
+1. En un place de pruebas, retrasa `hydrate` para una cuenta concreta (un `task.wait`
+   temporal condicionado por `UserId`).
+2. Con una segunda cuenta ya cargada, dispara `DonarCoins` hacia la primera durante ese
+   retraso, desde la consola del cliente.
+3. Anota los `Coins` del emisor antes y después.
+4. Espera a que la primera cuenta termine de cargar y anota sus `Coins`.
+5. Comprueba el atributo `AmountSending` del emisor.
+
+**Pasa:** el emisor conserva sus Coins, o el receptor los recibe.
+**Falla:** el emisor pierde los Coins, el receptor no los gana y `AmountSending` sube.
+
+**Instrumentación sugerida:** hacer que `Collections.Give` devuelva cuántas estadísticas
+aplicó realmente. Es un cambio de una línea que convertiría este fallo silencioso, y todos
+los de su forma, en algo detectable — pero es un **cambio de código**, así que queda
+registrado aquí y no aplicado.
+
+
+## BUG-CANDIDATE-020
+
+### El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual
+
+**Sistema:** Tiendas / Casas / Seguridad · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Media
+
+**Código relacionado:** `Core/…/Shared/Stores/init.luau`, `fn:ChangeDesing`;
+`Core/…/Shared/Stores/HouseAdded.luau`, `module:ChangeDesing`;
+`Core/…/Shared/BreakDown.luau`, `Set`
+**Documentación relacionada:** [Tiendas y decoración](../systems/stores.md#quién-escribe-content-la-incógnita-cerrada)
+
+#### Comportamiento observado — HECHO
+
+El manejador del servidor filtra las claves con cuidado, pero solo una de ellas por valor:
+
+```lua
+for index, value in Valores do
+	if index ~= "Material" then
+		NewValores[index] = value            -- copiado tal cual
+	else
+		local material = DataDesing.FindMaterial(value)
+		if material then ... end             -- validado contra el catálogo
+	end
+end
+store:ChangeDesing(Data, NewValores)
+```
+
+`Material` se resuelve contra el catálogo y además exige haberlo comprado o tener el
+gamepass. **`Color` no se valida en absoluto**: se copia y llega hasta la escritura:
+
+```lua
+Data.Desing[ListRuta[1]][ListRuta[2]][index] = breackdownValues.Set(value)
+```
+
+Y `BreakDown.Set` deja pasar las cadenas sin tocarlas:
+
+```lua
+module.DataNormal = { ['boolean'] = true, ['string'] = true, ['number'] = true }
+
+function module.Set(Option)
+	if module.DataNormal[typeof(Option)] then return Option end
+	...
+```
+
+#### Por qué esto puede ser un problema — HECHO
+
+Lo que se escribe es la sección `content` del perfil `World` de esa casa, a través de
+`WorldService.UpdateStore("WorldContentStore", …)`. Es decir: **datos que el cliente
+controla en tamaño y contenido acaban en el DataStore de una casa que puede no ser suya.**
+
+El permiso necesario es bajo. `fn:GetStore` concede a cualquiera con un rol distinto de
+`46`, no solo al dueño. Un invitado con permiso de construcción cumple.
+
+Las validaciones que sí existen acotan la **forma** pero no el **tamaño**:
+
+| Validación | Qué acota | Qué no |
+|---|---|---|
+| `ListRuta` de dos partes, ambas resueltas contra `Estructura` | Dónde se escribe | Cuánto |
+| `if not Changes[index] then continue end` | Qué claves (`Color`, `Material`) | El valor de `Color` |
+| `BreakDown.Set` | Que no sean tablas arbitrarias | Que las cadenas sean cortas |
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede disparar `ChangeDesing` con
+`{ Color = string.rep("A", 200000) }` y hacer crecer el perfil `World` de la casa hasta
+acercarse o superar el límite de 4 MB por clave de DataStore. A partir de ahí los guardados
+de esa casa fallarían, y con suficientes fallos seguidos el cortacircuitos `Health` de
+DataKit abriría el circuito para ese store.
+
+El daño no lo sufre quien ataca: lo sufre **la casa**, y por tanto su dueño.
+
+Hay una segunda vía, más lenta y con el mismo efecto: cada `(carpeta, modelo)` es una
+ranura distinta, así que aunque hubiera un tope por valor, el número de ranuras multiplica
+lo acumulable.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `NewValores[index] = value` sin ninguna comprobación para toda clave que no sea `Material` |
+| 2 | `BreakDown.Set` devuelve las cadenas sin modificar ni medir |
+| 3 | La escritura va a `WorldContentStore`, que `WorldService` mapea a la sección `content` del perfil `World` |
+| 4 | El permiso lo concede `GetStore`, que acepta cualquier rol distinto de `46` |
+| 5 | No hay límite de frecuencia en el remote `ChangeDesing` |
+| 6 | El lado que renderiza **sí** es robusto: `ColorTexture.Color` sustituye cualquier valor que no sea `Color3` por blanco. El problema es de almacenamiento, no de renderizado |
+
+:::note Un segundo camino, con otro destino
+
+`Stores/Added.luau` —la variante del place de donaciones— tiene la misma forma y el mismo
+hueco:
+
+```lua
+for Name, Valor in ColorTexture do
+	if not Changes[Name] then continue end
+	v.Value:SetAttribute(Name, Valor)
+end
+```
+
+Filtra el **nombre** contra `ColorTexture` y no toca el **valor**. El destino cambia: aquí
+va a un `BoolValue` bajo `StoresData`, que `SPEC` persiste en el perfil `WorldsPlayer` del
+propio jugador, no en el de una casa ajena. El daño sería a los datos de quien lo hace, lo
+que baja mucho la gravedad de esta variante, pero el patrón es idéntico y conviene arreglar
+los dos a la vez.
+
+Una diferencia técnica que hay que comprobar: aquí el valor pasa por `Instance:SetAttribute`,
+que impone sus propios límites de tipo y quizá de tamaño, mientras que en la ruta de casas
+va directo a una tabla del DataStore.
+
+:::
+
+#### Incógnitas
+
+- Qué hace DataKit ante una escritura que supera el límite del DataStore: si rechaza
+  limpiamente y deja el perfil anterior intacto, la gravedad baja mucho.
+- Si `UpdateStore` valida el tamaño de la sección antes de escribir. `WorldService.UpdateStore`
+  no se ha releído con esta pregunta en mente.
+- Cuántas ranuras `(carpeta, modelo)` tiene una casa real. Determina el techo acumulable.
+- Si `Instance:SetAttribute` limita la longitud de una cadena. Decide si la variante de
+  `Added.luau` es explotable o se cierra sola.
+
+#### Escenario de ejemplo
+
+Un jugador con rol de constructor en la casa de un amigo abre la consola y manda un color
+de 200 000 caracteres para un suelo. Repite con cada superficie. La casa deja de guardar;
+la siguiente sesión pierde el mobiliario colocado desde ese momento.
+
+**Comportamiento esperado:** un color que no es un color se rechaza.
+**Comportamiento posible:** se guarda, y el perfil de la casa se degrada.
+
+#### Plan de verificación — *Seguridad*, *Persistencia*
+
+1. En un place de pruebas, entra en una casa con una cuenta que tenga un rol distinto de
+   `46` pero no sea la dueña.
+2. Desde la consola del cliente, dispara `ChangeDesing` con
+   `("Floors.Color1", { Color = string.rep("A", 1000) })`.
+3. Lee la sección `content` del perfil de esa casa y comprueba si la cadena está ahí.
+4. Si está, repite subiendo el tamaño y anota en qué punto empieza a fallar el guardado.
+5. Comprueba si el fallo se reporta o pasa en silencio.
+
+**Pasa:** el valor se rechaza por no ser un `Color3`, o `UpdateStore` corta por tamaño.
+**Falla:** la cadena aparece íntegra en el perfil.
+
+**Instrumentación sugerida:** registrar el tamaño serializado de cada sección al guardar.
+Es información útil mucho más allá de esta entrada.
+
+---
+
+## BUG-CANDIDATE-021
+
+### El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso
+
+**Sistema:** Tiendas / Economía · **Clasificación:** Posible bug / Requiere pruebas multijugador
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Media
+
+:::note Esto puede ser el diseño querido
+
+«Es mi casa, puedo quitar lo que haya» es una regla perfectamente razonable. Lo que esta
+entrada cuestiona no es que el dueño pueda **quitar** el mueble, sino **a quién se le paga**
+cuando lo hace. Se registra como pregunta de diseño con evidencia, no como acusación.
+
+:::
+
+**Código relacionado:** `Core/…/Shared/Stores/init.luau`, `fn:SellDecors` y `fn:GetDecorPlayer`
+**Documentación relacionada:** [Tiendas y decoración](../systems/stores.md#el-modelo-de-permisos)
+
+#### Comportamiento observado — HECHO
+
+`GetDecorPlayer`, en el servidor, busca primero en el índice del jugador que pregunta y
+**luego en todo el mobiliario de la casa**, sin filtrar por dueño:
+
+```lua
+local list = Client and self.DecorsPlayer:Get() or Player and self.DecorsPlayer[Player.UserId]
+if list then ... end
+
+if self.Added and self.Added:IsA("House") then
+	for i, v in self.Added.DecorChild do
+		...
+		for _, data in v do
+			if IsValue and data.Boolean == decor then return data end
+```
+
+`SellDecors` acepta tres caminos, y el tercero solo mira quién es el dueño de la casa:
+
+```lua
+if Decor2.Boolean:IsDescendantOf(Player)
+	or (self.Added:IsA("House") and Decor2.Owner == Player.UserId and (...)
+	or (self.Added.DataBaseHouse and tonumber(self.Added.DataBaseHouse.OwnerId) == Player.UserId)) then
+
+	local PriceDevolver = not Decor2.Boolean.Value and Decor2.Data.Price
+	                       or self.Cobros.Lerp(Decor2.Data.Price, .7)
+	debris:AddItem(Decor2.Boolean, 0)
+	self.Cobros.Give(Player, PriceDevolver, true)
+```
+
+`Player` es siempre quien disparó el remote. El reembolso va a esa cuenta, sea o no quien
+compró el mueble.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El sistema **sí sabe** quién colocó cada mueble: `Object.OwnerPlace` viaja en el perfil y
+`fn:SetStore` lo restaura al arrancar el servidor. `ExitModeConstruccion` lo usa para fijar
+solo lo de cada jugador:
+
+```lua
+if data.Boolean:GetAttribute("OwnerPlace") == Player.UserId then
+	data.Boolean.Value = true
+end
+```
+
+La información de propiedad existe y se usa en otro sitio. En el reembolso no se consulta.
+
+#### Teoría — TEORÍA
+
+Un jugador invita a otro a su casa, el invitado compra y coloca mobiliario —pagándolo de su
+bolsillo y consumiendo su tope diario de donación, que es justo lo que el código hace para
+tratar eso como un regalo—, y después el dueño lo vende y cobra el 70 % del precio.
+
+Lo que convierte esto en una vía de extracción, y no solo en una asimetría, es
+precisamente ese tope: el juego reconoce que amueblar una casa ajena **es** transferir
+valor, y le aplica el límite diario de 1 000. La venta por parte del dueño no tiene tope
+equivalente.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `GetDecorPlayer` cae a `DecorChild` —todo el mobiliario de la casa— sin filtrar por dueño |
+| 2 | El tercer disyuntor de `SellDecors` solo comprueba `OwnerId == Player.UserId` |
+| 3 | `Cobros.Give(Player, …)` paga a quien llamó, no a `Decor2.Owner` |
+| 4 | `Decor2.Owner` y el atributo `OwnerPlace` existen y se usan en `ExitModeConstruccion` y en la restauración |
+| 5 | `BuyDecors` tiene la misma forma para «recoger»: el dueño se lleva el mueble a **su** inventario (`addInventory(Inventory, true)`) |
+| 6 | Colocar en casa ajena consume el tope diario de donación; retirarlo no devuelve nada a ese tope |
+
+#### Incógnitas
+
+- Si la interfaz de la casa ofrece «vender» sobre muebles ajenos, o solo «devolver al
+  inventario». Si solo ofrece lo segundo, hace falta un cliente modificado, lo que reduce
+  la exposición pero no cierra el caso.
+- Si `Decor2.Data.Price` de un mueble ajeno es el precio real pagado o el de catálogo.
+- Si el equipo considera que retirar mobiliario ajeno debe reembolsar a alguien.
+
+#### Escenario de ejemplo
+
+Dos jugadores. A invita a B con rol de constructor. B compra mobiliario por 900 Coins y lo
+coloca. A lo vende todo y recibe 630 Coins. B pierde 900 y ha gastado además su tope diario.
+Repetible cada día, con cada invitado.
+
+**Comportamiento esperado:** o el reembolso va a quien compró, o retirar mobiliario ajeno no
+reembolsa a nadie.
+**Comportamiento posible:** el reembolso va a quien pulsa el botón.
+
+#### Plan de verificación — *Multijugador*, *Funcional*
+
+1. Dos cuentas. A dueña de una casa, B con un rol distinto de `46`.
+2. B compra un mueble y lo coloca dentro de la casa. Anota los Coins de ambos.
+3. A dispara `SellDecor` sobre ese mueble.
+4. Anota los Coins de ambos otra vez y comprueba si el mueble desapareció.
+5. Repite con `BuyDecor` en modo «recoger» y mira en qué inventario acaba.
+
+**Pasa:** B recibe el reembolso, o no lo recibe nadie.
+**Falla:** A recibe el reembolso de un mueble que pagó B.
+
+**Instrumentación sugerida:** registrar `Decor2.Owner` junto a quien llama en cada venta.
+Un solo `warn` bastaría para saber si esto ocurre en producción.
+
+
+## BUG-CANDIDATE-022
+
+### Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no
+
+**Sistema:** Monetización / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Monetization/init.luau`, `AddedProductPlayer` y su
+conexión en `Works`; `Core/…/Shared/Monetization/MainModule.luau`, `LoadProductInfo`
+**Documentación relacionada:** [Monetización](../systems/monetization.md#sharedmonetization-el-camino-abierto)
+
+#### Comportamiento observado — HECHO
+
+El remote está conectado sin filtro, y el manejador toma dos argumentos del cliente:
+
+```lua
+self.Events.AddedProductPlayer.OnServerEvent:Connect(function(...) self:AddedProductPlayer(...) end)
+```
+
+```lua
+function module:AddedProductPlayer(Player, ProductId, InfoType)
+	if client then ...
+	elseif typeof(ProductId) == 'number' and typeof(InfoType) == 'EnumItem' then
+
+		local InventoryItems = Player and Player:FindFirstChild('InventoryItemsProucts')
+
+		if InventoryItems and not InventoryItems:FindFirstChild(tostring(ProductId)) then
+			...
+			local product = self.RecolectarInfo.LoadProductInfo(ProductId, InfoType)
+
+			if product and self.listItems[tostring(product.assetType)] then
+				self.AddItem(tostring(ProductId), InfoType.Name).Parent = InventoryItems
+```
+
+Las comprobaciones que hace, en orden: que `ProductId` sea un número, que `InfoType` sea un
+`EnumItem`, que el jugador tenga la carpeta, que no esté ya, y que el **tipo de asset** esté
+en una lista de cuatro.
+
+#### Por qué esto puede ser un problema — HECHO
+
+`LoadProductInfo` es una consulta de **metadatos**, no de propiedad:
+
+```lua
+module.LoadProductInfo = function(ID, tipo)
+	if not tonumber(ID) then return end
+	local nice, product = pcall(function()
+		return MPS:GetProductInfo(ID, tipo)
+	end)
+```
+
+`GetProductInfo` devuelve nombre, precio y tipo de **cualquier** asset público de Roblox.
+No dice nada sobre quién lo creó ni sobre quién lo posee. **En toda la ruta no hay ninguna
+llamada a `UserOwnsGamePassAsync`, `PlayerOwnsAsset` ni equivalente.**
+
+El contraste es directo dentro del mismo repositorio: `GamePassService.syncFromRoblox`, para
+conceder un pase, sí llama a `UserOwnsGamePassAsync`. La comprobación existe y se usa a
+cincuenta metros de aquí.
+
+El destino tampoco es efímero: `InventoryItemsProucts` es una carpeta de `SPEC`, es decir
+**se persiste en el perfil del jugador** y sobrevive a la sesión.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede disparar `AddedProductPlayer` con el id de una camiseta, un
+pantalón, una imagen o un gamepass creados por otra persona, y quedárselo listado en su
+escaparate. Después, `GetProductPlayer` lo devuelve a todos los clientes junto a los
+artículos que sí creó, sin distinguirlos.
+
+Lo que **no** es: robo de Robux. Si otro jugador compra ese artículo, Roblox paga a su
+creador real; el juego no interviene en el cobro. El daño es de atribución —un jugador
+aparece vendiendo trabajo ajeno— y de contenido: `assetType` `0` es una imagen, así que la
+lista blanca permite meter imágenes arbitrarias de Roblox en un escaparate del juego.
+
+Hay una limpieza posterior, pero comprueba lo mismo:
+
+```lua
+if productSearched and self.listItems[tostring(productSearched.assetType)] then
+	table.insert(newAdded.Data, productSearched)
+else
+	product:Destroy()
+end
+```
+
+Filtra por tipo, no por autoría. Un artículo inyectado del tipo correcto sobrevive a la
+limpieza indefinidamente.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `AddedProductPlayer.OnServerEvent` se conecta sin envoltorio ni validación previa |
+| 2 | `ProductId` e `InfoType` vienen del cliente; solo se comprueba su **tipo de dato** |
+| 3 | `LoadProductInfo` usa `GetProductInfo`, que es metadatos públicos |
+| 4 | No hay ninguna llamada de propiedad en la ruta — `grep` sobre el módulo lo confirma |
+| 5 | `GamePassService` sí verifica propiedad, en el mismo repositorio, para el caso análogo |
+| 6 | `InventoryItemsProucts` está en `SPEC`, así que lo inyectado se persiste |
+| 7 | La revalidación de `GetProductPlayer` filtra por `assetType`, no por autoría |
+
+#### Incógnitas
+
+- Si un `EnumItem` se puede enviar tal cual por un `RemoteEvent`. **INFERENCIA:** sí, Roblox
+  los serializa; es lo primero que hay que confirmar y se comprueba en un minuto. Si no se
+  pudiera, la guarda `typeof(InfoType) == 'EnumItem'` cerraría la entrada entera.
+- Qué hace la interfaz con `ProductsPlayer`: si solo lo enseña, el daño es de imagen; si
+  además abre un prompt de compra, la suplantación es más visible.
+- Si `loadItems`, que consulta el proxy por `CreatorName`, se usa como fuente autoritativa
+  en algún otro punto. Ahí la autoría **sí** está garantizada por la consulta.
+
+#### Escenario de ejemplo
+
+Un jugador copia el id de la camiseta más vendida de otro usuario y la añade a su
+escaparate. Aparece listada como suya, junto a sus propias creaciones, y sigue ahí en las
+siguientes sesiones porque está en su perfil.
+
+**Comportamiento esperado:** solo se listan artículos que el jugador creó, que es lo que
+`loadItems` obtiene del proxy.
+**Comportamiento posible:** se lista cualquier asset público de los cuatro tipos admitidos.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero que un `EnumItem` viaja por un `RemoteEvent`: dispara
+   `AddedProductPlayer` con `(1234567, Enum.InfoType.Asset)` y mira si el manejador entra en
+   la rama del `elseif`. Si no entra, la entrada queda cerrada.
+2. Con una cuenta que no haya creado nada, dispara el remote con el id de una camiseta
+   pública de otro creador.
+3. Mira si aparece un `StringValue` con ese id bajo `InventoryItemsProucts`.
+4. Sal y vuelve a entrar; comprueba si sigue ahí.
+5. Repite con un asset de tipo imagen (`assetType` `0`) y observa dónde se muestra.
+
+**Pasa:** el remote rechaza el artículo por no pertenecer al jugador.
+**Falla:** el artículo se añade, se persiste y se lista.
+
+**Instrumentación sugerida:** un `warn` con el llamante y el id en cada
+`AddedProductPlayer` aceptado. Diría de inmediato si esto ocurre ya en producción, y con qué
+ids.
+
+
+## BUG-CANDIDATE-023
+
+### La posición de un mueble la decide el cliente y el servidor no la comprueba
+
+**Sistema:** Tiendas / Casas · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Stores/DecorFuncs/AddedDecor/init.luau`,
+`module:Update`; `Core/…/Shared/Stores/init.luau`, `fn:UpdateDecor`
+**Documentación relacionada:** [Tiendas y decoración](../systems/stores.md#los-trece-remotes)
+
+#### Comportamiento observado — HECHO
+
+El remote `Update` lleva una tabla del cliente hasta `AddedDecor:Update`, y ahí la posición
+se aplica sin más:
+
+```lua
+model:PivotTo(Data.Position or model:GetPivot())
+if not self.Data.NoScale then model:ScaleTo(Data.Scale) end
+```
+
+Lo llamativo es el **contraste con lo que sí se valida** en las líneas de alrededor:
+
+| Campo del cliente | Qué se le hace |
+|---|---|
+| `Data.Scale` | `Positions.GetScale` lo pasa por `math.clamp` contra el rango declarado en el `Settings` del modelo |
+| `Data.Colors` | Solo se aplican partes cuyo nombre sea `LightColor` o termine en dígito, y el color se sustituye por blanco si no es un `Color3` |
+| `Data.IsOn` | Solo se acepta si el modelo tiene la etiqueta `Lamp` o `Interruptor` |
+| El nombre del mueble | `verificarExistencia` lo resuelve contra `decoration template` o `Assets/ToolsModels` en el servidor |
+| **`Data.Position`** | **Nada.** Se aplica tal cual |
+
+#### Por qué esto puede ser un problema — HECHO
+
+Toda la lógica de colocación vive en el cliente. `Client/Posicionamientos.luau` tiene
+`IsInArea`, `GetFusion` y `getFace`; `Stores/init.luau` construye `RaycastParams` con
+`fn:RayParams`; `AddedDecor/Collitions.luau` marca qué caras aceptan apoyo.
+
+El servidor no ejecuta nada de eso. `Collitions.General` solo escribe un atributo
+`Whitelist`, que es un dato **para** el cliente:
+
+```lua
+function module:General()
+	if self.Disabled then
+		local Part = self.Disabled.PrimaryPart or self.Disabled:FindFirstChild("Primary")
+		if Part then
+			Part:SetAttribute("Whitelist", table.concat({"Back","Front","Left","Right","Top"}, ","))
+		end
+	end
+end
+```
+
+Y el resultado **se persiste**: `UpdateData` escribe el atributo `Position` en el `BoolValue`
+del mueble, que acaba en `content.Objects` del perfil `World`.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede colocar mobiliario en cualquier CFrame: atravesando paredes,
+flotando fuera de la casa, dentro de otro mueble, o a coordenadas extremas. Como el permiso
+lo concede `GetStore` a cualquier rol distinto de `46`, un invitado puede hacerlo en casa
+ajena, y el resultado sobrevive al reinicio del servidor.
+
+No es un exploit de economía: el mueble se paga igual. Es que **todas las reglas de
+colocación son sugerencias**, porque quien las aplica es la parte que no manda.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `model:PivotTo(Data.Position or …)` sin ninguna comprobación previa |
+| 2 | `Data.Scale` sí pasa por `math.clamp`: la validación de rango existe en el mismo bloque, para otro campo |
+| 3 | `Posicionamientos`, `RayParams` y `Collitions` viven en el lado cliente o solo producen datos para él |
+| 4 | `UpdateData` persiste `Position` como atributo, y de ahí va a `content.Objects` |
+| 5 | El único punto donde se exige un `CFrame` es la primera colocación (`typeof(Data.Position)=="CFrame"`); en las actualizaciones posteriores un valor de otro tipo simplemente conserva la posición actual |
+
+#### Incógnitas
+
+- Si el juego se apoya en la física para corregir posiciones imposibles. Los muebles anclados
+  no se mueven solos, así que probablemente no.
+- Qué hace Roblox con un `CFrame` de coordenadas extremas o con `NaN`. `PivotTo` puede lanzar
+  error, en cuyo caso el caso más burdo falla cerrado por accidente.
+- Si existe una comprobación de límites en el sistema de construcción de parcelas
+  (`BuildingSystem`), que es otro camino y no se ha leído.
+
+#### Escenario de ejemplo
+
+Un invitado con rol de constructor coloca una veintena de muebles atravesando las paredes y
+flotando sobre el tejado de la casa de otro. El dueño vuelve a entrar al día siguiente y
+siguen ahí, porque están guardados en el perfil.
+
+**Comportamiento esperado:** el servidor rechaza una posición que el cliente no habría podido
+producir jugando con normalidad.
+**Comportamiento posible:** la acepta y la guarda.
+
+#### Plan de verificación — *Seguridad*, *Funcional*
+
+1. Entra en una casa con permiso de construcción y coloca un mueble por el camino normal.
+2. Desde la consola del cliente, dispara `Decors.Update` con el mismo `BoolValue` y una tabla
+   `{ Position = CFrame.new(0, 500, 0) }`.
+3. Comprueba si el mueble se mueve ahí.
+4. Reinicia el servidor de la casa y vuelve a entrar.
+5. Comprueba si sigue en esa posición.
+
+**Pasa:** la posición se rechaza o se corrige.
+**Falla:** el mueble aparece a 500 studs de altura, y sigue ahí tras el reinicio.
+
+**Instrumentación sugerida:** registrar la distancia entre `Data.Position` y el centro de la
+casa en cada actualización. Un umbral generoso bastaría para detectar el abuso sin tener
+que reimplementar las reglas de colocación en el servidor.
+
+
+## BUG-CANDIDATE-024
+
+### `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente
+
+**Sistema:** Interactuables / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/interactable/MusicPlayer.server.luau` — el
+archivo entero son 17 líneas
+**Documentación relacionada:** [Interactuables](../systems/interactables.md#el-caso-peor-musicplayer)
+
+#### Comportamiento observado — HECHO
+
+```lua
+remotes.Interactable.MusicPlayer.OnServerEvent:Connect(function(player, model, id)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not humanoid then
+		return
+	end
+
+	local emitter = model.Emitter.Sound
+	emitter.SoundId = id
+	emitter:Play()
+	print("aaa", id)
+end)
+```
+
+La única comprobación —que el jugador tenga un `Humanoid`— no dice nada sobre `model` ni
+sobre `id`. No hay comprobación de tipo, de etiqueta, de distancia, de propiedad, de lista
+blanca de audios ni de frecuencia.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El juego tiene un sistema entero dedicado a **moderar el audio**: `Karaoke/RevisarCanciones`
+mantiene una cola de revisión, tiene métodos `AdminAdded` / `AdminRemoved`, y `Data.Main` lo
+conecta al sistema de comandos de administración. `BusquedaMusicas` busca y cachea
+canciones. Existe una decisión explícita de que no cualquier audio suene en el juego.
+
+Esta ruta no pasa por nada de eso. Un `SoundId` va directo de un `RemoteEvent` a
+`Sound.SoundId` y a `:Play()`.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede reproducir **cualquier asset de audio de Roblox** en cualquier
+modelo que tenga la ruta `Emitter.Sound`, y lo oye todo el que esté cerca de ese modelo. Ni
+el `model` tiene que ser un tocadiscos ni el jugador tiene que estar cerca de él.
+
+Es el vector clásico de vandalismo por audio, y además **elude la moderación de canciones
+que el juego ya implementa** para el karaoke.
+
+Segundo efecto, menor: `emitter:Play()` sin límite de frecuencia. Un bucle de llamadas
+reinicia el sonido continuamente, lo que a los demás jugadores les llega como un chasquido
+sostenido.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El archivo completo son 17 líneas; no hay más validación en ninguna parte |
+| 2 | `model.Emitter.Sound` se indexa directamente: no hay `HasTag("MusicPlayer")` ni `IsA("Model")` |
+| 3 | `id` se asigna a `SoundId` sin comparar contra ninguna lista |
+| 4 | Otros manejadores del mismo directorio **sí** comprueban etiqueta y distancia: `Fridge` hace las dos. La comprobación existe en el proyecto, no aquí |
+| 5 | `Karaoke/RevisarCanciones` y `BusquedaMusicas` demuestran que la moderación de audio es un requisito reconocido del juego |
+| 6 | Queda un `print("aaa", id)` de depuración, lo que sugiere que el archivo no llegó a revisarse |
+
+#### Incógnitas
+
+- Cuántos modelos del juego tienen la ruta `Emitter.Sound`. Determina el alcance: si solo la
+  tienen los tocadiscos, el vandalismo se limita a esos puntos.
+- Si el `Sound` es 3D con `RollOffMaxDistance` corto, lo que acotaría quién lo oye.
+- Si Roblox filtra el audio al reproducirlo. Los assets de audio subidos por terceros están
+  restringidos desde 2022, lo que **reduce mucho** la gravedad: la mayoría de ids ajenos no
+  sonarían. Es lo primero que hay que comprobar, y puede rebajar esta entrada a molestia.
+
+#### Escenario de ejemplo
+
+Un jugador dispara el remote en bucle con el id de un audio desagradable, apuntando al
+tocadiscos de una casa llena de gente. Nadie más puede pararlo desde la interfaz, porque la
+interfaz no es la que lo está mandando.
+
+**Comportamiento esperado:** solo suenan audios aprobados, en tocadiscos reales, para quien
+esté cerca.
+**Comportamiento posible:** suena cualquier audio, en cualquier emisor, desde cualquier
+distancia.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero si Roblox permite reproducir un audio ajeno en esta experiencia. Si no,
+   la gravedad baja a «puede reiniciar el sonido en bucle».
+2. Desde la consola del cliente, dispara `Interactable.MusicPlayer` con un tocadiscos
+   legítimo y un id arbitrario.
+3. Repite estando al otro lado del mapa.
+4. Repite apuntando a un modelo que no sea un tocadiscos pero tenga `Emitter.Sound`.
+5. Llama en bucle y observa el efecto para el resto de jugadores.
+
+**Pasa:** el servidor rechaza el modelo, la distancia o el id.
+**Falla:** cualquiera de los cuatro pasos produce sonido.
+
+**Instrumentación sugerida:** el `print` que ya está ahí, convertido en `warn` con el nombre
+del jugador y la distancia al modelo, diría de inmediato si esto ya ocurre en producción.
+
+---
+
+## BUG-CANDIDATE-025
+
+### La distancia de interacción la comprueba solo el cliente
+
+**Sistema:** Interactuables · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Client/interactable/Interactable/init.luau`, constantes de
+distancia y línea de visión; los 25 scripts de `Core/…/ServerScripts/interactable/`
+**Documentación relacionada:** [Interactuables → La matriz de validación](../systems/interactables.md#la-matriz-de-validación)
+
+#### Comportamiento observado — HECHO
+
+La clase base declara las reglas de interacción:
+
+```lua
+local MAX_INTERACTION_DISTANCE = 18
+local LINE_OF_SIGHT_INTERVAL = .05
+local LINE_OF_SIGHT_MARGIN = 5
+```
+
+y las aplica sobre `players.LocalPlayer`. Es un módulo de cliente: el servidor no lo carga.
+
+De los 25 manejadores de servidor, **cuatro** vuelven a comprobar la distancia: `Fridge`,
+`Tijeras`, `Bed` y `DoubleBed`. Los otros veintiuno operan sobre la `Instance` que reciben.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Varios de esos veintiuno tienen efectos reales:
+
+| Manejador | Efecto sin comprobar distancia |
+|---|---|
+| `Shower`, `Washbasin`, `Toilet`, `Bath` | `character:PivotTo(...)` — **teletransportan al jugador** al objeto, esté donde esté |
+| `Shower`, `Washbasin` | Escriben `Occupant.Value = player` sobre el modelo recibido |
+| `ClassicDoor` | Abre y cierra una puerta desde cualquier distancia |
+| `Display` | Escribe el atributo `Video` de un modelo cualquiera |
+| `DiscoBall`, `SmokeMachine`, `Lamp` | Activan efectos a distancia |
+| `Treadmill`, `Weight` | Conceden progreso de estadísticas |
+
+`Washbasin` es el más ilustrativo porque indexa `model.Occupant` y `model.Player`
+directamente: cualquier modelo con esos dos hijos sirve como destino de teletransporte y
+puede quedar «ocupado» por quien lo pida.
+
+#### Teoría — TEORÍA
+
+La consecuencia no es un exploit de economía: es que **las reglas de interacción son
+decorativas**. Un cliente modificado puede usar cualquier interactuable del mapa sin
+acercarse, ocupar objetos que no está usando para que otros no puedan, y teletransportarse
+a cualquier lavabo o ducha del place.
+
+Lo que hace de esto una observación de arquitectura y no un fallo puntual es que **el
+framework no ofrece la comprobación**. `Interactable` monta el `ProximityPrompt` y aplica la
+distancia en el cliente, pero no expone nada que un script de servidor pueda invocar para
+comprobar lo mismo. Los cuatro que lo hacen bien lo escriben a mano, cada uno a su manera:
+`Bed` y `DoubleBed` usan `player:DistanceFromCharacter(...) > 20`, `Tijeras` una constante
+propia, `Fridge` la resta de posiciones.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | Las tres constantes de interacción están en un módulo que solo el cliente carga |
+| 2 | 4 de 25 manejadores comprueban distancia; 8 de 25 comprueban la etiqueta |
+| 3 | Los cuatro que la comprueban usan tres formas distintas y dos umbrales distintos (18 en el cliente, 20 en `Bed`) |
+| 4 | `Washbasin` indexa `model.Occupant` y `model.Player` sin comprobar nada |
+| 5 | No existe ninguna función auxiliar compartida de validación en `ServerScripts/interactable/` |
+
+#### Incógnitas
+
+- Si alguna capa anterior filtra estos remotes. No se ha encontrado ninguna, pero
+  `StarterPlayerScripts.rbxm` es binario (ver **U-001**) y podría contener algo, aunque el
+  cliente no puede imponer nada al servidor.
+- Cuál es el umbral correcto. El cliente usa 18, `Bed` usa 20. Elegir uno es una decisión de
+  producto, no de lectura de código.
+
+#### Escenario de ejemplo
+
+Un jugador se sienta en un rincón del mapa y va marcando estadísticas de higiene en todas
+las duchas del place sin moverse, mientras deja «ocupados» los lavabos de una casa ajena.
+
+**Comportamiento esperado:** el servidor rechaza una interacción que el cliente no habría
+podido iniciar por distancia.
+**Comportamiento posible:** la acepta.
+
+#### Plan de verificación — *Seguridad*
+
+1. Colócate lejos de una ducha y dispara `Interactable.Shower` con su modelo.
+2. Comprueba si tu personaje se teletransporta.
+3. Repite con `WashHands` sobre un lavabo de otra casa y mira si su `Occupant` queda fijado.
+4. Repite con `Treadmill` y comprueba si las estadísticas suben.
+5. Contrasta con `Fridge`, que debería rechazarte.
+
+**Pasa:** todos los manejadores rechazan por distancia, como hace `Fridge`.
+**Falla:** cualquiera de ellos actúa.
+
+**Instrumentación sugerida:** en vez de parchear 21 archivos, una función compartida
+—`assertNear(player, model, maxDistance)`— y una pasada añadiéndola al principio de cada
+manejador. Es un **cambio de código**, así que queda registrado aquí y no aplicado; se
+menciona porque la forma de la solución explica por qué el problema existe: hoy no hay
+dónde ponerla.
+
+
+## BUG-CANDIDATE-026
+
+### El globo está implementado entero y ningún jugador lo recibe nunca
+
+**Sistema:** Inventario · **Clasificación:** Bug probable / Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/ServerScripts/inventory/InventoryManager/DefaultTools.luau`,
+la entrada `Ballon`; `InventoryManager/init.luau`, `ensureDefaultInventory`
+**Documentación relacionada:** [Inventario y herramientas](../systems/inventory.md#el-equipamiento-por-defecto-solo-ocurre-una-vez)
+
+#### Comportamiento observado — HECHO
+
+`DefaultTools` declara diez objetos. La entrada `Ballon` dice esto:
+
+```lua
+Ballon = {
+	Name = 'GloveGun',
+	Value = true,
+	DefaultSlot = 6
+},
+```
+
+El campo `Name` dice `GloveGun`. La entrada inmediatamente anterior es:
+
+```lua
+GloveGun = {
+	Name = 'GloveGun',
+	Value = true,
+	DefaultSlot = 5
+},
+```
+
+Y el bucle que concede los objetos **usa el campo `Name`, no la clave de la tabla**:
+
+```lua
+for _, toolData in pairs(DefaultTools) do
+	if toolData.Value == true and typeof(toolData.Name) == "string" then
+		local toolName = toolData.Name
+		inventory.items[toolName] = 1
+		if toolData.DefaultSlot then
+			...
+			inventory.wheel[tostring(slot)] = toolName
+		end
+	end
+end
+```
+
+#### Por qué esto es un problema — HECHO
+
+El resultado es aritmético, no hipotético:
+
+| | Lo que se pretendía | Lo que ocurre |
+|---|---|---|
+| `items` | `GloveGun = 1`, `Ballon = 1` | `GloveGun = 1` escrito dos veces. **`Ballon` no existe** |
+| `wheel["5"]` | `GloveGun` | `GloveGun` |
+| `wheel["6"]` | `Ballon` | `GloveGun` otra vez |
+
+Y `Ballon` **no es un objeto a medio hacer**. Está completo:
+
+| Pieza | Ruta |
+|---|---|
+| Modelo de la herramienta | `Assets/Tools/Toys/Ballon/` |
+| Script de cliente | `Assets/Tools/Toys/Ballon/MainTool.client.luau` |
+| `RemoteEvent` | `Events/Tools/Ballon` |
+| Manejador de servidor | `ToolsServer.server.luau`, `ballonRemote.OnServerEvent` |
+| Malla | `Assets/VisualItems/Ballon.rbxm` |
+
+Un `grep` por `Ballon` sobre todo `src/` no encuentra **ninguna otra vía** de concesión: ni
+tienda, ni recompensa de gamepass, ni comando. `DefaultTools` es el único camino, y está
+roto.
+
+#### Lo que agrava la consecuencia — HECHO
+
+`ensureDefaultInventory` corre **una sola vez en la vida de los datos de cada jugador**:
+
+```lua
+if inventory.defaultsInitialised then
+	return
+end
+```
+
+La bandera es correcta y está bien razonada —evita devolver objetos que alguien gastó a
+propósito—, pero significa que **arreglar el typo no repara a nadie**. Todo jugador que ya
+haya entrado tiene su `defaultsInitialised` a `true` y nunca volverá a pasar por ese bucle.
+Repararlo exigiría una migración explícita.
+
+#### Teoría — TEORÍA
+
+Lo único que la lectura estática no puede confirmar es si algún sistema no leído concede
+`Ballon` por otra vía. La búsqueda dice que no, pero 481 archivos siguen sin leerse.
+
+También cabe que sea deliberado: que el globo se retirase y se dejara la entrada apuntando a
+otro objeto para no tocar los slots. En contra de esa lectura está que `DefaultSlot = 6`
+sigue ahí, produciendo un `GloveGun` duplicado en la rueda, que no beneficia a nadie.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El campo `Name` de `Ballon` dice `GloveGun` |
+| 2 | El bucle de concesión lee `toolData.Name`, no la clave |
+| 3 | El globo tiene modelo, script de cliente, remote y manejador de servidor |
+| 4 | `grep -rn Ballon src/` no muestra ninguna otra ruta de concesión |
+| 5 | `defaultsInitialised` hace la consecuencia permanente para los jugadores existentes |
+| 6 | El resultado colateral —dos slots de rueda con `GloveGun`— no tiene ninguna utilidad |
+
+#### Incógnitas
+
+- Si el globo se retiró a propósito del juego. Es una pregunta para el equipo, no para el
+  código.
+- Cuántos jugadores tienen ya `defaultsInitialised`, que es cuánta gente necesitaría la
+  migración.
+
+#### Escenario de ejemplo
+
+Un jugador nuevo entra. Recibe nueve objetos en vez de diez, y su rueda tiene el mismo
+lanzaguantes en los huecos 5 y 6. Nunca ve el globo, y no hay forma de conseguirlo.
+
+**Comportamiento esperado:** `items.Ballon = 1` y `wheel["6"] = "Ballon"`.
+**Comportamiento posible:** `Ballon` no aparece y el hueco 6 duplica el hueco 5.
+
+#### Plan de verificación — *Funcional*
+
+1. En un place de pruebas, entra con una cuenta que no haya jugado nunca.
+2. Vuelca `PlayerDataService.getData(player).inventory` desde la consola del servidor.
+3. Comprueba si existe la clave `Ballon` en `items`.
+4. Mira qué hay en `wheel["5"]` y `wheel["6"]`.
+5. Mira la mochila: comprueba si hay una `Tool` llamada `Ballon`.
+
+**Pasa:** `items.Ballon` existe y la rueda tiene dos objetos distintos.
+**Falla:** no existe `Ballon` y los huecos 5 y 6 dicen ambos `GloveGun`.
+
+**Instrumentación sugerida:** ninguna. Es una comprobación de dos minutos con un `print`, y
+el diagnóstico ya está cerrado. Lo que hace falta decidir es la migración para las cuentas
+que ya pasaron por ahí.
+
+---
+
+## BUG-CANDIDATE-027
+
+### `ToolsServer` reparenta y manipula las `Instance` que le diga el cliente
+
+**Sistema:** Herramientas / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/ToolsServer.server.luau` —
+`equipRemoteAccesory`, `flyRemote`, `equipRemote`
+**Documentación relacionada:** [Inventario y herramientas → Las herramientas](../systems/inventory.md#las-herramientas)
+
+#### Comportamiento observado — HECHO
+
+El caso más directo son diez líneas:
+
+```lua
+equipRemoteAccesory.OnServerEvent:Connect(function(player: Player, handle: Part, accesory: BasePart, isEquipping: boolean)
+	local character = player.Character or player.CharacterAdded:Wait()
+
+	if not accesory or not handle then return end
+
+	if isEquipping then
+		accesory.Parent = character
+	else
+		accesory.Parent = handle.Parent
+	end
+end)
+```
+
+`accesory` y `handle` son referencias a `Instance` que **elige el cliente**. No se comprueba
+su clase, ni dónde están, ni de quién son. Las anotaciones de tipo `Part` y `BasePart` son
+documentación: Luau no las impone en tiempo de ejecución, y un `RemoteEvent` acepta cualquier
+`Instance`.
+
+Los otros dos tienen la misma forma con menos alcance:
+
+```lua
+equipRemote.OnServerEvent:Connect(function(player, handle: Part)
+	local equipSound = handle:FindFirstChild("EquipSound")
+	if equipSound and equipSound:IsA("Sound") then
+		equipSound:Play()
+	end
+end)
+
+flyRemote.OnServerEvent:Connect(function(player, particles1, particles2, toggle, startSound, runningSound, stopSound)
+	...
+	particles1.Enabled = toggle
+	particles2.Enabled = toggle
+	if toggle then startSound:Play() ...
+```
+
+#### Por qué esto puede ser un problema — HECHO
+
+`equipRemoteAccesory` es una **primitiva de reparentado arbitrario** accesible desde
+cualquier cliente:
+
+| Llamada | Efecto |
+|---|---|
+| `accesory` = una parte del mundo, `isEquipping` = true | Esa parte se mueve al personaje de quien llama |
+| `accesory` = la `Tool` de otro jugador, `isEquipping` = true | La herramienta ajena se reparenta al personaje de quien llama |
+| `accesory` = cualquier cosa, `handle` = cualquier cosa, `isEquipping` = false | Reparentado de A al padre de B: dos referencias arbitrarias, un movimiento arbitrario |
+
+Reparentar es además cómo se destruye lógica en Roblox: mover un modelo fuera de su
+contenedor rompe los `WaitForChild` y las jerarquías que otros scripts asumen. En este
+repositorio hay bastante código que depende de la jerarquía —`model.Emitter.Sound`,
+`model.Occupant`, `self.Added.DataObjects`— y ese código se rompe o cambia de sentido si su
+árbol se mueve.
+
+Lo llamativo es que **el mismo archivo contiene el ejemplo correcto**, dos manejadores más
+abajo:
+
+```lua
+cannonRemote.OnServerEvent:Connect(function(player, action, tool, a, b, c)
+	if not tool or not tool:IsA("Tool") then return end
+	...
+	if tool.Parent ~= character then
+		return
+	end
+```
+
+Clase y propiedad, antes de nada, más un cooldown de cinco segundos. `GloveGun` hace lo
+mismo. La comprobación existe, en el archivo, escrita por la misma mano.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede mover objetos del mundo a su personaje, retirar objetos de otros
+jugadores, y desmontar jerarquías de las que dependen otros sistemas. Con `flyRemote`, además,
+puede activar cualquier `ParticleEmitter` y reproducir cualquier `Sound` del DataModel.
+
+Ninguna de estas rutas concede moneda, así que no es un exploit económico. Es control sobre
+el mundo compartido.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `accesory.Parent = character` sin comprobación de clase, ubicación ni propiedad |
+| 2 | `accesory.Parent = handle.Parent` — las dos referencias vienen del cliente |
+| 3 | Las anotaciones `: Part` y `: BasePart` no se validan en ejecución |
+| 4 | `flyRemote` escribe `.Enabled` y llama a `:Play()` sobre cinco referencias del cliente |
+| 5 | `Cannon` y `GloveGun`, en el mismo archivo, sí comprueban `IsA("Tool")` y `tool.Parent == character` |
+| 6 | No hay límite de frecuencia en ninguno de los tres |
+
+#### Incógnitas
+
+- Si la replicación de Roblox permite al cliente pasar una referencia a una `Instance` que su
+  cliente no ve. Para cualquier cosa en `Workspace` y `ReplicatedStorage`, sí.
+- Qué rompe en la práctica reparentar un modelo de mobiliario: los sistemas de casas escuchan
+  `AncestryChanged` y podrían tratarlo como una eliminación, lo que llevaría el efecto hasta
+  el perfil persistido.
+
+#### Escenario de ejemplo
+
+Un jugador dispara `EquipToolAccesory` con la `Tool` equipada de otro jugador y
+`isEquipping = true`. La herramienta se mueve a su personaje. Repite con muebles de una casa
+para sacarlos de `DataObjects`, que es donde el sistema de casas espera encontrarlos.
+
+**Comportamiento esperado:** el servidor solo reparenta accesorios de una herramienta que el
+jugador tiene equipada.
+**Comportamiento posible:** reparenta lo que se le pida.
+
+#### Plan de verificación — *Seguridad*
+
+1. Con dos cuentas, la segunda con una herramienta equipada.
+2. Desde la consola del cliente de la primera, dispara `Tools.EquipToolAccesory` con esa
+   herramienta y `isEquipping = true`.
+3. Comprueba dónde acaba la herramienta.
+4. Repite con un mueble colocado dentro de una casa y observa si el sistema de casas lo
+   trata como eliminado (y si eso llega al perfil).
+5. Contrasta con `Tools.Cannon` usando la herramienta de otro: debería rechazarte.
+
+**Pasa:** los tres manejadores rechazan `Instance` que no pertenecen al llamante.
+**Falla:** cualquiera de los pasos 3 o 4 tiene efecto.
+
+**Instrumentación sugerida:** registrar el `GetFullName()` de `accesory` y el nombre de quien
+llama. Dos líneas, y diría de inmediato si esto ya se está usando.
+
+
+## BUG-CANDIDATE-028
+
+### Tres cargadores de moderación comprueban que haya un administrador conectado, no que quien llama lo sea
+
+**Sistema:** Karaoke / Seguridad · **Clasificación:** Posible bug / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Karaoke/RevisarCanciones/init.luau` —
+`CargarMusicasServer`, `CargarMusicaReport`, `CargarMusicasBaneadas`, `IsAviableToUpdate`
+**Documentación relacionada:** [Karaoke → Dónde se rompe el patrón](../systems/karaoke.md#dónde-se-rompe-el-patrón)
+
+#### Comportamiento observado — HECHO
+
+El manejador reparte sin comprobar nada, y confía la autorización a cada método:
+
+```lua
+self.Events.CargarMusicas.OnServerEvent:Connect(function(Staff, TypeBusqueda, Page)
+	if TypeBusqueda == "CargarMusicasServer" then
+		self:CargarMusicasServer(Page, Staff)
+	elseif TypeBusqueda == "CargarMusicaReport" then
+		self:CargarMusicaReport(Page, Staff)
+	elseif TypeBusqueda == "CargarMusicasBaneadas" then
+		self:CargarMusicasBaneadas(Page, Staff)
+	elseif self.Admins:IsAdmin(Staff) then          -- ← la única rama que comprueba al llamante
+		self:UpdateMusicas()
+	end
+end)
+```
+
+Y los tres métodos comprueban otra cosa:
+
+```lua
+elseif #self.AdminsActive > 0 and typeof(Page) == 'number' then
+	local Data, NewData = self.DataStore:GetData('RevisionRating', true, self.SongPorPagina, Page)
+```
+
+`AdminsActive` es la lista de administradores **presentes en este servidor**. La condición
+dice «hay algún moderador conectado», no «tú eres moderador». El parámetro `Staff` llega al
+método y no se usa para autorizar.
+
+`CargarMusicasBaneadas` usa `IsAviableToUpdate(true)`, que parece más estricto pero mira lo
+mismo:
+
+```lua
+function module:IsAviableToUpdate(SuperAdmin)
+	if not SuperAdmin or #self.AdminsActive == 0 then return #self.AdminsActive > 0 end
+	for _, Admin in self.AdminsActive do
+		if self.Admins:IsAdmin(Admin, true) then
+			return true
+		end
+	end
+end
+```
+
+Recorre a **los administradores conectados** buscando un superadministrador. Nunca mira a
+quien llamó.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Con un moderador conectado, cualquier jugador puede disparar:
+
+| Efecto | Detalle |
+|---|---|
+| Una lectura paginada de DataStore | `GetData('RevisionRating' \| 'DenunciasRating' \| 'BaneosRating', …)`, contra la cuota del juego |
+| El vaciado de la caché de páginas | `ListDatas = NewData and {} or ListDatas` reemplaza lo que los moderadores tenían precargado |
+| Con la página que quiera | `Page` solo se comprueba con `typeof(Page) == 'number'`: ni entero, ni rango |
+
+#### Lo que limita el daño — HECHO
+
+Y es importante decirlo, porque cambia la gravedad. `CargarMusicasServer` termina así:
+
+```lua
+self:ObtenerMusica(0, nil, Player)
+```
+
+`ObtenerMusica` **sí** comprueba al llamante, y no es amable:
+
+```lua
+if self.Admins:IsAdmin(StaffRequerest, Page == 2) then
+	self.Events.ObtenerMusicas:FireClient(StaffRequerest, Page, self.PreloadSongs[Selection])
+else
+	self.Admins:IntenteSerAdmin(StaffRequerest)   -- Player:Kick(...)
+end
+```
+
+De modo que un no administrador **es expulsado** al final del recorrido, y **no recibe
+ninguno de los datos**. No es una fuga de información: la lista de canciones en revisión no
+sale del servidor.
+
+Lo que sí ocurre antes de la expulsión es el trabajo: la lectura de DataStore se hace y la
+caché se reemplaza. El atacante puede volver a entrar y repetir.
+
+#### Teoría — TEORÍA
+
+Es una defensa en profundidad que funciona a medias. La guarda correcta está en el sitio
+equivocado —al final, en vez de a la entrada—, así que la autorización protege los **datos**
+pero no los **recursos**. Un cliente en bucle de entrar-disparar-ser expulsado-volver puede
+consumir cuota de DataStore y mantener la interfaz de los moderadores vaciándose sola.
+
+Lo que hace pensar que es un descuido y no un diseño es el contraste dentro del mismo
+archivo: `ViewLyric`, `Desbanear`, `ActionSongDenunce`, `AprovarRechazarMusicaAction` y
+`PublishRevisarMusic` **sí** comprueban al llamante lo primero. Estos tres son la excepción.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La condición es `#self.AdminsActive > 0`, una propiedad del servidor, no del llamante |
+| 2 | El parámetro `Staff`/`Player` llega a los tres métodos y no se usa para autorizar |
+| 3 | `IsAviableToUpdate` recorre los administradores conectados, nunca al llamante |
+| 4 | `Page` solo se comprueba de tipo, y va directo a una lectura paginada de DataStore |
+| 5 | Los otros cinco manejadores del archivo comprueban al llamante lo primero |
+| 6 | La expulsión llega **después** de la lectura, no antes |
+
+#### Incógnitas
+
+- Cuánto cuesta realmente `GetData` con paginación. Si cachea agresivamente, el abuso de
+  cuota es despreciable y esto se queda en una molestia para los moderadores.
+- Si `Page` fuera de rango produce un error atrapado o una lectura cara. No se ha leído
+  `GlobalDataStore:GetData`.
+- Cuánto tarda Roblox en dejar volver a entrar a un jugador expulsado. Determina la
+  frecuencia máxima del abuso.
+
+#### Escenario de ejemplo
+
+Un jugador con un cliente modificado espera a ver a un moderador conectado, dispara
+`CargarMusicas` con `"CargarMusicaReport"`, es expulsado, vuelve a entrar y repite. El
+moderador ve su lista de denuncias vaciarse y recargarse sin haber tocado nada.
+
+**Comportamiento esperado:** el remote rechaza —o expulsa— antes de leer nada.
+**Comportamiento posible:** lee, reemplaza la caché, y expulsa después.
+
+#### Plan de verificación — *Seguridad*
+
+1. Con dos cuentas, una con el rango `KaraokeAdmins` en el grupo, ambas en el mismo servidor.
+2. Desde la consola del cliente de la cuenta sin rango, dispara
+   `Karaoke.CargarMusicas` con `("CargarMusicasServer", 0)`.
+3. Comprueba en el registro del servidor si la lectura de DataStore ocurre.
+4. Comprueba si la cuenta sin rango es expulsada, y si recibió algún dato antes.
+5. Comprueba en el cliente del moderador si su lista se recarga.
+6. Repite con el moderador desconectado: no debería ocurrir nada.
+
+**Pasa:** no hay lectura de DataStore cuando quien llama no es administrador.
+**Falla:** la lectura ocurre y la caché se reemplaza, aunque el llamante acabe expulsado.
+
+**Instrumentación sugerida:** un `warn` con el nombre del llamante y su condición de
+administrador al principio de los tres métodos. Diría de inmediato si esto se está usando y,
+de paso, es donde tendría que ir la comprobación.
+
+
+## BUG-CANDIDATE-029
+
+### Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos
+
+**Sistema:** Cuadros · **Clasificación:** Posible bug / Requiere inyección de fallos
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Paint/ServerClient/init.luau`, `module:Remove` — las
+funciones locales `GetData` y `Delete`
+**Documentación relacionada:** [Cuadros → El borrado y sus reintentos](../systems/paint.md#el-borrado-y-sus-reintentos)
+
+#### Comportamiento observado — HECHO
+
+Dentro de `Remove` hay dos funciones locales que reintentan llamándose a sí mismas:
+
+```lua
+local esperar = task.wait
+local function GetData()
+	local Sucesss, DataPintura = self.DataBase:GetData("DataPinturas", KeyCuadro)
+	local OwnerCuadro = Sucesss and DataPintura and Format.IsOwner(Player, DataPintura)
+	if OwnerCuadro then
+		local function Delete()
+			local success, _ = self.DataBase:DeleteData('DataPinturas', KeyCuadro)
+			if not success then
+				warn('error al eliminar este cuadro, intentando de nuevo.')
+				Delete(esperar(self.ColaLoad.TimeExhauste / self.ColaLoad.MaxLoads))
+			else
+				warn('Cuadro eliminado por completo.')
+			end
+		end
+		Delete()
+	elseif not Sucesss then
+		warn('error al obtener el dato del cuadro, intentando de nuevo.')
+		GetData(esperar(self.ColaLoad.TimeExhauste / self.ColaLoad.MaxLoads))
+	else
+		warn('No eres dueño del cuadro, no puedes eliminarlo.')
+	end
+end
+GetData()
+```
+
+Ni `GetData` ni `Delete` aceptan parámetros: el `esperar(...)` que se les pasa está ahí solo
+para introducir la pausa antes de la llamada. **Ninguna de las dos tiene contador de
+intentos ni condición de parada** distinta del éxito.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Tres cosas se acumulan:
+
+1. **No es un bucle, es recursión.** Una llamada en posición de sentencia no es una llamada
+   de cola en Luau, así que cada reintento **añade un marco de pila**. Un fallo persistente
+   crece la pila hasta agotarla.
+2. **No hay techo de intentos.** Con el DataStore caído, el hilo reintenta indefinidamente,
+   una vez cada 3 segundos (`TimeExhauste / MaxLoads` = 60/20).
+3. **No hay cortacircuitos.** Esto usa `GlobalDataStore`, que llama a `DataStoreService`
+   directamente, **fuera de DataKit**, así que no tiene detrás el `Health` que corta tras
+   cinco fallos y que protege al resto del juego (ver **U-008**).
+
+Además, los efectos visibles ya ocurrieron **antes** del bucle: `table.remove` sobre la lista
+del jugador, `RemoveCache`, y `Load` reenviando la lista al cliente. Para el jugador el
+cuadro ya no existe; lo que puede quedar colgado indefinidamente es el borrado real.
+
+#### Teoría — TEORÍA
+
+Con `DataStoreService` degradado —throttling, incidencia de Roblox— cada intento de borrado
+deja un hilo vivo reintentando cada 3 segundos y creciendo en pila. Varios jugadores
+borrando durante la incidencia dejan varios hilos así. Ninguno se rinde, ninguno avisa a
+nadie más allá de un `warn`, y el consumo de cuota de DataStore sigue durante toda la
+incidencia, que es justo cuando conviene reducirlo.
+
+El desenlace probable es un error de desbordamiento de pila muchos minutos después, no una
+caída inmediata. Eso lo hace difícil de correlacionar con su causa.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `Delete` se llama a sí misma en la rama de fallo, sin contador |
+| 2 | `GetData` hace lo mismo, con la misma forma |
+| 3 | La llamada está en posición de sentencia, no `return`: no es una llamada de cola |
+| 4 | El intervalo es fijo: `TimeExhauste / MaxLoads`, sin retroceso exponencial |
+| 5 | `GlobalDataStore` está fuera de DataKit, así que no hay `Health` que corte |
+| 6 | Los efectos en la lista del jugador y en la caché ya se aplicaron antes de entrar al bucle |
+
+#### Incógnitas
+
+- Si `GlobalDataStore:GetData` y `DeleteData` traen su propio reintento interno. No se ha
+  leído `GlobalDataStore` (ver **U-008**); si lo tienen, hay reintentos anidados y el
+  problema es mayor, no menor.
+- Cuántos marcos de pila aguanta Luau aquí. A un reintento cada 3 segundos, alcanzar el
+  límite lleva horas: la consecuencia realista es el consumo sostenido, no el desbordamiento.
+
+#### Escenario de ejemplo
+
+Roblox tiene una incidencia de DataStore. Diez jugadores borran un cuadro. Diez hilos
+reintentan cada tres segundos durante las dos horas que dura la incidencia, sumando cuota
+justo cuando está limitada. En los registros solo se ve `error al eliminar este cuadro,
+intentando de nuevo` repetido.
+
+**Comportamiento esperado:** unos pocos reintentos con retroceso, y después rendirse
+dejando constancia.
+**Comportamiento posible:** reintentos indefinidos que crecen en pila.
+
+#### Plan de verificación — *Recuperación ante fallos*
+
+1. En un place de pruebas, sustituye temporalmente `DataBase.DeleteData` por una función que
+   devuelva siempre fallo. *(Instrumentación para la prueba, no una corrección.)*
+2. Borra un cuadro.
+3. Cuenta los `warn` durante cinco minutos y confirma el intervalo de 3 segundos.
+4. Comprueba si el hilo se detiene alguna vez por sí solo.
+5. Repite con `GetData` fallando, para la otra rama.
+
+**Pasa:** los reintentos se detienen tras un número acotado.
+**Falla:** siguen indefinidamente.
+
+**Instrumentación sugerida:** un contador de intentos en el `warn`. Convierte «esto falló
+otra vez» en «este es el intento 240», que es la información que hace falta para actuar.
+
+---
+
+## BUG-CANDIDATE-030
+
+### El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos
+
+**Sistema:** Cuadros / Seguridad · **Clasificación:** Posible bug / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Paint/ServerClient/init.luau`, `module:UpdateCuadros`
+y las constantes `timeUpdate` / `MaxUpdateDistance` de `module.init`
+**Documentación relacionada:** [Cuadros → La red](../systems/paint.md#la-red)
+
+#### Comportamiento observado — HECHO
+
+`UpdateCuadros` corre en los dos lados. El límite de ritmo está dentro de la rama de cliente:
+
+```lua
+if IsClient then
+	local now = tick()
+	if not force and (self.DateTimeUpdate and (now - self.DateTimeUpdate) < (self.timeUpdate or 0.5)) then
+		return
+	end
+	self.DateTimeUpdate = now
+end
+```
+
+Y la difusión, dentro de la de servidor:
+
+```lua
+for _, OtherPlayer in game:GetService('Players'):GetPlayers() do
+	if ModeloCuadro:GetAttribute("Owner") or OtherPlayer ~= Player then
+		events:FindFirstChild('Update'):FireClient(OtherPlayer, ModeloCuadro, serializacion)
+	end
+end
+```
+
+En el servidor no se comprueba ningún ritmo. `DateTimeUpdate` solo se escribe en la rama de
+cliente.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Las guardas de **autorización** están bien puestas —etiqueta del modelo y atributo `Owner`
+o `InInUse` igual al `UserId`, ambos escritos por el servidor— así que un jugador solo puede
+editar su propio lienzo. El problema no es quién, es **cuántas veces**:
+
+| | Valor |
+|---|---|
+| Intervalo previsto entre actualizaciones | `timeUpdate = 3` segundos |
+| Dónde se impone | Solo en el cliente |
+| Destinatarios de cada actualización | Todos los jugadores del servidor |
+| Tamaño de cada mensaje | La serialización completa del cuadro, sin tope (ver el formato en la página) |
+
+Es una **amplificación**: una llamada del cliente produce N mensajes salientes, con N igual
+al número de jugadores conectados, y sin límite de frecuencia.
+
+**HECHO adicional.** `MaxUpdateDistance = 160` se declara en `module.init` y **no se usa en
+ningún sitio**: un `grep` sobre todo `src/` solo encuentra la declaración. La intención de
+limitar la difusión a quien esté cerca existió y no llegó a implementarse, ni en el cliente
+ni en el servidor.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado que llame a `Update` en bucle sobre su propio lienzo genera tráfico
+saliente proporcional al aforo del servidor, con una carga útil que él mismo controla en
+tamaño. No necesita permisos que no tenga: solo su propio cuadro.
+
+Es el mismo patrón que [BUG-CANDIDATE-025](#bug-candidate-025) —una regla declarada en el
+cliente que el servidor no reevalúa— pero aquí lo que se pierde no es una regla de juego,
+es el presupuesto de red del servidor.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El bloque del límite está dentro de `if IsClient then` |
+| 2 | `DateTimeUpdate` solo se asigna en esa rama |
+| 3 | El bucle de difusión no consulta ningún tiempo |
+| 4 | `MaxUpdateDistance` se declara y no aparece en ninguna otra línea del repositorio |
+| 5 | El parámetro `force` permite al propio cliente saltarse su límite, así que ni siquiera es firme de ese lado |
+| 6 | `SeguridadFormato` valida la forma de la serialización, no su tamaño |
+
+#### Incógnitas
+
+- Cuánto pesa una serialización real. Determina si esto es una molestia o una saturación.
+- Si Roblox impone su propio límite al ritmo de `FireClient` por servidor. Si lo hace, acota
+  el daño sin arreglar la causa.
+- Si el cliente aplica alguna otra limitación en el `.rbxm` de la interfaz, que no es
+  inspeccionable (ver **U-001**). Aunque la aplicara, seguiría siendo del lado que no manda.
+
+#### Escenario de ejemplo
+
+Un jugador entra a un servidor lleno, se pone delante de su lienzo y llama a `Update` en
+bucle con una serialización grande. Los demás jugadores reciben esa carga varias veces por
+segundo cada uno, aunque estén al otro lado del mapa: el límite de distancia que iba a
+evitarlo está declarado y no se usa.
+
+**Comportamiento esperado:** el servidor descarta actualizaciones más frecuentes que
+`timeUpdate`, y difunde solo a quien esté a menos de `MaxUpdateDistance`.
+**Comportamiento posible:** acepta y difunde todas, a todos.
+
+#### Plan de verificación — *Seguridad*, *Carga*
+
+1. Entra a un servidor de pruebas con varias cuentas.
+2. Desde la consola del cliente, llama a `Paint.Update` con tu propio lienzo diez veces por
+   segundo.
+3. Mide el tráfico entrante de las otras cuentas.
+4. Comprueba si las que están lejos también lo reciben.
+5. Repite con una serialización grande y compara.
+
+**Pasa:** el servidor descarta las llamadas por encima del ritmo previsto.
+**Falla:** todas se difunden a todos.
+
+**Instrumentación sugerida:** llevar en el servidor el mismo `DateTimeUpdate` por jugador
+que ya existe en el cliente. La estructura está escrita; lo que falta es aplicarla del lado
+que decide.
+
+
+## BUG-CANDIDATE-031
+
+### Se puede hacer bailar al personaje de otro jugador
+
+**Sistema:** Animación · **Clasificación:** Posible bug / Requiere pruebas multijugador
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/AnimationSystem/init.server.luau` —
+`playAnimation`, `stopAnimation` y el manejador de `Animator.PlayAnimation`
+**Documentación relacionada:** [Barrido → Animación y bailes](../systems/survey.md#animación-y-bailes)
+
+#### Comportamiento observado — HECHO
+
+El remote acepta un `Humanoid` del cliente y lo pasa tal cual:
+
+```lua
+remotes.Animator.PlayAnimation.OnServerEvent:Connect(function(player, name: string?, humanoid: Humanoid?)
+	if name then
+		stopAnimation(player, humanoid)
+		playAnimation(player, name, humanoid)
+	end
+end)
+```
+
+Y `playAnimation` usa ese `humanoid` como destino, mientras comprueba la posesión contra
+**quien llama**:
+
+```lua
+local function playAnimation(player: Player, name: string, humanoid: Humanoid?)
+	if not humanoid then
+		humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	end
+
+	local animFolder = player:FindFirstChild("Animations")
+	local animValue = animFolder and animFolder:FindFirstChild(name)
+
+	if not animValue then
+		warn(player.Name .. " intentó bailar " .. name .. " sin tenerlo.")
+		return
+	end
+	...
+	local animator = humanoid and humanoid:FindFirstChildOfClass("Animator")
+	...
+	local track = animator:LoadAnimation(animation)
+	track:Play()
+```
+
+Las dos mitades miran a personas distintas: **la posesión se comprueba contra el llamante, y
+la animación se carga sobre el `Humanoid` que el llamante eligió.**
+
+#### Por qué esto puede ser un problema — HECHO
+
+El respaldo `if not humanoid then humanoid = player.Character…` demuestra la intención: el
+parámetro existe para el caso normal, en el que se omite y se usa el propio personaje. Lo que
+no hay es nada que rechace un `Humanoid` ajeno cuando sí se manda.
+
+`stopAnimation(player, humanoid)` tiene la misma forma, así que también se puede cortar el
+baile de otro.
+
+Lo que hace de esto una inconsistencia y no un descuido general es que **este archivo es de
+los que más cuidado tienen**: comprueba la posesión, registra el intento fallido con el
+nombre del jugador, y lleva escrita una decisión de seguridad previa:
+
+```lua
+-- Eliminamos AddAnimation remote por seguridad.
+```
+
+Alguien ya endureció este sistema. El parámetro `humanoid` quedó fuera de esa revisión.
+
+#### Teoría — TEORÍA
+
+Un jugador que posea al menos un baile puede reproducirlo en el personaje de cualquier otro,
+y detener los bailes ajenos. Es vandalismo, no robo: no concede nada ni accede a datos.
+
+El alcance está acotado por dos cosas. Las pistas se marcan con
+`track:SetAttribute("Dance", true)` y `stopAnimation` solo detiene las marcadas así, de modo
+que no se pueden cortar animaciones que no sean bailes. Y hay que poseer el baile, así que no
+se puede reproducir cualquier `AnimationId`: solo los que el atacante haya comprado.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El manejador declara `humanoid: Humanoid?` y lo reenvía sin comprobar |
+| 2 | La comprobación de posesión usa `player`, el destino usa `humanoid` |
+| 3 | El respaldo `if not humanoid then …` enseña que el caso previsto es omitirlo |
+| 4 | `stopAnimation` repite la forma |
+| 5 | `remotes.Animate`, el otro remote de baile, **no** acepta destino: usa siempre el personaje del llamante. Los dos caminos existen y solo uno tiene el agujero |
+| 6 | El comentario sobre `AddAnimation` prueba que este archivo ya pasó una revisión de seguridad |
+
+#### Incógnitas
+
+- Para qué se añadió el parámetro. Puede haber un uso legítimo —bailes en pareja, un NPC—
+  que exigiría una comprobación en vez de quitarlo.
+- Si `LoadAnimation` sobre el `Animator` de otro jugador replica a todos los clientes o solo
+  al servidor. Determina si los demás lo ven.
+
+#### Escenario de ejemplo
+
+Un jugador compra un baile y, desde la consola, lo reproduce en el personaje de otro cada
+pocos segundos. La víctima ve a su avatar bailando sin haberlo pedido y no encuentra en la
+interfaz nada que lo detenga, porque no salió de su interfaz.
+
+**Comportamiento esperado:** el baile se reproduce en el personaje de quien lo pide.
+**Comportamiento posible:** se reproduce en el personaje que se indique.
+
+#### Plan de verificación — *Multijugador*
+
+1. Dos cuentas en el mismo servidor. La primera con al menos un baile comprado.
+2. Desde su consola de cliente, dispara `Animator.PlayAnimation` con el nombre del baile y el
+   `Humanoid` de la segunda cuenta.
+3. Comprueba si la segunda cuenta baila, y si lo ven los dos clientes.
+4. Prueba `stopAnimation` mientras la segunda cuenta baila algo suyo.
+5. Repite con un baile que la primera cuenta **no** posea: debería rechazarse y dejar un
+   `warn`.
+
+**Pasa:** el paso 2 no tiene efecto sobre la segunda cuenta.
+**Falla:** la segunda cuenta baila.
+
+**Instrumentación sugerida:** en el `warn` que ya existe, añadir a quién se dirigía la
+animación. Con eso se ve en producción si el parámetro se está usando para algo distinto del
+propio personaje — que es también la información necesaria para decidir si se quita o se
+comprueba.
+
+
+## Cobertura
+
+Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
+completa.
+
+| Área | Leída de punta a punta | Notas |
+|---|---|---|
+| Arranque (4 archivos) | Sí | |
+| `WorldManager`, `ServerPresence`, `Profiles` | Sí | |
+| `PlayerWorld_Init`, `WorldService`, `WorldDataReplicator`, `ModeratorManager` | Sí | Toda la plantilla `PlayerHouses` |
+| `ServerDirectory`, `WorldsBrowser` | Sí | |
+| `PlayerDataReplicator` (script de servidor), `PlayerSchema`, `HousesInfo`, `RolesInfo`, `GeneralConfiguration` | Sí | |
+| `DataKit`: `init`, `Profile`, `Lease`, `Mutex`, `Health` | Sí | Ya documentados con Moonwave en el propio código |
+| `DataKit`: `Store`, `BaseStore` | En parte | Propiedad, staging y save/close leídos; `transfer` e `Inbox` no |
+| `ShopServerSystem` | En parte | Solo `ProcessPurchase`; la rotación de tienda y la sincronización por `MessagingService` no |
+| `playerManager`, `Client/PlayerManager` | Sí | |
+| `EventService`, `ReferralService` | Sí | |
+| `PlayerDataService`, `WorldSystem/PlayerDataReplicator.luau` | Sí | |
+| `Data/Main/init.server.luau` | Sí | El orquestador de sesión; ver [Data.Main](../systems/session-orchestrator.md) |
+| `AddValues`, `BreakDown` | En parte | Solo el camino de materialización de atributos, para cerrar la duda del tope de donación |
+| `Collections` (moneda) | Sí | Leído entero: la pasada de seguridad (BUG-CANDIDATE-015), la ruta de persistencia (BUG-CANDIDATE-008) y la escritura silenciosa de `Give` (BUG-CANDIDATE-019) |
+| `RoleService`, `EventCommands`, `ReferralCommands` | **En parte** | Solo la ruta de autorización, para la pasada de seguridad |
+| `machines/Machine`, `machines/PopTheLock` | **En parte** | Solo las rutas de enlace y de premio |
+| `GlobalDataStore`, `GiftInbox` | **No** | Ambos usan DataStoreService fuera de DataKit |
+| `Shared/Stores`: `init`, `HouseAdded`, `ColorTexture` | Sí | Los trece manejadores de remotes y el ciclo de `content` |
+| `Shared/Stores`: `Compras` | En parte | Solo `Comprar` y la forma general |
+| `Shared/Stores`: `DecorFuncs/` (3 archivos), `DecorsPlayer` | Sí | La colocación y el índice por jugador |
+| `Client/Posicionamientos` | En parte | `GetScale`, `IsInArea`, `GetFusion`, `getFace` |
+| `Shared/Stores`: `Added` | Sí | Los puestos del place de donaciones |
+| `Shared/Monetization` (4 archivos), `WorldSystem/GamePassService/init` | Sí | |
+| `GamePassService/GamePassRewards` | En parte | Solo `ensure` |
+| `ShopInfo`, `inventory/InventoryManager` | **No** | En cola; alimentan a `GamePassService` |
+| Interactuables: registrador, clase base, `bindToTag` | Sí | |
+| Interactuables: los 25 scripts de servidor | En parte | Solo su validación de entrada, para la matriz |
+| Interactuables: los 36 módulos de cliente por tipo | **No** | Decisión deliberada: la pregunta era la estructura, no el catálogo |
+| Inventario: `init.server`, `InventoryManager`, `DefaultTools` | Sí | |
+| `ToolsServer.server.luau` | En parte | Los ocho manejadores y su validación; no la mecánica del cañón ni del guante |
+| `ToolPlacementServer`, `Client/inventory/`, `ToolUseManagge` | **No** | En cola |
+| `Karaoke/init.luau` | Sí | |
+| `RevisarCanciones`, `CrearCancion` | En parte | El modelo de administración, los manejadores y sus guardas; no la paginación ni el editor |
+| `KaraokeTV/`, `BusquedaMusicas` | **No** | En cola |
+| `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
+| `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
+| Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
+| `JobSystem`, `ToolPlacementServer`, `BuildingSystem`, `KaraokeTV` | **No** | En cola, por ese orden |
+| Sistemas de juego (~420 archivos) | **No** | En cola |
+| 320 binarios `.rbxm` | **No inspeccionables** | |
+
+Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
+esté limpia.
+
+### Alcance de la revisión de seguridad
+
+La pasada de seguridad no fue una auditoría. Se buscaron patrones concretos sobre la
+superficie ya leída:
+
+- remotes que conceden valor (moneda, artículos, recompensas);
+- remotes que aceptan cantidades, precios o identificadores del cliente;
+- comandos de administración y cómo se autorizan;
+- secretos y credenciales en el código;
+- límites de frecuencia en remotes que provocan trabajo caro;
+- comprobaciones de propiedad antes de actuar sobre datos de otro jugador.
+
+Tras la segunda pasada, ya **sí** están revisados los trece remotes de `Stores` y los cinco
+de `Monetization`, con los resultados de las entradas 020, 021 y 022.
+
+Los 43 remotes de `Interactable` están revisados **en cuanto a validación de entrada** —esa
+es la matriz de la página de Interactuables y las entradas 024 y 025—, no en cuanto a la
+lógica interna de cada uno.
+
+Los ocho remotes de `Tools` están revisados en cuanto a validación de entrada (entrada 027),
+y los cinco de `Inventory` enteros.
+
+Los remotes de moderación de `Karaoke` están revisados en cuanto a autorización (entrada 028).
+
+Los ocho remotes de `Paint` están revisados en cuanto a autorización y ritmo (entrada 030).
+
+**Siguen sin revisar:** los remotes de la cocina, `ToolPlacementServer`, los
+televisores de karaoke, y el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
+hallazgos, así que esta sección debe leerse como un barrido en curso, no como una garantía.

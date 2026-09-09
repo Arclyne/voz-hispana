@@ -1,98 +1,100 @@
 ---
 sidebar_position: 0
-title: Overview
+title: Resumen
 ---
 
-# Architecture overview
+# Resumen de la arquitectura
 
-## What Voz Hispana is
+## Qué es Voz Hispana
 
-Voz Hispana is a Spanish-language Roblox social game, **voice-chat only** — a player
-without voice chat enabled is kicked on join. It spans **several Roblox places**: a lobby,
-a karaoke place, an arcade club, a donation place, and one place per house design, each of
-which runs as a private reserved server.
+Voz Hispana es un juego social de Roblox en español, **exclusivo de chat de voz**: a un
+jugador sin chat de voz activado se le expulsa al entrar. Abarca **varios places de
+Roblox**: un lobby, un place de karaoke, un club arcade, un place de donaciones, y un
+place por cada diseño de casa, cada uno de los cuales corre como servidor reservado
+privado.
 
-## The five structural facts
+## Los cinco hechos estructurales
 
-Everything else follows from these. Each is established directly from source, and each is
-counter-intuitive enough that missing it will cause a reader to misread the codebase.
+Todo lo demás se deriva de estos. Cada uno está establecido directamente desde el código,
+y cada uno es lo bastante contraintuitivo como para que pasarlo por alto lleve a leer mal
+el proyecto.
 
-### 1. The game is assembled at runtime from downloaded templates
+### 1. El juego se ensambla en tiempo de ejecución a partir de plantillas descargadas
 
-`ImportTemplates.server.luau` downloads three Roblox assets with
-`InsertService:LoadAsset` and merges them into the live services. What is committed under
-`src/ServerStorage/TemplatesTesting/` are **local overrides** of those assets, not their
-runtime locations.
+`ImportTemplates.server.luau` descarga tres assets de Roblox con
+`InsertService:LoadAsset` y los fusiona dentro de los servicios vivos. Lo versionado bajo
+`src/ServerStorage/TemplatesTesting/` son **overrides locales** de esos assets, no sus
+ubicaciones en ejecución.
 
-→ [Initialization](./initialization.md)
+→ [Inicialización](./initialization.md)
 
-### 2. Most scripts ship disabled
+### 2. La mayoría de los scripts se distribuyen desactivados
 
-104 of 170 `.meta.json` files set `Disabled: true`. `InitScripts.server.luau` enables the
-server-side ones after the import completes. The client-side ones are excluded from that
-sweep, and **nothing in this repository enables them** — the loader that does is not
-inspectable.
+104 de 170 archivos `.meta.json` ponen `Disabled: true`. `InitScripts.server.luau`
+enciende los del lado servidor cuando la importación termina. Los del lado cliente quedan
+excluidos de ese barrido, y **nada en este repositorio los enciende** — el cargador que
+lo hace no es inspeccionable.
 
-→ [Client lifecycle](./client-lifecycle.md)
+→ [Ciclo de vida del cliente](./client-lifecycle.md)
 
-### 3. A file's name and path lie about where it runs
+### 3. El nombre y la ruta de un archivo mienten sobre dónde corre
 
-`RunContext` in a sibling `.meta.json` beats the `.server.luau` / `.client.luau` suffix
-(47 scripts are forced to `Server`, 27 to `Client`), and the template import moves
-everything out of `TemplatesTesting/` into real services. Read the `.meta.json`.
+`RunContext` en el `.meta.json` hermano gana al sufijo `.server.luau` / `.client.luau`
+(47 scripts forzados a `Server`, 27 a `Client`), y la importación de plantillas saca todo
+de `TemplatesTesting/` hacia servicios reales. Hay que leer el `.meta.json`.
 
-### 4. There is no central bootstrap for players
+### 4. No hay bootstrap central para los jugadores
 
-Systems register independently through [`PlayerInit`](/api/PlayerInit) and initialise
-concurrently. There is no `PlayerReady` signal, no dependency graph, and no ordering
-guarantee between them.
+Los sistemas se registran de forma independiente a través de
+[`PlayerInit`](/api/PlayerInit) y se inicializan concurrentemente. No hay señal
+`PlayerReady`, ni grafo de dependencias, ni garantía de orden entre ellos.
 
-→ [Player lifecycle](./player-lifecycle.md)
+→ [Ciclo de vida del jugador](./player-lifecycle.md)
 
-### 5. World identity is a distributed lease, not a stored mapping
+### 5. La identidad de un mundo es un lease distribuido, no un mapeo guardado
 
-There is no persisted `HouseId → ServerCode` table that could go stale. A house's
-reachability *is* a MemoryStore lease with a 120-second TTL, refreshed by the server that
-holds it. When that server dies, the entry expires on its own.
+No existe una tabla persistida `HouseId → ServerCode` que pueda quedarse obsoleta. La
+alcanzabilidad de una casa **es** un lease en MemoryStore con un TTL de 120 segundos, que
+refresca el servidor que lo posee. Cuando ese servidor muere, la entrada expira sola.
 
-→ [Reserved servers](./reserved-servers.md)
+→ [Servidores reservados](./reserved-servers.md)
 
-## The layers
+## Las capas
 
 ```mermaid
 flowchart TB
-    subgraph BOOT["Bootstrap — src/, outside the templates"]
+    subgraph BOOT["Arranque — src/, fuera de las plantillas"]
         IT["ImportTemplates"]
         IS["InitScripts"]
         IAT["InitAfterTemplates"]
         PI["PlayerInit"]
     end
 
-    subgraph TPL["Templates — downloaded at runtime"]
-        CORE["Core<br/>most of the game"]
-        GW["GameWorlds<br/>public-server registration"]
-        BS["BuildingSystem<br/>construction UI"]
-        PH["PlayerHouses<br/>house-server logic"]
+    subgraph TPL["Plantillas — descargadas en ejecución"]
+        CORE["Core<br/>casi todo el juego"]
+        GW["GameWorlds<br/>registro de servidores públicos"]
+        BS["BuildingSystem<br/>UI de construcción"]
+        PH["PlayerHouses<br/>lógica del servidor de casa"]
     end
 
-    subgraph SYS["Systems — after the merge"]
+    subgraph SYS["Sistemas — tras la fusión"]
         WS["World System<br/>WorldManager, ServerPresence,<br/>EventService, ServerDirectory"]
         DK["DataKit<br/>Store, Profile, Lease, Mutex"]
-        PD["Player Data<br/>PlayerDataService, Replicator, Schema"]
-        GAME["Gameplay<br/>Inventory, Interactables, Machines,<br/>Karaoke, Paint, Shops, Quests, Jobs…"]
+        PD["Datos de jugador<br/>PlayerDataService, Replicator, Schema"]
+        GAME["Juego<br/>Inventario, Interactuables, Máquinas,<br/>Karaoke, Paint, Tiendas, Misiones, Trabajos…"]
     end
 
-    subgraph EXT["Roblox backends"]
+    subgraph EXT["Backends de Roblox"]
         MS["MemoryStore<br/>UserServerRegistry_Test<br/>DataKitLeases"]
-        DS["DataStore<br/>profiles + cards"]
+        DS["DataStore<br/>perfiles + tarjetas"]
         MSG["MessagingService"]
         TS["TeleportService"]
     end
 
     IT --> TPL
     IS --> TPL
-    IAT -.->|barrier| IS
-    PI -.->|per-player fan-out| SYS
+    IAT -.->|barrera| IS
+    PI -.->|reparto por jugador| SYS
 
     CORE --> WS
     CORE --> DK
@@ -112,49 +114,51 @@ flowchart TB
     GAME --> PD
 ```
 
-## Server kinds
+## Tipos de servidor
 
-| Kind | Identified by | Registers as | Entered by |
+| Tipo | Identificado por | Se registra como | Se entra con |
 |---|---|---|---|
-| Public place | `game.PrivateServerId == ""` | `"{PlaceId}_{JobId}"`, `hostingType = "default"` | `ServerInstanceId` |
-| Player house | `TeleportData.key` on the first joiner | `"{UserId}_{roomName}"`, `hostingType = "room"` | `ReservedServerAccessCode` |
-| Event | registry entry | event key, `hostingType = "event"` | `ReservedServerAccessCode` |
+| Place público | `game.PrivateServerId == ""` | `"{PlaceId}_{JobId}"`, `hostingType = "default"` | `ServerInstanceId` |
+| Casa de jugador | `TeleportData.key` del primer jugador que llega | `"{UserId}_{roomName}"`, `hostingType = "room"` | `ReservedServerAccessCode` |
+| Evento | entrada del registro | clave del evento, `hostingType = "event"` | `ReservedServerAccessCode` |
 
-→ [Server lifecycle](./server-lifecycle.md)
+→ [Ciclo de vida del servidor](./server-lifecycle.md)
 
-## The two directories
+## Los dos directorios
 
-A recurring source of confusion, so it is worth stating once, prominently: there are
-**two** MemoryStore-backed registries with different jobs.
+Es una fuente recurrente de confusión, así que conviene decirlo una vez y bien visible:
+hay **dos** registros respaldados por MemoryStore, con trabajos distintos.
 
 | | `UserServerRegistry_Test` | `DataKitLeases` |
 |---|---|---|
-| Owned by | [`ServerPresence`](/api/ServerPresence) | `DataKit.Lease` |
-| Answers | *"what servers exist, who is in them"* | *"who owns this world's data, and how do I reach them"* |
-| Used for | browsing, server lists, friend/most-played queries | reservation decisions, host resolution |
+| Lo mantiene | [`ServerPresence`](/api/ServerPresence) | `DataKit.Lease` |
+| Responde a | *«qué servidores existen y quién está dentro»* | *«quién posee los datos de este mundo y cómo llego»* |
+| Se usa para | navegar, listas de servidores, consultas de amigos y más jugados | decisiones de reserva, resolución del anfitrión |
 
-→ [Reserved servers](./reserved-servers.md)
+→ [Servidores reservados](./reserved-servers.md)
 
-## Persistence in one paragraph
+## La persistencia en un párrafo
 
-All durable state goes through **`DataKit`**, a wally-installed package vendored at
-`Core/ServerStorage/DataKit`. It layers a single-writer distributed lease over a DataStore
-so that exactly one server may write an identity at a time; adds autosave, a durable
-message inbox for cross-server mutations of offline identities, and "cards" — small
-projections a lobby can read without loading the full record. `Profiles.luau` declares the
-four identities the game uses: `WorldsPlayer`, `World`, `Event` and `ReferralCode`.
+Todo el estado duradero pasa por **`DataKit`**, un paquete instalado con wally y
+vendorizado en `Core/ServerStorage/DataKit`. Superpone un lease distribuido de escritor
+único sobre un DataStore, de forma que exactamente un servidor puede escribir una
+identidad a la vez; añade autoguardado, un buzón durable de mensajes para mutaciones
+entre servidores sobre identidades desconectadas, y «tarjetas» — proyecciones pequeñas
+que un lobby puede leer sin cargar el registro completo. `Profiles.luau` declara las
+cuatro identidades que usa el juego: `WorldsPlayer`, `World`, `Event` y `ReferralCode`.
 
-→ [Persistence](./persistence.md)
+→ [Persistencia](./persistence.md)
 
-## Where the documentation is incomplete
+## Dónde está incompleta esta documentación
 
-Stated up front rather than discovered later:
+Se dice por delante, en vez de que se descubra después:
 
-| Gap | Consequence |
+| Hueco | Consecuencia |
 |---|---|
-| 320 `.rbxm` binaries are unreadable | The client entry point, all UI, all tools and all models are outside what can be documented from source. |
-| `PlayerHouses` is not in `TEMPLATES_IDS` | How the house template reaches a house place is unproven. |
-| The three template asset IDs may differ from the on-disk overrides | Only the local overrides can be read; the published assets are authoritative in production. |
-| ~200 gameplay remotes not yet reviewed | The security assessment in [Networking](./networking.md) covers only the paths read end-to-end. |
+| 320 binarios `.rbxm` ilegibles | El punto de entrada del cliente, toda la UI, todas las herramientas y todos los modelos quedan fuera de lo documentable desde el código. |
+| `PlayerHouses` no está en `TEMPLATES_IDS` | Cómo llega la plantilla de casas a un place de casa no está probado. |
+| Los tres assets de plantilla pueden diferir de los overrides en disco | Solo se pueden leer los overrides locales; en producción manda el asset publicado. |
+| ~200 remotes de juego sin revisar | La valoración de seguridad de [Red](./networking.md) cubre solo las rutas leídas de punta a punta. |
 
-Current status and what remains is tracked in `DOCS_PROGRESS.md` at the repository root.
+El estado actual y lo que queda se lleva en `DOCS_PROGRESS.md`, en la raíz del
+repositorio.

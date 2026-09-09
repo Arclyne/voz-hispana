@@ -1,10 +1,10 @@
 {
-  "label": "Systems",
+  "label": "Sistemas",
   "position": 3,
   "collapsed": false,
   "link": {
     "type": "generated-index",
-    "title": "Systems",
-    "description": "The real subsystems of Voz Hispana, identified from the source rather than from a template."
+    "title": "Sistemas",
+    "description": "Los subsistemas reales de Voz Hispana, identificados a partir del código y no de una plantilla."
   }
 }

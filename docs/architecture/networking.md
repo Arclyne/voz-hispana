@@ -1,33 +1,34 @@
 ---
 sidebar_position: 7
-title: Networking
+title: Red
 ---
 
-# Networking
+# Red
 
-## Shape of the remote surface
+## Forma de la superficie de remotes
 
-**FACT.** Remotes are not created in code. They are **declared as Rojo `.model.json`
-files** and shipped as instances, so the full surface is knowable statically by reading
-the file tree. There are:
+**HECHO.** Los remotes no se crean en código. Se **declaran como archivos `.model.json`
+de Rojo** y se distribuyen como instancias, así que la superficie completa se puede
+conocer estáticamente leyendo el árbol de archivos. Hay:
 
-| Class | Count |
+| Clase | Cantidad |
 |---|---|
 | `RemoteEvent` | 174 |
 | `RemoteFunction` | 40 |
 | `BindableEvent` | 11 |
 | `BindableFunction` | 1 |
 
-169 of the `RemoteEvent`s and all 40 `RemoteFunction`s live under
-`ReplicatedStorage.Events`, organised by topic. The remaining 5 are local to a feature
-(for example `Assets/Tools/Toys/SlimeBomb/RemoteEvent`).
+169 de los `RemoteEvent` y los 40 `RemoteFunction` viven bajo `ReplicatedStorage.Events`,
+organizados por tema. Los 5 restantes son locales a una función concreta (por ejemplo
+`Assets/Tools/Toys/SlimeBomb/RemoteEvent`).
 
-## Topic map
+## Mapa por temas
 
-**FACT.** `ReplicatedStorage.Events` groups remotes into one folder per subsystem. The
-count per folder is a fair first estimate of where the client↔server traffic actually is:
+**HECHO.** `ReplicatedStorage.Events` agrupa los remotes en una carpeta por subsistema. La
+cantidad por carpeta es una primera estimación razonable de dónde está de verdad el
+tráfico cliente↔servidor:
 
-| Folder | `RemoteEvent` | `RemoteFunction` | `BindableEvent` |
+| Carpeta | `RemoteEvent` | `RemoteFunction` | `BindableEvent` |
 |---|---|---|---|
 | `Interactable` | 44 | — | — |
 | `Karaoke` | 25 | — | — |
@@ -40,7 +41,7 @@ count per folder is a fair first estimate of where the client↔server traffic a
 | `Paint` | 6 | — | — |
 | `Decors` | 5 | — | — |
 | `Player` | 5 | — | 2 |
-| `(root)` | 5 | 1 | — |
+| `(raíz)` | 5 | 1 | — |
 | `CustomClickDetector` | 4 | — | — |
 | `Inventory` | 4 | 1 | — |
 | `Quests` | 4 | 2 | — |
@@ -49,49 +50,49 @@ count per folder is a fair first estimate of where the client↔server traffic a
 | `Animator` | 2 | 1 | — |
 | `Other` | 2 | — | — |
 | `GameLoad` | 1 | — | — |
-| `LootBox` / `Roulette` | — | 1 each | — |
+| `LootBox` / `Roulette` | — | 1 cada uno | — |
 | `ShopUI` | — | — | 1 |
 | `WorldSystem` (PlayerHouses) | 1 | 9 | — |
 
-**INFERENCE.** Two things stand out. `WorldSystem` is the only area that leans on
-`RemoteFunction`s (30 of the 40 across both templates) — because world/housing operations
-are request→response by nature: *may I join, what are my houses, what does this cost*.
-Everything else is overwhelmingly fire-and-forget `RemoteEvent`s.
+**INFERENCIA.** Destacan dos cosas. `WorldSystem` es la única área que se apoya en
+`RemoteFunction` (30 de los 40, sumando ambas plantillas), porque las operaciones de
+mundos y casas son petición→respuesta por naturaleza: *¿puedo entrar, qué casas tengo,
+cuánto cuesta esto*. Todo lo demás es abrumadoramente `RemoteEvent` de disparar y olvidar.
 
-## Two `WorldSystem` event folders
+## Dos carpetas `WorldSystem` de eventos
 
-**FACT.** There are two distinct `Events/WorldSystem` folders, in different templates,
-and they are merged into the same runtime folder by the
-[template import](./initialization.md):
+**HECHO.** Hay dos carpetas `Events/WorldSystem` distintas, en plantillas distintas, y la
+[importación de plantillas](./initialization.md) las fusiona en la misma carpeta de
+ejecución:
 
-| Template | Remotes | Present in |
+| Plantilla | Remotes | Presente en |
 |---|---|---|
-| `Core` | `JoinServer`, `JoinWorld`, `GetHouses`, `GetPlayerHouses`, `GetPlayerHouseServers`, `GetSlots`, `BuySlot`, `BuyItem`, `GetShopData`, `GetFriendServers`, `GetMostPlayedServers`, `GetFavoriteWorlds`, `houseControl`, `currencyControl`, … | Every place |
-| `PlayerHouses` | `GetWorldSettings`, `GetRoles`, `GetUserRol`, `SetUserRole`, `GetBans`, `SetBan`, `SetWorldName`, `togglePrivacity`, `GetSlots`, `WorldDataUpdated` | House places |
+| `Core` | `JoinServer`, `JoinWorld`, `GetHouses`, `GetPlayerHouses`, `GetPlayerHouseServers`, `GetSlots`, `BuySlot`, `BuyItem`, `GetShopData`, `GetFriendServers`, `GetMostPlayedServers`, `GetFavoriteWorlds`, `houseControl`, `currencyControl`, … | Todos los places |
+| `PlayerHouses` | `GetWorldSettings`, `GetRoles`, `GetUserRol`, `SetUserRole`, `GetBans`, `SetBan`, `SetWorldName`, `togglePrivacity`, `GetSlots`, `WorldDataUpdated` | Places de casa |
 
-**INFERENCE.** The split is by *where the operation can be answered*. `Core`'s remotes
-answer questions about **which** worlds exist and how to reach them, and are served by a
-lobby. `PlayerHouses`' remotes administer **this** world — its name, roles, bans,
-privacy — and can only be served by the server that actually holds the world's data.
+**INFERENCIA.** La separación es por *dónde se puede responder la operación*. Los remotes
+de `Core` responden a qué mundos existen y cómo llegar a ellos, y los sirve un lobby. Los
+de `PlayerHouses` administran **este** mundo —su nombre, roles, baneos, privacidad— y solo
+los puede servir el servidor que tiene cargados los datos del mundo.
 
-**OBSERVATION.** `GetSlots` is declared in **both** folders, both as a `RemoteFunction`.
-Only one binder exists in the whole repository —
-`Core/…/ServerScripts/PlayerDataReplicator.server.luau` sets
-`GetSlots.OnServerInvoke = getPlayerSlots` — and only one consumer,
-`Core/…/Client/WorldSystem/Modules/InventoryController.luau`. Nothing in the
-`PlayerHouses` template references it.
+**OBSERVACIÓN.** `GetSlots` está declarado en **ambas** carpetas, en las dos como
+`RemoteFunction`. Solo existe un enlazador en todo el repositorio —
+`Core/…/ServerScripts/PlayerDataReplicator.server.luau` hace
+`GetSlots.OnServerInvoke = getPlayerSlots` — y un solo consumidor,
+`Core/…/Client/WorldSystem/Modules/InventoryController.luau`. Nada de la plantilla
+`PlayerHouses` lo referencia.
 
-If both templates are ever merged into the same place, the merge rules keep the
-first-imported instance and destroy the second; since the classes are identical, the
-result is one `RemoteFunction` with one binding, which is what the code already expects.
-This is recorded as an observation, **not** a defect. Whether the two templates *are*
-merged into the same place is **UNKNOWN** — `PlayerHouses` does not appear in
-`TEMPLATES_IDS`.
+Si alguna vez ambas plantillas se fusionan en el mismo place, las reglas de fusión
+conservan la instancia importada primero y destruyen la segunda; como las clases son
+idénticas, el resultado es un solo `RemoteFunction` con un solo enlace, que es lo que el
+código ya espera. Queda registrado como observación, **no** como defecto. Si las dos
+plantillas *se fusionan* en el mismo place es **DESCONOCIDO**: `PlayerHouses` no aparece
+en `TEMPLATES_IDS`.
 
-## The request→response pattern
+## El patrón petición→respuesta
 
-**FACT.** `RemoteFunction`s in the world system consistently return
-`(ok: boolean, err: string?)`. `WorldManager` is the clearest example:
+**HECHO.** Los `RemoteFunction` del sistema de mundos devuelven de forma consistente
+`(ok: boolean, err: string?)`. `WorldManager` es el ejemplo más claro:
 
 ```lua
 JoinServerFunc.OnServerInvoke = function(player: Player, serverKey: string)
@@ -103,70 +104,74 @@ JoinServerFunc.OnServerInvoke = function(player: Player, serverKey: string)
 end
 ```
 
-Every failure path returns a *string reason*, never `nil` and never an error. The client
-therefore always gets a definite answer, and a `pcall` around the invoke is not needed
-to distinguish "denied" from "broke".
+Cada ruta de fallo devuelve una *cadena con el motivo*, nunca `nil` y nunca un error. Así
+el cliente siempre recibe una respuesta definida, y no hace falta envolver el invoke en un
+`pcall` para distinguir «denegado» de «se rompió».
 
-## Input validation
+## Validación de entrada
 
-**FACT.** Server handlers in the reviewed path validate client input by *type* before
-using it, and resolve identifiers through server-side tables rather than trusting them:
+**HECHO.** Los manejadores del servidor en la ruta revisada validan la entrada del cliente
+por *tipo* antes de usarla, y resuelven los identificadores con tablas del lado servidor
+en vez de confiar en ellos:
 
-| Handler | Validation |
+| Manejador | Validación |
 |---|---|
-| `JoinServer` | `typeof(serverKey) ~= "string"` → reject; then `parseRoomKey` must match `^(%d+)_(.+)$`; then `HousesInfo[roomName]` must exist |
-| `JoinWorld` | `typeof(placeKey) ~= "string"` → reject; `PlaceKeyToPlaceId[placeKey]` must exist, otherwise `"Invalid place key"` |
-| `LoadCharacterRequest` | player validity, a 2-second cooldown, `InitScriptsReadyFlag`, and a one-character-per-session flag |
-| `teleportToHost` | `meta.placeId` must be a `number` and `meta.accessCode` a `string`, else `"Malformed host metadata"` |
-| `JoinServer` (`default` hosting) | `placeId` must be a `number` and `jobId` a `string`, else `"Malformed directory entry"` |
+| `JoinServer` | `typeof(serverKey) ~= "string"` → rechazo; luego `parseRoomKey` debe casar con `^(%d+)_(.+)$`; luego `HousesInfo[roomName]` debe existir |
+| `JoinWorld` | `typeof(placeKey) ~= "string"` → rechazo; `PlaceKeyToPlaceId[placeKey]` debe existir, si no `"Invalid place key"` |
+| `LoadCharacterRequest` | validez del jugador, cooldown de 2 segundos, `InitScriptsReadyFlag`, y un flag de un-personaje-por-sesión |
+| `teleportToHost` | `meta.placeId` debe ser `number` y `meta.accessCode` `string`, si no `"Malformed host metadata"` |
+| `JoinServer` (hosting `default`) | `placeId` debe ser `number` y `jobId` `string`, si no `"Malformed directory entry"` |
 
-**INFERENCE — the security property that matters.** A client can name *what* it wants to
-reach, never *how*. `PlaceId`s come from `HousesInfo` or `PlaceKeyToPlaceId`;
-`accessCode`s come from MemoryStore. The source states the rule for events directly:
+**INFERENCIA — la propiedad de seguridad que importa.** Un cliente puede nombrar *qué*
+quiere alcanzar, nunca *cómo*. Los `PlaceId` salen de `HousesInfo` o de
+`PlaceKeyToPlaceId`; los `accessCode` salen de MemoryStore. El código enuncia la regla
+directamente para los eventos:
 
 ```lua
 -- El code sale del registro de MemoryStore, nunca del cliente.
 ```
 
-**Scope note.** This assessment covers the bootstrap, player and world-system paths that
-have been read end-to-end. The other ~200 remotes — `Interactable`, `Karaoke`,
-`Machines`, `Stores`, `Tools` — have **not** been reviewed yet, and nothing here should
-be read as a statement about them. They are queued for Phase 3/4.
+**Nota de alcance.** Esta valoración cubre las rutas de arranque, jugador y sistema de
+mundos que se han leído de punta a punta. Los otros ~200 remotes —`Interactable`,
+`Karaoke`, `Machines`, `Stores`, `Tools`— **no** se han revisado, y nada de lo dicho aquí
+debe leerse como una afirmación sobre ellos. Están en cola para las fases 3 y 4.
 
-## Server → server communication
+## Comunicación servidor → servidor
 
-**FACT.** `MessagingService` is used by 9 files. The topics established in the reviewed
-path:
+**HECHO.** `MessagingService` lo usan 9 archivos. Los temas establecidos en la ruta
+revisada:
 
-| Topic | Publisher | Payload |
+| Tema | Publicador | Contenido |
 |---|---|---|
 | `UserServerRegistryUpdate` | `ServerPresence.RefreshNow` | `{ key = serverKey, info = payload }` |
 | `UserServerRegistryClosed` | `ServerPresence.Cleanup` | `serverKey` |
 
-**INFERENCE.** These exist so that a server browsing the directory learns about changes
-without polling MemoryStore. The MemoryStore entry remains the source of truth — the
-message is a hint that it changed. Every publish is wrapped in `pcall` and a failure only
-warns, so a dropped message degrades freshness rather than correctness.
+**INFERENCIA.** Existen para que un servidor que consulta el directorio se entere de los
+cambios sin sondear MemoryStore. La entrada de MemoryStore sigue siendo la fuente de
+verdad: el mensaje es solo un aviso de que cambió. Cada publicación va dentro de un
+`pcall` y un fallo solo avisa, así que un mensaje perdido degrada la frescura, no la
+corrección.
 
-Other `MessagingService` users — `DataKit.Store`/`BaseStore`, `ServerDirectory`,
+Los demás usuarios de `MessagingService` —`DataKit.Store`/`BaseStore`, `ServerDirectory`,
 `ShopServerSystem`, `Karaoke/RevisarCanciones`, `Paint/ServerClient`, `ComprasTablero`,
-`Referrals/ReferralMain` — are documented with their systems.
+`Referrals/ReferralMain`— se documentan con sus sistemas.
 
 ## Bindables
 
-**FACT.** 11 `BindableEvent`s and 1 `BindableFunction`. 8 of the `BindableEvent`s are in
-`Events/IconsUI`, 2 in `Events/Player`, 1 in `Events/ShopUI`.
+**HECHO.** 11 `BindableEvent` y 1 `BindableFunction`. 8 de los `BindableEvent` están en
+`Events/IconsUI`, 2 en `Events/Player`, 1 en `Events/ShopUI`.
 
-**INFERENCE.** Bindables here are same-side decoupling (mostly client UI), not
-client↔server transport. Their small number relative to 214 remotes suggests most
-intra-side coupling is done by direct `require` instead.
+**INFERENCIA.** Aquí los bindables sirven para desacoplar dentro del mismo lado (sobre
+todo UI de cliente), no como transporte cliente↔servidor. Su escaso número frente a 214
+remotes sugiere que casi todo el acoplamiento dentro de un lado se hace por `require`
+directo.
 
-## Related implementation
+## Implementación relacionada
 
-| Concern | Code |
+| Aspecto | Código |
 |---|---|
-| World/housing remotes | `Core/…/ServerScripts/WorldManager.server.luau` |
-| World administration remotes | `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` |
-| Directory queries | `Core/…/ServerScripts/ServerDirectory.server.luau`, `WorldsBrowser.server.luau` |
-| Cross-server messaging | [`ServerPresence`](/api/ServerPresence); `DataKit/Store.luau`, `DataKit/BaseStore.luau` |
-| Character request | `Core/…/ServerScripts/playerManager.server.luau` |
+| Remotes de mundos y casas | `Core/…/ServerScripts/WorldManager.server.luau` |
+| Remotes de administración de mundo | `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` |
+| Consultas al directorio | `Core/…/ServerScripts/ServerDirectory.server.luau`, `WorldsBrowser.server.luau` |
+| Mensajería entre servidores | [`ServerPresence`](/api/ServerPresence); `DataKit/Store.luau`, `DataKit/BaseStore.luau` |
+| Solicitud de personaje | `Core/…/ServerScripts/playerManager.server.luau` |

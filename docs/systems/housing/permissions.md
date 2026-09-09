@@ -1,23 +1,24 @@
 ---
 sidebar_position: 6
-title: Permissions
+title: Permisos
 ---
 
-# House permissions
+# Permisos de una casa
 
-Three separate checks govern a house, at three different moments, in two different scripts.
-Confusing them is easy, so this page names each one and what it actually gates.
+Tres comprobaciones distintas gobiernan una casa, en tres momentos distintos, repartidas en
+dos scripts. Confundirlas es fácil, así que esta página nombra cada una y qué controla de
+verdad.
 
-| Check | Where | When | Gates |
+| Comprobación | Dónde | Cuándo | Controla |
 |---|---|---|---|
-| `hasRoom` | `PlayerWorld_Init` | Once, at boot | *May this house exist?* — does the owner named in the key own that room |
-| `canHostWorld` | `PlayerWorld_Init` | Once, at boot | *May **this** player open it?* — the first arrival only |
-| `canPlayerEnter` | `ModeratorManager` | Continuously | *May this player remain?* — every player, re-evaluated on every change |
-| `canModerate` | `WorldDataReplicator` | Per request | *May this player change settings, roles or bans?* |
+| `hasRoom` | `PlayerWorld_Init` | Una vez, al arrancar | *¿Puede existir esta casa?* — si el dueño nombrado en la clave posee esa room |
+| `canHostWorld` | `PlayerWorld_Init` | Una vez, al arrancar | *¿Puede **este** jugador abrirla?* — solo el primero que llega |
+| `canPlayerEnter` | `ModeratorManager` | De forma continua | *¿Puede este jugador quedarse?* — todos, reevaluado en cada cambio |
+| `canModerate` | `WorldDataReplicator` | Por petición | *¿Puede este jugador cambiar ajustes, roles o baneos?* |
 
-## The role ladder
+## La escala de roles
 
-**FACT.** `PlayerHouses/ReplicatedStorage/RolesInfo.luau`:
+**HECHO.** `PlayerHouses/ReplicatedStorage/RolesInfo.luau`:
 
 ```lua
 local RolesInfo = {
@@ -30,8 +31,8 @@ local RolesInfo = {
 }
 ```
 
-**FACT.** `owner` is never stored in the `roles` table. It is derived from
-`settings.OwnerId`, in both scripts that need it:
+**HECHO.** `owner` nunca se guarda en la tabla `roles`. Se deriva de `settings.OwnerId`, en
+los dos scripts que lo necesitan:
 
 ```lua
 local function roleFor(data: any, userId: number): number
@@ -43,97 +44,99 @@ local function roleFor(data: any, userId: number): number
 end
 ```
 
-A player with no entry has role `0`.
+Un jugador sin entrada tiene rol `0`.
 
-## Who may open the house
+## Quién puede abrir la casa
 
-**FACT.** `canHostWorld` runs once, against the first player to arrive:
+**HECHO.** `canHostWorld` corre una vez, contra el primer jugador que llega:
 
 ```mermaid
 flowchart TD
-    A["canHostWorld(hostPlayer)"] --> B{"WorldService.get()<br/>returned data?"}
-    B -- no --> F1["false — World data not loaded"]
-    B -- yes --> C{"hostPlayer.UserId<br/>== settings.OwnerId?"}
-    C -- yes --> OK1["allowed"]
-    C -- no --> D{"bans[userId] == true?"}
-    D -- yes --> F2["false — You are banned from this world"]
-    D -- no --> E{"settings.ServerType<br/>== 'private'?"}
-    E -- no --> OK2["allowed — public house"]
-    E -- yes --> G{"roles[userId] >= guest (46)?"}
-    G -- yes --> OK3["allowed"]
+    A["canHostWorld(hostPlayer)"] --> B{"¿WorldService.get()<br/>devolvió datos?"}
+    B -- no --> F1["false — datos del mundo no cargados"]
+    B -- sí --> C{"¿hostPlayer.UserId<br/>== settings.OwnerId?"}
+    C -- sí --> OK1["permitido"]
+    C -- no --> D{"¿bans[userId] == true?"}
+    D -- sí --> F2["false — estás baneado de este mundo"]
+    D -- no --> E{"¿settings.ServerType<br/>== 'private'?"}
+    E -- no --> OK2["permitido — casa pública"]
+    E -- sí --> G{"¿roles[userId] >= guest (46)?"}
+    G -- sí --> OK3["permitido"]
     G -- no --> H["pcall hostPlayer:IsFriendsWith(ownerId)"]
-    H --> I{"call ok and is a friend?"}
-    I -- yes --> OK4["allowed"]
-    I -- no --> F3["false — This world is private…"]
+    H --> I{"¿la llamada fue bien y es amigo?"}
+    I -- sí --> OK4["permitido"]
+    I -- no --> F3["false — este mundo es privado…"]
 
     style F1 fill:#5a3a3a,stroke:#a66,color:#fff
     style F2 fill:#5a3a3a,stroke:#a66,color:#fff
     style F3 fill:#5a3a3a,stroke:#a66,color:#fff
 ```
 
-**FACT.** A refusal calls `onFailedServer`, which warns and then
-`ServerPresence.KickAll`s — everyone present is ejected, not just the refused player. At
-that moment the first player *is* everyone present, so the effect is the same.
+**HECHO.** Un rechazo llama a `onFailedServer`, que avisa y después hace
+`ServerPresence.KickAll` — se expulsa a todos los presentes, no solo al jugador rechazado.
+En ese momento el primer jugador *es* todo el mundo presente, así que el efecto es el
+mismo.
 
-**FACT.** The `IsFriendsWith` call is wrapped in `pcall`, and the failure is treated as
-"not a friend": `if not ok or not isFriend then` refuse. This gate **fails closed** —
-unlike the voice-chat gate in
-[BUG-CANDIDATE-001](../../testing/verification-plan.md#bug-candidate-001), which fails open.
+**HECHO.** La llamada a `IsFriendsWith` va envuelta en `pcall`, y el fallo se trata como
+«no es amigo»: `if not ok or not isFriend then` rechazar. Esta puerta **falla cerrada** —a
+diferencia de la de chat de voz de
+[BUG-CANDIDATE-001](../../testing/verification-plan.md#bug-candidate-001), que falla
+abierta.
 
-## Who may remain
+## Quién puede quedarse
 
-**FACT.** `ModeratorManager.canPlayerEnter` applies the same policy to **every** player, and
-re-applies it whenever the house's data changes:
+**HECHO.** `ModeratorManager.canPlayerEnter` aplica la misma política a **todos** los
+jugadores, y la vuelve a aplicar cada vez que cambian los datos de la casa:
 
 ```mermaid
 flowchart TD
-    subgraph TRIGGERS["When it runs"]
-        T1["ServerInfo.status becomes 'ready'<br/>→ sweepKickCurrent + sweepAccessAll"]
-        T2["Players.PlayerAdded<br/>(deferred until status is ready)"]
+    subgraph TRIGGERS["Cuándo se ejecuta"]
+        T1["ServerInfo.status pasa a 'ready'<br/>→ sweepKickCurrent + sweepAccessAll"]
+        T2["Players.PlayerAdded<br/>(diferido hasta que status sea ready)"]
         T3["OnStoreUpdated WorldBansStore<br/>→ sweepKickFromSnapshot"]
-        T4["OnStoreUpdated WorldSettingsStore<br/>or WorldRolesStore → sweepAccessAll"]
+        T4["OnStoreUpdated WorldSettingsStore<br/>o WorldRolesStore → sweepAccessAll"]
     end
 
     T1 --> C["canPlayerEnter(plr, mgr)"]
     T2 --> C
     T4 --> C
-    T3 --> K["kick everyone in the ban snapshot"]
+    T3 --> K["expulsa a todos los de la instantánea de baneos"]
 
-    C --> D{"banned?"}
-    D -- yes --> K
-    D -- no --> E{"settings readable?"}
-    E -- no --> OK0["allowed — fail open<br/>while data is unavailable"]
-    E -- yes --> F{"is the owner?"}
-    F -- yes --> OK1["allowed"]
-    F -- no --> G{"ServerType == 'private'?"}
-    G -- no --> OK2["allowed"]
-    G -- yes --> H{"role >= guest (46)?"}
-    H -- yes --> OK3["allowed"]
-    H -- no --> I{"IsFriendsWith(owner)?"}
-    I -- yes --> OK4["allowed"]
-    I -- no --> KICK["kick — This world is private…"]
+    C --> D{"¿baneado?"}
+    D -- sí --> K
+    D -- no --> E{"¿settings legibles?"}
+    E -- no --> OK0["permitido — falla abierto<br/>mientras no hay datos"]
+    E -- sí --> F{"¿es el dueño?"}
+    F -- sí --> OK1["permitido"]
+    F -- no --> G{"¿ServerType == 'private'?"}
+    G -- no --> OK2["permitido"]
+    G -- sí --> H{"¿rol >= guest (46)?"}
+    H -- sí --> OK3["permitido"]
+    H -- no --> I{"¿IsFriendsWith(dueño)?"}
+    I -- sí --> OK4["permitido"]
+    I -- no --> KICK["expulsión — este mundo es privado…"]
 ```
 
-**FACT.** Every kick goes through a `pcall`-wrapped helper, so a failed kick warns rather
-than raising.
+**HECHO.** Toda expulsión pasa por un helper envuelto en `pcall`, así que una expulsión
+fallida avisa en vez de lanzar error.
 
-**INFERENCE — the two checks are deliberately redundant.** `canHostWorld` decides whether
-the house opens at all; `canPlayerEnter` polices everyone continuously afterwards. The first
-player is covered by both, because `onReady` runs `sweepAccessAll` over all present players
-as soon as the server reports ready.
+**INFERENCIA — las dos comprobaciones son redundantes a propósito.** `canHostWorld` decide
+si la casa se abre siquiera; `canPlayerEnter` vigila a todo el mundo de forma continua
+después. El primer jugador queda cubierto por ambas, porque `onReady` ejecuta
+`sweepAccessAll` sobre todos los presentes en cuanto el servidor se reporta listo.
 
-**FACT — bans take effect immediately.** `SetBan` does not kick. The kick comes from the
-`WorldBansStore` signal that the write produces, via `sweepKickFromSnapshot`. So banning
-someone who is currently inside ejects them without any extra code path, and the same
-mechanism ejects them if a *different* server writes the ban.
+**HECHO — los baneos surten efecto de inmediato.** `SetBan` no expulsa. La expulsión viene
+de la señal `WorldBansStore` que produce la escritura, vía `sweepKickFromSnapshot`. Así,
+banear a alguien que está dentro lo echa sin ninguna ruta de código adicional, y el mismo
+mecanismo lo echa si el baneo lo escribe un servidor *distinto*.
 
-**FACT — flipping a house to private ejects strangers.** `togglePrivacity` writes
-`settings`, which fires `WorldSettingsStore`, which runs `sweepAccessAll`, which
-re-evaluates everyone against the new privacy setting.
+**HECHO — pasar una casa a privada echa a los extraños.** `togglePrivacity` escribe
+`settings`, lo que dispara `WorldSettingsStore`, que ejecuta `sweepAccessAll`, que
+reevalúa a todo el mundo contra el nuevo ajuste de privacidad.
 
-## Who may administer
+## Quién puede administrar
 
-**FACT.** `WorldDataReplicator.canModerate` gates every administrative remote:
+**HECHO.** `WorldDataReplicator.canModerate` controla todos los remotes administrativos:
 
 ```lua
 local function canModerate(data: any, player: Player): boolean
@@ -144,89 +147,94 @@ local function canModerate(data: any, player: Player): boolean
 end
 ```
 
-**OBSERVATION — the comparison is strictly greater than.** `RolesInfo.moderator` is 48, so
-a player whose role is exactly `moderator` returns `48 > 48` → `false` and **cannot
-moderate**. The effective administrative set is `admin` (49), `coOwner` (50) and the owner.
+**OBSERVACIÓN — la comparación es estrictamente «mayor que».** `RolesInfo.moderator` vale
+48, así que un jugador cuyo rol sea exactamente `moderator` evalúa `48 > 48` → `false` y
+**no puede moderar**. El conjunto administrativo efectivo es `admin` (49), `coOwner` (50) y
+el dueño.
 
-The function is named `canModerate` and the role is named `moderator`, so either the
-comparison or the name is wrong. Which one is a product decision, not something static
-reading can settle. Recorded as
+La función se llama `canModerate` y el rol se llama `moderator`, así que o la comparación o
+el nombre están mal. Cuál de los dos es una decisión de producto, no algo que la lectura
+estática pueda resolver. Registrado como
 [BUG-CANDIDATE-011](../../testing/verification-plan.md#bug-candidate-011).
 
-Note the contrast: the *entry* check uses `>=` (`role >= RolesInfo["guest"]`), so `guest`
-itself does pass there. The two comparisons are inconsistent with each other.
+Nótese el contraste: la comprobación de *entrada* usa `>=` (`role >= RolesInfo["guest"]`),
+así que `guest` sí pasa allí. Las dos comparaciones son inconsistentes entre sí.
 
-### The administrative remotes
+### Los remotes administrativos
 
-**FACT.** All are `RemoteFunction`s in `PlayerHouses`' `Events/WorldSystem` folder:
+**HECHO.** Todos son `RemoteFunction` de la carpeta `Events/WorldSystem` de
+`PlayerHouses`:
 
-| Remote | Requires | Extra validation |
+| Remote | Requiere | Validación adicional |
 |---|---|---|
-| `GetUserRol(userId?)` | — | Defaults to the caller; returns `OWNER_ROLE` for the owner |
-| `GetRoles()` | — | Returns the whole roles table |
-| `GetWorldSettings()` | — | Returns the whole settings table |
-| `GetBans()` | — | Returns `{}` if `bans` is not a table |
-| `SetWorldName(rawName)` | `canModerate` | Sanitised — see below |
-| `SetBan(targetUserId, shouldBan)` | `canModerate` | Type-checks both arguments; **refuses to ban the owner** |
-| `SetUserRole(targetUserId, roleName)` | `canModerate` | Type-checks; refuses to edit the owner; `roleName` must be `"none"` or a key of `RolesInfo` |
-| `togglePrivacity()` | `canModerate` | Flips `public` ↔ `private` |
+| `GetUserRol(userId?)` | — | Por defecto el llamante; devuelve `OWNER_ROLE` para el dueño |
+| `GetRoles()` | — | Devuelve la tabla de roles entera |
+| `GetWorldSettings()` | — | Devuelve la tabla de ajustes entera |
+| `GetBans()` | — | Devuelve `{}` si `bans` no es una tabla |
+| `SetWorldName(rawName)` | `canModerate` | Saneado — ver más abajo |
+| `SetBan(targetUserId, shouldBan)` | `canModerate` | Comprueba el tipo de ambos argumentos; **se niega a banear al dueño** |
+| `SetUserRole(targetUserId, roleName)` | `canModerate` | Comprueba tipos; se niega a editar al dueño; `roleName` debe ser `"none"` o una clave de `RolesInfo` |
+| `togglePrivacity()` | `canModerate` | Alterna `public` ↔ `private` |
 
-**OBSERVATION — the four read remotes have no permission check at all.** `GetRoles`,
-`GetWorldSettings`, `GetBans` and `GetUserRol` return the house's full roles table, settings
-and ban list to **any** player who can invoke them from inside the house.
+**OBSERVACIÓN — los cuatro remotes de lectura no tienen ninguna comprobación de
+permisos.** `GetRoles`, `GetWorldSettings`, `GetBans` y `GetUserRol` devuelven la tabla
+completa de roles, los ajustes y la lista de baneos de la casa a **cualquier** jugador que
+pueda invocarlos desde dentro.
 
-This is a low-severity information exposure: everything returned is about a house the caller
-is standing in, and the ban list is a set of user ids. It is recorded because the *push*
-path is restricted while the *pull* path is not — `pushStore` sends these same payloads only
-to players with `role >= moderator` or the owner, which shows the intent was to restrict
-them. Recorded as
+Es una exposición de información de baja gravedad: todo lo devuelto es sobre una casa en la
+que el llamante está de pie, y la lista de baneos es un conjunto de ids de usuario. Se
+registra porque la ruta de *envío* sí está restringida mientras que la de *consulta* no:
+`pushStore` manda exactamente estos mismos contenidos solo a jugadores con
+`role >= moderator` o al dueño, lo que demuestra que la intención era restringirlos.
+Registrado como
 [BUG-CANDIDATE-012](../../testing/verification-plan.md#bug-candidate-012).
 
-**FACT — role escalation is not prevented.** `SetUserRole` checks that the caller can
-moderate and that the target is not the owner. It does **not** check that the caller's role
-outranks the role being assigned. An `admin` (49) can therefore grant `coOwner` (50) to
-another player, or to themselves. Whether that is intended is a product question; it is
-noted here as a property of the code, and folded into
+**HECHO — no se impide la escalada de roles.** `SetUserRole` comprueba que el llamante
+pueda moderar y que el objetivo no sea el dueño. **No** comprueba que el rol del llamante
+supere al rol que se está asignando. Un `admin` (49) puede por tanto conceder `coOwner`
+(50) a otro jugador, o a sí mismo. Si eso es intencionado es una cuestión de producto; se
+anota aquí como propiedad del código, y se integra en
 [BUG-CANDIDATE-011](../../testing/verification-plan.md#bug-candidate-011).
 
-### Name sanitisation
+### Saneado del nombre
 
-**FACT.** `SetWorldName` is the most thoroughly validated remote in the reviewed source:
+**HECHO.** `SetWorldName` es el remote más concienzudamente validado del código revisado:
 
-1. `tostring(rawName or "")` — accepts anything, coerces it;
-2. `gsub("[%c%z]", "")` — strips control characters and nulls;
-3. trims leading and trailing whitespace, collapses runs of whitespace to one space;
-4. truncates to 40 characters using `utf8.offset`, so a multi-byte character is never cut
-   in half;
-5. falls back to `"Room"` if the result is empty;
-6. runs `TextService:FilterStringAsync(proposed, player.UserId)` followed by
-   `GetNonChatStringForBroadcastAsync()`, inside a `pcall`;
-7. keeps the filtered result only if the call succeeded and returned a non-empty string.
+1. `tostring(rawName or "")` — acepta cualquier cosa y la convierte;
+2. `gsub("[%c%z]", "")` — quita caracteres de control y nulos;
+3. recorta espacios al principio y al final, y colapsa secuencias de espacios en uno;
+4. trunca a 40 caracteres usando `utf8.offset`, de modo que nunca parte por la mitad un
+   carácter multibyte;
+5. cae a `"Room"` si el resultado queda vacío;
+6. ejecuta `TextService:FilterStringAsync(proposed, player.UserId)` seguido de
+   `GetNonChatStringForBroadcastAsync()`, dentro de un `pcall`;
+7. conserva el resultado filtrado solo si la llamada fue bien y devolvió una cadena no
+   vacía.
 
-**OBSERVATION.** Step 7 means a `FilterStringAsync` failure falls back to the
-*unfiltered* (but otherwise sanitised) name. That is a fail-open on text filtering, and it
-is the same class of decision as
-[BUG-CANDIDATE-001](../../testing/verification-plan.md#bug-candidate-001). It is recorded
-here rather than as its own candidate because the sanitisation in steps 1–5 still applies
-and the exposure is limited to a house name.
+**OBSERVACIÓN.** El paso 7 implica que un fallo de `FilterStringAsync` cae al nombre *sin
+filtrar* (aunque sí saneado). Es un fallo abierto en el filtrado de texto, de la misma
+clase que
+[BUG-CANDIDATE-001](../../testing/verification-plan.md#bug-candidate-001). Se registra
+aquí en vez de como candidato propio porque el saneado de los pasos 1–5 sigue
+aplicándose y la exposición se limita al nombre de una casa.
 
-## Replication of privileged data
+## Replicación de datos privilegiados
 
-**FACT.** `pushStore` sends `settings`, `roles` and `bans` only to players who pass the
-role bar:
+**HECHO.** `pushStore` envía `settings`, `roles` y `bans` solo a los jugadores que superan
+el listón de rol:
 
 ```lua
 if role >= RolesInfo["moderator"] or data.settings.OwnerId == plr.UserId then
 ```
 
-**OBSERVATION.** This uses `>=`, so a `moderator` **does** receive the replicated data —
-while `canModerate` uses `>` and denies them the ability to act on it. A moderator can see
-the roles and bans UI and cannot use it. This is the clearest single piece of evidence that
-the `>` in `canModerate` is unintentional, and it is the reason
-[BUG-CANDIDATE-011](../../testing/verification-plan.md#bug-candidate-011) is classified
-`Likely Bug` rather than `Observation`.
+**OBSERVACIÓN.** Esto usa `>=`, así que un `moderator` **sí** recibe los datos replicados
+— mientras que `canModerate` usa `>` y le niega la capacidad de actuar sobre ellos. Un
+moderador puede ver la interfaz de roles y baneos y no puede usarla. Es la prueba más
+clara de que el `>` de `canModerate` no es intencionado, y la razón de que
+[BUG-CANDIDATE-011](../../testing/verification-plan.md#bug-candidate-011) esté clasificado
+como `Likely Bug` y no como `Observation`.
 
-**FACT.** The owner's own entry is synthesised into the payload rather than stored:
+**HECHO.** La entrada del propio dueño se sintetiza en el contenido en vez de guardarse:
 
 ```lua
 if storeName == "WorldRolesStore" and data.settings.OwnerId == plr.UserId then
@@ -235,16 +243,16 @@ if storeName == "WorldRolesStore" and data.settings.OwnerId == plr.UserId then
 end
 ```
 
-`table.clone` is used so the store's live table is not mutated.
+Se usa `table.clone` para no mutar la tabla viva del store.
 
-## Related implementation
+## Implementación relacionada
 
-| Concern | Code |
+| Aspecto | Código |
 |---|---|
-| Role ladder | `PlayerHouses/ReplicatedStorage/RolesInfo.luau` |
-| Open-the-house gate | `PlayerWorld_Init.lua.server.luau`, `canHostWorld` |
-| Ownership of the room | `PlayerWorld_Init.lua.server.luau`, `hasRoom` |
-| Continuous enforcement | `ModeratorManager.server.luau`, `canPlayerEnter`, `sweepAccessAll`, `sweepKickFromSnapshot` |
-| Administrative gate | `WorldDataReplicator.server.luau`, `canModerate`, `roleFor` |
-| Name sanitisation | `WorldDataReplicator.server.luau`, `SetWorldNameRF.OnServerInvoke` |
-| Privileged replication | `WorldDataReplicator.server.luau`, `pushStore` |
+| Escala de roles | `PlayerHouses/ReplicatedStorage/RolesInfo.luau` |
+| Puerta de apertura de la casa | `PlayerWorld_Init.lua.server.luau`, `canHostWorld` |
+| Propiedad de la room | `PlayerWorld_Init.lua.server.luau`, `hasRoom` |
+| Control continuo | `ModeratorManager.server.luau`, `canPlayerEnter`, `sweepAccessAll`, `sweepKickFromSnapshot` |
+| Puerta administrativa | `WorldDataReplicator.server.luau`, `canModerate`, `roleFor` |
+| Saneado del nombre | `WorldDataReplicator.server.luau`, `SetWorldNameRF.OnServerInvoke` |
+| Replicación privilegiada | `WorldDataReplicator.server.luau`, `pushStore` |

@@ -1,44 +1,43 @@
 ---
 sidebar_position: 1
-title: Initialization
+title: Inicialización
 ---
 
-# Initialization
+# Inicialización
 
-This page describes how a Voz Hispana server assembles itself from an almost-empty
-DataModel into a running game. It is the single most important page on this site,
-because nothing else in the codebase makes sense without it.
+Esta página describe cómo un servidor de Voz Hispana se ensambla a sí mismo, desde un
+DataModel casi vacío hasta un juego en marcha. Es la página más importante del sitio,
+porque sin ella nada del resto del código tiene sentido.
 
-## The short version
+## La versión corta
 
-Almost nothing that runs in Voz Hispana is in this repository's `src/` tree at the
-place it will eventually live. At runtime, a server:
+Casi nada de lo que corre en Voz Hispana está en el árbol `src/` de este repositorio en
+el sitio donde acabará viviendo. En ejecución, un servidor:
 
-1. downloads three *template* assets from Roblox with `InsertService:LoadAsset`,
-2. merges their contents into the live services (`ReplicatedStorage`,
+1. descarga tres assets de *plantilla* de Roblox con `InsertService:LoadAsset`,
+2. fusiona su contenido dentro de los servicios vivos (`ReplicatedStorage`,
    `ServerScriptService`, `StarterGui`, …),
-3. and only then enables the scripts that arrived, which have been shipped disabled.
+3. y solo entonces activa los scripts que han llegado, que se distribuyen desactivados.
 
-Everything else — player initialization, the world system, housing — happens after
-that.
+Todo lo demás —inicialización del jugador, sistema de mundos, casas— ocurre después.
 
-## The four bootstrap files
+## Los cuatro archivos de arranque
 
-**FACT.** Only four files participate in the bootstrap, and they are the only Luau in
-the repository outside the template folders:
+**HECHO.** Solo cuatro archivos participan en el arranque, y son el único Luau del
+repositorio fuera de las carpetas de plantillas:
 
-| File | Kind | Role |
+| Archivo | Tipo | Papel |
 |---|---|---|
-| `src/ServerScriptService/ImportTemplates.server.luau` | `Script` | Imports and merges the templates |
-| `src/ServerScriptService/InitScripts.server.luau` | `Script` | Enables the imported scripts |
-| `src/ReplicatedStorage/InitAfterTemplates.luau` | `ModuleScript` | Blocking "templates are ready" barrier |
-| `src/ReplicatedStorage/PlayerInit.luau` | `ModuleScript` | Deferred `PlayerAdded` fan-out |
+| `src/ServerScriptService/ImportTemplates.server.luau` | `Script` | Importa y fusiona las plantillas |
+| `src/ServerScriptService/InitScripts.server.luau` | `Script` | Activa los scripts importados |
+| `src/ReplicatedStorage/InitAfterTemplates.luau` | `ModuleScript` | Barrera bloqueante «plantillas listas» |
+| `src/ReplicatedStorage/PlayerInit.luau` | `ModuleScript` | Reparto diferido de `PlayerAdded` |
 
-Both `Script`s carry the tag `IgnoreLoader` in their `.meta.json`. **INFERENCE:** the
-tag exists so that a loader elsewhere skips them; nothing in this repository reads
-`IgnoreLoader`, so the consumer is either in a template asset or unused.
+Ambos `Script` llevan la etiqueta `IgnoreLoader` en su `.meta.json`. **INFERENCIA:** la
+etiqueta existe para que algún cargador los omita; nada en este repositorio lee
+`IgnoreLoader`, así que su consumidor está en un asset de plantilla o no existe.
 
-## Boot sequence
+## Secuencia de arranque
 
 ```mermaid
 sequenceDiagram
@@ -48,55 +47,55 @@ sequenceDiagram
     participant IS as InitScripts<br/>(ServerScriptService)
     participant IAT as InitAfterTemplates<br/>(ReplicatedStorage)
     participant RS as ReplicatedStorage
-    participant Svc as Live services
+    participant Svc as Servicios vivos
 
-    RBX->>IT: server start
-    RBX->>IS: server start
-    Note over IT,IS: Two sibling Scripts. Roblox guarantees<br/>no ordering between them.
+    RBX->>IT: arranca el servidor
+    RBX->>IS: arranca el servidor
+    Note over IT,IS: Dos Scripts hermanos. Roblox no garantiza<br/>ningún orden entre ellos.
 
-    IT->>RS: create TemplatesReady (RemoteEvent)
-    IT->>RS: create TemplatesReadyFlag (BoolValue = false)
-    IS->>RS: create InitScriptsReadyFlag (BoolValue = false)
+    IT->>RS: crea TemplatesReady (RemoteEvent)
+    IT->>RS: crea TemplatesReadyFlag (BoolValue = false)
+    IS->>RS: crea InitScriptsReadyFlag (BoolValue = false)
 
     IS->>IAT: require(...)
     activate IAT
-    Note over IAT: blocks on TemplatesReadyFlag
+    Note over IAT: se bloquea en TemplatesReadyFlag
 
     IT->>IT: require(PlayerInit)
-    IT->>IT: PlayerInit.Connect(voice-chat gate)
+    IT->>IT: PlayerInit.Connect(control de chat de voz)
 
-    loop for each of 3 template asset IDs
+    loop por cada uno de los 3 asset IDs
         IT->>RBX: InsertService:LoadAsset(id)
-        IT->>IT: prefer ServerStorage.TemplatesTesting[name] override
-        IT->>Svc: processImportedModel -> merge into services
+        IT->>IT: prefiere el override ServerStorage.TemplatesTesting[nombre]
+        IT->>Svc: processImportedModel -> fusiona en los servicios
     end
 
-    IT->>Svc: destroy ServerStorage.TemplatesTesting
+    IT->>Svc: destruye ServerStorage.TemplatesTesting
     IT->>RS: TemplatesReadyFlag = true
     IT->>RS: TemplatesReady:FireAllClients()
 
-    IAT-->>IS: returns true
+    IAT-->>IS: devuelve true
     deactivate IAT
     IS->>IS: task.wait(1)
-    IS->>Svc: enable every disabled BaseScript (with exclusions)
+    IS->>Svc: activa todo BaseScript desactivado (con exclusiones)
     IS->>RS: InitScriptsReadyFlag = true
 ```
 
-### Related implementation
+### Implementación relacionada
 
-| Step | Code |
+| Paso | Código |
 |---|---|
-| Template asset IDs | `ImportTemplates.server.luau`, `TEMPLATES_IDS` |
-| Override lookup | `ImportTemplates.server.luau`, `testOverrides` |
-| Merge into services | `ImportTemplates.server.luau`, `processImportedModel` / `mergeInstances` |
-| Readiness barrier | `InitAfterTemplates.luau` |
-| Script enabling | `InitScripts.server.luau` |
-| Player fan-out | [`PlayerInit`](/api/PlayerInit) |
+| IDs de los assets | `ImportTemplates.server.luau`, `TEMPLATES_IDS` |
+| Búsqueda de override | `ImportTemplates.server.luau`, `testOverrides` |
+| Fusión en servicios | `ImportTemplates.server.luau`, `processImportedModel` / `mergeInstances` |
+| Barrera de disponibilidad | `InitAfterTemplates.luau` |
+| Activación de scripts | `InitScripts.server.luau` |
+| Reparto por jugador | [`PlayerInit`](/api/PlayerInit) |
 
-## Step 1 — Template import
+## Paso 1 — Importación de plantillas
 
-**FACT.** `ImportTemplates.server.luau` declares three asset IDs, in a fixed order,
-with an explicit comment that the first must stay first:
+**HECHO.** `ImportTemplates.server.luau` declara tres asset IDs, en orden fijo, con un
+comentario explícito de que el primero debe seguir siendo el primero:
 
 ```lua
 local TEMPLATES_IDS = {
@@ -106,69 +105,69 @@ local TEMPLATES_IDS = {
 }
 ```
 
-For each ID it calls `InsertService:LoadAsset(assetId)` inside a `pcall`, takes the
-first child of the returned model, and then chooses between two sources:
+Para cada ID llama a `InsertService:LoadAsset(assetId)` dentro de un `pcall`, toma el
+primer hijo del modelo devuelto, y entonces elige entre dos fuentes:
 
-- if `ServerStorage.TemplatesTesting` contains a `Folder` or `Model` **with the same
-  name**, that local copy is cloned and used instead, and the downloaded one is
-  destroyed;
-- otherwise the downloaded one is used.
+- si `ServerStorage.TemplatesTesting` contiene un `Folder` o `Model` **con el mismo
+  nombre**, se clona esa copia local y se usa en su lugar, destruyendo la descargada;
+- si no, se usa la descargada.
 
-**This is why the repository looks the way it does.** `src/ServerStorage/TemplatesTesting/Core/…`
-is a local override of the published `Core` asset. It is not where that code lives at
-runtime — at runtime its `ReplicatedStorage` subfolder's contents are children of the
-real `ReplicatedStorage`.
+**Esto es por lo que el repositorio tiene la forma que tiene.**
+`src/ServerStorage/TemplatesTesting/Core/…` es un override local del asset `Core`
+publicado. No es donde ese código vive en ejecución: en ejecución, el contenido de su
+subcarpeta `ReplicatedStorage` son hijos del `ReplicatedStorage` real.
 
-So a path like:
+Así, una ruta como:
 
 ```
 src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/Profiles.luau
 ```
 
-is, at runtime:
+es, en ejecución:
 
 ```
 ServerStorage.WorldSystem.Profiles
 ```
 
-which is exactly how other scripts require it:
+que es exactamente como la piden otros scripts:
 
 ```lua
 local worldSystemStorage = ServerStorage:WaitForChild("WorldSystem")
 local Profiles = require(worldSystemStorage:WaitForChild("Profiles"))
 ```
 
-### Which services can receive content
+### Qué servicios pueden recibir contenido
 
-**FACT.** Only folders whose name is in `validServices` are merged; anything else in a
-template's root is ignored:
+**HECHO.** Solo se fusionan las carpetas cuyo nombre esté en `validServices`; cualquier
+otra cosa en la raíz de una plantilla se ignora:
 
 ```
 ReplicatedFirst, StarterGui, ServerScriptService, ReplicatedStorage, ServerStorage,
 StarterPack, StarterPlayer, SoundService, Lighting, MaterialService
 ```
 
-### Merge semantics
+### Semántica de la fusión
 
-**FACT.** `mergeInstances(source, target)` walks the source's children:
+**HECHO.** `mergeInstances(source, target)` recorre los hijos del origen:
 
-| Case | Behaviour |
+| Caso | Comportamiento |
 |---|---|
-| Target has no child of that name | The instance is re-parented into the target |
-| Target has a child of that name, **same** `ClassName` | Recurse into it, then destroy the incoming instance |
-| Target has a child of that name, **different** `ClassName` | The incoming instance is destroyed, silently |
+| El destino no tiene hijo con ese nombre | La instancia se reparenta al destino |
+| El destino tiene un hijo con ese nombre, **mismo** `ClassName` | Se recurre dentro, y luego se destruye la instancia entrante |
+| El destino tiene un hijo con ese nombre, `ClassName` **distinto** | La instancia entrante se destruye, en silencio |
 
-**INFERENCE.** The existing instance always wins. Because `Core` is imported first,
-`Core` wins every name collision against `GameWorlds` and `BuildingSystem`. That is
-what "CORE (siempre el primero)" buys.
+**INFERENCIA.** La instancia existente siempre gana. Como `Core` se importa primero,
+`Core` gana toda colisión de nombre frente a `GameWorlds` y `BuildingSystem`. Eso es lo
+que compra el «CORE (siempre el primero)».
 
-**Note the asymmetry:** a same-class collision merges *children* but keeps the existing
-instance itself. For a `Folder` that is a union. For a `ModuleScript` or a `Script`, the
-incoming source code is discarded — the existing one is kept and the new one destroyed.
+**Nótese la asimetría:** una colisión de misma clase fusiona los *hijos* pero conserva la
+instancia existente. Para un `Folder` eso es una unión. Para un `ModuleScript` o un
+`Script`, el código fuente entrante se descarta: se conserva el existente y se destruye
+el nuevo.
 
-### Cleanup
+### Limpieza
 
-**FACT.** After the loop, the whole override folder is removed:
+**HECHO.** Tras el bucle, se elimina la carpeta de overrides entera:
 
 ```lua
 local folderTest = ServerStorage:FindFirstChild("TemplatesTesting")
@@ -178,48 +177,48 @@ if folderTest then
 end
 ```
 
-**OBSERVATION.** `Destroy()` then `Debris:AddItem()` on the same already-destroyed
-instance is redundant, not harmful. It is recorded as an observation only; it is not a
-defect and requires no change.
+**OBSERVACIÓN.** `Destroy()` seguido de `Debris:AddItem()` sobre la misma instancia ya
+destruida es redundante, no dañino. Queda registrado solo como observación; no es un
+defecto y no requiere ningún cambio.
 
-## Step 2 — The readiness barrier
+## Paso 2 — La barrera de disponibilidad
 
-**FACT.** `InitAfterTemplates` is a `ModuleScript` that **blocks until templates are
-ready and then returns `true`**. Requiring it is the wait:
+**HECHO.** `InitAfterTemplates` es un `ModuleScript` que **se bloquea hasta que las
+plantillas están listas y entonces devuelve `true`**. Pedirlo con `require` es la espera:
 
 ```lua
 require(ReplicatedStorage:WaitForChild("InitAfterTemplates"))
 ```
 
-It resolves differently per side:
+Se resuelve distinto según el lado:
 
-| Side | Source of truth |
+| Lado | Fuente de verdad |
 |---|---|
-| Server (`RunService:IsServer()`) | `TemplatesReadyFlag` (a `BoolValue`), read now and watched via `.Changed` |
-| Client | `TemplatesReady` (a `RemoteEvent`) `OnClientEvent`, **plus** an immediate read of `TemplatesReadyFlag` for the case where the event already fired |
+| Servidor (`RunService:IsServer()`) | `TemplatesReadyFlag` (un `BoolValue`), leído ahora y vigilado con `.Changed` |
+| Cliente | `TemplatesReady` (un `RemoteEvent`) vía `OnClientEvent`, **más** una lectura inmediata de `TemplatesReadyFlag` por si el evento ya se disparó |
 
-Both branches then `repeat task.wait() until ready`.
+Ambas ramas terminan en `repeat task.wait() until ready`.
 
-Because Luau caches `ModuleScript` results, the block happens **once per side**; every
-later `require` returns the cached `true` immediately.
+Como Luau cachea el resultado de un `ModuleScript`, el bloqueo ocurre **una vez por
+lado**; cada `require` posterior devuelve el `true` cacheado de inmediato.
 
-## Step 3 — Enabling the imported scripts
+## Paso 3 — Activación de los scripts importados
 
-**FACT.** Templates ship their scripts disabled — 104 of the 170 `.meta.json` files in
-this repository set `Disabled: true`. `InitScripts.server.luau` turns them on:
+**HECHO.** Las plantillas traen sus scripts desactivados — 104 de los 170 `.meta.json`
+del repositorio ponen `Disabled: true`. `InitScripts.server.luau` los enciende:
 
 ```mermaid
 flowchart TD
     A["require(InitAfterTemplates)"] --> B["task.wait(1)"]
     B --> C["for obj in game:GetDescendants()"]
-    C --> D{"descendant of<br/>Players or ServerStorage?"}
-    D -- yes --> C
-    D -- no --> E{"descendant of<br/>ReplicatedStorage.Client?"}
-    E -- yes --> C
-    E -- no --> F{"BaseScript with<br/>Enabled == false?"}
+    C --> D{"¿desciende de<br/>Players o ServerStorage?"}
+    D -- sí --> C
+    D -- no --> E{"¿desciende de<br/>ReplicatedStorage.Client?"}
+    E -- sí --> C
+    E -- no --> F{"¿BaseScript con<br/>Enabled == false?"}
     F -- no --> C
-    F -- yes --> G{"tagged<br/>IgnoreAutoEnable?"}
-    G -- yes --> H["ignoredCount += 1"]
+    F -- sí --> G{"¿etiquetado<br/>IgnoreAutoEnable?"}
+    G -- sí --> H["ignoredCount += 1"]
     G -- no --> I["pcall: obj.Enabled = true"]
     I --> J["enabledCount += 1"]
     H --> C
@@ -227,101 +226,102 @@ flowchart TD
     C --> K["InitScriptsReadyFlag = true"]
 ```
 
-Three exclusions, all **FACT**:
+Tres exclusiones, todas **HECHO**:
 
-1. **`Players` and `ServerStorage` descendants are skipped.** Scripts inside a player's
-   `Backpack`/`PlayerGui`, and anything left in `ServerStorage`, stay as they are.
-2. **`ReplicatedStorage.Client` descendants are skipped.** This folder holds
-   `RunContext = "Client"` scripts; the server does not enable them.
-3. **Anything tagged `IgnoreAutoEnable`** is counted and skipped. Four scripts in the
-   repository carry this tag.
+1. **Se omiten los descendientes de `Players` y `ServerStorage`.** Los scripts dentro del
+   `Backpack`/`PlayerGui` de un jugador, y cualquier cosa que quede en `ServerStorage`,
+   se dejan como están.
+2. **Se omiten los descendientes de `ReplicatedStorage.Client`.** Esa carpeta contiene
+   scripts con `RunContext = "Client"`; el servidor no los activa.
+3. **Se omite y se cuenta todo lo etiquetado `IgnoreAutoEnable`.** Cuatro scripts del
+   repositorio llevan esa etiqueta.
 
-**FACT.** The `task.wait(1)` between the barrier and the sweep is unconditional and
-unexplained in the source.
+**HECHO.** El `task.wait(1)` entre la barrera y el barrido es incondicional y no está
+explicado en el código.
 
-## Reading the repository correctly
+## Cómo leer bien este repositorio
 
-Two conventions in this repository will mislead a reader who assumes standard Roblox
-practice.
+Dos convenciones del repositorio despistarán a quien asuma la práctica habitual de
+Roblox.
 
-### The `.server.luau` suffix does not mean "server"
+### El sufijo `.server.luau` no significa «servidor»
 
-**FACT.** Rojo derives a script's class from the filename suffix, but `RunContext` in a
-sibling `.meta.json` overrides where it actually runs. In this repository `RunContext`
-is set explicitly on 74 scripts: **47 `Server` and 27 `Client`**.
+**HECHO.** Rojo deriva la clase de un script del sufijo del archivo, pero `RunContext` en
+un `.meta.json` hermano manda sobre dónde corre realmente. En este repositorio
+`RunContext` está puesto explícitamente en 74 scripts: **47 `Server` y 27 `Client`**.
 
-Every file under `Core/ReplicatedStorage/Client/` named `*.server.luau` is a
-**client-context** `Script`. For example
-`Core/ReplicatedStorage/Client/PlayerManager.server.luau` uses `Players.LocalPlayer` and
-its `.meta.json` says `"RunContext": "Client"`.
+Todo archivo bajo `Core/ReplicatedStorage/Client/` llamado `*.server.luau` es un `Script`
+**de contexto cliente**. Por ejemplo,
+`Core/ReplicatedStorage/Client/PlayerManager.server.luau` usa `Players.LocalPlayer` y su
+`.meta.json` dice `"RunContext": "Client"`.
 
-> **Always read the sibling `.meta.json` before concluding where a script runs.**
+> **Lee siempre el `.meta.json` hermano antes de concluir dónde corre un script.**
 
-### A script's file location is not its runtime location
+### La ubicación de un archivo no es su ubicación en ejecución
 
-Covered above: everything under `TemplatesTesting/<Template>/<Service>/` ends up under
-`<Service>` at runtime.
+Ya cubierto arriba: todo lo que está bajo `TemplatesTesting/<Plantilla>/<Servicio>/`
+acaba bajo `<Servicio>` en ejecución.
 
-## Ordering guarantees
+## Garantías de orden
 
-**FACT.** `ImportTemplates` and `InitScripts` are sibling `Script`s in
-`ServerScriptService`. Roblox does not define an execution order between sibling
-scripts.
+**HECHO.** `ImportTemplates` e `InitScripts` son `Script` hermanos en
+`ServerScriptService`. Roblox no define un orden de ejecución entre scripts hermanos.
 
-**INFERENCE.** The design does not rely on one. `InitScripts` blocks on
-`InitAfterTemplates`, which blocks on a `BoolValue` that `ImportTemplates` sets last.
-Whichever starts first, `InitScripts` cannot proceed past the barrier until
-`ImportTemplates` has finished. Similarly, `InitAfterTemplates` uses
-`WaitForChild` for `TemplatesReady`/`TemplatesReadyFlag`, so it tolerates being required
-before `ImportTemplates` has created them.
+**INFERENCIA.** El diseño no depende de uno. `InitScripts` se bloquea en
+`InitAfterTemplates`, que se bloquea en un `BoolValue` que `ImportTemplates` pone al
+final. Arranque quien arranque primero, `InitScripts` no puede pasar de la barrera hasta
+que `ImportTemplates` haya terminado. De forma parecida, `InitAfterTemplates` usa
+`WaitForChild` para `TemplatesReady`/`TemplatesReadyFlag`, así que tolera que se le
+requiera antes de que `ImportTemplates` los haya creado.
 
-**THEORY — not verified.** There is one ordering the barrier does not cover. The
-`TemplatesReadyFlag` `BoolValue` is created by `ImportTemplates`, but `InitScripts`
-creates `InitScriptsReadyFlag` itself and template scripts wait on *that*. What is not
-covered is a template script that begins running the moment it is enabled and reads
-state a *later*-enabled script was supposed to publish; the sweep order over
-`game:GetDescendants()` is not defined by the source. This is recorded, not asserted.
+**TEORÍA — no verificada.** Hay un orden que la barrera no cubre. El `BoolValue`
+`TemplatesReadyFlag` lo crea `ImportTemplates`, pero `InitScripts` crea
+`InitScriptsReadyFlag` por su cuenta y los scripts de plantilla esperan a *ese*. Lo que
+no queda cubierto es un script de plantilla que empiece a correr en cuanto se le activa y
+lea estado que otro script activado *más tarde* debía publicar; el orden del barrido
+sobre `game:GetDescendants()` no está definido por el código. Queda registrado, no
+afirmado.
 
-## Two flags and one remote
+## Dos flags y un remote
 
-**FACT.** The bootstrap publishes three instances into `ReplicatedStorage`:
+**HECHO.** El arranque publica tres instancias en `ReplicatedStorage`:
 
-| Name | Class | Created by | Meaning |
+| Nombre | Clase | Lo crea | Significado |
 |---|---|---|---|
-| `TemplatesReady` | `RemoteEvent` | `ImportTemplates` | Fired to all clients once templates are merged |
-| `TemplatesReadyFlag` | `BoolValue` | `ImportTemplates` | Server-side source of truth for the same fact |
-| `InitScriptsReadyFlag` | `BoolValue` | `InitScripts` | Set once the enable sweep has finished |
+| `TemplatesReady` | `RemoteEvent` | `ImportTemplates` | Se dispara a todos los clientes cuando las plantillas están fusionadas |
+| `TemplatesReadyFlag` | `BoolValue` | `ImportTemplates` | Fuente de verdad del mismo hecho, en el servidor |
+| `InitScriptsReadyFlag` | `BoolValue` | `InitScripts` | Se pone cuando el barrido de activación ha terminado |
 
-`InitScriptsReadyFlag` is read outside the bootstrap: `playerManager.server.luau`
-refuses `LoadCharacterRequest` while it is false. See
-[Player lifecycle](./player-lifecycle.md).
+`InitScriptsReadyFlag` se lee fuera del arranque: `playerManager.server.luau` rechaza
+`LoadCharacterRequest` mientras sea falso. Ver
+[Ciclo de vida del jugador](./player-lifecycle.md).
 
-## The voice-chat gate
+## El control de chat de voz
 
-**FACT.** `ImportTemplates.server.luau` also registers the game's entry requirement,
-before it does any importing:
+**HECHO.** `ImportTemplates.server.luau` registra además el requisito de entrada al
+juego, antes de importar nada:
 
 ```lua
 PlayerInit.Connect(onPlayerAdded)
 ```
 
-For each player it calls `VoiceChatService:IsVoiceEnabledForUserIdAsync(player.UserId)`
-inside a `pcall`:
+Para cada jugador llama a `VoiceChatService:IsVoiceEnabledForUserIdAsync(player.UserId)`
+dentro de un `pcall`:
 
-- call succeeded **and** voice is disabled → the player is kicked;
-- call succeeded and voice is enabled → nothing happens;
-- call **failed** → only `warn`, the player stays.
+- la llamada tuvo éxito **y** la voz está desactivada → se expulsa al jugador;
+- la llamada tuvo éxito y la voz está activada → no pasa nada;
+- la llamada **falló** → solo `warn`, el jugador se queda.
 
-The source comment on the failure branch reads *"quizas conviene que le hagamos kick
-tambien"* ("maybe we should kick them too"), so the third branch is a known open
-decision rather than an oversight. Recorded as
+El comentario del código en la rama de fallo dice *«quizas conviene que le hagamos kick
+tambien»*, así que la tercera rama es una decisión abierta y conocida, no un descuido.
+Registrado como
 [BUG-CANDIDATE-001](../testing/verification-plan.md#bug-candidate-001).
 
-## What is not knowable from this repository
+## Lo que no se puede saber desde este repositorio
 
 | | |
 |---|---|
-| **UNKNOWN** | Whether the published contents of assets `137484964666215`, `92258948630058` and `94091855508048` match `TemplatesTesting/Core`, `/GameWorlds` and `/BuildingSystem` on disk. The override only applies when a same-named folder exists locally; in production the published asset is what ships. |
-| **UNKNOWN** | Where `PlayerHouses` is imported. It exists under `TemplatesTesting/` but no asset ID in `TEMPLATES_IDS` is commented as such, and `PlayerHouses` is not one of the three. See [Housing](../systems/housing/overview.md). |
-| **UNKNOWN** | What is inside `src/StarterPlayer/StarterPlayerScripts.rbxm` and `StarterCharacterScripts.rbxm`. Binary. See [Client lifecycle](./client-lifecycle.md). |
-| **OBSERVATION** | `default.project.json` maps `StarterPack` to `src/StarterPack`, which does not exist in the repository. |
+| **DESCONOCIDO** | Si el contenido publicado de los assets `137484964666215`, `92258948630058` y `94091855508048` coincide con `TemplatesTesting/Core`, `/GameWorlds` y `/BuildingSystem` en disco. El override solo aplica cuando existe una carpeta local con el mismo nombre; en producción manda el asset publicado. |
+| **DESCONOCIDO** | Dónde se importa `PlayerHouses`. Existe bajo `TemplatesTesting/` pero ningún asset ID de `TEMPLATES_IDS` está comentado como tal, y `PlayerHouses` no es ninguno de los tres. Ver [Casas](../systems/housing/overview.md). |
+| **DESCONOCIDO** | Qué hay dentro de `src/StarterPlayer/StarterPlayerScripts.rbxm` y `StarterCharacterScripts.rbxm`. Binarios. Ver [Ciclo de vida del cliente](./client-lifecycle.md). |
+| **OBSERVACIÓN** | `default.project.json` mapea `StarterPack` a `src/StarterPack`, que no existe en el repositorio. |

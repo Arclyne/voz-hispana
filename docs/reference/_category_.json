@@ -1,10 +1,10 @@
 {
-  "label": "Reference",
+  "label": "Referencia",
   "position": 4,
   "collapsed": true,
   "link": {
     "type": "generated-index",
-    "title": "Reference",
-    "description": "Generated inventories: every script, every remote, and every binary asset in the repository."
+    "title": "Referencia",
+    "description": "Inventarios generados: todos los scripts, todos los remotes y todos los assets binarios del repositorio."
   }
 }
