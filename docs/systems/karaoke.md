@@ -188,6 +188,31 @@ estructura exigida lo acota bastante; se registra por completitud.
 —incluso contemplan zonas con `listening` propio—, pero **ninguno de los manejadores de
 remote leídos los consulta**. Reclamar un televisor con `SetOwner` no comprueba distancia.
 
+## La búsqueda de canciones
+
+`ServerStorage/BusquedaMusicas.luau` (455 líneas) es el buscador: mantiene un índice de
+palabras clave por canción y lo consulta a través de
+[`GlobalDataStore`](./global-storage.md).
+
+**HECHO.** Todo su trabajo pesado está encolado, con tres colas que declaran su propio
+presupuesto:
+
+| Cola | `MaxLoads` | `TimeExhauste` | Para qué |
+|---|---|---|---|
+| `module.Guardado` | 15 | 60 s | Guardar las palabras clave de una canción |
+| `module.cache` | 40 | 60 s | Precargar canciones a la caché por sección |
+| `GlobalDataStore.DataPalabras` | 20 | 60 s | Resolver una palabra buscada contra el índice |
+
+La convención del repositorio es que el intervalo entre operaciones es
+`TimeExhauste / MaxLoads` — «tantas cargas como mucho por tantos segundos». Once líneas en
+cinco archivos la escriben así.
+
+Una no: [BUG-CANDIDATE-035](../testing/verification-plan.md#bug-candidate-035).
+
+**HECHO.** Una palabra ya resuelta se cachea `UpdateSuccess = 120` segundos, y
+`ClearCache` descarta lo que lleve más de `HoltToClean = 600` sin usarse. Eso es lo que
+mantiene la cola vacía en condiciones normales.
+
 ## Controles que sí sujetan
 
 | Control | Cómo |
@@ -209,6 +234,7 @@ remote leídos los consulta**. Reclamar un televisor con `SetOwner` no comprueba
 | Tres cargadores comprueban que haya un admin conectado, no que quien llama lo sea | [BUG-CANDIDATE-028](../testing/verification-plan.md#bug-candidate-028) |
 | El rol de administrador se cachea 50 segundos | [BUG-CANDIDATE-017](../testing/verification-plan.md#bug-candidate-017) |
 | Un `RemoteFunction` en la carpeta de televisores nunca se ataría | [BUG-CANDIDATE-034](../testing/verification-plan.md#bug-candidate-034) |
+| El limitador de ritmo de la búsqueda está invertido: nueve veces el presupuesto declarado | [BUG-CANDIDATE-035](../testing/verification-plan.md#bug-candidate-035) |
 
 ## Observaciones registradas, que no son defectos
 
@@ -227,7 +253,7 @@ remote leídos los consulta**. Reclamar un televisor con `SetOwner` no comprueba
 | `RevisarCanciones/init.luau` | 1 111 | **En parte** — el modelo de administración, los manejadores de remote y sus guardas; no la mecánica de paginación ni el buzón |
 | `CrearCancion/init.luau` | 869 | **En parte** — la superficie pública y la ausencia de filtrado de texto |
 | `KaraokeTV/` (3 archivos) | 950 | **En parte** — el registro de televisores, el despacho de remotes y sus guardas; no la sincronización de letra ni la cola |
-| `ServerStorage/BusquedaMusicas.luau` | — | **Pendiente** — la búsqueda y su caché |
+| `ServerStorage/BusquedaMusicas.luau` | 455 | **En parte** — las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
 
 ## Implementación relacionada
 
@@ -237,7 +263,8 @@ remote leídos los consulta**. Reclamar un televisor con `SetOwner` no comprueba
 | Cola de revisión | `RevisarCanciones/init.luau`, `PublishRevisarMusic`, `AprovarRechazarMusicaAction` |
 | Denuncias y baneos | `RevisarCanciones/init.luau`, `Denunciar`, `ActionSongDenunce`, `Desbanear` |
 | Sincronía entre servidores | `RevisarCanciones/init.luau`, `SuscribeAsync`, `PublishAsync`, `ReciveAsync` |
-| Almacenamiento | `ServerStorage/GlobalDataStore` — fuera de DataKit |
+| Almacenamiento | `ServerStorage/GlobalDataStore` — fuera de DataKit; ver [Persistencia fuera de DataKit](./global-storage.md) |
+| Búsqueda por palabra clave | `ServerStorage/BusquedaMusicas.luau`, `SearchPalabrasClaves`, `GuardarPalabrasClaves` |
 | Editor de canciones | `CrearCancion/init.luau` |
 | Televisores | `KaraokeTV/init.luau`, `Works`, `Added`; `KaraokeTV/FunctActionsTV.luau` |
 | Un televisor concreto | `KaraokeTV/TV/init.luau`, `module.new`, `Distance` |

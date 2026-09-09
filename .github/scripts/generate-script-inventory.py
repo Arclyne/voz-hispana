@@ -112,6 +112,7 @@ PARTIAL = {
     t("Core/ServerScriptService/ServerScripts/cooking/CuttingBoard.server.luau"),
     t("Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/init.luau"),
     t("Core/ServerStorage/GlobalDataStore/init.luau"),
+    t("Core/ServerStorage/BusquedaMusicas.luau"),
     t("Core/ServerScriptService/ServerScripts/ToolPlacementServer.server.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/init.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/FunctActionsTV.luau"),

@@ -27,8 +27,8 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
 | Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 27 |
-| Pendiente | Aún sin leer | 456 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 28 |
+| Pendiente | Aún sin leer | 455 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 85 leídos.
+530 archivos, 76,305 líneas, 86 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1553,11 +1553,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BusquedaMusicas.luau` | ModuleScript | — | — | 455 | `ServerStorage.BusquedaMusicas` | Pendiente |
+| `BusquedaMusicas.luau` | ModuleScript | — | — | 455 | `ServerStorage.BusquedaMusicas` | Analizado (en parte) |
 | `SoundInfo.luau` | ModuleScript | — | — | 37 | `ServerStorage.SoundInfo` | Analizado (en parte) |
 
 </details>

@@ -87,6 +87,7 @@ o en un place de pruebas.
 | [032](#bug-candidate-032) | Una condición de trabajo mal escrita permite la acción en silencio | Trabajos | Observación / Requiere verificación en ejecución | Baja | Alta |
 | [033](#bug-candidate-033) | Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva | Persistencia | Posible bug / Requiere pruebas de concurrencia | Media | Alta |
 | [034](#bug-candidate-034) | Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado | Karaoke | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
+| [035](#bug-candidate-035) | El limitador de ritmo de la búsqueda de canciones está invertido | Karaoke / Persistencia | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
 
 ### Entradas de seguridad
 
@@ -4128,6 +4129,128 @@ Lo único que hay que decidir es si se corrige ahora o cuando alguien lo necesit
 argumento para hacerlo ahora es que la persona que lo necesite no tendrá ninguna pista.
 
 
+## BUG-CANDIDATE-035
+
+### El limitador de ritmo de la búsqueda de canciones está invertido
+
+**Sistema:** Karaoke / Persistencia · **Clasificación:** Bug probable / Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/ServerStorage/BusquedaMusicas.luau`, línea 294, dentro de
+`module:SearchPalabrasClaves`
+**Documentación relacionada:** [Karaoke → La búsqueda de canciones](../systems/karaoke.md#la-búsqueda-de-canciones)
+
+#### Comportamiento observado — HECHO
+
+El bucle que drena la cola de palabras buscadas espera así entre lecturas de DataStore:
+
+```lua
+task.wait(self.DataPalabras.MaxLoads / self.DataPalabras.TimeExhauste)
+```
+
+`self` aquí es `GlobalDataStore`, y su tabla `DataPalabras` declara:
+
+```lua
+DataPalabras = {
+	PalabrasBuscadas = 0,
+	MaxLoads = 20,
+	TimeExhauste = 60,
+	...
+},
+```
+
+De modo que la espera es **20 / 60 = 0,333 segundos**.
+
+#### Por qué esto es un problema — HECHO
+
+Los nombres dicen lo que significan: **`MaxLoads` cargas como máximo por cada
+`TimeExhauste` segundos**. El intervalo correcto entre cargas es, por tanto,
+`TimeExhauste / MaxLoads` = 60 / 20 = **3 segundos**.
+
+Y así se escribe en el resto del repositorio. **Once usos, en cinco archivos, escriben la
+división en ese orden. Solo esta línea la escribe al revés:**
+
+| Archivo | Expresión |
+|---|---|
+| `Paint/ServerClient` (líneas 116, 255, 263, 552, 576) | `TimeExhauste / MaxLoads` |
+| `Stores/Compras` (283, 304) | `TimeExhauste / MaxLoads` |
+| `Karaoke/CrearCancion` (816) | `TimeExhauste / MaxLoads` |
+| `BusquedaMusicas` (230, 352, 369) | `TimeExhauste / MaxLoads` |
+| **`BusquedaMusicas` (294)** | **`MaxLoads / TimeExhauste`** |
+
+Las otras tres líneas del **mismo archivo** usan el orden correcto. No es una convención
+distinta de este módulo: es una línea suelta.
+
+#### Teoría — TEORÍA
+
+La cola de búsqueda drena a **3 lecturas por segundo** en vez de una cada 3 segundos: nueve
+veces el presupuesto que la propia configuración declara, y nueve veces el de cualquier otra
+cola del juego.
+
+Cada iteración hace `self:GetData('OrderNombre', selectt)`, que es una lectura real de
+DataStore. Y ese camino pasa por `GlobalDataStore`, que —como establece
+[Persistencia fuera de DataKit](../systems/global-storage.md)— **no tiene reintentos ni
+cortacircuitos**: si Roblox empieza a limitar por cuota, no hay nada que reduzca el ritmo.
+
+Lo que hace esto peor que un simple exceso de cuota es que el bucle se realimenta:
+`SearchPalabrasClaves` se vuelve a llamar a sí misma al terminar, así que mientras haya
+palabras en cola el ritmo se mantiene.
+
+**Lo que acota el daño:** la cola solo crece cuando alguien busca, y una palabra ya buscada
+se cachea `UpdateSuccess = 120` segundos. Con poca gente buscando, la cola está vacía casi
+siempre y esto no se nota. Se notaría con muchos jugadores buscando a la vez — es decir, en
+el momento en que menos conviene.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La expresión es `MaxLoads / TimeExhauste`, invertida respecto a las otras once del repositorio |
+| 2 | Las otras tres apariciones **del mismo archivo** usan el orden correcto |
+| 3 | Los nombres —«cargas máximas» y «tiempo de agotamiento»— solo tienen sentido en el orden `TimeExhauste / MaxLoads` |
+| 4 | `self.DataPalabras` resuelve a la tabla de `GlobalDataStore`, con `MaxLoads = 20` y `TimeExhauste = 60`: la espera resultante es 0,333 s |
+| 5 | Cada iteración hace una lectura real de DataStore (`GetData('OrderNombre', …)`) |
+| 6 | `GlobalDataStore` no tiene reintentos ni cortacircuitos que amortigüen el exceso |
+
+#### Incógnitas
+
+- Cuánta gente busca canciones a la vez en un servidor real. Determina si esto es teórico o
+  ya está pasando.
+- Si `GetData` cachea lo suficiente como para que muchas de esas iteraciones no lleguen al
+  DataStore. No se ha leído la rama de caché de `GetData` con esta pregunta en mente.
+- Si el límite de cuota que se agota es el del juego entero o el de la clave. En el primer
+  caso, esto afecta también a los perfiles de jugador y a las casas.
+
+#### Escenario de ejemplo
+
+Un servidor lleno, y diez jugadores buscando canciones en el karaoke. La cola de palabras se
+llena, y el bucle empieza a leer del DataStore tres veces por segundo en vez de una cada
+tres. Roblox empieza a limitar por cuota. Como no hay cortacircuitos, el bucle sigue
+insistiendo al mismo ritmo, y otros sistemas que comparten la cuota del juego empiezan a
+fallar sus guardados.
+
+**Comportamiento esperado:** una lectura cada 3 segundos, que es lo que la configuración
+declara.
+**Comportamiento posible:** tres por segundo.
+
+#### Plan de verificación — *Persistencia*, *Carga*
+
+1. En un place de pruebas, añade un `print(os.clock())` justo antes del `task.wait` de la
+   línea 294.
+2. Busca varias canciones distintas seguidas, para llenar la cola.
+3. Mide el intervalo real entre iteraciones.
+4. Compáralo con el de `Paint`, que usa el orden correcto con los mismos valores.
+5. Comprueba si aparecen avisos de límite de DataStore en el registro del servidor.
+
+**Pasa:** el intervalo es de ~3 segundos.
+**Falla:** es de ~0,33 segundos.
+
+**Instrumentación sugerida:** ninguna hace falta para el diagnóstico, que está cerrado. Lo
+que sí conviene, al corregirlo, es extraer esa división a una función con nombre —algo como
+`intervaloEntreCargas(cola)`— para que no se pueda volver a escribir al revés en el sitio
+número doce.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -4170,7 +4293,7 @@ completa.
 | `Karaoke/init.luau` | Sí | |
 | `RevisarCanciones`, `CrearCancion` | En parte | El modelo de administración, los manejadores y sus guardas; no la paginación ni el editor |
 | `KaraokeTV/` (3 archivos) | En parte | Registro de televisores, despacho de remotes y sus guardas |
-| `BusquedaMusicas` | **No** | En cola |
+| `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
 | `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
 | `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
 | Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
@@ -4179,7 +4302,7 @@ completa.
 | `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
 | `BuildingSystem` | Su papel, sí | Es interfaz de cliente sin remotes propios; su UI no se ha leído |
 | `GiftHandler.server.luau` | Sí | La ruta de regalos y `ProcessReceipt` |
-| `BusquedaMusicas` | **No** | En cola |
+| `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
 | Sistemas de juego (~420 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 

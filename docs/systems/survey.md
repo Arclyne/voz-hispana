@@ -219,11 +219,14 @@ comprobación de etiqueta ni distancia.
 
 | # | Qué | Por qué |
 |---|---|---|
-| 1 | `BusquedaMusicas` | Cierra Karaoke, y es el único consumidor de `GlobalDataStore` sin leer |
-| 2 | Los 36 módulos de tipo de Interactuables | Catálogo, no explicación: solo si alguien necesita extender un tipo |
-| 3 | La interfaz de `BuildingSystem` | Ya se sabe qué es y a quién llama; leer sus 2 749 líneas es documentar UI |
-| 4 | Los cuatro módulos de trabajo por dentro | `Bartender`, `LimpiarPiso`, `CajasTransport`, `ButtonMoney` |
+| 1 | Los 36 módulos de tipo de Interactuables | Catálogo, no explicación: solo si alguien necesita extender un tipo |
+| 2 | La interfaz de `BuildingSystem` | Ya se sabe qué es y a quién llama; leer sus 2 749 líneas es documentar UI |
+| 3 | Los cuatro módulos de trabajo por dentro | `Bartender`, `LimpiarPiso`, `CajasTransport`, `ButtonMoney` |
 
 **Ya hechos** desde que se escribió esta lista: `JobSystem`, `ToolPlacementServer`,
-`GlobalDataStore`, `GiftInbox`, `GiftHandler`, los televisores de karaoke, y el papel de
-`BuildingSystem`.
+`GlobalDataStore`, `GiftInbox`, `GiftHandler`, `BusquedaMusicas`, los televisores de
+karaoke, y el papel de `BuildingSystem`.
+
+Con eso **no queda ningún archivo señalado por nombre**. Lo que sigue en la lista es trabajo
+de catálogo y de interfaz: útil para quien vaya a extender un tipo concreto, no para
+entender el juego.
