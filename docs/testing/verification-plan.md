@@ -95,11 +95,15 @@ o en un place de pruebas.
 | [042](#bug-candidate-042) | `typee` de comando suministrado por el cliente, sin la comprobación de rol que sí hace el camino del chat | **Explotable hoy**, impacto por determinar |
 | [043](#bug-candidate-043) | Condición de victoria suministrada por el cliente, con manejador de premio **puesto** (no stub) | **Explotable hoy**, entrega un objeto de inventario |
 | [046](#bug-candidate-046) | Canal de voz y `Tool` suministrados por el cliente, sin comprobar posesión | **Explotable hoy**, acotado a voz |
+| [048](#bug-candidate-048) | `Instance` de destino suministrada por el cliente, y el servidor ejecuta el movimiento | **Explotable hoy**, acotado a objetos reales del place |
+| [049](#bug-candidate-049) | Concesión de estadística a petición del cliente; `Weight` ni siquiera recibe modelo | **Explotable hoy**, con techo en 100 |
 | [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
 | [045](#bug-candidate-045) | El caché de assets pierde el filtro de tipo al reintentar, y puede dejar colgado a quien espera | Karaoke / Assets | Confirmado (el filtro) + Requiere pruebas de concurrencia (el bloqueo) | Baja / Media | **Muy alta** / baja |
 | [046](#bug-candidate-046) | Cualquiera puede entrar en cualquier canal de walkie, y el objeto en el que escribe el servidor lo elige el cliente | Walkie-talkie / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [047](#bug-candidate-047) | 46 muebles y todas las herramientas colocables comparten una descripción de relleno | Tiendas / Construcción | Confirmado por análisis estático | Baja (presentación) | **Muy alta** |
+| [048](#bug-candidate-048) | Cuatro interactuables mueven al personaje a donde diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
+| [049](#bug-candidate-049) | Las estadísticas de supervivencia se rellenan desde cualquier sitio, y una sin objeto siquiera | Estadísticas / Seguridad | Confirmado por análisis estático | Media | **Muy alta** |
 | [040](#bug-candidate-040) | Las dos tablas globales del place de donaciones llaman a un método que no existe | Donaciones / Persistencia | Confirmado por análisis estático | Media | **Muy alta** |
 | [041](#bug-candidate-041) | El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno | Utilidades compartidas | Confirmado por análisis estático | Media | **Muy alta** |
 | [042](#bug-candidate-042) | El comando de administración se comprueba en el chat y no en el remote | Comandos / Seguridad | Posible bug / Requiere pruebas de seguridad | Por determinar | Alta en la forma |
@@ -2937,6 +2941,17 @@ del jugador y la distancia al modelo, diría de inmediato si esto ya ocurre en p
 **Código relacionado:** `Core/…/Client/interactable/Interactable/init.luau`, constantes de
 distancia y línea de visión; los 25 scripts de `Core/…/ServerScripts/interactable/`
 **Documentación relacionada:** [Interactuables → La matriz de validación](../systems/interactables.md#la-matriz-de-validación)
+
+**Actualización.** Al leer los 25 scripts de servidor enteros se comprobó que la gravedad
+**Baja** de esta entrada no vale para todos. Cuatro de ellos —`Bath`, `Toilet`, `Shower` y
+`Washbasin`— no solo actúan sobre el modelo que les da el cliente: **mueven al personaje
+hasta él**. Eso deja de ser «actuar a distancia» y pasa a ser «llegar», y se separa en
+[BUG-CANDIDATE-048](#bug-candidate-048). Otros seis conceden estadísticas de supervivencia
+sin comprobar nada: [BUG-CANDIDATE-049](#bug-candidate-049).
+
+Esta entrada sigue siendo la correcta para el resto —encender una lámpara ajena, abrir una
+puerta lejana— y sigue siendo la que señala la causa común: la validación no está en el
+framework.
 
 #### Comportamiento observado — HECHO
 
@@ -6053,6 +6068,331 @@ clonando un `Settings` común o si cada herramienta debe traer el suyo, porque e
 **cambio de código** y aquí no se aplica.
 
 
+## BUG-CANDIDATE-048
+
+### Cuatro interactuables mueven al personaje a donde diga el cliente
+
+**Sistema:** Interactuables / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/interactable/Bath.server.luau`,
+`Toilet.server.luau`, `Shower.server.luau`, `Washbasin.server.luau`
+**Documentación relacionada:** [Interactuables → La matriz de validación](../systems/interactables.md#la-matriz-de-validación)
+
+#### Comportamiento observado — HECHO
+
+La [matriz de validación](../systems/interactables.md#la-matriz-de-validación) ya registra
+que estos cuatro no comprueban ni tipo, ni etiqueta, ni distancia del `model` que reciben.
+Lo que esta entrada añade es **qué hacen con él**: mover el personaje.
+
+```lua
+-- Bath.server.luau
+local seat = model:FindFirstChildOfClass("Seat")
+if seat.Occupant then return end
+...
+seat:Sit(humanoid)
+```
+
+```lua
+-- Washbasin.server.luau
+local playerPart = model.Player
+...
+character:PivotTo(playerPart:GetPivot())
+```
+
+```lua
+-- Shower.server.luau
+local playerPart = model:FindFirstChild("Player") :: Part
+character:PivotTo(playerPart:GetPivot())
+```
+
+`Toilet` hace lo mismo que `Bath` con `seat:Sit(humanoid)`.
+
+`Seat:Sit(humanoid)` **teletransporta** al personaje al asiento. `PivotTo` lo hace
+explícitamente. En los cuatro casos el destino sale de una `Instance` que eligió el cliente,
+y **el servidor ejecuta el movimiento**, así que ninguna comprobación del lado cliente lo
+para.
+
+#### Por qué esto es más que la 025 — HECHO
+
+[BUG-CANDIDATE-025](#bug-candidate-025) registra que la distancia solo la comprueba el
+cliente, con gravedad **Baja** y consecuencia «vandalismo»: usar un objeto lejano. Correcto
+para la mayoría de los interactuables — encender una lámpara ajena molesta poco.
+
+Aquí la consecuencia es distinta: **no es actuar a distancia, es llegar**. El jugador acaba
+físicamente donde estaba el objeto.
+
+#### Qué acota el destino — HECHO
+
+Un cliente no puede fabricar la `Instance`: lo que crea en su lado no existe para el
+servidor. Solo puede nombrar objetos que el servidor ya conoce. Así que los destinos posibles
+son los objetos reales del place que tengan la forma que cada manejador espera:
+
+| Manejador | Qué exige el modelo | Destinos posibles |
+|---|---|---|
+| `Bath`, `Toilet` | un hijo de clase `Seat` | **Todo lo que tenga un `Seat`**: sillas, camas, bancos, asientos de máquina… |
+| `Shower` | hijos `Occupant` y `Player` | Las duchas etiquetadas |
+| `Washbasin` | hijos `Occupant` y `Player` | Los lavabos |
+
+`Bath` y `Toilet` son los amplios: `Seat` es una de las clases más comunes en un mapa de
+Roblox, y **cualquier modelo que contenga uno vale como destino**.
+
+Un modelo sin la forma esperada hace que el manejador lance —`seat.Occupant` sobre `nil`— y
+la llamada muere ahí. **Falla cerrado**, que es lo único que hoy limita la superficie.
+
+#### El que no devuelve — HECHO
+
+Tres de los cuatro devuelven al personaje a donde estaba:
+
+| Manejador | ¿Vuelve? |
+|---|---|
+| `Toilet` | Sí — `player.Character:PivotTo(playerCFrame)` tras `SEAT_DURATION` |
+| `Shower` | Sí — al cambiar `occupant`, `character:PivotTo(platerCFrame)` |
+| `Bath` | Al levantarse del asiento, la física decide; no hay `PivotTo` de vuelta |
+| **`Washbasin`** | **No.** Guarda el `Occupant`, espera 2 s, concede higiene y lo suelta — sin ningún `PivotTo` de regreso |
+
+`Washbasin` es por tanto el más limpio de usar: llamas, te mueves, te quedas.
+
+#### Teoría — TEORÍA
+
+Un jugador puede llegar a cualquier sitio del place donde haya un asiento, una ducha o un
+lavabo, sin recorrer el camino. Lo que eso valga depende enteramente de si en este juego hay
+sitios a los que **no** se debería poder llegar andando: una sala de karaoke alquilada, el
+interior del night club, una zona de pago, una casa a la que no se ha sido invitado.
+
+Ahí es donde esto deja de ser vandalismo y pasa a ser salto de control de acceso. Las casas
+viven en servidores reservados —ver [Casas](../systems/housing/overview.md)—, así que el
+alcance se queda dentro del place actual; pero **dentro** de él, las puertas y los permisos
+de sala no sirven de nada si se puede aparecer al otro lado sentándose en una silla.
+
+Merece leerse junto a [BUG-CANDIDATE-012](#bug-candidate-012) —lectura de permisos sin
+comprobación— y [BUG-CANDIDATE-021](#bug-candidate-021): la pauta que comparten es que los
+controles de este juego asumen que estar en un sitio significa haber podido llegar.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | Los cuatro manejadores reciben `model` del cliente sin comprobar tipo, etiqueta ni distancia |
+| 2 | `Bath` y `Toilet` llaman a `seat:Sit(humanoid)`, que teletransporta |
+| 3 | `Shower` y `Washbasin` llaman a `character:PivotTo(...)` con una pieza del modelo |
+| 4 | `Washbasin` no tiene ningún `PivotTo` de vuelta |
+| 5 | `Bath` y `Toilet` aceptan cualquier modelo con un hijo `Seat` |
+| 6 | Un modelo sin la forma esperada lanza y la llamada muere: falla cerrado |
+| 7 | Ninguno de los cuatro comprueba que el jugador esté cerca del modelo |
+
+#### Incógnitas
+
+- **La principal:** si en este place hay zonas a las que no se debería poder llegar andando.
+  Sin eso, la gravedad baja a la de la 025.
+- Cuántos modelos del mapa contienen un `Seat`. Vive en los `.rbxm`, así que hay que contarlo
+  en Studio.
+- Si al levantarse de un `Seat` alcanzado así el personaje vuelve solo o se queda. `Bath` no
+  lo fuerza.
+- Si `Seat:Sit` funciona con un asiento ocupado por otro jugador. El código lo comprueba, así
+  que probablemente no, pero conviene confirmarlo.
+- Si algún otro modelo del juego tiene hijos llamados `Occupant` y `Player` sin ser ducha ni
+  lavabo. Eso ampliaría los destinos de esos dos.
+
+#### Escenario de ejemplo
+
+Alguien alquila una sala de karaoke privada. Otro jugador, desde fuera, dispara
+`Interactable.Bath:FireServer(<el sofá de dentro>)` y aparece sentado en él. El alquiler
+sigue registrado, la puerta sigue cerrada, y el sistema de permisos nunca se enteró de nada:
+no se le preguntó.
+
+**Comportamiento esperado:** el servidor comprueba que el objeto es del tipo correcto y que el
+jugador está a su lado antes de moverlo.
+**Comportamiento posible:** mueve al personaje a donde diga el cliente.
+
+#### Plan de verificación — *Seguridad*
+
+1. Enumera primero las zonas del place con acceso restringido. Si no hay ninguna, para: esto
+   es la 025 y nada más.
+2. Desde la consola del cliente, en un extremo del mapa:
+   `Interactable.Bath:FireServer(<un modelo con Seat en el otro extremo>)`.
+3. Comprueba si el personaje aparece sentado allí.
+4. Repite con un sofá dentro de una zona restringida.
+5. Repite con `Interactable.Washbasin`… es decir, `WashHands`, apuntando a un lavabo dentro
+   de una zona restringida, y comprueba que **no** te devuelve.
+6. Repite con `Toilet` y comprueba que sí te devuelve tras `SEAT_DURATION`, y si en ese rato
+   se puede hacer algo desde allí.
+7. Prueba con un modelo sin `Seat` y confirma que falla cerrado.
+8. Prueba con el asiento ya ocupado por otro jugador.
+9. Comprueba si algún sistema —permisos de sala, `AreaSystem`— reacciona a la llegada.
+
+**Pasa:** el paso 3 no mueve al personaje.
+**Falla:** lo mueve. Si además el paso 4 funciona, la gravedad sube a Alta.
+
+**Instrumentación sugerida:** ninguna. La corrección —comprobar etiqueta y distancia, como ya
+hace `Fridge`— es un **cambio de código** y aquí no se aplica. Lo que sí conviene decir es que
+`Fridge` tiene esa comprobación escrita a mano en su propio archivo: el arreglo de fondo es
+ponerla en el framework, que es lo que señala la [025](#bug-candidate-025).
+
+
+## BUG-CANDIDATE-049
+
+### Las estadísticas de supervivencia se rellenan desde cualquier sitio, y una sin objeto siquiera
+
+**Sistema:** Estadísticas / Seguridad · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/ServerScripts/interactable/Weight.server.luau`,
+`Bath`, `Toilet`, `Shower`, `Washbasin`, `Treadmill`;
+`Core/…/ServerScripts/stats/Stats.luau`
+**Documentación relacionada:** [Servidor — piezas sueltas](../systems/server-misc.md#estadísticas-y-animaciones)
+
+#### El sistema — HECHO
+
+`Stats.luau` mantiene seis atributos sobre el jugador, cada uno bajando solo:
+
+| Estadística | Baja | Cada |
+|---|---|---|
+| `hunger` | 0,3 | 10 s |
+| `thirst` | 0,35 | 10 s |
+| `sleepness` | 0,26 | 10 s |
+| `hygiene` | 0,28 | 10 s |
+| `bladder` | **2** | 10 s |
+| `physic` | 0,15 | 10 s |
+
+Y los interactuables las suben: la ducha y el baño dan `hygiene`, el váter pone `bladder` a
+100, las pesas y la cinta dan `physic`.
+
+#### El caso claro: `Weight` no recibe modelo — HECHO
+
+El manejador entero:
+
+```lua
+remotes.Interactable.Weight.OnServerEvent:Connect(function(player)
+	local stats = Stats.fromPlayer(player)
+	if not stats then return end
+
+	local humanoid = getAliveHumanoid(player)
+	if not humanoid then return end
+
+	local animator = humanoid:FindFirstChildOfClass("Animator")
+	local track = animator:LoadAnimation(assets.Interactable.Weight.Animation)
+	track:Play()
+	track.Stopped:Wait()
+
+	stats:increment("physic", 10)
+end)
+```
+
+**No hay segundo parámetro.** No hay pesas, no hay modelo, no hay sitio. Estar vivo es el
+único requisito. `Interactable.Weight:FireServer()` desde cualquier punto del mapa, esperar la
+animación, y `physic` sube 10.
+
+Y **no hay antirrebote**: cada llamada carga una `AnimationTrack` nueva y espera su
+`Stopped`. Llamadas en paralelo se atienden en paralelo.
+
+#### El resto: basta con nombrar un objeto — HECHO
+
+Los otros cinco sí reciben un modelo, pero ninguno comprueba etiqueta ni distancia — ver
+[BUG-CANDIDATE-048](#bug-candidate-048) y la
+[matriz](../systems/interactables.md#la-matriz-de-validación). Cualquier ducha, lavabo o
+váter del place vale, esté donde esté.
+
+| Estadística | Cómo se rellena sin moverse |
+|---|---|
+| `hygiene` | `Bath`, `Shower` o `WashHands` sobre cualquier modelo válido |
+| `bladder` | `Toilet` la pone a **100** de golpe |
+| `physic` | `Weight`, sin objeto siquiera |
+| `hunger`, `thirst`, `sleepness` | No se han visto rutas equivalentes; las llenan cocina y camas |
+
+#### Lo que sí sujeta — HECHO
+
+`Stats:increment` corta en 100:
+
+```lua
+function Stats:increment(name: string, value: number)
+	self:set(name, math.min(100, self:get(name) + value))
+end
+```
+
+Así que **no hay valores absurdos**: el techo es «lleno». Eso descarta que esto rompa nada por
+desbordamiento y es lo que mantiene la gravedad en Media y no más alta.
+
+Y las estadísticas viven en atributos del jugador, no en el perfil: no se persisten. La
+ventaja dura la sesión.
+
+#### Teoría — TEORÍA
+
+Tres de las seis estadísticas se pueden mantener al 100 % con un bucle de una línea. Para
+`physic` no hace falta ni estar cerca de nada.
+
+Lo que se pierde no es moneda: es **el bucle de juego**. Un sistema de supervivencia funciona
+porque obliga a ir a sitios y a gastar tiempo; si tres de sus seis medidores se rellenan
+desde la consola, la mitad de las razones para moverse por el mapa desaparecen para quien lo
+sepa. Y como el techo es 100 y nada se persiste, **no deja rastro**: nadie va a ver una cifra
+rara en ningún sitio.
+
+Es la misma familia que [BUG-CANDIDATE-016](#bug-candidate-016) y
+[BUG-CANDIDATE-043](#bug-candidate-043) —el servidor concede porque el cliente lo pide— con
+la diferencia de que aquí no hay manejador vacío que lo salve: estas concesiones ya están
+puestas.
+
+**OBSERVACIÓN, aparte.** `animator:LoadAnimation` se llama sin comprobar que `animator`
+exista. Si el `Humanoid` no tiene `Animator` todavía —lo normal justo tras aparecer—, el
+manejador lanza. Falla cerrado, pero es un error en el registro cada vez.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `Weight.OnServerEvent` no declara ningún parámetro más allá de `player` |
+| 2 | No comprueba posición, ni proximidad, ni la existencia de unas pesas |
+| 3 | No hay antirrebote ni enfriamiento en ninguno de los seis |
+| 4 | `Toilet` hace `stats:set("bladder", 100)`, no un incremento |
+| 5 | `Bath`, `Shower` y `Washbasin` conceden `hygiene` sobre modelos sin validar |
+| 6 | `Stats:increment` corta en 100, lo que acota el efecto |
+| 7 | Las seis viven en atributos del jugador y no aparecen en `PlayerSchema` |
+| 8 | `Weight` carga una `AnimationTrack` por llamada, sin límite |
+
+#### Incógnitas
+
+- Si las estadísticas hacen algo aparte de mostrarse: si a 0 pasa algo —daño, lentitud, un
+  aviso—, esto importa; si son decorativas, casi nada. No se ha encontrado ningún consumidor
+  fuera de la interfaz, pero `Client/stats.server.luau` está leído solo en parte.
+- Qué pasa con mil `AnimationTrack` cargadas a la vez sobre un `Animator`. Puede que Roblox
+  las descarte, puede que no.
+- Si `hunger`, `thirst` y `sleepness` tienen alguna ruta igual de floja. La cocina está solo
+  barrida.
+- Si existe alguna versión persistida de estas estadísticas que no se haya encontrado.
+
+#### Escenario de ejemplo
+
+Alguien publica en un foro dos líneas: un bucle que dispara `Interactable.Weight` cada
+segundo. Quien lo pegue no vuelve a ver bajar su `physic`. No hay nada que detectar: el valor
+nunca pasa de 100, no se guarda, y desde fuera es indistinguible de un jugador que va mucho al
+gimnasio.
+
+**Comportamiento esperado:** subir una estadística exige estar en el objeto que la sube.
+**Comportamiento posible:** basta con pedirlo, y para `physic` ni eso.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero qué pasa cuando una estadística llega a 0. Eso fija la gravedad de todo
+   lo demás.
+2. Entra y anota el valor del atributo `physic` del jugador.
+3. Desde la consola del cliente, en mitad de la nada: `Interactable.Weight:FireServer()`.
+4. Espera a que acabe la animación y vuelve a mirar `physic`.
+5. Llama veinte veces seguidas sin esperar y comprueba el valor, y si aparece algún error.
+6. Repite el paso 3 recién aparecido, antes de que exista el `Animator`, y comprueba si lanza.
+7. Con `hygiene` a la mitad, dispara `Interactable.Bath` sobre un modelo con `Seat` lejano.
+8. Con `bladder` a la mitad, dispara `Interactable.Toilet` sobre un váter lejano y comprueba
+   que se pone a 100.
+9. Sal y vuelve a entrar: confirma que las estadísticas se reinician a 100 y no se persisten.
+
+**Pasa:** el paso 4 no cambia `physic`.
+**Falla:** sube.
+
+**Instrumentación sugerida:** ninguna. La corrección —recibir el modelo, comprobar etiqueta y
+distancia, y poner un enfriamiento— es un **cambio de código** y aquí no se aplica. Nótese que
+`Weight` es el único que ni siquiera recibe el modelo: arreglarlo cambia la firma del remote,
+y por tanto también el cliente.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -6089,7 +6429,7 @@ completa.
 | `GamePassService/GamePassRewards` | En parte | Solo `ensure` |
 | `ShopInfo`, `inventory/InventoryManager` | **No** | En cola; alimentan a `GamePassService` |
 | Interactuables: registrador, clase base, `bindToTag` | Sí | |
-| Interactuables: los 25 scripts de servidor | En parte | Solo su validación de entrada, para la matriz |
+| Interactuables: los 25 scripts de servidor | **Sí, enteros** | La matriz de validación y, sobre todo, qué hace cada uno con el modelo que recibe: los candidatos 048 y 049 salieron de esta segunda pasada |
 | Interactuables: los 36 módulos de cliente por tipo | **No** | Decisión deliberada: la pregunta era la estructura, no el catálogo |
 | Inventario: `init.server`, `InventoryManager`, `DefaultTools` | Sí | |
 | `ToolsServer.server.luau` | En parte | Los ocho manejadores y su validación; no la mecánica del cañón ni del guante |

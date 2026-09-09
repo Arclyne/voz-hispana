@@ -26,10 +26,10 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 118 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 139 |
 | Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 181 |
 | Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** — ver [Librerías de terceros](../architecture/third-party.md) | 160 |
-| Pendiente | Aún sin leer | 85 |
+| Pendiente | Aún sin leer | 64 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -79,7 +79,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 456 leídos.
+530 archivos, 76,305 líneas, 477 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -1457,51 +1457,51 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/</code> — 21 archivo(s) — 4/21 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/</code> — 21 archivo(s) — 21/21 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BarraBartender.server.luau` | Script | Server | yes | 24 | `ServerScriptService.ServerScripts.interactable.BarraBartender.server` | Pendiente |
-| `Bath.server.luau` | Script | Server | yes | 41 | `ServerScriptService.ServerScripts.interactable.Bath.server` | Pendiente |
+| `BarraBartender.server.luau` | Script | Server | yes | 24 | `ServerScriptService.ServerScripts.interactable.BarraBartender.server` | Analizado |
+| `Bath.server.luau` | Script | Server | yes | 41 | `ServerScriptService.ServerScripts.interactable.Bath.server` | Analizado |
 | `Bin.server.luau` | Script | Server | yes | 17 | `ServerScriptService.ServerScripts.interactable.Bin.server` | Analizado |
-| `ClassicDoor.server.luau` | Script | Server | yes | 151 | `ServerScriptService.ServerScripts.interactable.ClassicDoor.server` | Pendiente |
+| `ClassicDoor.server.luau` | Script | Server | yes | 151 | `ServerScriptService.ServerScripts.interactable.ClassicDoor.server` | Analizado |
 | `CuadrosPaint.server.luau` | Script | Server | yes | 11 | `ServerScriptService.ServerScripts.interactable.CuadrosPaint.server` | Analizado |
-| `DiscoBall.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.DiscoBall.server` | Pendiente |
+| `DiscoBall.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.DiscoBall.server` | Analizado |
 | `Display.server.luau` | Script | Server | yes | 31 | `ServerScriptService.ServerScripts.interactable.Display.server` | Analizado |
-| `Fridge.server.luau` | Script | Server | yes | 137 | `ServerScriptService.ServerScripts.interactable.Fridge.server` | Pendiente |
-| `Lamp.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.interactable.Lamp.server` | Pendiente |
+| `Fridge.server.luau` | Script | Server | yes | 137 | `ServerScriptService.ServerScripts.interactable.Fridge.server` | Analizado |
+| `Lamp.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.interactable.Lamp.server` | Analizado |
 | `MusicPlayer.server.luau` | Script | Server | yes | 17 | `ServerScriptService.ServerScripts.interactable.MusicPlayer.server` | Analizado |
-| `NpcDialog.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.NpcDialog.server` | Pendiente |
-| `Paint.server.luau` | Script | Server | yes | 19 | `ServerScriptService.ServerScripts.interactable.Paint.server` | Pendiente |
-| `Pee.server.luau` | Script | Server | yes | 222 | `ServerScriptService.ServerScripts.interactable.Pee.server` | Pendiente |
-| `Seat.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.Seat.server` | Pendiente |
-| `Shower.server.luau` | Script | Server | yes | 68 | `ServerScriptService.ServerScripts.interactable.Shower.server` | Pendiente |
-| `SmokeMachine.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.SmokeMachine.server` | Pendiente |
-| `Tijeras.server.luau` | Script | Server | yes | 153 | `ServerScriptService.ServerScripts.interactable.Tijeras.server` | Pendiente |
-| `Toilet.server.luau` | Script | Server | yes | 98 | `ServerScriptService.ServerScripts.interactable.Toilet.server` | Pendiente |
-| `Treadmill.server.luau` | Script | Server | yes | 64 | `ServerScriptService.ServerScripts.interactable.Treadmill.server` | Pendiente |
-| `Washbasin.server.luau` | Script | Server | yes | 49 | `ServerScriptService.ServerScripts.interactable.Washbasin.server` | Pendiente |
-| `Weight.server.luau` | Script | Server | yes | 38 | `ServerScriptService.ServerScripts.interactable.Weight.server` | Pendiente |
+| `NpcDialog.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.NpcDialog.server` | Analizado |
+| `Paint.server.luau` | Script | Server | yes | 19 | `ServerScriptService.ServerScripts.interactable.Paint.server` | Analizado |
+| `Pee.server.luau` | Script | Server | yes | 222 | `ServerScriptService.ServerScripts.interactable.Pee.server` | Analizado |
+| `Seat.server.luau` | Script | Server | yes | 27 | `ServerScriptService.ServerScripts.interactable.Seat.server` | Analizado |
+| `Shower.server.luau` | Script | Server | yes | 68 | `ServerScriptService.ServerScripts.interactable.Shower.server` | Analizado |
+| `SmokeMachine.server.luau` | Script | Server | yes | 7 | `ServerScriptService.ServerScripts.interactable.SmokeMachine.server` | Analizado |
+| `Tijeras.server.luau` | Script | Server | yes | 153 | `ServerScriptService.ServerScripts.interactable.Tijeras.server` | Analizado |
+| `Toilet.server.luau` | Script | Server | yes | 98 | `ServerScriptService.ServerScripts.interactable.Toilet.server` | Analizado |
+| `Treadmill.server.luau` | Script | Server | yes | 64 | `ServerScriptService.ServerScripts.interactable.Treadmill.server` | Analizado |
+| `Washbasin.server.luau` | Script | Server | yes | 49 | `ServerScriptService.ServerScripts.interactable.Washbasin.server` | Analizado |
+| `Weight.server.luau` | Script | Server | yes | 38 | `ServerScriptService.ServerScripts.interactable.Weight.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/Bed/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/Bed/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Bed.luau` | ModuleScript | — | — | 186 | `ServerScriptService.ServerScripts.interactable.Bed.Bed` | Pendiente |
-| `init.server.luau` | Script | Server | yes | 20 | `ServerScriptService.ServerScripts.interactable.Bed.init.server` | Pendiente |
+| `Bed.luau` | ModuleScript | — | — | 186 | `ServerScriptService.ServerScripts.interactable.Bed.Bed` | Analizado |
+| `init.server.luau` | Script | Server | yes | 20 | `ServerScriptService.ServerScripts.interactable.Bed.init.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/DoubleBed/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/interactable/DoubleBed/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `DoubleBed.luau` | ModuleScript | — | — | 255 | `ServerScriptService.ServerScripts.interactable.DoubleBed.DoubleBed` | Pendiente |
-| `init.server.luau` | Script | Server | yes | 23 | `ServerScriptService.ServerScripts.interactable.DoubleBed.init.server` | Pendiente |
+| `DoubleBed.luau` | ModuleScript | — | — | 255 | `ServerScriptService.ServerScripts.interactable.DoubleBed.DoubleBed` | Analizado |
+| `init.server.luau` | Script | Server | yes | 23 | `ServerScriptService.ServerScripts.interactable.DoubleBed.init.server` | Analizado |
 
 </details>
 
