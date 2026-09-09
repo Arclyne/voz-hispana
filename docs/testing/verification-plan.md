@@ -97,6 +97,8 @@ o en un place de pruebas.
 | [046](#bug-candidate-046) | Canal de voz y `Tool` suministrados por el cliente, sin comprobar posesión | **Explotable hoy**, acotado a voz |
 | [048](#bug-candidate-048) | `Instance` de destino suministrada por el cliente, y el servidor ejecuta el movimiento | **Explotable hoy**, acotado a objetos reales del place |
 | [049](#bug-candidate-049) | Concesión de estadística a petición del cliente; `Weight` ni siquiera recibe modelo | **Explotable hoy**, con techo en 100 |
+| [050](#bug-candidate-050) | Modelo de estación suministrado por el cliente, sin propietario ni distancia | **Explotable hoy**, es robo y no falsificación |
+| [050](#bug-candidate-050) | Cualquiera puede recoger el plato de cualquier cocina del servidor | Cocina / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
 | [045](#bug-candidate-045) | El caché de assets pierde el filtro de tipo al reintentar, y puede dejar colgado a quien espera | Karaoke / Assets | Confirmado (el filtro) + Requiere pruebas de concurrencia (el bloqueo) | Baja / Media | **Muy alta** / baja |
@@ -6393,6 +6395,146 @@ distancia, y poner un enfriamiento— es un **cambio de código** y aquí no se 
 y por tanto también el cliente.
 
 
+## BUG-CANDIDATE-050
+
+### Cualquiera puede recoger el plato de cualquier cocina del servidor
+
+**Sistema:** Cocina / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/cooking/CookingStation.luau`, la rama de
+recogida al principio de `bind`
+**Documentación relacionada:** [Cocina → Recoger el plato](../systems/cooking.md#recoger-el-plato)
+
+#### Comportamiento observado — HECHO
+
+Es lo primero que hace el manejador, antes que cualquier otra comprobación:
+
+```lua
+remote.OnServerEvent:Connect(function(player: Player, model: Model)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not humanoid or humanoid.Health <= 0 then
+		return
+	end
+
+	local resultReady = model:GetAttribute("ResultReady")
+	if resultReady then
+		model:SetAttribute("ResultReady", nil)
+		...
+		InventoryManager.addItem(player, resultReady)
+		InventoryManager.equipTool(player, resultReady)
+		return
+	end
+```
+
+Lo único que se comprueba antes de conceder el objeto es que quien llama esté vivo.
+
+#### Por qué esto es un problema — HECHO
+
+Cuatro cosas que no se comprueban, y una que no se puede:
+
+| No se comprueba | Consecuencia |
+|---|---|
+| Que `model` sea una estación de cocina | Sirve cualquier `Instance` con el atributo |
+| Que `model` esté cerca del jugador | Se recoge desde el otro lado del mapa |
+| **Quién cocinó** | El plato no recuerda de quién es |
+| Que la estación corresponda al remote | `Interactable.Blender:FireServer(<un fogón>)` funciona igual: la rama de recogida está antes de `matchAttribute` y de `validate` |
+
+Y la que no se puede comprobar desde fuera: **el nombre del objeto concedido es el valor del
+atributo**, `InventoryManager.addItem(player, resultReady)`. Si un cliente pudiera poner
+atributos sobre un modelo del servidor, esto sería una concesión arbitraria de objetos. **No
+puede**: los atributos que escribe un cliente no se replican al servidor. Por eso esto es
+robo, no falsificación — y conviene decir la diferencia, porque la forma es la misma que la de
+[BUG-CANDIDATE-022](#bug-candidate-022) y ahí sí llega del cliente.
+
+#### Qué acota — HECHO
+
+| Control | Qué cubre |
+|---|---|
+| Solo hay un `ResultReady` por estación | No se puede recoger dos veces: se pone a `nil` en el acto |
+| El atributo lo escribe siempre el servidor | El objeto concedido es siempre un plato real, cocinado de verdad |
+| Cocinarlo cuesta un ingrediente | El plato existe porque alguien pagó por él — solo que no fue quien lo recoge |
+| Hay que estar vivo | |
+
+Es decir: el objeto no se crea de la nada. Se le quita a otro.
+
+#### Teoría — TEORÍA
+
+Un jugador puede recorrer el servidor recogiendo los platos de todas las cocinas en cuanto
+estén listos, sin acercarse a ninguna. Quien cocinó pierde el ingrediente y el plato, y desde
+su lado se ve como que la comida «desapareció» —la estación queda vacía y sin explicación—.
+
+Dentro de una casa propia no importa: las casas son servidores reservados y ahí solo hay
+invitados. Importa en el place público y en las cocinas compartidas, donde el ciclo de cocinar
+—buscar el ingrediente, ocupar la estación, esperar la duración— se puede saltar entero
+esperando a que lo haga otro.
+
+Y **no deja rastro**: en el registro del servidor, recoger un plato robado y recoger el propio
+son la misma línea.
+
+Es de la familia de [BUG-CANDIDATE-021](#bug-candidate-021) —el dueño de una casa puede vender
+el mueble de un invitado— con la diferencia de que allí hace falta ser el dueño de algo y aquí
+no hace falta ser nada.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La rama de recogida es lo primero del manejador, antes de `matchAttribute` y de `validate` |
+| 2 | La única comprobación previa es que el `Humanoid` esté vivo |
+| 3 | `model` llega del cliente y no se comprueba etiqueta, tipo ni distancia |
+| 4 | El plato no guarda quién lo cocinó: no hay ningún atributo de propietario |
+| 5 | Las cinco estaciones comparten esta misma función `bind` |
+| 6 | Los cinco remotes son intercambiables para esta rama |
+| 7 | `SetAttribute("ResultReady", nil)` es inmediato, así que dos ladrones no lo cogen los dos |
+| 8 | El atributo solo lo escribe el servidor: el objeto concedido es siempre real |
+
+#### Incógnitas
+
+- Cuánto vale un plato: si se venden, si dan estadísticas, si son ingredientes de otra cosa.
+  De eso depende que esto sea una molestia o un negocio.
+- Si las cocinas públicas existen. Si toda la cocina ocurre dentro de casas —servidores
+  reservados con invitados—, el alcance real es mucho menor.
+- Si `InventoryManager.addItem` tiene tope. Recogiendo platos ajenos en bucle se llena rápido.
+- Si el cliente legítimo manda algo más que el modelo. No se ha leído `Client/cooking/`, así
+  que puede haber una segunda ruta.
+
+#### Escenario de ejemplo
+
+Dos jugadores comparten la cocina de un local. Uno pone algo al horno y se aleja a por otro
+ingrediente. Al volver, el horno está vacío. Cree que se le quemó, o que falló algo. Repite y
+vuelve a pasar. No hay forma de que sepa que el plato se lo está llevando alguien que ni
+siquiera está en la habitación.
+
+**Comportamiento esperado:** recoge el plato quien lo cocinó, estando delante de la estación.
+**Comportamiento posible:** lo recoge quien lo pida primero, desde donde sea.
+
+#### Plan de verificación — *Seguridad*
+
+1. Averigua primero para qué sirven los platos. Eso fija la gravedad.
+2. Con la cuenta A, cocina algo y **no** lo recojas. Confirma que `ResultReady` está puesto en
+   el modelo.
+3. Con la cuenta B, desde el otro extremo del mapa:
+   `Interactable.Oven:FireServer(<el modelo del horno de A>)`.
+4. Comprueba el inventario de B.
+5. Comprueba qué ve A: si la estación queda vacía y si recibe algún aviso.
+6. Repite el paso 3 usando un remote **distinto** al de la estación —`Blender` sobre un
+   horno— y confirma que también funciona.
+7. Repite estando B muerto y confirma que falla.
+8. Con dos cuentas ladronas disparando a la vez, confirma que solo una lo consigue.
+9. Comprueba si `addItem` acepta cien platos.
+
+**Pasa:** el paso 4 no encuentra nada en el inventario de B.
+**Falla:** el plato aparece.
+
+**Instrumentación sugerida:** ninguna. La corrección —guardar quién cocinó en un atributo y
+comprobarlo, más etiqueta y distancia— es un **cambio de código** y aquí no se aplica. La
+buena noticia es que el sitio donde ponerla es **uno solo**: las cinco estaciones comparten
+`bind`, así que a diferencia de la [025](#bug-candidate-025) aquí no hay que tocar veinticinco
+archivos.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -6440,7 +6582,9 @@ completa.
 | `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
 | `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
 | `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
-| Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
+| Misiones, Animación | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
+| Cocina: `CookingStation`, `Blender`, `Oven`, `Stove` | **Sí, enteros** | El ciclo, el consumo del ingrediente y la rama de recogida |
+| Cocina: `Microwave`, `CuttingBoard` | En parte | Su `validate` y su superficie de red |
 | `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
 | `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
 | `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |

@@ -26,10 +26,10 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 139 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 143 |
 | Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 181 |
 | Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** — ver [Librerías de terceros](../architecture/third-party.md) | 160 |
-| Pendiente | Aún sin leer | 64 |
+| Pendiente | Aún sin leer | 60 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -79,7 +79,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 477 leídos.
+530 archivos, 76,305 líneas, 481 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -1439,20 +1439,20 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `CookingStation.luau` | ModuleScript | — | — | 270 | `ServerScriptService.ServerScripts.cooking.CookingStation` | Analizado (en parte) |
+| `CookingStation.luau` | ModuleScript | — | — | 270 | `ServerScriptService.ServerScripts.cooking.CookingStation` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/interactables/</code> — 5 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/cooking/interactables/</code> — 5 archivo(s) — 4/5 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Blender.server.luau` | Script | Server | yes | 54 | `ServerScriptService.ServerScripts.cooking.interactables.Blender.server` | Pendiente |
+| `Blender.server.luau` | Script | Server | yes | 54 | `ServerScriptService.ServerScripts.cooking.interactables.Blender.server` | Analizado |
 | `CuttingBoard.server.luau` | Script | Server | yes | 113 | `ServerScriptService.ServerScripts.cooking.interactables.CuttingBoard.server` | Pendiente |
-| `Microwave.server.luau` | Script | Server | yes | 233 | `ServerScriptService.ServerScripts.cooking.interactables.Microwave.server` | Pendiente |
-| `Oven.server.luau` | Script | Server | yes | 72 | `ServerScriptService.ServerScripts.cooking.interactables.Oven.server` | Pendiente |
-| `Stove.server.luau` | Script | Server | yes | 93 | `ServerScriptService.ServerScripts.cooking.interactables.Stove.server` | Pendiente |
+| `Microwave.server.luau` | Script | Server | yes | 233 | `ServerScriptService.ServerScripts.cooking.interactables.Microwave.server` | Analizado (en parte) |
+| `Oven.server.luau` | Script | Server | yes | 72 | `ServerScriptService.ServerScripts.cooking.interactables.Oven.server` | Analizado |
+| `Stove.server.luau` | Script | Server | yes | 93 | `ServerScriptService.ServerScripts.cooking.interactables.Stove.server` | Analizado |
 
 </details>
 
