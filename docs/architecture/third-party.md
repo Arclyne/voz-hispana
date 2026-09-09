@@ -124,8 +124,13 @@ se lee el resto del repositorio:
 | `Icon` es `--!nonstrict` y `FastCastRedux` es `--!nocheck` | Quedan fuera del análisis de tipos de Luau. Es decisión de sus autores, y significa que un error de tipos en esos 6 800 líneas no lo va a encontrar la herramienta |
 
 **HECHO.** Lo único que gestiona versiones en este repositorio es `rokit.toml`, y lo que
-gestiona son **herramientas** —Rojo 7.7.0—, no librerías de Luau. No existe `wally.toml` ni
-carpeta `Packages/`.
+gestiona son **herramientas** —Rojo 7.7.0—, no librerías de Luau. **No existe ningún
+`wally.toml`** en todo el árbol.
+
+Sí hay una carpeta `Packages/`, pero es de `Icon`: `Icon/Packages/` contiene `Janitor.luau` y
+`GoodSignal.luau`, es decir, las dependencias que `Icon` trae **dentro de sí misma**. No es
+una carpeta de paquetes del proyecto, y nada la regenera: viene copiada con el resto de
+`Icon`.
 
 **Qué significa en la práctica:** si mañana sale un parche de seguridad de `Icon`, no hay
 comando que lo traiga. Alguien tiene que ir al repositorio de arriba, comparar a mano y

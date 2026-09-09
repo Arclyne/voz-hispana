@@ -18,8 +18,8 @@ saltar de servidor.
 ### 📘 [arclyne.github.io/data-kit](https://arclyne.github.io/data-kit/)
 
 Ese es el sitio canónico, escrito por sus autores, con el contrato de cada función. En
-**este** repositorio está copiado al árbol, no traído por un gestor de paquetes: no hay
-`wally.toml` ni carpeta `Packages/`, así que actualizarlo es manual. Ver
+**este** repositorio está copiado al árbol, no traído por un gestor de paquetes: no hay ningún
+`wally.toml`, así que actualizarlo es manual. Ver
 [Librerías de terceros](./third-party.md). Sus
 trece clases aparecen además en la [Referencia de API](/api/DataKit) de este sitio, porque
 las anotaciones viajan con el código y Moonwave las extrae — pero **la fuente es la de
