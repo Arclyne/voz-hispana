@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 58 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 15 |
-| Pendiente | Aún sin leer | 477 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 59 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 17 |
+| Pendiente | Aún sin leer | 474 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 64 leídos.
+530 archivos, 76,181 líneas, 67 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -905,22 +905,22 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Shared.Karaoke.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 177 | `ReplicatedStorage.Shared.Karaoke.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/</code> — 3 archivo(s) — 1/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Attributes.luau` | ModuleScript | — | — | 83 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Attributes` | Pendiente |
 | `Generos.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.Generos` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 869 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 869 | `ReplicatedStorage.Shared.Karaoke.CrearCancion.init` | Analizado (en parte) |
 
 </details>
 
@@ -944,13 +944,13 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/</code> — 3 archivo(s) — 1/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `AttributesRequerest.luau` | ModuleScript | — | — | 11 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.AttributesRequerest` | Pendiente |
 | `Script.server.luau` | Script | — | yes | 75 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.Script.server` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 1111 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 1111 | `ReplicatedStorage.Shared.Karaoke.RevisarCanciones.init` | Analizado (en parte) |
 
 </details>
 

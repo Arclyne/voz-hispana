@@ -80,6 +80,7 @@ o en un place de pruebas.
 | [025](#bug-candidate-025) | La distancia de interacción la comprueba solo el cliente | Interactuables | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [026](#bug-candidate-026) | El globo está implementado entero y ningún jugador lo recibe nunca | Inventario | Bug probable / Confirmado por análisis estático | Baja | **Muy alta** |
 | [027](#bug-candidate-027) | `ToolsServer` reparenta y manipula las `Instance` que le diga el cliente | Herramientas / Seguridad | Bug probable / Requiere pruebas de seguridad | Alta | Alta |
+| [028](#bug-candidate-028) | Tres cargadores de moderación comprueban que haya un administrador conectado, no que quien llama lo sea | Karaoke / Seguridad | Posible bug / Requiere pruebas de seguridad | Baja | Alta |
 
 ### Entradas de seguridad
 
@@ -99,6 +100,7 @@ formato que el resto: teoría con justificación, no acusaciones.
 | [024](#bug-candidate-024) | `SoundId` y modelo suministrados por el cliente, sin moderación | **Explotable hoy**, acotado por las restricciones de audio de Roblox |
 | [025](#bug-candidate-025) | Reglas de interacción solo en el cliente en 21 de 25 manejadores | **Explotable hoy**, impacto bajo |
 | [027](#bug-candidate-027) | Reparentado arbitrario de `Instance` desde un remote | **Explotable hoy**, control sobre el mundo compartido |
+| [028](#bug-candidate-028) | Guarda de autorización que mira al servidor en vez de al llamante | **Explotable hoy**, pero sin fuga de datos: el llamante acaba expulsado |
 
 #### Lo que se revisó y salió limpio
 
@@ -107,6 +109,8 @@ engañosa:
 
 | Superficie | Resultado |
 |---|---|
+| Remotes de moderación de Karaoke | **Correcto, y es la postura más dura del proyecto.** Cinco de los ocho manejadores comprueban al llamante lo primero y, si no cumple, `IntenteSerAdmin` lo **expulsa** con un aviso explícito. Los baneos exigen además el rango `KaraokeSuperAdmin`. |
+| Difusión de datos de moderación | **Correcto.** `FireOnlyAdmins` recorre `AdminsActive` y `ObtenerMusica` revalida por página: la página de baneos exige superadministrador incluso en la ruta de difusión. |
 | Comandos de administración (`EventCommands`, `ReferralCommands`) | **Correcto.** Ambos comprueban `Admins:IsRole(player, "Admins")` contra un grupo de Roblox, y rechazan en silencio para no revelar la existencia del comando. |
 | `RoleService` ante fallo de `GroupService` | **Falla cerrado.** Un `pcall` fallido produce una tabla de roles vacía, no un pase libre. |
 | Precios de la tienda | **Correcto.** El precio se lee de `HousesInfo`/`DancesInfo` en el servidor; el cliente solo envía un id de artículo, que además debe estar en la rotación vigente. |
@@ -3179,6 +3183,156 @@ jugador tiene equipada.
 llama. Dos líneas, y diría de inmediato si esto ya se está usando.
 
 
+## BUG-CANDIDATE-028
+
+### Tres cargadores de moderación comprueban que haya un administrador conectado, no que quien llama lo sea
+
+**Sistema:** Karaoke / Seguridad · **Clasificación:** Posible bug / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Karaoke/RevisarCanciones/init.luau` —
+`CargarMusicasServer`, `CargarMusicaReport`, `CargarMusicasBaneadas`, `IsAviableToUpdate`
+**Documentación relacionada:** [Karaoke → Dónde se rompe el patrón](../systems/karaoke.md#dónde-se-rompe-el-patrón)
+
+#### Comportamiento observado — HECHO
+
+El manejador reparte sin comprobar nada, y confía la autorización a cada método:
+
+```lua
+self.Events.CargarMusicas.OnServerEvent:Connect(function(Staff, TypeBusqueda, Page)
+	if TypeBusqueda == "CargarMusicasServer" then
+		self:CargarMusicasServer(Page, Staff)
+	elseif TypeBusqueda == "CargarMusicaReport" then
+		self:CargarMusicaReport(Page, Staff)
+	elseif TypeBusqueda == "CargarMusicasBaneadas" then
+		self:CargarMusicasBaneadas(Page, Staff)
+	elseif self.Admins:IsAdmin(Staff) then          -- ← la única rama que comprueba al llamante
+		self:UpdateMusicas()
+	end
+end)
+```
+
+Y los tres métodos comprueban otra cosa:
+
+```lua
+elseif #self.AdminsActive > 0 and typeof(Page) == 'number' then
+	local Data, NewData = self.DataStore:GetData('RevisionRating', true, self.SongPorPagina, Page)
+```
+
+`AdminsActive` es la lista de administradores **presentes en este servidor**. La condición
+dice «hay algún moderador conectado», no «tú eres moderador». El parámetro `Staff` llega al
+método y no se usa para autorizar.
+
+`CargarMusicasBaneadas` usa `IsAviableToUpdate(true)`, que parece más estricto pero mira lo
+mismo:
+
+```lua
+function module:IsAviableToUpdate(SuperAdmin)
+	if not SuperAdmin or #self.AdminsActive == 0 then return #self.AdminsActive > 0 end
+	for _, Admin in self.AdminsActive do
+		if self.Admins:IsAdmin(Admin, true) then
+			return true
+		end
+	end
+end
+```
+
+Recorre a **los administradores conectados** buscando un superadministrador. Nunca mira a
+quien llamó.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Con un moderador conectado, cualquier jugador puede disparar:
+
+| Efecto | Detalle |
+|---|---|
+| Una lectura paginada de DataStore | `GetData('RevisionRating' \| 'DenunciasRating' \| 'BaneosRating', …)`, contra la cuota del juego |
+| El vaciado de la caché de páginas | `ListDatas = NewData and {} or ListDatas` reemplaza lo que los moderadores tenían precargado |
+| Con la página que quiera | `Page` solo se comprueba con `typeof(Page) == 'number'`: ni entero, ni rango |
+
+#### Lo que limita el daño — HECHO
+
+Y es importante decirlo, porque cambia la gravedad. `CargarMusicasServer` termina así:
+
+```lua
+self:ObtenerMusica(0, nil, Player)
+```
+
+`ObtenerMusica` **sí** comprueba al llamante, y no es amable:
+
+```lua
+if self.Admins:IsAdmin(StaffRequerest, Page == 2) then
+	self.Events.ObtenerMusicas:FireClient(StaffRequerest, Page, self.PreloadSongs[Selection])
+else
+	self.Admins:IntenteSerAdmin(StaffRequerest)   -- Player:Kick(...)
+end
+```
+
+De modo que un no administrador **es expulsado** al final del recorrido, y **no recibe
+ninguno de los datos**. No es una fuga de información: la lista de canciones en revisión no
+sale del servidor.
+
+Lo que sí ocurre antes de la expulsión es el trabajo: la lectura de DataStore se hace y la
+caché se reemplaza. El atacante puede volver a entrar y repetir.
+
+#### Teoría — TEORÍA
+
+Es una defensa en profundidad que funciona a medias. La guarda correcta está en el sitio
+equivocado —al final, en vez de a la entrada—, así que la autorización protege los **datos**
+pero no los **recursos**. Un cliente en bucle de entrar-disparar-ser expulsado-volver puede
+consumir cuota de DataStore y mantener la interfaz de los moderadores vaciándose sola.
+
+Lo que hace pensar que es un descuido y no un diseño es el contraste dentro del mismo
+archivo: `ViewLyric`, `Desbanear`, `ActionSongDenunce`, `AprovarRechazarMusicaAction` y
+`PublishRevisarMusic` **sí** comprueban al llamante lo primero. Estos tres son la excepción.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La condición es `#self.AdminsActive > 0`, una propiedad del servidor, no del llamante |
+| 2 | El parámetro `Staff`/`Player` llega a los tres métodos y no se usa para autorizar |
+| 3 | `IsAviableToUpdate` recorre los administradores conectados, nunca al llamante |
+| 4 | `Page` solo se comprueba de tipo, y va directo a una lectura paginada de DataStore |
+| 5 | Los otros cinco manejadores del archivo comprueban al llamante lo primero |
+| 6 | La expulsión llega **después** de la lectura, no antes |
+
+#### Incógnitas
+
+- Cuánto cuesta realmente `GetData` con paginación. Si cachea agresivamente, el abuso de
+  cuota es despreciable y esto se queda en una molestia para los moderadores.
+- Si `Page` fuera de rango produce un error atrapado o una lectura cara. No se ha leído
+  `GlobalDataStore:GetData`.
+- Cuánto tarda Roblox en dejar volver a entrar a un jugador expulsado. Determina la
+  frecuencia máxima del abuso.
+
+#### Escenario de ejemplo
+
+Un jugador con un cliente modificado espera a ver a un moderador conectado, dispara
+`CargarMusicas` con `"CargarMusicaReport"`, es expulsado, vuelve a entrar y repite. El
+moderador ve su lista de denuncias vaciarse y recargarse sin haber tocado nada.
+
+**Comportamiento esperado:** el remote rechaza —o expulsa— antes de leer nada.
+**Comportamiento posible:** lee, reemplaza la caché, y expulsa después.
+
+#### Plan de verificación — *Seguridad*
+
+1. Con dos cuentas, una con el rango `KaraokeAdmins` en el grupo, ambas en el mismo servidor.
+2. Desde la consola del cliente de la cuenta sin rango, dispara
+   `Karaoke.CargarMusicas` con `("CargarMusicasServer", 0)`.
+3. Comprueba en el registro del servidor si la lectura de DataStore ocurre.
+4. Comprueba si la cuenta sin rango es expulsada, y si recibió algún dato antes.
+5. Comprueba en el cliente del moderador si su lista se recarga.
+6. Repite con el moderador desconectado: no debería ocurrir nada.
+
+**Pasa:** no hay lectura de DataStore cuando quien llama no es administrador.
+**Falla:** la lectura ocurre y la caché se reemplaza, aunque el llamante acabe expulsado.
+
+**Instrumentación sugerida:** un `warn` con el nombre del llamante y su condición de
+administrador al principio de los tres métodos. Diría de inmediato si esto se está usando y,
+de paso, es donde tendría que ir la comprobación.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -3217,7 +3371,10 @@ completa.
 | Inventario: `init.server`, `InventoryManager`, `DefaultTools` | Sí | |
 | `ToolsServer.server.luau` | En parte | Los ocho manejadores y su validación; no la mecánica del cañón ni del guante |
 | `ToolPlacementServer`, `Client/inventory/`, `ToolUseManagge` | **No** | En cola |
-| Sistemas de juego (~435 archivos) | **No** | En cola |
+| `Karaoke/init.luau` | Sí | |
+| `RevisarCanciones`, `CrearCancion` | En parte | El modelo de administración, los manejadores y sus guardas; no la paginación ni el editor |
+| `KaraokeTV/`, `BusquedaMusicas` | **No** | En cola |
+| Sistemas de juego (~430 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
@@ -3245,6 +3402,8 @@ lógica interna de cada uno.
 Los ocho remotes de `Tools` están revisados en cuanto a validación de entrada (entrada 027),
 y los cinco de `Inventory` enteros.
 
-**Siguen sin revisar:** los remotes de `Karaoke`, `Paint` y la cocina, `ToolPlacementServer`,
-y el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
+Los remotes de moderación de `Karaoke` están revisados en cuanto a autorización (entrada 028).
+
+**Siguen sin revisar:** los remotes de `Paint` y la cocina, `ToolPlacementServer`, los
+televisores de karaoke, y el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
 hallazgos, así que esta sección debe leerse como un barrido en curso, no como una garantía.
