@@ -1,49 +1,49 @@
 ---
 sidebar_position: 7
-title: Error handling
+title: Manejo de errores
 ---
 
-# Housing error handling
+# Manejo de errores en Casas
 
-Every failure mode found in the housing path, what the code does about it, and what is left
-open. Rows marked **UNKNOWN** are not gaps in this page — they are gaps in what static
-reading can establish.
+Todos los modos de fallo encontrados en la ruta de casas, qué hace el código con cada uno,
+y qué queda abierto. Las filas marcadas **DESCONOCIDO** no son huecos de esta página: son
+huecos de lo que la lectura estática puede establecer.
 
-## Failure matrix
+## Matriz de fallos
 
-| Failure | Detected where | Handling | Player sees | Open question |
+| Fallo | Dónde se detecta | Manejo | Qué ve el jugador | Pregunta abierta |
 |---|---|---|---|---|
-| Client sends a non-string `serverKey` | `JoinServerFunc` | Rejected before anything else | `(false, "Invalid Server Key")` | — |
-| Key does not match `^(%d+)_(.+)$` | `parseRoomKey` | Falls through to the presence directory | `(false, "Server not found")` if absent | — |
-| Room not in `HousesInfo` | `JoinServerFunc` / `PlayerWorld_Init` | Lobby: treated as a non-house key. House server: `onFailedServer` → `KickAll` | `"[Error] Unknown room X."` | — |
-| `ReserveServer` fails | `reserveAccessCode` | `warn`, returns `nil`; `hostWorld` clears its local stage and calls `claim:release()` so the turn is freed immediately | `(false, "The server could not be reserved")` | No retry — is one attempt enough? |
-| `TeleportAsync` fails | `safeTeleport` | 3 attempts, 0.5 s apart, each `pcall`ed | `(false, "TeleportFailed: …")` | — |
-| Host metadata malformed | `teleportToHost` | Type-checks `placeId` and `accessCode` before use | `(false, "Malformed host metadata")` | — |
-| Directory entry malformed | `JoinServerFunc` | Type-checks `placeId` and `jobId` | `(false, "Malformed directory entry")` | — |
-| MemoryStore read fails | `ServerPresence.SafeGet` | Retries with backoff; abandons on throttle; returns an explicit error flag distinct from "not found" | `(false, "Error trying to get the server")` | — |
-| MemoryStore throttled | `isThrottled` in `ServerPresence`, `Lease`, `ServerDirectory` | Stops retrying, pauses 60 s, keeps the existing cache | Stale data, no error | — |
-| Another lobby is staging | `claimStaged` returns `kind = "staged"` | Polls `peekStaged` 10 × 1 s, then joins the same instance | `(false, "Server is pending")` if the poll times out | Is 10 s enough for a slow `ReserveServer`? |
-| Staging lobby vanished | `waitForStagedHost` | `if not stager then return nil` — gives up at once rather than polling a dead claim | `(false, "The server could not be reserved")` | — |
-| `TeleportData` missing or malformed | `extractPayload` | Returns `(nil, nil)`; `onPlayerAdded` does nothing, so the server stays uninitialised | Nothing — the player is in an inert server | **UNKNOWN**: no kick, no message. See below. |
-| `WorldsPlayer` read fails | `hasRoom` | Distinguishes "read failed" from "does not own" | `"[Error] Failed getting the [id] rooms."` | — |
-| Owner does not own the room | `hasRoom` | `onFailedServer` → `KickAll` | `"[Error] The user N does not have the X."` | — |
-| Lease already held | `Store._resolveOwnership` → `onDenied` | `convergeToOwner`, 3 attempts | Teleported to the real host, or kicked | [BUG-CANDIDATE-004](../../testing/verification-plan.md#bug-candidate-004) |
-| Store never becomes ready | `store:awaitReady()` returns false | `onFailedServer` unless already denied | `"[Error] The data server could not be obtained."` | — |
-| Player not allowed to host | `canHostWorld` | `WorldService.destroy()` then `KickAll` | The specific refusal reason | — |
-| `GetNameFromUserIdAsync` fails on first boot | `getRoomDisplayName` | Falls back to `"default Name"` | A house permanently named that | [BUG-CANDIDATE-009](../../testing/verification-plan.md#bug-candidate-009) |
-| `IsFriendsWith` fails | `canHostWorld`, `canPlayerEnter` | Treated as "not a friend" — **fails closed** | Refused from a private house | — |
-| `FilterStringAsync` fails | `SetWorldName` | Keeps the sanitised but unfiltered name — **fails open** | The name is applied | Noted in [Permissions](./permissions.md) |
-| `store:update` fails | `WorldService.update` returns false | `warn`, remote returns `nil` / `false` | Nothing happens | No user-facing error |
-| Kick fails | `ModeratorManager.kickPlayer` | `pcall`ed, warns | Stays in the house | — |
-| `ListItemsAsync` fails | `ServerDirectory.fullSync` | 3 attempts; **preserves the existing cache** rather than replacing it with a partial one | Slightly stale server list | — |
-| HTTP proxy unreachable | `WorldsBrowser.searchPlayer` | `pcall`, warns, returns `{}` | An empty search result | Indistinguishable from "no matches" |
+| El cliente envía una `serverKey` que no es cadena | `JoinServerFunc` | Rechazado antes que nada | `(false, "Invalid Server Key")` | — |
+| La clave no casa con `^(%d+)_(.+)$` | `parseRoomKey` | Cae al directorio de presencia | `(false, "Server not found")` si no está | — |
+| Room no está en `HousesInfo` | `JoinServerFunc` / `PlayerWorld_Init` | Lobby: se trata como clave que no es de casa. Servidor de casa: `onFailedServer` → `KickAll` | `"[Error] Unknown room X."` | — |
+| Falla `ReserveServer` | `reserveAccessCode` | `warn`, devuelve `nil`; `hostWorld` limpia su stage local y llama a `claim:release()` para liberar el turno de inmediato | `(false, "The server could not be reserved")` | Sin reintento — ¿basta un intento? |
+| Falla `TeleportAsync` | `safeTeleport` | 3 intentos, 0,5 s entre ellos, cada uno con `pcall` | `(false, "TeleportFailed: …")` | — |
+| Metadata del anfitrión mal formada | `teleportToHost` | Comprueba tipos de `placeId` y `accessCode` antes de usarlos | `(false, "Malformed host metadata")` | — |
+| Entrada del directorio mal formada | `JoinServerFunc` | Comprueba tipos de `placeId` y `jobId` | `(false, "Malformed directory entry")` | — |
+| Falla la lectura de MemoryStore | `ServerPresence.SafeGet` | Reintenta con backoff; abandona si hay throttle; devuelve un flag de error distinto de «no encontrado» | `(false, "Error trying to get the server")` | — |
+| MemoryStore hace throttling | `isThrottled` en `ServerPresence`, `Lease`, `ServerDirectory` | Deja de reintentar, pausa 60 s, conserva la caché existente | Datos algo desfasados, sin error | — |
+| Otro lobby está haciendo staging | `claimStaged` devuelve `kind = "staged"` | Sondea `peekStaged` 10 × 1 s, y luego entra a la misma instancia | `(false, "Server is pending")` si el sondeo agota el plazo | ¿Bastan 10 s para un `ReserveServer` lento? |
+| El lobby que hacía staging desapareció | `waitForStagedHost` | `if not stager then return nil` — se rinde al momento en vez de sondear un claim muerto | `(false, "The server could not be reserved")` | — |
+| `TeleportData` ausente o mal formado | `extractPayload` | Devuelve `(nil, nil)`; `onPlayerAdded` no hace nada, así que el servidor queda sin inicializar | Nada — el jugador está en un servidor inerte | **DESCONOCIDO**: sin expulsión ni mensaje. Ver abajo. |
+| Falla la lectura de `WorldsPlayer` | `hasRoom` | Distingue «falló la lectura» de «no la posee» | `"[Error] Failed getting the [id] rooms."` | — |
+| El dueño no posee la room | `hasRoom` | `onFailedServer` → `KickAll` | `"[Error] The user N does not have the X."` | — |
+| El lease ya está tomado | `Store._resolveOwnership` → `onDenied` | `convergeToOwner`, 3 intentos | Teletransportado al anfitrión real, o expulsado | [BUG-CANDIDATE-004](../../testing/verification-plan.md#bug-candidate-004) |
+| El store nunca queda listo | `store:awaitReady()` devuelve false | `onFailedServer` salvo que ya esté denegado | `"[Error] The data server could not be obtained."` | — |
+| El jugador no puede hostear | `canHostWorld` | `WorldService.destroy()` y luego `KickAll` | El motivo concreto del rechazo | — |
+| Falla `GetNameFromUserIdAsync` en el primer arranque | `getRoomDisplayName` | Cae a `"default Name"` | Una casa llamada así para siempre | [BUG-CANDIDATE-009](../../testing/verification-plan.md#bug-candidate-009) |
+| Falla `IsFriendsWith` | `canHostWorld`, `canPlayerEnter` | Se trata como «no es amigo» — **falla cerrado** | Rechazado de una casa privada | — |
+| Falla `FilterStringAsync` | `SetWorldName` | Conserva el nombre saneado pero sin filtrar — **falla abierto** | El nombre se aplica | Anotado en [Permisos](./permissions.md) |
+| Falla `store:update` | `WorldService.update` devuelve false | `warn`, el remote devuelve `nil` / `false` | No pasa nada | Sin error visible para el usuario |
+| Falla la expulsión | `ModeratorManager.kickPlayer` | Con `pcall`, avisa | Se queda en la casa | — |
+| Falla `ListItemsAsync` | `ServerDirectory.fullSync` | 3 intentos; **conserva la caché existente** en vez de sustituirla por una parcial | Lista de servidores algo desfasada | — |
+| Proxy HTTP inalcanzable | `WorldsBrowser.searchPlayer` | `pcall`, avisa, devuelve `{}` | Un resultado de búsqueda vacío | Indistinguible de «sin coincidencias» |
 
-## Two failure modes worth expanding
+## Dos modos de fallo que merecen más detalle
 
-### A house server with no usable `TeleportData`
+### Un servidor de casa sin `TeleportData` utilizable
 
-**FACT.** `extractPayload` returns `(nil, nil)` when `GetJoinData().TeleportData` is absent
-or its `key` is not a string. `onPlayerAdded` then does nothing at all:
+**HECHO.** `extractPayload` devuelve `(nil, nil)` cuando falta `GetJoinData().TeleportData`
+o cuando su `key` no es una cadena. `onPlayerAdded` entonces no hace absolutamente nada:
 
 ```lua
 local key, accessCode = extractPayload(player)
@@ -54,23 +54,23 @@ if key then
 end
 ```
 
-**INFERENCE.** No `else`. The player is left in a reserved server that never initialises:
-no world data, no presence, no `isStarted`, and — because `PlayerAdded` was connected with
-`:Once` — **no second chance from a later arrival**, since the `Once` connection was
-consumed by this player.
+**INFERENCIA.** No hay `else`. El jugador se queda en un servidor reservado que nunca se
+inicializa: sin datos de mundo, sin presencia, sin `isStarted` y —como `PlayerAdded` se
+conectó con `:Once`— **sin una segunda oportunidad desde una llegada posterior**, porque
+la conexión `Once` la ha consumido este jugador.
 
-Every other failure in `init` funnels through `onFailedServer`, which warns and kicks with
-an explanation. This path alone is silent.
+Cualquier otro fallo de `init` desemboca en `onFailedServer`, que avisa y expulsa con una
+explicación. Solo esta ruta es silenciosa.
 
-**UNKNOWN.** Whether a player can reach a `PlayerHouses` place without valid
-`TeleportData`. `WorldManager` always sets it, so the reachable routes would be a direct
-join to the place, a Roblox-initiated rejoin, or a teleport from code not in this
-repository. Recorded as
+**DESCONOCIDO.** Si un jugador puede llegar a un place de `PlayerHouses` sin un
+`TeleportData` válido. `WorldManager` siempre lo pone, así que las rutas posibles serían
+una entrada directa al place, una reentrada iniciada por Roblox, o un teleport desde
+código que no está en este repositorio. Registrado como
 [BUG-CANDIDATE-013](../../testing/verification-plan.md#bug-candidate-013).
 
-### `ReserveServer` failure releases the turn but does not retry
+### Un fallo de `ReserveServer` libera el turno pero no reintenta
 
-**FACT.** `reserveAccessCode` makes exactly one attempt:
+**HECHO.** `reserveAccessCode` hace exactamente un intento:
 
 ```lua
 local ok, code = pcall(TeleportService.ReserveServer, TeleportService, placeId)
@@ -79,7 +79,7 @@ warn("[WorldManager] ReserveServer failed:", code)
 return nil
 ```
 
-and `hostWorld` unwinds cleanly:
+y `hostWorld` deshace limpiamente:
 
 ```lua
 if not code then
@@ -89,51 +89,52 @@ if not code then
 end
 ```
 
-**INFERENCE — this is correct behaviour, not an omission.** Releasing the staging claim
-immediately is what lets the *next* request retry from a clean state, rather than waiting
-out the 30-second staging TTL. Compare `safeTeleport`, which does retry: a teleport is
-idempotent from the caller's point of view, while a reservation holds a distributed claim
-that others are blocked on. Retrying under the claim would extend everyone else's wait.
+**INFERENCIA — esto es comportamiento correcto, no una omisión.** Liberar de inmediato la
+reclamación de staging es lo que permite que la *siguiente* petición reintente desde un
+estado limpio, en vez de esperar los 30 segundos del TTL de staging. Compárese con
+`safeTeleport`, que sí reintenta: un teleport es idempotente desde el punto de vista del
+llamante, mientras que una reserva mantiene una reclamación distribuida que bloquea a
+otros. Reintentar bajo la reclamación alargaría la espera de todos los demás.
 
-The observation stands only as a question about the *user-visible* result: the player sees
-one failure message and must act again themselves.
+La observación se sostiene solo como pregunta sobre el resultado *visible para el usuario*:
+el jugador ve un único mensaje de fallo y tiene que actuar de nuevo por su cuenta.
 
-## Error-reporting conventions
+## Convenciones de reporte de errores
 
-**FACT.** Two distinct conventions coexist, split by trust boundary:
+**HECHO.** Coexisten dos convenciones distintas, separadas por la frontera de confianza:
 
-| Layer | Convention |
+| Capa | Convención |
 |---|---|
-| Remotes reached by clients (`JoinServer`, `JoinWorld`) | Return `(false, "reason")` — always a definite answer, never an error, never `nil` |
-| House-server internals | `onFailedServer(msg)` → `warn` + `ServerPresence.KickAll(msg)` — the message is both the log line and the kick reason |
-| Administrative remotes | Return `nil` or `(false, "Code")` and `warn` server-side |
-| Everything touching a Roblox web API | Wrapped in `pcall`, without exception, in every path reviewed |
+| Remotes que alcanza el cliente (`JoinServer`, `JoinWorld`) | Devuelven `(false, "motivo")` — siempre una respuesta definida, nunca un error, nunca `nil` |
+| Interior del servidor de casa | `onFailedServer(msg)` → `warn` + `ServerPresence.KickAll(msg)` — el mensaje es a la vez la línea de log y el motivo de expulsión |
+| Remotes administrativos | Devuelven `nil` o `(false, "Code")` y avisan en el servidor |
+| Todo lo que toca una API web de Roblox | Envuelto en `pcall`, sin excepción, en todas las rutas revisadas |
 
-**INFERENCE.** The house-server convention means internal error messages are shown
-verbatim to players — including strings like
-`"[Error] Failed getting the [12345] rooms."`, which leaks a user id and an internal
-bracket format into a user-facing kick dialog. Low severity, and mentioned here only
-because the *same* string serves two audiences.
+**INFERENCIA.** La convención del servidor de casa implica que los mensajes de error
+internos se muestran literalmente a los jugadores — incluidas cadenas como
+`"[Error] Failed getting the [12345] rooms."`, que filtra un id de usuario y un formato de
+corchetes interno a un diálogo de expulsión. Gravedad baja, y se menciona solo porque la
+*misma* cadena sirve a dos públicos.
 
-## What has no handling at all
+## Lo que no tiene manejo alguno
 
-**FACT**, stated so the absence is not mistaken for an omission in this page:
+**HECHO**, dicho para que la ausencia no se confunda con una omisión de esta página:
 
-| No handling for | Consequence |
+| Sin manejo para | Consecuencia |
 |---|---|
-| The last player leaving | Nothing housing-specific runs; see [Server lifecycle](./server-lifecycle.md) |
-| An empty house server timing out | Roblox decides; not expressible in this code |
-| A `World` profile that fails to save at shutdown | `Store` retries internally; a total failure loses at most one autosave interval |
-| A house whose owner no longer owns the room | Not reachable — nothing removes entries from `rooms` |
-| Deleting or resetting a house | Not expressible; see [Persistence](./persistence.md) |
+| La salida del último jugador | No corre nada específico de casas; ver [Ciclo de vida del servidor](./server-lifecycle.md) |
+| Que un servidor de casa vacío caduque | Lo decide Roblox; no es expresable en este código |
+| Un perfil `World` que falle al guardar en el apagado | `Store` reintenta internamente; un fallo total pierde como mucho un intervalo de autoguardado |
+| Una casa cuyo dueño ya no posee la room | Inalcanzable — nada quita entradas de `rooms` |
+| Borrar o resetear una casa | No es expresable; ver [Persistencia](./persistence.md) |
 
-## Related implementation
+## Implementación relacionada
 
-| Concern | Code |
+| Aspecto | Código |
 |---|---|
-| Client-facing failures | `WorldManager.server.luau`, `JoinServerFunc`, `JoinWorldFunc` |
-| Teleport retry | `WorldManager.server.luau`, `safeTeleport` |
-| Reservation unwinding | `WorldManager.server.luau`, `hostWorld` |
-| House-server failures | `PlayerWorld_Init.lua.server.luau`, `onFailedServer` |
-| MemoryStore resilience | [`ServerPresence`](/api/ServerPresence); `ServerDirectory.server.luau`, `fullSync` |
-| Store resilience | [`Store`](/api/Store), [`Health`](/api/Health) |
+| Fallos de cara al cliente | `WorldManager.server.luau`, `JoinServerFunc`, `JoinWorldFunc` |
+| Reintento de teleport | `WorldManager.server.luau`, `safeTeleport` |
+| Deshacer la reserva | `WorldManager.server.luau`, `hostWorld` |
+| Fallos del servidor de casa | `PlayerWorld_Init.lua.server.luau`, `onFailedServer` |
+| Resiliencia de MemoryStore | [`ServerPresence`](/api/ServerPresence); `ServerDirectory.server.luau`, `fullSync` |
+| Resiliencia del Store | [`Store`](/api/Store), [`Health`](/api/Health) |
