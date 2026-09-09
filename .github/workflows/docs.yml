@@ -1,0 +1,86 @@
+name: Documentation
+
+# Builds the Moonwave documentation site and publishes it to GitHub Pages.
+#
+# The build job runs on every push and every pull request so that a change which
+# breaks the documentation fails visibly, at the point it is introduced.
+# Deployment only happens for pushes to the default branch.
+#
+# One-time repository setup required before the first deploy succeeds:
+#   Settings → Pages → Build and deployment → Source: "GitHub Actions".
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "moonwave.toml"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "moonwave.toml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Moonwave
+        run: npm install --global moonwave@latest
+
+      # `moonwave build` exits non-zero when the Luau doc comments fail to
+      # extract or when Docusaurus cannot compile the site (including broken
+      # internal links, which moonwave.toml sets to `throw`). No `|| true`,
+      # no `continue-on-error`: a documentation build failure must fail the job.
+      - name: Build site
+        run: moonwave build --out-dir build --code src
+
+      - name: Verify build output exists
+        run: |
+          if [ ! -f build/index.html ]; then
+            echo "::error::Moonwave reported success but produced no build/index.html"
+            exit 1
+          fi
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
