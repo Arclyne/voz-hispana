@@ -98,6 +98,7 @@ o en un place de pruebas.
 | [048](#bug-candidate-048) | `Instance` de destino suministrada por el cliente, y el servidor ejecuta el movimiento | **Explotable hoy**, acotado a objetos reales del place |
 | [049](#bug-candidate-049) | Concesión de estadística a petición del cliente; `Weight` ni siquiera recibe modelo | **Explotable hoy**, con techo en 100 |
 | [050](#bug-candidate-050) | Modelo de estación suministrado por el cliente, sin propietario ni distancia | **Explotable hoy**, es robo y no falsificación |
+| [051](#bug-candidate-051) | El nivel del jugador no sube nunca, y el requisito de nivel solo existe en el cliente | Construcción / Progresión | Confirmado por análisis estático | Baja | **Muy alta** |
 | [050](#bug-candidate-050) | Cualquiera puede recoger el plato de cualquier cocina del servidor | Cocina / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
@@ -6535,6 +6536,132 @@ buena noticia es que el sitio donde ponerla es **uno solo**: las cinco estacione
 archivos.
 
 
+## BUG-CANDIDATE-051
+
+### El nivel del jugador no sube nunca, y el requisito de nivel solo existe en el cliente
+
+**Sistema:** Construcción / Progresión · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta**
+
+**Código relacionado:** `BuildingSystem/…/Main/FurnitureFrame/init.luau` líneas 13 y 168–169;
+`Core/ServerStorage/WorldSystem/PlayerSchema.luau` línea 51;
+`Core/…/ServerScripts/NametagServer.server.luau`
+**Documentación relacionada:** [Interfaz de construcción → El precio y el nivel](../systems/building-ui.md#el-precio-y-el-nivel)
+
+Son dos hallazgos que se sostienen el uno al otro, y por eso van juntos.
+
+### Primero: nada incrementa `Level` — HECHO
+
+`Level` está declarado en el perfil:
+
+```lua
+{ Name = "Level", Value = "0" },   -- PlayerSchema.luau, dentro de leaderstats
+```
+
+Se busca en los 552 `.luau` del repositorio quién lo escribe. Los únicos sitios que lo tocan
+son:
+
+| Sitio | Qué hace |
+|---|---|
+| `PlayerSchema.luau` | Lo declara con valor inicial `"0"` |
+| `NametagServer.server.luau` | Lo **lee** para pintarlo en la etiqueta, y escucha sus cambios |
+| `BuildingSystem/…/FurnitureFrame` | Lo **lee** para decidir si pinta un candado |
+
+**Ninguno lo escribe.** No hay concesión de experiencia, ni subida por tiempo jugado, ni por
+misiones, ni por compras. `Level` se queda en `"0"` toda la vida de la cuenta.
+
+Y `NametagServer` está preparado para reaccionar —`connectLevelValue`, un `ChildAdded` que
+espera a que aparezca— así que el sistema de presentación existe entero, esperando a un
+productor que no está.
+
+### Segundo: el requisito solo lo comprueba el cliente — HECHO
+
+```lua
+data.GUI.Button.Lock.Visible = data.setting.Price.Level
+	and data.setting.Price.Level>tonumber(self.LevelPlayer.Value)
+```
+
+`Price.Level` aparece **una sola vez en toda la base de código**: aquí. Ningún manejador de
+servidor lo lee.
+
+La compra de decoración sí se cobra en el servidor —`self.Cobros.charge(Player, Data.Price, true)`
+en `Shared/Stores/init.luau`, con el precio que lee el propio servidor—, así que **el dinero
+está bien sujeto**. Lo que no se comprueba en ninguna parte del servidor es el nivel.
+
+### Por qué juntos son peor que por separado — TEORÍA
+
+Por separado, cada uno tendría un final feliz:
+
+- Si el nivel subiera pero el requisito fuera solo de cliente, sería una puerta de interfaz
+  más, de la familia de [BUG-CANDIDATE-042](#bug-candidate-042).
+- Si el requisito se comprobara en el servidor pero el nivel no subiera, los muebles con
+  requisito serían simplemente inalcanzables — visiblemente roto, y por tanto arreglado
+  pronto.
+
+Juntos se tapan. Todo mueble con `Price.Level > 0` sale con candado **para todo el mundo,
+siempre**, así que en el juego nunca se ve a nadie desbloquearlo y nadie nota que la
+progresión no avanza. Y quien se salte la interfaz lo compra igual, pagando su precio en
+monedas, sin que nada lo pare.
+
+El resultado es una función de progresión que está declarada, se persiste, se pinta en la
+etiqueta de cada jugador y filtra un catálogo — y que **no hace nada**.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `PlayerSchema` declara `Level` con `Value = "0"` |
+| 2 | Una búsqueda de `Level` en los 552 `.luau` no encuentra ninguna escritura |
+| 3 | `NametagServer` tiene `connectLevelValue` y un `ChildAdded` esperando un `Level` |
+| 4 | `Price.Level` aparece exactamente una vez, en el cliente |
+| 5 | Ningún manejador de servidor de `Shared/Stores` lo consulta |
+| 6 | El precio en monedas **sí** se cobra en el servidor, con su propio dato |
+| 7 | El candado es un `Lock.Visible`, es decir, pura presentación |
+
+#### Incógnitas
+
+- **La principal:** si algún mueble tiene de verdad `Price.Level` puesto. Los `Settings` viven
+  dentro de los `.rbxm`, así que hay que abrirlos en Studio. Si ninguno lo usa, el segundo
+  hallazgo es teórico y solo queda el primero.
+- Si la progresión por nivel está planeada y sin conectar, o si se abandonó. El `TODO` de
+  `Furniture` en la ruleta ([044](#bug-candidate-044)) y el stub de `Rewards` en los tutoriales
+  ([039](#bug-candidate-039)) sugieren que hay varias funciones en ese estado.
+- Qué muestra hoy la etiqueta: si `Level 0` sale escrito en el nametag de todo el mundo, es
+  visible para los jugadores y merece decidirse antes.
+- Si hay un sistema de nivel en un `.rbxm` que `grep` no ve. Poco probable —la escritura
+  tendría que ser de servidor y los scripts de servidor están en `.luau`— pero no imposible.
+
+#### Escenario de ejemplo
+
+Un jugador ve tres muebles con candado en el catálogo y pregunta cómo subir de nivel. Nadie
+sabe responderle, porque no se puede. Mientras tanto su nametag dice «Nivel 0», igual que el
+de un jugador con quinientas horas.
+
+**Comportamiento esperado:** el nivel sube con el juego y el servidor comprueba el requisito.
+**Comportamiento posible:** el nivel es constante y el requisito es un icono.
+
+#### Plan de verificación — *Corrección funcional*
+
+1. En Studio, abre varios `.rbxm` de decoración y comprueba si alguno tiene `Price.Level`. Si
+   ninguno lo tiene, el segundo hallazgo queda en teoría; sigue con el primero.
+2. Entra con una cuenta nueva y anota `leaderstats.Level`.
+3. Juega una sesión larga: compra, cocina, haz misiones, gana monedas. Vuelve a mirar `Level`.
+4. Mira el nametag: comprueba qué nivel muestra.
+5. Si algún mueble tiene requisito, pon `Level` a mano por encima y confirma que el candado
+   desaparece — eso prueba que el filtro funciona y que el problema es el productor.
+6. Con `Level` de nuevo en 0, salta la interfaz y compra ese mueble por la vía del servidor.
+7. Comprueba si la compra se completa y si se cobra el precio en monedas.
+
+**Pasa:** el paso 3 ve subir el nivel, y el paso 6 se rechaza.
+**Falla:** el nivel no se mueve, o la compra pasa.
+
+**Instrumentación sugerida:** ninguna para observarlo. Arreglarlo son dos decisiones
+distintas —qué hace subir de nivel, y si el requisito debe comprobarse en el servidor— y las
+dos son **cambios de código** que aquí no se aplican. Conviene decidirlas juntas: comprobar el
+requisito en el servidor sin conectar antes la subida de nivel dejaría esos muebles
+definitivamente fuera del alcance de todos.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -6588,7 +6715,7 @@ completa.
 | `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
 | `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
 | `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
-| `BuildingSystem` | Su papel, sí | Es interfaz de cliente sin remotes propios; su UI no se ha leído |
+| `BuildingSystem` (8 archivos, 2 749 líneas) | En parte | Confirmado que no tiene ni un remote; leídos `init.luau`, `ColorFormat` y la ficha del catálogo. Los otros cinco, en superficie a propósito |
 | `GiftHandler.server.luau` | Sí | La ruta de regalos y `ProcessReceipt` |
 | `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
 | `LootBoxService`, `PlaytimeRewardSystem`, `FavoriteService`, `DancesInfo` | Sí | Sistemas que no estaban ni en la lista |

@@ -40,7 +40,7 @@ empaquetadas.
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
 del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 13 de sistemas +
-3 de referencia + 50 candidatos a bug con evidencia, frente a un plan que aún necesita
+3 de referencia + 51 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -225,7 +225,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | **Superficie** — `docs/systems/server-misc.md` y `client-ui.md`; su papel, no su implementación |
 | Trabajos | `Shared/JobSystem`, `Events/Jobs` | **Documentado** — `docs/systems/jobs.md`. Faltan los cuatro módulos de trabajo por dentro |
 | Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | **Documentado** — `docs/systems/nametags.md`. Faltan `Shared/Nametag/` y el cliente |
-| Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | **Papel establecido** — `docs/systems/survey.md`: es interfaz de cliente sin remotes propios; conduce a `Stores`. Su lógica de UI sigue sin leer |
+| Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | **Documentado** — `docs/systems/building-ui.md`, 1 candidato (051). Confirmado que no tiene ni un remote: 2 749 líneas sin autoridad |
 | Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | **Documentado** — `docs/systems/cooking.md`, 1 diagrama, 1 candidato (050). Falta el cliente y la tabla de cortar |
 | Bar y NPCs | `Shared/BartenderSystem`, `Shared/NPC_Custom`, `Shared/DialogModule` | **Documentado** — `docs/systems/bar-npcs.md`, 1 diagrama. **No estaba en esta tabla hasta ahora** |
 | Tutoriales y guías | `Shared/GuideService`, `Shared/Tutorials` | **Documentado** — `docs/systems/tutorials.md`, 1 diagrama, 1 candidato de seguridad (039). **No estaba en esta tabla hasta ahora** |
@@ -323,10 +323,10 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 143 |
-| Analizado (en parte) | 181 |
+| Analizado (leído entero, descrito en el sitio) | 145 |
+| Analizado (en parte) | 187 |
 | Frontera (terceros) — documentada por fuera, sin leer por dentro | 160 |
-| Pendiente | 60 |
+| Pendiente | 52 |
 
 Las lecturas parciales y por qué:
 
@@ -513,7 +513,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 50 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 51 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -551,7 +551,7 @@ y razonado está en la propia página; el resumen es:
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
 - **Diagramas:** 47 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 50 redactados al completo, incluida una pasada de seguridad
+- **Candidatos a bug:** 51 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y

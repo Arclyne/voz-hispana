@@ -26,10 +26,10 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 143 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 181 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 145 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 187 |
 | Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** — ver [Librerías de terceros](../architecture/third-party.md) | 160 |
-| Pendiente | Aún sin leer | 60 |
+| Pendiente | Aún sin leer | 52 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -1699,68 +1699,68 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `BuildingSystem`
 
-8 archivos, 2,750 líneas, 0 leídos.
+8 archivos, 2,750 líneas, 8 leídos.
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ColorFormat.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.ColorFormat` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 151 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.init` | Pendiente |
+| `ColorFormat.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.ColorFormat` | Analizado |
+| `init.luau` | ModuleScript | — | — | 151 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Color/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Color/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 291 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Color.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 291 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Color.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/DesingFrame/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/DesingFrame/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 494 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.DesingFrame.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 494 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.DesingFrame.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/FurnitureFrame/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/FurnitureFrame/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 325 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.FurnitureFrame.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 325 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.FurnitureFrame.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/Inventory/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/Main/Inventory/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.Inventory.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.Main.Inventory.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/MoveAndPlaceent/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/BuildingSystem/ReplicatedStorage/BuildInterface/ConstructionModeModule/MoveAndPlaceent/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 1065 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.MoveAndPlaceent.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 1065 | `ReplicatedStorage.BuildInterface.ConstructionModeModule.MoveAndPlaceent.init` | Analizado (en parte) |
 
 </details>
