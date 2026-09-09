@@ -1,0 +1,63 @@
+# Moonwave configuration — Voz Hispana technical documentation
+#
+# Two layers live in the same site:
+#   * docs/   — conceptual engineering documentation (Markdown + Mermaid)
+#   * /api/   — Moonwave API reference extracted from `--[=[ ... ]=]` comments in src/
+#
+# Build:  npx moonwave build --code src
+# Dev:    npx moonwave dev   --code src
+
+title = "Voz Hispana"
+gitRepoUrl = "https://github.com/arclyne/voz-hispana"
+gitSourceBranch = "main"
+
+# `classOrder` is intentionally not set yet. It is added once the full set of
+# `@class` annotations exists (Phase 4), so that the sidebar groups classes by
+# system instead of alphabetically. Setting it early would break the build the
+# moment it named a class that does not exist.
+
+[home]
+enabled = true
+includeReadme = false
+
+[[home.features]]
+title = "Architecture"
+description = "How a server boots, how templates are imported, and how players and characters are initialised."
+
+[[home.features]]
+title = "Systems"
+description = "Housing and reserved servers, persistence, networking, and the gameplay systems built on top of them."
+
+[[home.features]]
+title = "Verification"
+description = "Recorded inconsistencies, the theory behind each one, and a reproducible plan to confirm or dismiss it."
+
+[docusaurus]
+title = "Voz Hispana"
+tagline = "Technical documentation"
+url = "https://arclyne.github.io"
+baseUrl = "/voz-hispana/"
+onBrokenLinks = "throw"
+onBrokenMarkdownLinks = "warn"
+
+[navbar]
+title = "Voz Hispana"
+
+[[navbar.items]]
+to = "docs/intro"
+label = "Documentation"
+position = "left"
+
+[[navbar.items]]
+to = "api/"
+label = "API Reference"
+position = "left"
+
+[[navbar.items]]
+href = "https://github.com/arclyne/voz-hispana"
+label = "GitHub"
+position = "right"
+
+[footer]
+style = "dark"
+copyright = "Voz Hispana — engineering documentation generated with Moonwave."

@@ -20,6 +20,22 @@
 
 local Players = game:GetService("Players")
 
+--[=[
+	Deferred fan-out for `Players.PlayerAdded`.
+
+	Template scripts are imported at runtime by `ImportTemplates.server.luau` and are
+	only enabled afterwards by `InitScripts.server.luau`. A script that connects to
+	`Players.PlayerAdded` directly can therefore miss players who joined while the
+	import was still running. This module keeps its own connection from the moment it
+	is first required, remembers which players it has already announced, and replays
+	that announcement to listeners that register later.
+
+	Callbacks are invoked through `task.defer` and wrapped in `pcall`, so one failing
+	listener neither blocks nor breaks the others.
+
+	@server
+	@class PlayerInit
+]=]
 local PlayerInit = {}
 local listeners = {}           -- lista de funciones que deben ejecutarse por jugador
 local initialized = {}         -- mapa player -> true si ya fue inicializado
@@ -62,6 +78,17 @@ end
 
 -- API: registra un listener. Cuando se registre, se ejecutará inmediatamente
 -- para los jugadores que ya están inicializados.
+--[=[
+	Registers a per-player callback.
+
+	The callback runs once for every player who joins from this point on, and
+	immediately (deferred) for every player already present and already announced.
+	It never runs twice for the same player through this module.
+
+	@param callback (player: Player) -> () -- invoked once per player
+	@return () -> () -- call to deactivate this listener
+	@error "PlayerInit.Connect expects a function" -- raised when `callback` is not a function
+]=]
 function PlayerInit.Connect(callback)
 	assert(type(callback) == "function", "PlayerInit.Connect expects a function")
 
