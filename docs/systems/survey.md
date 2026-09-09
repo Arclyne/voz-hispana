@@ -153,14 +153,49 @@ devuelve nada. Es coherente con que el estado de micrófono llegue por atributos
 
 ## Sistema de construcción
 
-**Leído:** nada. **Sin leer:** los 8 archivos de `BuildingSystem/ReplicatedStorage`
-(2 749 líneas).
+**Leído:** su estructura, su superficie de red y a quién llama.
+**Sin leer:** la lógica de interfaz de sus 8 archivos (2 749 líneas).
 
 Es una **plantilla independiente**, con su propio asset (`94091855508048`), que
 `ImportTemplates` fusiona en ejecución. Ver [Inicialización](../architecture/initialization.md).
 
-Ya no es candidato a escribir la sección `content` del perfil `World` —eso lo resolvió
-[Tiendas y decoración](./stores.md)—, así que su papel exacto sigue sin establecerse.
+**HECHO — es interfaz de cliente, y nada más.** Su papel queda establecido:
+
+| Comprobación | Resultado |
+|---|---|
+| `RemoteEvent` / `RemoteFunction` declarados | **Ninguno.** No hay un solo `.model.json` bajo `BuildingSystem/` |
+| `FireServer` / `OnServerEvent` en su código | **Ninguno** |
+| Archivos `.meta.json` | **Ninguno**, así que ningún script suyo declara `RunContext` ni arranca desactivado |
+| Referencias a `LocalPlayer` | Una |
+
+Lo que hace es **conducir el sistema de [Tiendas y decoración](./stores.md)** llamando a sus
+métodos:
+
+```
+Stores:UpdateDecor · Stores:BuyDecors · Stores:SellDecors
+Stores:ComprarMaterial · Stores:ExitModeConstruccion · Stores:GetDecorPlayer
+Stores:GetStore · Stores:GetStoreParts · Stores.DecorsPlayer · Stores.MaxBuildPlace
+```
+
+Y aquí encaja una pieza documentada en otro sitio: **por eso no necesita remotes propios**.
+`Stores` usa el idioma de doble contexto —llamar a uno de sus métodos en el cliente *envía*
+el remote, recibirlo en el servidor *ejecuta* la lógica— así que la interfaz de construcción
+llama a métodos normales y la red ocurre sola. Ver
+[Tiendas → Un módulo, dos juegos, dos contextos](./stores.md#un-módulo-dos-juegos-dos-contextos).
+
+:::note Esto cierra definitivamente la hipótesis del perfil `World`
+
+La documentación de Casas señalaba a `BuildingSystem` como escritor probable de la sección
+`content`. No lo es, y ahora se sabe por qué **no puede serlo**: no tiene ninguna vía para
+escribir en un DataStore. Lo que persiste es `Stores`, en el servidor, a partir de las
+acciones que esta interfaz genera.
+
+:::
+
+**DESCONOCIDO.** Quién monta esta interfaz. Ningún archivo `.luau` fuera de
+`BuildingSystem/` menciona `BuildInterface` ni `ConstructionModeModule`, así que su punto de
+entrada está en un `.rbxm` —probablemente `StarterGui/BuildMenu.rbxm`— que no es
+inspeccionable. Es el mismo hueco que **U-001**.
 
 ## Colocación de herramientas
 
@@ -184,8 +219,11 @@ comprobación de etiqueta ni distancia.
 
 | # | Qué | Por qué |
 |---|---|---|
-| 1 | `Shared/JobSystem` | 1 515 líneas, toca economía, y no se sabe nada de él |
-| 2 | `ToolPlacementServer` | 880 líneas, y es el análogo de un problema ya registrado |
-| 3 | `GlobalDataStore` y `GiftInbox` | Cierran **U-008**, y de ellos depende cuánto pesa BUG-CANDIDATE-029 |
-| 4 | `BuildingSystem` | Una plantilla entera sin tocar |
-| 5 | `KaraokeTV` y `BusquedaMusicas` | Cierran Karaoke |
+| 1 | `KaraokeTV` y `BusquedaMusicas` | Cierran Karaoke, y `BusquedaMusicas` es el único consumidor de `GlobalDataStore` sin leer |
+| 2 | `GiftHandler.server.luau` | Quien llama a `GiftInbox`; cierra la ruta de regalos en Robux |
+| 3 | Los 36 módulos de tipo de Interactuables | Catálogo, no explicación: solo si alguien necesita extender un tipo |
+| 4 | La interfaz de `BuildingSystem` | Ya se sabe qué es y a quién llama; leer sus 2 749 líneas es documentar UI |
+| 5 | Los cuatro módulos de trabajo por dentro | `Bartender`, `LimpiarPiso`, `CajasTransport`, `ButtonMoney` |
+
+**Ya hechos** desde que se escribió esta lista: `JobSystem`, `ToolPlacementServer`,
+`GlobalDataStore` y `GiftInbox`, y el papel de `BuildingSystem`.

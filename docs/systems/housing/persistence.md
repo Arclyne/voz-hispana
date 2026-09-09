@@ -58,6 +58,11 @@ probable, por eliminación, y lo etiquetaba como **DESCONOCIDO**. Al leer `Share
 resultó ser otro sistema. Se deja anotado porque es exactamente para lo que sirve marcar
 una hipótesis como tal.
 
+Después se comprobó además por qué `BuildingSystem` **no podía** serlo: es interfaz de
+cliente y no tiene ninguna vía para escribir en un DataStore — ni un remote declarado, ni un
+`FireServer` en su código. Lo que hace es conducir a `Stores`, que es quien persiste. Ver
+[Barrido → Sistema de construcción](../survey.md#sistema-de-construcción).
+
 :::
 
 Ver [Tiendas y decoración](../stores.md).

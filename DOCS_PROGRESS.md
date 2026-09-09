@@ -224,7 +224,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | Pendiente |
 | Trabajos | `Shared/JobSystem`, `Events/Jobs` | **Documentado** — `docs/systems/jobs.md`. Faltan los cuatro módulos de trabajo por dentro |
 | Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | Pendiente |
-| Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | Pendiente |
+| Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | **Papel establecido** — `docs/systems/survey.md`: es interfaz de cliente sin remotes propios; conduce a `Stores`. Su lógica de UI sigue sin leer |
 | Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | **Barrido** — `docs/systems/survey.md`; solo los `bind` |
 | Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
 | Librerías de terceros | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pendiente (marcar como terceros, documentar solo la frontera) |
@@ -629,9 +629,9 @@ de `docs/architecture/persistence.md`.
 ### 3. Los sistemas de juego que quedan
 
 El orden razonado está en `docs/systems/survey.md`, que además dice de cada sistema qué se
-miró y qué no. En resumen, ya sin `JobSystem`, la persistencia de fuera de DataKit ni
-`ToolPlacementServer`: `BuildingSystem` (2 749 líneas, una plantilla entera sin tocar), los
-televisores de karaoke, `BusquedaMusicas` y `GiftHandler`. Un commit por sistema.
+miró y qué no. El orden vive en `docs/systems/survey.md` y se mantiene ahí, no aquí, para no tener dos
+listas que se desincronicen. A día de hoy encabezan `KaraokeTV` y `BusquedaMusicas`, y
+después `GiftHandler`. Un commit por sistema.
 
 De Interactuables ya está la estructura; lo que falta ahí son los 36 módulos de tipo, y
 eso es un catálogo, no una explicación: hacerlo solo merece la pena si alguien necesita
