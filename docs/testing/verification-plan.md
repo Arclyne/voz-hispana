@@ -1470,9 +1470,22 @@ durante un tiempo, para ver si en la práctica hay llamantes sin rol.
 
 **La nota se queda en Media, pero por una razón distinta de la que estaba escrita.**
 
-Faltaba explicar **por qué llegarían más jugadores a una instancia rota**: un teleport por
-`ReservedServerAccessCode` va a la instancia que ya está viva con ese código, así que
+Faltaba explicar **por qué llegarían más jugadores a una instancia rota**: si un teleport por
+`ReservedServerAccessCode` va a la instancia que ya está viva con ese código, entonces
 mientras el lease apunte ahí la instancia inservible **sigue recibiendo víctimas**.
+
+:::warning Ese «si» es una suposición sobre Roblox, no un hecho de este repositorio
+
+El enrutado de un `ReservedServerAccessCode` hacia una instancia ya viva es **comportamiento
+de la plataforma**, y este código no lo establece. Se marca igual que la
+[005](#bug-candidate-005) marca el suyo, y por la misma razón.
+
+**Si la suposición es falsa** —si cada teleport crea una instancia nueva— entonces la
+instancia rota atrapa a **un solo jugador** y el resto va a instancias sanas: la gravedad
+bajaría a Baja. Todo el razonamiento de abajo cuelga de esto, así que es lo primero del plan
+de verificación.
+
+:::
 
 Lo que la salva de ser Alta es que esa instancia nunca escribió un lease —nunca llegó a
 `ServerPresence.new`—, así que el que la señala es el de la instancia anterior y **expira en
@@ -1570,9 +1583,22 @@ reservada para todos los que vengan detrás, sin ninguna línea de log que lo ex
 4. Anota si el servidor llega a inicializarse alguna vez.
 5. Repite desconectando a un jugador a mitad del teleport y dejando que Roblox lo
    reintroduzca.
+6. **La pregunta que fija la gravedad:** con la instancia ya inservible, teletransporta a un
+   tercer jugador a **ese mismo `accessCode`** y mira dónde aterriza.
+   - Si entra en la instancia rota → la ventana atrapa a todo el que llegue, y la nota es
+     Media.
+   - Si Roblox le crea una instancia nueva → la rota atrapó a uno solo, y la nota baja a
+     Baja.
+7. Comprueba cuánto tarda la casa en volver a ser alcanzable: debería ser al expirar el lease
+   de la instancia anterior, ≤120 s.
+8. Comprueba si se puede llegar a un servidor reservado **siguiendo a un amigo**. De eso
+   depende que el paso 1 sea un caso de laboratorio o algo que pasa solo.
 
 **Pasa:** el caso es inalcanzable, o un jugador válido posterior sí inicializa el servidor.
 **Falla:** la instancia sigue inerte tras una llegada válida.
+
+**Los pasos 6 y 8 son los que deciden la gravedad**, no los que la confirman: el mecanismo
+del defecto ya está establecido por lectura; lo que no lo está es a cuánta gente alcanza.
 
 **Instrumentación sugerida:** un aviso en la rama nil que nombre al jugador y vuelque
 `GetJoinData()`, lo que haría visible el caso en producción incluso antes de reproducirlo.

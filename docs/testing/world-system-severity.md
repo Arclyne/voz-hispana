@@ -100,9 +100,26 @@ flowchart TD
 
 La entrada original decía, correctamente, que el `:Once` queda consumido y que un jugador
 posterior tampoco podrá inicializar el servidor. Lo que no decía es **por qué llegarían más
-jugadores a una instancia rota**: porque un teleport por `ReservedServerAccessCode` va a la
+jugadores a una instancia rota**: porque un teleport por `ReservedServerAccessCode` iría a la
 instancia que ya está viva con ese código. Mientras el lease apunte ahí, la instancia
-inservible **sigue recibiendo víctimas**.
+inservible **seguiría recibiendo víctimas**.
+
+:::warning Aquí hay una suposición, y conviene marcarla
+
+Ese enrutado es **comportamiento de Roblox**, no algo que establezca este repositorio — la
+misma clase de afirmación que la [005](./verification-plan.md#bug-candidate-005) se cuida de
+no dar por sentada. Si la doy por sentada aquí para sostener el argumento, estoy aplicando
+dos varas distintas.
+
+| Si el enrutado es como se supone | Si no lo es |
+|---|---|
+| La instancia rota atrapa a todo el que entre en la ventana | Atrapa a **uno**, y el resto va a instancias sanas |
+| **Media** | **Baja** |
+
+Todo el razonamiento de este apartado cuelga de eso, así que es lo primero que hay que
+comprobar — antes incluso que la pregunta del amigo.
+
+:::
 
 Y lo que la salva de ser Alta es el mismo número de la cadena A: esa instancia nunca escribió
 un lease —nunca llegó a `ServerPresence.new`—, así que el lease que la señala es el de la
