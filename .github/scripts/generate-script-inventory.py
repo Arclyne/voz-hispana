@@ -118,6 +118,8 @@ PARTIAL = {
     t("Core/ServerScriptService/ServerScripts/PlaytimeRewardSystem.server.luau"),
     t("Core/ServerScriptService/ServerScripts/FavoriteService.server.luau"),
     t("Core/ReplicatedStorage/DancesInfo.luau"),
+    t("Core/ReplicatedStorage/Shared/Referrals/ReferralConfig.luau"),
+    t("Core/ServerScriptService/ServerScripts/Referrals/ReferralMain.server.luau"),
     t("Core/ServerScriptService/ServerScripts/ToolPlacementServer.server.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/init.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/FunctActionsTV.luau"),

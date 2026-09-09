@@ -136,6 +136,9 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Orden entre dos manejadores de `PlayerRemoving` en Invitaciones | **Correcto, y es el patrón a imitar.** `ReferralMain` usa `PlayerDataService.onBeforeClose` en vez de `Players.PlayerRemoving`, con el motivo escrito: el orden entre dos conexiones al mismo evento no está garantizado. Es la forma del arreglo que le falta a BUG-CANDIDATE-018. |
+| Doble conteo de segundos al arrancar Invitaciones | **Correcto.** No recorre `Players:GetPlayers()` porque `PlayerInit` ya reejecuta el callback: hacerlo sería sumar dos veces. Es de las pocas veces que un consumidor demuestra haber leído el contrato de `PlayerInit`. |
+| Apertura de la hoja de compartir | **Correcto.** Un mapa `sharing` impide solapes, Studio recibe un aviso en vez de un 403 confuso, y si Roblox rechaza la caducidad se reintenta con la suya por defecto para no dejar al jugador sin link. |
 | Toda la ruta de regalos en Robux | **Correcto, y es el camino mejor protegido del repositorio.** `ProcessReceipt` resuelve **toda** decisión dudosa no otorgando y dejando que Roblox reintente: producto de regalo sin destinatario, comprador igual al receptor, propiedad no verificable, `applyItem` que no devuelve `true`. Un producto creado solo para regalar jamás cae al comprador por defecto, y el código lo marca como «Seguridad crítica». |
 | Reutilizar una intención de regalo | **Correcto.** Lleva TTL, está atada a un `productId` concreto, y se consume **antes** de comprobar la caducidad, así que una vencida no queda rondando para el siguiente recibo. |
 | Varios `ProcessReceipt` compitiendo | **Correcto.** `grep` sobre todo `src/` confirma una única asignación, en `GiftHandler.server.luau`. Es un asignador global: dos scripts que lo pongan se pisan en silencio. |
@@ -2080,6 +2083,37 @@ interfaz: el cliente sigue esperando un `StartClientPlayer` que ya no va a llega
 **Comportamiento esperado:** la reconexión inicializa al jugador con normalidad.
 **Comportamiento posible:** el jugador queda en un estado inerte hasta que le toque otro
 servidor.
+
+:::tip El patrón de arreglo ya existe en este repositorio
+
+`ReferralMain.server.luau` se topó con **exactamente este riesgo** y lo resolvió, dejando
+escrito el porqué:
+
+```lua
+--[[
+	El volcado va por onBeforeClose y no por PlayerRemoving: PlayerDataInit tambien
+	escucha PlayerRemoving para cerrar el perfil, y el orden entre dos conexiones
+	al mismo evento no esta garantizado. Si el perfil se cerrara primero, los
+	segundos de la sesion se perderian y un teleport a una casa reiniciaria la
+	cuenta. onBeforeClose corre siempre antes del cierre.
+]]
+PlayerDataService.onBeforeClose(function(player)
+	ReferralService.OnPlayerLeaving(player)
+end)
+```
+
+`PlayerDataService.onBeforeClose` **sí** tiene orden garantizado: `close` ejecuta los
+callbacks antes de soltar el store, y lo hace dentro de `pcall`.
+
+Aplicado aquí, la limpieza de `DataComplete` dejaría de depender de qué manejador de
+`Players.PlayerRemoving` gane la carrera. `Data.Main` ya usa ese mecanismo para su secuencia
+de salida —`setExitSequence`, que corre dentro de `finalize`—; lo que quedó fuera es
+justamente el borrado de la entrada.
+
+Es una observación sobre la forma del arreglo, no una corrección aplicada: este proyecto no
+cambia código.
+
+:::
 
 #### Plan de verificación — *Ciclo de vida*
 
@@ -4491,6 +4525,8 @@ completa.
 | `ShopServerSystem` | En parte | Solo `ProcessPurchase`; la rotación de tienda y la sincronización por `MessagingService` no |
 | `playerManager`, `Client/PlayerManager` | Sí | |
 | `EventService`, `ReferralService` | Sí | |
+| Invitaciones: `ReferralConfig`, `ReferralMain` | Sí | La configuración razonada y los tres remotes |
+| Invitaciones: `ReferralCommands`, `ReferralShared`, `ReferralClient` | **No** | En cola |
 | `PlayerDataService`, `WorldSystem/PlayerDataReplicator.luau` | Sí | |
 | `Data/Main/init.server.luau` | Sí | El orquestador de sesión; ver [Data.Main](../systems/session-orchestrator.md) |
 | `AddValues`, `BreakDown` | En parte | Solo el camino de materialización de atributos, para cerrar la duda del tope de donación |

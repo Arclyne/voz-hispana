@@ -27,8 +27,8 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
 | Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 33 |
-| Pendiente | Aún sin leer | 450 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 35 |
+| Pendiente | Aún sin leer | 448 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 91 leídos.
+530 archivos, 76,305 líneas, 93 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 3/6 leídos</summary>
@@ -1120,12 +1120,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Referrals/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Referrals/</code> — 3 archivo(s) — 1/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `ProgressRing.luau` | ModuleScript | — | — | 114 | `ReplicatedStorage.Shared.Referrals.ProgressRing` | Pendiente |
-| `ReferralConfig.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.Referrals.ReferralConfig` | Pendiente |
+| `ReferralConfig.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.Referrals.ReferralConfig` | Analizado (en parte) |
 | `ReferralShared.luau` | ModuleScript | — | — | 309 | `ReplicatedStorage.Shared.Referrals.ReferralShared` | Pendiente |
 
 </details>
@@ -1414,12 +1414,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Referrals/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Referrals/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `ReferralCommands.server.luau` | Script | — | yes | 333 | `ServerScriptService.ServerScripts.Referrals.ReferralCommands.server` | Pendiente |
-| `ReferralMain.server.luau` | Script | — | yes | 233 | `ServerScriptService.ServerScripts.Referrals.ReferralMain.server` | Pendiente |
+| `ReferralMain.server.luau` | Script | — | yes | 233 | `ServerScriptService.ServerScripts.Referrals.ReferralMain.server` | Analizado (en parte) |
 
 </details>
 
