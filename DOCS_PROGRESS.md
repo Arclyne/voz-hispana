@@ -10,22 +10,31 @@
 
 ## Current Phase
 
-**Phase 3 — Systems** (starting; Housing first)
+**Phase 3 — Systems** (Housing complete; other systems pending)
 
 ---
 
 ## Overall Progress
 
-**18 %**
+**28 %**
 
 Rationale for the number (kept deliberately conservative):
 the repository holds **552 inspectable `.luau` files / ~80 500 lines** plus
-**320 non-inspectable `.rbxm` binaries**. Phases 0–2 are complete: infrastructure
-is in place and the whole architecture layer is written from source read end to end
-(~26 files). That is roughly 5 % of the Luau by file count, but a much larger share
-of the *load-bearing* code — bootstrap, world system, reservation, presence and the
-persistence package. The remaining ~500 files are gameplay systems, largely
-unexamined.
+**320 non-inspectable `.rbxm` binaries**. Phases 0–2 are complete and Housing —
+the system the brief singles out — is documented in depth. **32 of 552 files have
+been read** (see `docs/reference/script-inventory.md` for the per-file status).
+
+That is 6 % by file count but a far larger share of the load-bearing code:
+the entire bootstrap, the entire world/housing system, the reservation and
+presence layers, and the persistence package. The remaining ~520 files are
+gameplay systems (interactables, karaoke, machines, tools, shops, quests, jobs)
+plus vendored third-party libraries.
+
+The percentage is deliberately *not* file-count-weighted, because 480 of the
+remaining files are gameplay leaves whose documentation value per file is much
+lower than the bootstrap's. It reflects: 7 architecture pages + 7 housing pages
++ 3 reference pages + 14 evidenced bug candidates, against a plan that still
+needs ~8 more systems and the per-script Moonwave sweep.
 
 ---
 
@@ -186,7 +195,7 @@ repository. Not yet validated — Phase 3 confirms or merges these.
 | System | Primary location | Status |
 |---|---|---|
 | Bootstrap / Template Loading | `src/ServerScriptService`, `src/ReplicatedStorage` | **Documented** (architecture layer) |
-| World & Housing (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documenting** — reservation path documented, house entity in progress |
+| World & Housing (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documented** — 7 pages, 14 diagrams, 8 bug candidates. Not `Verified`: that needs Studio. |
 | Persistence (`DataKit`) | `Core/ServerStorage/DataKit` | **Documented** (architecture layer); `Store.transfer` and `Inbox` still unread |
 | Player Data | `Core/ServerStorage/WorldSystem/PlayerData*`, `Core/…/PlayerDataInit.server.luau`, `Core/ServerScriptService/Data` | Pending |
 | Referrals | `Core/ServerStorage/WorldSystem/ReferralService.luau`, `Core/…/Referrals`, `Shared/Referrals` | Pending |
@@ -213,119 +222,118 @@ No system has reached `Verified`. Verification requires running the plans in
 
 ### Housing — detail
 
-**Status:** Documenting
+**Status:** Documented (not Verified — verification requires Roblox Studio)
+
+Pages: `docs/systems/housing/` — `overview.md`, `identity.md`, `persistence.md`,
+`entry-flow.md`, `server-lifecycle.md`, `permissions.md`, `error-handling.md`.
 
 Conceptual documentation:
 
-- [x] Overview (architecture level — `docs/architecture/reserved-servers.md`)
-- [ ] House identity, creation, ownership
-- [x] Architecture (two registries, staging claim)
-- [ ] House persistent lifecycle
-- [x] Reserved-server lifecycle
-- [x] Networking (`JoinServer` / `JoinWorld`)
-- [x] Persistence (`Profiles.World`, `onConflict = "deny"`, card projection)
-- [ ] Permissions, roles, bans, guests
+- [x] Overview, responsibilities, components, architecture
+- [x] House identity, creation, ownership, purchase (houses **and** slots)
+- [x] House persistent lifecycle
+- [x] Reserved-server lifecycle, including reserved-but-never-joined and last-player
+- [x] Networking (`JoinServer` / `JoinWorld` / the administrative remotes)
+- [x] Persistence (`Profiles.World`, `onConflict = "deny"`, the card projection,
+      the four storage locations)
+- [x] Permissions — all four checks, roles, bans, guests, private/public
 - [x] Concurrency
-- [x] Cleanup / shutdown
-- [ ] Error handling (full matrix)
+- [x] Cleanup / shutdown ordering
+- [x] Error handling — full failure matrix
 
-Diagrams:
+Diagrams (14 across the housing and reserved-server pages):
 
-- [x] Player entry / reservation sequence
-- [x] Concurrency decision flow
-- [ ] House persistent lifecycle (state diagram)
-- [ ] Reserved-server startup sequence
-- [ ] Player exit / last player
-- [ ] Shutdown flow
-- [ ] Persistence flow
-- [ ] Registry / lease flow
+- [x] Housing architecture
+- [x] House persistent lifecycle (state)
+- [x] Reserved-server lifecycle (state)
+- [x] Server reservation sequence
+- [x] Reserved-server startup sequence (inside the entry-flow sequence)
+- [x] Player entry flow
+- [x] Guest entry (documented in prose — it is the same path, with a different
+      `canHostWorld` outcome; a separate diagram would duplicate the entry sequence)
+- [x] Shutdown flow
+- [x] Concurrency / reservation decision flow
+- [x] House browser assembly flow
+- [x] House purchase sequence
+- [x] `canHostWorld` decision flow
+- [x] `canPlayerEnter` decision flow, with its triggers
+- [ ] A dedicated registry/lease diagram — **deliberately not added**: the two
+      registries are already covered by a comparison table plus the reservation
+      sequence, and a third view would restate them.
 
 Scripts:
 
 - `WorldManager.server.luau` — Analyzed
-- `ServerPresence.luau` — Documented (Moonwave)
+- `ServerPresence.luau` — **Documented** (Moonwave)
 - `Profiles.luau` — Analyzed
+- `PlayerSchema.luau` — Analyzed
 - `PlayerWorld_Init.lua.server.luau` — Analyzed
 - `WorldService.luau` — Analyzed
+- `WorldDataReplicator.server.luau` — Analyzed
+- `ModeratorManager.server.luau` — Analyzed
 - `PublicServerInit.lua.server.luau` — Analyzed
-- `HousesInfo.luau`, `RolesInfo.luau` — Analyzed
-- `WorldDataReplicator.server.luau` — Pending
-- `ModeratorManager.server.luau` — Pending
-- `EventService.luau` — Pending
-- `ServerDirectory.server.luau` — Pending
-- `WorldsBrowser.server.luau` — Pending
+- `ServerDirectory.server.luau` — Analyzed
+- `WorldsBrowser.server.luau` — Analyzed
+- `PlayerDataReplicator.server.luau` — Analyzed
+- `ShopServerSystem.server.luau` — Analyzed (partly: `ProcessPurchase` only)
+- `HousesInfo.luau`, `RolesInfo.luau`, `GeneralConfiguration.luau` — Analyzed
 - `GamePassService/*` — Pending
+- `EventService.luau` — Pending (events share the reservation machinery)
 
-Unknowns: U-002 (how `PlayerHouses` is imported), and how a house is *purchased*
-(`BuySlot`, `HouseBuyLoad`, `rooms` on the player profile) — not yet read.
+Unknowns still open: **U-002** (how `PlayerHouses` is imported), **U-007**
+(nothing enforces `slots` as a cap on open houses), and the `content` section of
+the `World` profile, which is declared and never written by any script read so far —
+`BuildingSystem` is the likely writer.
 
-Possible bugs: BUG-CANDIDATE-004, 005, 006.
+Possible bugs: BUG-CANDIDATE-004, 005, 006, 008, 009, 010, 011, 012, 013, 014.
 
 ---
 
 ## Scripts
 
-Per-script status tracking begins in Phase 4. As of now:
+**Per-file status now lives in `docs/reference/script-inventory.md`**, which is generated
+by `.github/scripts/generate-script-inventory.py` and lists all 552 files with their
+runtime DataModel path, `RunContext`, `Disabled` flag, line count and status.
 
-- **552** `.luau` files — **26 Analyzed or Documented**, the rest `Pending`
-- **Read end-to-end so far (status `Analyzed`):**
-  - `src/ServerScriptService/ImportTemplates.server.luau`
-  - `src/ServerScriptService/InitScripts.server.luau`
-  - `src/ReplicatedStorage/InitAfterTemplates.luau`
-  - `src/ReplicatedStorage/PlayerInit.luau`
-  - `src/ReplicatedStorage/Client/visualsManager.server.luau`
-  - `…/Core/ServerScriptService/ServerScripts/WorldManager.server.luau`
-  - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
-  - `…/Core/ServerStorage/WorldSystem/Profiles.luau`
-  - `…/PlayerHouses/ServerScriptService/PlayerWorld_Init.lua.server.luau`
-  - `…/PlayerHouses/ServerScriptService/WorldService.luau`
-  - `…/Core/ReplicatedStorage/HousesInfo.luau`
-  - `…/PlayerHouses/ReplicatedStorage/RolesInfo.luau`
-  - `…/GameWorlds/ServerScriptService/ServerScripts/PublicServerInit.lua.server.luau`
-  - `…/Core/ServerScriptService/ServerScripts/playerManager.server.luau`
-  - `…/Core/ReplicatedStorage/Client/PlayerManager.server.luau`
-  - `…/Core/ReplicatedStorage/Client/MainPS.server.luau`
-  - `…/Core/StarterGui/LocalScript.client.luau`
-  - `…/Core/ServerStorage/DataKit/init.luau`
-  - `…/Core/ServerStorage/DataKit/Profile.luau`
-  - `…/Core/ServerStorage/DataKit/Lease.luau`
-  - `…/Core/ServerStorage/DataKit/Mutex.luau`
-  - `…/Core/ServerStorage/DataKit/Health.luau`
-  - `…/Core/ServerStorage/DataKit/Store.luau` — **partly**: ownership, staging,
-    save/close read; `transfer`, `Inbox` and the message pipeline not yet
-  - `…/Core/ServerStorage/DataKit/BaseStore.luau` — **partly**: the envelope format only
+Summary as of this run:
 
-- **Moonwave-annotated by this project (status `Documented`):**
-  - `src/ReplicatedStorage/PlayerInit.luau` — `@class PlayerInit`
-  - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau` — `@class ServerPresence`
+| Status | Count |
+|---|---|
+| **Documented** (read in full + Moonwave-annotated by this project) | 2 |
+| Analyzed (read in full, described on the site) | 27 |
+| Analyzed (partly) | 3 |
+| Pending | 520 |
 
-- **Already Moonwave-annotated in-source before this project** (vendored packages;
-  they appear in the API reference for free): `DataKit`, `Store`, `Profile`, `Lease`,
-  `Mutex`, `Health`, `BaseStore`, `Signal`, `Inbox`, `Adapters`, plus the third-party
-  `Promise`, `Sift`, `Trove`, `Observers`, `Kinetic`.
+The 3 partial reads and why:
+
+| File | What was read | What was not |
+|---|---|---|
+| `DataKit/Store.luau` (1 237 lines) | Ownership resolution, staging, save/close, heartbeat | `transfer`, the message pipeline, projections |
+| `DataKit/BaseStore.luau` (330) | The durable envelope format (`__dkFence` / `__dkData` / `__dkMsgs`) | Commit, fencing, inbox mechanics |
+| `ShopServerSystem.server.luau` (?) | `ProcessPurchase` | Shop rotation, `MessagingService` sync, `MemoryStore` use |
+
+**Already Moonwave-annotated in-source before this project** — they appear in the API
+reference for free, and are third-party or vendored: `DataKit`, `Store`, `Profile`,
+`Lease`, `Mutex`, `Health`, `BaseStore`, `Signal`, `Inbox`, `Adapters`, `Promise`, `Sift`,
+`Trove`, `Observers`, `Kinetic`, `Icon`.
 
 ---
 
 ## Binary Assets
 
-**320 `.rbxm` files — Binary / Not Inspectable.**
+**320 `.rbxm` files — Binary / Not Inspectable.** Full enumeration, grouped by directory
+with runtime paths, is in `docs/reference/binary-assets.md` (generated by
+`.github/scripts/generate-reference.py`).
 
-Their contents cannot be read from this repository and **must not be guessed**.
-Notable ones referenced by the bootstrap or by UI flows:
+The five that actually block documentation:
 
-| Path | Context |
+| Path | Blocks |
 |---|---|
-| `src/ReplicatedFirst/LoadingScreenUI.rbxm` | Loading screen, replicated first |
-| `src/StarterPlayer/StarterPlayerScripts.rbxm` | Client entry-point container — **contents unknown** |
-| `src/StarterPlayer/StarterCharacterScripts.rbxm` | Character scripts — **contents unknown** |
-| `src/StarterGui/ScreenGui.rbxm`, `src/StarterGui/BuildMenu.rbxm` | Root UI |
-| `src/ServerStorage/RBX_ANIMSAVES.rbxm` | Animation editor saves |
-| `…/Core/StarterGui/*.rbxm` (16 files) | Core template UI |
-| `…/PlayerHouses/StarterGui/PermsGui.rbxm` | Housing permissions UI |
-| `…/Core/MaterialService/*.rbxm` | Materials |
-| `…/Core/ReplicatedStorage/Assets/**` | Tools, furniture, models |
-
-A full enumerated table goes into `docs/reference/binary-assets.md` in Phase 4.
+| `src/StarterPlayer/StarterPlayerScripts.rbxm` | The client loader and the `LoadCharacterRequest` sender → BUG-CANDIDATE-007 |
+| `src/StarterPlayer/StarterCharacterScripts.rbxm` | The full character lifecycle |
+| `src/ReplicatedFirst/LoadingScreenUI.rbxm` | The first thing a client sees |
+| `src/StarterGui/ScreenGui.rbxm`, `BuildMenu.rbxm` | Root UI |
+| `…/PlayerHouses/StarterGui/PermsGui.rbxm` | The client half of housing permissions |
 
 ---
 
@@ -346,8 +354,14 @@ A full enumerated table goes into `docs/reference/binary-assets.md` in Phase 4.
 
 ## Problems Found
 
-Seven entries, all written up in full in `docs/testing/verification-plan.md`.
-**None is asserted as a confirmed bug.**
+Fourteen entries, all written up in full in `docs/testing/verification-plan.md`.
+**None is asserted as a confirmed bug.** Two are classified *Confirmed by Static
+Analysis*, and even those state only what the code demonstrably does — 011 confirms an
+inconsistency, not which side of it is wrong; 014 confirms an exposure, not its impact.
+
+**BUG-CANDIDATE-014 is the one to act on first.** It is a committed credential, and
+unlike the others its remediation does not wait on a test result. It is out of scope for
+this documentation project, which changes no code, but it should not sit in a backlog.
 
 | ID | Title | System | Classification | Severity if confirmed | Confidence |
 |---|---|---|---|---|---|
@@ -358,6 +372,13 @@ Seven entries, all written up in full in `docs/testing/verification-plan.md`.
 | BUG-CANDIDATE-005 | Teleport with an access code whose instance has shut down | Housing | Requires Teleport Testing | Medium | Low |
 | BUG-CANDIDATE-006 | A Studio session can publish a fake access code to the live registry | Housing | Likely Bug / Requires Integration Testing | High | Medium |
 | BUG-CANDIDATE-007 | The client script loader is not in this repository | Client | Observation / Requires Runtime Verification | — | High |
+| BUG-CANDIDATE-008 | A purchase grants the item before it charges for it | Housing / Economy | Possible Bug / Requires Failure Injection | Medium | Medium |
+| BUG-CANDIDATE-009 | A first-boot name lookup failure names the house permanently | Housing | Possible Bug / Requires Failure Injection | Low | High |
+| BUG-CANDIDATE-010 | `WorldDataReplicator` misses an already-`ready` server | Housing | Likely Bug / Requires Lifecycle Testing | Medium | Medium |
+| BUG-CANDIDATE-011 | The `moderator` role cannot moderate | Housing | Likely Bug / Confirmed by Static Analysis | Medium | High |
+| BUG-CANDIDATE-012 | House roles, settings and bans readable by any occupant | Housing | Observation / Requires Security Testing | Low | High |
+| BUG-CANDIDATE-013 | A house server with no `TeleportData` strands its player silently | Housing | Possible Bug / Requires Runtime Verification | Medium | Medium |
+| BUG-CANDIDATE-014 | A shared secret and proxy host hardcoded in a committed file | Housing / Security | Confirmed by Static Analysis | High | High |
 
 ### Leads investigated and closed during Phases 1–2
 
@@ -401,101 +422,137 @@ Each is written to be run by hand.
 6. BUG-CANDIDATE-004 — needs two accounts on two servers, 20+ runs.
 7. BUG-CANDIDATE-001 — a product decision more than a test.
 
+Housing entries, in the same spirit — cheapest first:
+
+8. BUG-CANDIDATE-014 — no test needed; check whether the repository is private and
+   whether the secret has been rotated. **Do this first regardless of order.**
+9. BUG-CANDIDATE-011 — two accounts, five minutes, and it needs no failure injection.
+10. BUG-CANDIDATE-012 — one account, invoke four remotes from the client console.
+11. BUG-CANDIDATE-009 — one stubbed call, one fresh house.
+12. BUG-CANDIDATE-010 — add two log lines, open a house 20 times.
+13. BUG-CANDIDATE-008 — read `Collections` first; that may shrink or close it.
+14. BUG-CANDIDATE-013 — starts with "is this even reachable?", which may close it.
+
 ---
 
 ## Last Completed Work
 
-- **Phase:** 2 — Architecture (complete). Phases 0 and 1 also complete.
-- **Systems touched:** Bootstrap / Template Loading; World & Housing (reservation path);
-  Persistence (`DataKit`)
-- **Files created:**
-  - `DOCS_PROGRESS.md`
-  - `moonwave.toml`
-  - `.github/workflows/docs.yml`
-  - `.github/scripts/enable-mermaid.py`
-  - `.github/scripts/check-luau-code-unchanged.py`
-  - `.github/scripts/check-docs-links.py`
+- **Phase:** 3 — Systems. Housing complete. Phases 0, 1 and 2 complete.
+- **Systems touched:** Bootstrap / Template Loading; World & Housing; Persistence
+  (`DataKit`); Player Data (partly, via the housing path)
+- **Files created this run:**
+  - `DOCS_PROGRESS.md`, `moonwave.toml`, `.github/workflows/docs.yml`
+  - `.github/scripts/` — `enable-mermaid.py`, `check-luau-code-unchanged.py`,
+    `check-docs-links.py`, `generate-reference.py`, `generate-script-inventory.py`
   - `docs/intro.md`
-  - `docs/architecture/` — `_category_.json`, `overview.md`, `initialization.md`,
-    `server-lifecycle.md`, `player-lifecycle.md`, `character-lifecycle.md`,
-    `client-lifecycle.md`, `networking.md`, `persistence.md`, `reserved-servers.md`
+  - `docs/architecture/` — 9 files (`_category_.json` + 8 pages)
+  - `docs/systems/` — `_category_.json`, `housing/_category_.json` + 7 pages
   - `docs/testing/` — `_category_.json`, `verification-plan.md`
-- **Files annotated (comments only, verified by the CI guard):**
+  - `docs/reference/` — `_category_.json` + 3 generated pages
+- **Files annotated (comments only, proven by the CI guard):**
   - `src/ReplicatedStorage/PlayerInit.luau`
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
-- **Diagrams:** 16 Mermaid diagrams (flowchart, sequence, state)
-- **Bug candidates:** 7 written up; 2 leads closed as not-defects
-- **Last commit:** `docs: add verification plan with seven bug candidates`
+- **Diagrams:** 30 Mermaid diagrams (flowchart, sequence, state)
+- **Bug candidates:** 14 written up in full; 2 Phase-0 leads closed as not-defects
+- **Scripts read:** 32 of 552
+- **Last commit:** `docs: add generated reference inventories`
+
+### Answers to the brief's headline questions
+
+Recorded here so a future run does not re-derive them:
+
+| Question | Answer | Where |
+|---|---|---|
+| What starts first on a server? | Two sibling `Script`s with **no guaranteed order**; a `BoolValue` barrier makes the order irrelevant | `docs/architecture/initialization.md` |
+| How is a player initialised? | No central bootstrap — systems register with `PlayerInit` and start concurrently and unordered | `docs/architecture/player-lifecycle.md` |
+| How is the client initialised? | **Cannot be answered from this repository.** Nothing here enables the 27 client scripts | `docs/architecture/client-lifecycle.md`, BUG-CANDIDATE-007 |
+| Can two players reserve the same house at once? | **No — it is guarded**, by an atomic MemoryStore compare-and-set, plus deny-and-converge for the residual window | `docs/architecture/reserved-servers.md` |
+| How is a stale server reference detected? | It is not — it is **prevented**. Nothing durable points at a server; reachability *is* a lease and liveness *is* its TTL | `docs/systems/housing/server-lifecycle.md` |
+| What happens when the last player leaves? | Nothing housing-specific. No handler exists, and none is needed | `docs/systems/housing/server-lifecycle.md` |
+| How is a house reopened? | There is no reopen path. A closed house is one with no lease | `docs/systems/housing/server-lifecycle.md` |
 
 ### Tooling notes for the next run
 
-- **Moonwave cannot be built locally in this environment.** The CLI installs from npm,
-  but `moonwave build` fetches its extractor binary from
-  `latest-github-release.eryn.io` / `github.com`, both outside the network allowlist
-  (HTTP 403). The build is validated on GitHub Actions runners instead.
-  Compensating local checks, both wired into CI and both worth running before every
-  commit:
-  - `python3 .github/scripts/check-docs-links.py` — relative links, heading anchors,
-    and `/api/<Class>` targets against the real `@class` annotations
-  - `python3 .github/scripts/check-luau-code-unchanged.py main` — proves only comments
-    changed
-- **Mermaid** is not part of Moonwave 1.4.2's Docusaurus template. The workflow builds
-  twice: a warm-up build populates Moonwave's cached project, the theme is installed
-  into it with `--no-save --no-package-lock` so the cache is not wiped, and only then is
-  it switched on. Failure to install is a warning, not an error.
-- **`git push` is currently blocked.** `git push -u origin docs/moonwave-documentation`
-  returns HTTP 403: *"Claude doesn't have GitHub access to Arclyne/voz-hispana for your
-  organization."* All work is committed locally on `docs/moonwave-documentation`.
-  An org admin must install the Claude GitHub App for the repository before any of this
-  reaches GitHub — and GitHub Pages cannot build until it does.
+- **Moonwave cannot be built locally in this environment.** The CLI installs from npm, but
+  `moonwave build` fetches its extractor binary from `latest-github-release.eryn.io` /
+  `github.com`, both outside the network allowlist (HTTP 403). The build is validated on
+  GitHub Actions runners instead. **Run these two before every commit** — they are the
+  local stand-in, and both are wired into CI:
+  - `python3 .github/scripts/check-docs-links.py`
+  - `python3 .github/scripts/check-luau-code-unchanged.py main`
+- **Regenerate the reference pages** after reading new files, and update the `ANALYSED` /
+  `PARTIAL` / `DOCUMENTED` sets at the top of `generate-script-inventory.py`:
+  - `python3 .github/scripts/generate-reference.py`
+  - `python3 .github/scripts/generate-script-inventory.py`
+- **Mermaid** is not in Moonwave 1.4.2's Docusaurus template. The workflow builds twice: a
+  warm-up populates Moonwave's cached project, the theme is installed into it with
+  `--no-save --no-package-lock` so the cache survives, then the real build runs. A failed
+  install warns rather than failing.
+- **`git push` is blocked, and this has not changed.** Every attempt returns HTTP 403:
+  *"Claude doesn't have GitHub access to Arclyne/voz-hispana for your organization."*
+  All work is committed locally on `docs/moonwave-documentation`. **Nothing reaches GitHub,
+  and GitHub Pages cannot build, until an org admin installs the Claude GitHub App for this
+  repository** (https://github.com/apps/claude/installations/select_target). The
+  documentation workflow is otherwise ready and will run on the first successful push.
 
 ---
 
 ## Next Recommended Work
 
-**Phase 3 — Systems, starting with Housing.** It is the system the brief asks to be
-covered most deeply, and it is the one already half-analysed.
+Housing is done. **Do not start Phase 4's per-script sweep yet** — the brief is explicit
+that five systems understood deeply beat fifty described shallowly, and there are more
+systems worth that treatment.
 
-Do this next, in order:
+### 1. Player Data (recommended next — small, and everything depends on it)
 
-1. **Read the housing scripts not yet read**, in this order — they answer the questions
-   the current documentation cannot:
-   - `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` — how house
-     settings, roles and bans reach the client, and how they are written back
-   - `PlayerHouses/ServerScriptService/ModeratorManager.server.luau` — moderation
-   - `Core/…/ServerScripts/PlayerDataReplicator.server.luau` and
-     `Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau` — `GetSlots`, and where
-     `data.rooms` is written (answers **U-007**: how a house is bought)
-   - `Core/…/ServerScripts/WorldsBrowser.server.luau` and `ServerDirectory.server.luau` —
-     how the house/server list is built and how it uses the presence registry
-   - `Core/ServerStorage/WorldSystem/GamePassService/*`
-2. **Write `docs/systems/housing/`** as several pages, not one:
-   `overview.md`, `identity.md` (HouseId, ownership, `HousesInfo`, purchase),
-   `persistence.md`, `reserved-server-lifecycle.md`, `entry-flow.md`,
-   `permissions.md` (roles, bans, guests, `canHostWorld`), `error-handling.md`.
-   Each with the Section-11 headings that actually apply — **do not emit empty
-   headings** to satisfy the template.
-3. **Add the housing diagrams still missing** (listed under *Systems → Housing* above).
-4. **Cross-link** `docs/architecture/reserved-servers.md` into the new housing pages, and
-   convert the two remaining plain-text `**Systems → Housing**` references in
-   `docs/architecture/initialization.md` and `docs/intro.md` into real links.
-5. **Update this file, then commit.** Suggested commits:
-   `docs: document housing identity and persistence`,
-   `docs: document housing reserved-server lifecycle`,
-   `docs: document housing permissions and error handling`,
-   `docs: update documentation progress`.
+Read, in this order:
 
-After Housing, the next most valuable systems are **Player Data** (it underpins
-everything else and is small) and **Referrals** (`ReferralService.luau` is 1 243 lines,
-the single largest non-vendored module in the repository).
+- `Core/ServerStorage/WorldSystem/PlayerDataService.luau` (1.9 KB)
+- `Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau` (555 lines) — the
+  DataStore-to-`Instance` replication whose contract `PlayerSchema` describes
+- `Core/ServerScriptService/ServerScripts/PlayerDataInit.server.luau`
+- `Core/ServerScriptService/Data/Main/init.server.luau` (392 lines)
+- `Core/ReplicatedStorage/Client/EconomySystem/Collections.luau` — **also closes
+  BUG-CANDIDATE-008**, which cannot be assessed without knowing where currency lives
 
-**Do not** start Phase 4's per-script sweep before Housing is finished — the brief is
-explicit that five systems understood deeply beat fifty described shallowly.
+Then write `docs/systems/player-data.md` and finish
+`docs/architecture/persistence.md`'s open question about `GlobalDataStore` and
+`GiftInbox`, which call `DataStoreService` outside `DataKit`.
+
+### 2. Referrals
+
+`Core/ServerStorage/WorldSystem/ReferralService.luau` is **1 243 lines**, the largest
+non-vendored module in the repository. Its message-driven half is already partly described
+in `docs/architecture/persistence.md` (the `onMessage` idempotence contract). Pair it with
+`ServerScripts/Referrals/*` and `Shared/Referrals/*`.
+
+### 3. Events
+
+`Core/ServerStorage/WorldSystem/EventService.luau` — the third `ReserveServer` caller, and
+the only one not yet documented. It shares all the reservation machinery already written
+up, so this should be fast. Pair with `EventBootstrap.server.luau` and
+`EventCommands.server.luau`.
+
+### 4. Then the gameplay systems
+
+Inventory / Tools, Interactables (44 remotes), Machines, Karaoke (25 remotes), Paint,
+Shops, Quests, Jobs, Animation, Building. Roughly 480 files. Take one at a time, and
+commit per system.
+
+### Deferred deliberately, with reasons
+
+| Deferred | Why |
+|---|---|
+| `docs/architecture/data-flow.md` | Persistence and Networking already cover the flows found. Add it only if a later system shows one they do not. |
+| `docs/architecture/dependencies.md` | Phase 5. Building it now, from four systems, would produce a graph that has to be redrawn. |
+| `classOrder` in `moonwave.toml` | Phase 4, once the full set of `@class` annotations exists. Naming a class that does not exist would fail the build. |
+| Per-script Moonwave sweep | Phase 4. Two modules are annotated so far; ~16 more are already annotated in-source by their vendors. |
 
 ### Before finishing any future run
 
-1. Run both check scripts above.
-2. Update *Current Phase*, *Last Completed Work*, *Next Recommended Work*, *Unknowns*,
-   and any new bug candidates.
-3. Commit. Attempt a push; if it still fails with 403, say so explicitly in the summary
-   so the access problem stays visible.
+1. Run both check scripts.
+2. Regenerate the two reference pages and update the status sets.
+3. Update *Current Phase*, *Last Completed Work*, *Next Recommended Work*, *Unknowns*, and
+   any new bug candidates in **both** this file and `docs/testing/verification-plan.md`.
+4. Commit. Attempt a push; if it still returns 403, say so explicitly in the summary so the
+   access problem stays visible rather than being quietly absorbed.
