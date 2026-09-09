@@ -1,0 +1,10 @@
+{
+  "label": "Architecture",
+  "position": 2,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Architecture",
+    "description": "How a Voz Hispana server assembles itself, and the lifecycles that run on top of it."
+  }
+}

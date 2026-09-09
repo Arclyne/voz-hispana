@@ -1,0 +1,10 @@
+{
+  "label": "Verification",
+  "position": 5,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Verification",
+    "description": "Suspected defects, the evidence and theory behind each, and a reproducible plan to confirm or dismiss them. Nothing here is asserted as a confirmed bug."
+  }
+}

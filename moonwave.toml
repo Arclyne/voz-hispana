@@ -1,0 +1,86 @@
+# Moonwave configuration — Voz Hispana technical documentation
+#
+# Two layers live in the same site:
+#   * docs/   — conceptual engineering documentation (Markdown + Mermaid)
+#   * /api/   — Moonwave API reference extracted from `--[=[ ... ]=]` comments in src/
+#
+# Build and dev must be given the same --code paths the workflow uses; see
+# DOC_CODE_PATHS in .github/workflows/docs.yml and the note further down.
+#
+#   npx moonwave build --code src/ReplicatedStorage \
+#                             src/ServerStorage/TemplatesTesting/Core/ServerStorage
+#
+# Plain `--code src` does NOT work: the extractor aborts on pre-existing comments
+# elsewhere in the tree.
+
+title = "Voz Hispana"
+gitRepoUrl = "https://github.com/arclyne/voz-hispana"
+gitSourceBranch = "main"
+
+# The API reference is scoped: the Documentation workflow passes `--code` paths
+# rather than all of `src/`, because Moonwave's extractor aborts on pre-existing
+# `---` separator comments elsewhere in the tree. The rationale and the current
+# paths live in .github/workflows/docs.yml (DOC_CODE_PATHS).
+
+# `classOrder` is intentionally not set yet. It is added once the full set of
+# `@class` annotations exists (Phase 4), so that the sidebar groups classes by
+# system instead of alphabetically. Setting it early would break the build the
+# moment it named a class that does not exist.
+
+[home]
+enabled = true
+includeReadme = false
+
+[[home.features]]
+title = "Architecture"
+description = "How a server boots, how templates are imported, and how players and characters are initialised."
+
+[[home.features]]
+title = "Systems"
+description = "Housing and reserved servers, persistence, networking, and the gameplay systems built on top of them."
+
+[[home.features]]
+title = "Verification"
+description = "Recorded inconsistencies, the theory behind each one, and a reproducible plan to confirm or dismiss it."
+
+[docusaurus]
+title = "Voz Hispana"
+tagline = "Technical documentation"
+url = "https://arclyne.github.io"
+baseUrl = "/voz-hispana/"
+onBrokenLinks = "throw"
+
+# Mermaid rendering is NOT configured here on purpose.
+#
+# Moonwave 1.4.2 generates its Docusaurus project from a fixed template whose
+# package.json does not include @docusaurus/theme-mermaid, and the cached project
+# is wiped whenever that package.json changes. Declaring the theme here would
+# therefore fail the build with "module not found".
+#
+# The Documentation workflow installs the theme into Moonwave's cached project and
+# injects `themes` + `markdown.mermaid` into a throwaway copy of this file. If that
+# install fails the workflow only warns, and the ```mermaid blocks degrade to code
+# blocks instead of failing the build. They still render natively when the Markdown
+# is read on GitHub.
+
+[navbar]
+title = "Voz Hispana"
+
+[[navbar.items]]
+to = "docs/intro"
+label = "Documentation"
+position = "left"
+
+[[navbar.items]]
+to = "api/"
+label = "API Reference"
+position = "left"
+
+[[navbar.items]]
+href = "https://github.com/arclyne/voz-hispana"
+label = "GitHub"
+position = "right"
+
+[footer]
+style = "dark"
+copyright = "Voz Hispana — engineering documentation generated with Moonwave."

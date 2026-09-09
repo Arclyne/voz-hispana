@@ -1,0 +1,16 @@
+# Python bytecode from the documentation helper scripts in .github/scripts/.
+# A .pyc was committed by accident in aa267e3; this keeps it from happening again.
+__pycache__/
+*.py[cod]
+
+# Moonwave build output. Moonwave prints this warning itself at the end of every
+# build: "Do not commit this folder: you should add it to your .gitignore file."
+# `.moonwave-warmup` is the throwaway first pass the Documentation workflow runs
+# to populate Moonwave's cached Docusaurus project before enabling Mermaid.
+/build/
+/.moonwave-warmup/
+
+# macOS Finder metadata. Two are already tracked (./.DS_Store and src/.DS_Store);
+# they are left alone rather than deleted, since removing them is a change to the
+# repository rather than to this documentation project.
+.DS_Store

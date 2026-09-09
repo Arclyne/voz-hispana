@@ -1,0 +1,159 @@
+name: Documentation
+
+# Builds the Moonwave documentation site and publishes it to GitHub Pages.
+#
+# The build job runs on every push and every pull request so that a change which
+# breaks the documentation fails visibly, at the point it is introduced.
+# Deployment only happens for pushes to the default branch.
+#
+# One-time repository setup required before the first deploy succeeds:
+#   Settings → Pages → Build and deployment → Source: "GitHub Actions".
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "moonwave.toml"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "src/**"
+      - "moonwave.toml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Which Luau paths Moonwave extracts the API reference from.
+#
+# NOT all of src/. Moonwave's extractor treats every `---` comment and every
+# `--[=[ ]=]` block as a doc comment, and aborts the whole build on the first
+# batch of diagnostics. Much of src/ServerStorage/TemplatesTesting/Core/
+# ReplicatedStorage predates this documentation project and uses `--- SECTION`
+# lines as visual separators, or carries `--[=[ ]=]` blocks whose parent class
+# has no `@class` entry. That produced 16 extractor errors across Icon,
+# FastCastRedux, PartCache, Karaoke, Paint, CardSlots, Carousel, ButtonMotion,
+# AreaSystem, DancesInfo and BusquedaSettings, plus a duplicate `@class Signal`
+# between Shared/Signal.luau and DataKit/Signal.luau.
+#
+# Fixing those would mean editing comments in ~15 files this project has not
+# read, several of them vendored third-party libraries — a much larger and
+# riskier change than the documentation it would enable. So the API layer is
+# scoped to the paths that actually carry annotated classes, and the conceptual
+# documentation continues to cover the rest.
+#
+# Widen this as more systems are documented, and re-run the link checker: it
+# validates /api/<Class> links against exactly these paths.
+env:
+  DOC_CODE_PATHS: >-
+    src/ReplicatedStorage
+    src/ServerStorage/TemplatesTesting/Core/ServerStorage
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history so the guard below can diff against the base branch.
+          fetch-depth: 0
+
+      # This project documents the game; it must never change it. Moonwave
+      # annotations and comments in .luau files are allowed, executable code is
+      # not. The guard strips comments from both versions with a small Luau lexer
+      # and fails if anything else moved.
+      - name: Guard — no executable Luau changed
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event_name == 'pull_request'
+                    && format('origin/{0}', github.event.pull_request.base.ref)
+                    || 'origin/main' }}"
+          # checkout used fetch-depth: 0, so every remote branch is already local.
+          python3 .github/scripts/check-luau-code-unchanged.py "$BASE"
+
+      # Same class of failure the Docusaurus build would raise (moonwave.toml sets
+      # onBrokenLinks = "throw"), but caught in seconds and with a precise message.
+      - name: Check internal documentation links
+        run: python3 .github/scripts/check-docs-links.py docs $DOC_CODE_PATHS
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Moonwave
+        run: npm install --global moonwave@latest
+
+      # `moonwave build` exits non-zero when the Luau doc comments fail to
+      # extract or when Docusaurus cannot compile the site (including broken
+      # internal links, which moonwave.toml sets to `throw`). No `|| true`,
+      # no `continue-on-error`: a documentation build failure must fail the job.
+      #
+      # Two passes, because Mermaid needs a theme Moonwave does not ship:
+      #   1. A warm-up build creates and populates Moonwave's cached Docusaurus
+      #      project. Its output is discarded.
+      #   2. @docusaurus/theme-mermaid is installed into that cached project with
+      #      --no-save --no-package-lock, so its package.json stays byte-identical
+      #      to Moonwave's template and the cache is reused rather than wiped.
+      #      Only if that succeeds is the theme enabled in moonwave.toml.
+      #   3. The real build runs and is the one that gates the job.
+      # A failure to install the theme is a warning, not an error: the diagrams
+      # then render as code blocks instead of taking the whole site down.
+      - name: Build site
+        run: |
+          set -euo pipefail
+
+          moonwave build --out-dir .moonwave-warmup --code $DOC_CODE_PATHS
+          rm -rf .moonwave-warmup
+
+          CACHE="$HOME/.cache/moonwave/$(basename "$PWD")"
+          if [ -d "$CACHE/node_modules" ] && npm install \
+               --prefix "$CACHE" --no-save --no-package-lock \
+               @docusaurus/theme-mermaid@^3.7.0; then
+            python3 .github/scripts/enable-mermaid.py
+            echo "Mermaid rendering enabled."
+          else
+            echo "::warning::Could not install @docusaurus/theme-mermaid — Mermaid diagrams will render as code blocks."
+          fi
+
+          moonwave build --out-dir build --code $DOC_CODE_PATHS
+
+      - name: Verify build output exists
+        run: |
+          if [ ! -f build/index.html ]; then
+            echo "::error::Moonwave reported success but produced no build/index.html"
+            exit 1
+          fi
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

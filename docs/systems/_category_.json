@@ -1,0 +1,10 @@
+{
+  "label": "Systems",
+  "position": 3,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Systems",
+    "description": "The real subsystems of Voz Hispana, identified from the source rather than from a template."
+  }
+}
