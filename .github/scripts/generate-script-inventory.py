@@ -86,6 +86,7 @@ ANALYSED |= {
     t("Core/ReplicatedStorage/Shared/JobSystem/ConditionsUses.luau"),
     t("Core/ServerStorage/WorldSystem/GiftInbox.luau"),
     t("Core/ServerStorage/GlobalDataStore/ReadMe.server.luau"),
+    t("Core/ReplicatedStorage/Shared/BartenderSystem/init.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -127,6 +128,13 @@ PARTIAL = {
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/FunctActionsTV.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/TV/init.luau"),
     t("Core/ServerScriptService/ServerScripts/GiftHandler.server.luau"),
+    t("Core/ReplicatedStorage/Shared/BartenderSystem/Instance/init.luau"),
+    t("Core/ReplicatedStorage/Shared/NPC_Custom/init.luau"),
+    t("Core/ReplicatedStorage/Shared/NPC_Custom/Actions.luau"),
+    t("Core/ReplicatedStorage/Shared/NPC_Custom/Instance/init.luau"),
+    t("Core/ReplicatedStorage/Shared/NPC_Custom/Instance/CustomizeSettings.luau"),
+    t("Core/ReplicatedStorage/Shared/NPC_Custom/Instance/FormatPathNpc.luau"),
+    t("Core/ReplicatedStorage/Shared/DialogModule/init.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",

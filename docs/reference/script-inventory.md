@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 37 |
-| Pendiente | Aún sin leer | 446 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 62 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 44 |
+| Pendiente | Aún sin leer | 438 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 95 leídos.
+530 archivos, 76,305 líneas, 103 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 3/6 leídos</summary>
@@ -692,21 +692,21 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 234 | `ReplicatedStorage.Shared.BartenderSystem.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 234 | `ReplicatedStorage.Shared.BartenderSystem.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/Instance/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/BartenderSystem/Instance/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `ActionsBartender.luau` | ModuleScript | — | — | 61 | `ReplicatedStorage.Shared.BartenderSystem.Instance.ActionsBartender` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 549 | `ReplicatedStorage.Shared.BartenderSystem.Instance.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 549 | `ReplicatedStorage.Shared.BartenderSystem.Instance.init` | Analizado (en parte) |
 
 </details>
 
@@ -731,11 +731,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/DialogModule/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/DialogModule/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 405 | `ReplicatedStorage.Shared.DialogModule.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 405 | `ReplicatedStorage.Shared.DialogModule.init` | Analizado (en parte) |
 
 </details>
 
@@ -967,23 +967,23 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Actions.luau` | ModuleScript | — | — | 100 | `ReplicatedStorage.Shared.NPC_Custom.Actions` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 105 | `ReplicatedStorage.Shared.NPC_Custom.init` | Pendiente |
+| `Actions.luau` | ModuleScript | — | — | 100 | `ReplicatedStorage.Shared.NPC_Custom.Actions` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 105 | `ReplicatedStorage.Shared.NPC_Custom.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/Instance/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/NPC_Custom/Instance/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `CustomizeSettings.luau` | ModuleScript | — | — | 24 | `ReplicatedStorage.Shared.NPC_Custom.Instance.CustomizeSettings` | Pendiente |
-| `FormatPathNpc.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.NPC_Custom.Instance.FormatPathNpc` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.NPC_Custom.Instance.init` | Pendiente |
+| `CustomizeSettings.luau` | ModuleScript | — | — | 24 | `ReplicatedStorage.Shared.NPC_Custom.Instance.CustomizeSettings` | Analizado (en parte) |
+| `FormatPathNpc.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.NPC_Custom.Instance.FormatPathNpc` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 196 | `ReplicatedStorage.Shared.NPC_Custom.Instance.init` | Analizado (en parte) |
 
 </details>
 

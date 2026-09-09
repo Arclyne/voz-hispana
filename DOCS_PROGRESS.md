@@ -227,6 +227,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | **Documentado** — `docs/systems/nametags.md`. Faltan `Shared/Nametag/` y el cliente |
 | Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | **Papel establecido** — `docs/systems/survey.md`: es interfaz de cliente sin remotes propios; conduce a `Stores`. Su lógica de UI sigue sin leer |
 | Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | **Barrido** — `docs/systems/survey.md`; solo los `bind` |
+| Bar y NPCs | `Shared/BartenderSystem`, `Shared/NPC_Custom`, `Shared/DialogModule` | **Documentado** — `docs/systems/bar-npcs.md`, 1 diagrama. **No estaba en esta tabla hasta ahora** |
 | Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
 | Librerías de terceros | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pendiente (marcar como terceros, documentar solo la frontera) |
 
@@ -317,9 +318,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 61 |
-| Analizado (en parte) | 37 |
-| Pendiente | 446 |
+| Analizado (leído entero, descrito en el sitio) | 62 |
+| Analizado (en parte) | 44 |
+| Pendiente | 438 |
 
 Las lecturas parciales y por qué:
 
@@ -543,7 +544,7 @@ y razonado está en la propia página; el resumen es:
 - **Archivos anotados con Moonwave (solo comentarios, demostrado por la guarda de CI):**
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
-- **Diagramas:** 41 diagramas Mermaid (flowchart, sequence, state)
+- **Diagramas:** 42 diagramas Mermaid (flowchart, sequence, state)
 - **Candidatos a bug:** 38 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
