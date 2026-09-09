@@ -70,6 +70,8 @@ o en un place de pruebas.
 | [015](#bug-candidate-015) | Un solo booleano separa la economía de escrituras arbitrarias del cliente | Economía / Seguridad | Observación / Requiere pruebas de seguridad | Crítica | Alta |
 | [016](#bug-candidate-016) | Las máquinas aceptan del cliente el valor de la recompensa sin validarlo | Máquinas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Alta |
 | [017](#bug-candidate-017) | Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto | Administración / Seguridad | Observación / Requiere verificación en ejecución | Baja | Alta |
+| [018](#bug-candidate-018) | Salir durante la carga deja el registro sucio y rompe la reconexión al mismo servidor | Datos del jugador / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
+| [019](#bug-candidate-019) | Donar a un jugador que aún no ha cargado destruye la moneda | Economía / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
 
 ### Entradas de seguridad
 
@@ -1813,6 +1815,272 @@ caduca como se espera.
 comando administrativo aceptado, para conocer la frescura real en producción.
 
 
+## BUG-CANDIDATE-018
+
+### Salir durante la carga deja el registro sucio y rompe la reconexión al mismo servidor
+
+**Sistema:** Datos del jugador / Sesión · **Clasificación:** Bug probable / Requiere pruebas de ciclo de vida
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerScriptService/Data/Main/init.server.luau`, `PlayerAdded`
+(líneas 104–155) y `PlayerRemoving` (líneas 187–196)
+**Documentación relacionada:** [Data.Main](../systems/session-orchestrator.md#los-tres-estados-de-datacomplete)
+
+#### Comportamiento observado — HECHO
+
+`PlayerAdded` marca al jugador como «cargando» en su primera línea, y el resto de la
+función es una secuencia larga con varios puntos de espera:
+
+```lua
+function PlayerAdded(Player)
+	if PlayerDataReplicator.DataComplete[Player.UserId] then return end
+	PlayerDataReplicator.DataComplete[Player.UserId] = 'no complete'
+	...
+	local list, errorMessage = PlayerDataReplicator.hydrate(Player)   -- espera al DataStore
+	...
+	PlayerDataReplicator.DataComplete[Player.UserId] = list
+	PlayerDataReplicator.markReady(Player)
+	...
+end
+```
+
+`PlayerRemoving`, el manejador que limpia ese registro, **se rinde ante el valor
+transitorio**:
+
+```lua
+function PlayerRemoving(Player)
+	RequerestLoadedPlayer[Player] = nil
+	local DataComplete = PlayerDataReplicator.DataComplete[Player.UserId]
+
+	if not DataComplete or table.find({"no complete", "Guardando"}, DataComplete) then return end
+
+	PlayerDataReplicator.finalize(Player)
+	PlayerDataReplicator.DataComplete[Player.UserId] = nil
+end
+```
+
+Sale con `return` y **no borra la entrada**. `DataComplete` solo lo escribe este archivo:
+un `grep` sobre todo `src/` confirma que ningún otro script lo asigna. Nada más lo va a
+limpiar.
+
+#### Por qué esto puede ser un problema — HECHO
+
+La primera línea de `PlayerAdded` es una guarda de reentrada contra **el mismo `UserId`**,
+no contra la misma `Instance` de `Player`:
+
+```lua
+if PlayerDataReplicator.DataComplete[Player.UserId] then return end
+```
+
+Si la entrada quedó sucia, una reconexión **a esa misma instancia de servidor** entra por
+esa guarda y sale inmediatamente: no hay `hydrate`, no hay `leaderstats`, no hay
+`markReady`, y `StartClientPlayer` no se dispara nunca.
+
+#### Teoría — TEORÍA
+
+Hay dos ventanas, y la segunda es la que más daño hace.
+
+**Ventana A — salir durante `hydrate`.** El propio `hydrate` la contempla:
+
+```lua
+if not player:IsDescendantOf(game) then
+	return nil, "El jugador salio durante la carga"
+end
+```
+
+Devuelve `nil`, y la rama de error de `PlayerAdded` **sí** limpia la entrada. Esta ventana
+se cierra sola. Está anotada porque demuestra que quien escribió el código conocía el
+problema en ese punto concreto.
+
+**Ventana B — salir después de `hydrate` y antes de la línea 147.** Aquí no hay
+comprobación. La secuencia sería:
+
+1. El jugador entra; `DataComplete[userId] = "no complete"`.
+2. `hydrate` termina bien.
+3. El jugador se va. `Players.PlayerRemoving` dispara los dos manejadores; el de
+   `Data.Main` ve `"no complete"` y **se rinde**.
+4. La corrutina de `PlayerAdded` continúa y escribe `DataComplete[userId] = list`.
+5. La entrada queda como **tabla, para un jugador que ya no está**.
+
+A partir de ahí, en ese servidor:
+
+| Consecuencia | Mecanismo |
+|---|---|
+| Una reconexión no inicializa nada | La guarda de la línea 105 |
+| El apagado tarda 30 s de más | `CountDatasCompletes()` cuenta las tablas, y espera hasta agotar el tope |
+| `RevisarCanciones` y `ComprasTablero` creen que el jugador está presente | Leen `DataComplete[UserId]` por inyección |
+
+**No hay pérdida de datos.** `PlayerDataInit` conecta su propio manejador de
+`Players.PlayerRemoving` que llama a `PlayerDataService.close`, y ese camino sí cierra el
+perfil y suelta el lease pase lo que pase. Lo que se corrompe es el estado en memoria de
+la sesión, no lo guardado.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `DataComplete` solo se asigna en `Data/Main/init.server.luau`; ningún otro archivo escribe en él |
+| 2 | `PlayerRemoving` sale antes de limpiar en dos de los cuatro estados posibles |
+| 3 | La guarda de reentrada es por `UserId`, que sobrevive a la reconexión, no por `Player` |
+| 4 | `markReady` sí está protegido (`if tracked[player] ~= nil then`), lo que impide que el estado de guardado se corrompa por esta misma vía — la protección existe en `PlayerDataReplicator` pero no en `DataComplete` |
+| 5 | `hydrate` comprueba explícitamente `IsDescendantOf(game)`, prueba de que la ventana de salida durante la carga se consideró en ese punto |
+
+#### Incógnitas
+
+- Con qué frecuencia Roblox devuelve a un jugador que reconecta a **la misma** instancia de
+  servidor. Sin eso, el impacto se queda en el retraso de apagado y el estado fantasma.
+- Cuánto dura realmente la ventana B: depende de lo que tarden `PaintServer:Load`,
+  `Commands:PlayerAdded` y `AgarreTool.new`, ninguno medido.
+
+#### Escenario de ejemplo
+
+Un jugador con conexión inestable entra, su perfil carga, y pierde la conexión mientras el
+servidor todavía está montando sus cuadros. Vuelve treinta segundos después y Roblox lo
+manda al mismo servidor. Aparece en el mundo sin `leaderstats`, sin inventario y sin
+interfaz: el cliente sigue esperando un `StartClientPlayer` que ya no va a llegar.
+
+**Comportamiento esperado:** la reconexión inicializa al jugador con normalidad.
+**Comportamiento posible:** el jugador queda en un estado inerte hasta que le toque otro
+servidor.
+
+#### Plan de verificación — *Ciclo de vida*
+
+1. En un place de pruebas, añade un `task.wait(10)` **temporal** justo después de la
+   llamada a `hydrate` en `PlayerAdded`, para ensanchar la ventana B a un tamaño manejable.
+   *(Es un cambio de instrumentación para la prueba, no una corrección.)*
+2. Entra con una cuenta y cierra el cliente a los ~5 segundos.
+3. Vuelca `PlayerDataReplicator.DataComplete` desde la consola del servidor.
+4. Vuelve a entrar, forzando el mismo servidor con `TeleportService:TeleportToPlaceInstance`
+   o uniéndote desde la lista de amigos.
+5. Observa si aparecen `leaderstats` y si el cliente recibe `StartClientPlayer`.
+
+**Pasa:** tras el paso 3 `DataComplete` no contiene ninguna entrada para ese `UserId`, y la
+reconexión inicializa con normalidad.
+**Falla:** queda una entrada, y la reconexión al mismo servidor no monta nada.
+
+**Instrumentación sugerida:** un `warn` en `PlayerAdded` cuando la guarda de la línea 105
+rechaza a un jugador. En producción, ese contador diría de inmediato si esto ocurre de
+verdad y con qué frecuencia.
+
+---
+
+## BUG-CANDIDATE-019
+
+### Donar a un jugador que aún no ha cargado destruye la moneda
+
+**Sistema:** Economía / Sesión · **Clasificación:** Bug probable / Requiere pruebas de ciclo de vida
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerScriptService/Data/Main/init.server.luau`,
+`donacion.Donar`; `Core/ReplicatedStorage/Client/EconomySystem/Collections.luau`,
+`Give` y `GetValue`
+**Documentación relacionada:** [Data.Main → Donaciones](../systems/session-orchestrator.md#donaciones-entre-jugadores)
+
+#### Comportamiento observado — HECHO
+
+`donacion.Donar` cobra primero y concede después, que es el orden correcto:
+
+```lua
+if SumaTotal <= MaxAmountSend and Cobros.charge(Player, {Coins = Cantidad}, true) then
+	Cobros.Give(Receptor, {Coins = Cantidad}, true)
+	Cash:SetAttribute("AmountSending", tostring(SumaTotal))
+```
+
+La validación del receptor es esta, y solo esta:
+
+```lua
+typeof(Receptor)=="Instance" and Receptor:IsA("Player") and Receptor:IsDescendantOf(game)
+```
+
+`Cobros.Give` localiza la `Instance` de moneda del receptor con `GetValue`, y **si no la
+encuentra no hace nada**:
+
+```lua
+local stat = module.GetValue(Player, NameStats)
+if stat then
+	... module.SetAmount(...)
+end
+-- sin rama else, sin valor de retorno, sin aviso
+```
+
+`GetValue` busca dentro de las carpetas de `Index` —`leaderstats` entre ellas— que **solo
+existen después de `hydrate`**. Un jugador que acaba de entrar aparece en `Players` y pasa
+las tres comprobaciones de `Donar` mucho antes de tener esas carpetas.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El cobro y la concesión no comparten condición de éxito:
+
+| | Cobro (`charge`) | Concesión (`Give`) |
+|---|---|---|
+| Sobre quién | El emisor, ya cargado por definición (si no, `Donar` habría fallado antes al indexar `leaderstats`) | El receptor, que puede estar a medio cargar |
+| Si la `Instance` no existe | `requirements` falla → devuelve `nil` → no se cobra | No hace nada, en silencio |
+| Valor de retorno | `true` o `nil` | ninguno |
+
+El resultado se comprueba en un lado y no en el otro. `Donar` nunca mira lo que devolvió
+`Give`, porque `Give` no devuelve nada.
+
+#### Teoría — TEORÍA
+
+Donar a un jugador que todavía está cargando **destruye la moneda**: sale de la cuenta del
+emisor, no entra en la del receptor, y además consume presupuesto del tope diario. Ambas
+partes ven la notificación de éxito, porque las notificaciones se envían
+incondicionalmente después:
+
+```lua
+Cobros.Give(Receptor, {Coins = Cantidad}, true)
+Cash:SetAttribute("AmountSending", tostring(SumaTotal))
+SentNotification(Player, "Server", `Has donado ${Cantidad} al jugador {Receptor.DisplayName}`, ...)
+SentNotification(Receptor, "Server", `El jugador {Player.DisplayName} te ha donado ${Cantidad}`, ...)
+return
+```
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `Give` no tiene rama `else` cuando `stat` es `nil`, ni valor de retorno |
+| 2 | `Donar` no comprueba el resultado de `Give` — no podría, aunque quisiera |
+| 3 | `GetValue` depende de carpetas que crea `hydrate`, no de la presencia del jugador |
+| 4 | Las notificaciones de éxito se emiten sin condicionar al resultado |
+| 5 | El mismo patrón de escritura silenciosa aparece en `SetAmount`, que ignora la llamada si `value` o `Amount` son falsos |
+
+#### Incógnitas
+
+- Cómo elige el cliente al receptor. Si la interfaz solo lista jugadores con datos cargados,
+  la ventana se estrecha mucho, pero un cliente modificado puede enviar cualquier `Player`
+  igualmente: la validación del servidor es la única que cuenta.
+- Si `Index` incluye alguna carpeta que exista antes de `hydrate`. No se ha leído completa.
+
+#### Escenario de ejemplo
+
+Dos amigos entran a la vez. Uno carga primero, abre el panel de donaciones, ve al otro en
+la lista y le manda 500 Coins. El receptor todavía está montando su árbol de datos. El
+emisor ve «Has donado 500», el receptor ve «te ha donado 500», y los 500 no existen en
+ninguna parte.
+
+**Comportamiento esperado:** o la donación llega, o se rechaza y no se cobra.
+**Comportamiento posible:** se cobra, no llega, y ambos reciben confirmación de éxito.
+
+#### Plan de verificación — *Ciclo de vida*, *Funcional*
+
+1. En un place de pruebas, retrasa `hydrate` para una cuenta concreta (un `task.wait`
+   temporal condicionado por `UserId`).
+2. Con una segunda cuenta ya cargada, dispara `DonarCoins` hacia la primera durante ese
+   retraso, desde la consola del cliente.
+3. Anota los `Coins` del emisor antes y después.
+4. Espera a que la primera cuenta termine de cargar y anota sus `Coins`.
+5. Comprueba el atributo `AmountSending` del emisor.
+
+**Pasa:** el emisor conserva sus Coins, o el receptor los recibe.
+**Falla:** el emisor pierde los Coins, el receptor no los gana y `AmountSending` sube.
+
+**Instrumentación sugerida:** hacer que `Collections.Give` devuelva cuántas estadísticas
+aplicó realmente. Es un cambio de una línea que convertiría este fallo silencioso, y todos
+los de su forma, en algo detectable — pero es un **cambio de código**, así que queda
+registrado aquí y no aplicado.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -1829,9 +2097,11 @@ completa.
 | `DataKit`: `Store`, `BaseStore` | En parte | Propiedad, staging y save/close leídos; `transfer` e `Inbox` no |
 | `ShopServerSystem` | En parte | Solo `ProcessPurchase`; la rotación de tienda y la sincronización por `MessagingService` no |
 | `playerManager`, `Client/PlayerManager` | Sí | |
-| `EventService`, `ReferralService` | **No** | En cola |
-| `PlayerDataService`, `WorldSystem/PlayerDataReplicator.luau` | **No** | En cola |
-| `Collections` (moneda) | **En parte** | Leído para la pasada de seguridad (BUG-CANDIDATE-015); falta trazar dónde persiste la moneda para cerrar BUG-CANDIDATE-008 |
+| `EventService`, `ReferralService` | Sí | |
+| `PlayerDataService`, `WorldSystem/PlayerDataReplicator.luau` | Sí | |
+| `Data/Main/init.server.luau` | Sí | El orquestador de sesión; ver [Data.Main](../systems/session-orchestrator.md) |
+| `AddValues`, `BreakDown` | En parte | Solo el camino de materialización de atributos, para cerrar la duda del tope de donación |
+| `Collections` (moneda) | Sí | Leído entero: la pasada de seguridad (BUG-CANDIDATE-015), la ruta de persistencia (BUG-CANDIDATE-008) y la escritura silenciosa de `Give` (BUG-CANDIDATE-019) |
 | `RoleService`, `EventCommands`, `ReferralCommands` | **En parte** | Solo la ruta de autorización, para la pasada de seguridad |
 | `machines/Machine`, `machines/PopTheLock` | **En parte** | Solo las rutas de enlace y de premio |
 | `GlobalDataStore`, `GiftInbox` | **No** | Ambos usan DataStoreService fuera de DataKit |

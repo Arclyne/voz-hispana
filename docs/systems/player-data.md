@@ -199,6 +199,19 @@ tracked[player] = bin.Event --// Agregado para evitar que se vuelva a sobreescri
 **HECHO.** `game:BindToClose` llama a `PlayerDataService.closeAll()`, que copia primero la
 lista de jugadores y luego cierra, para no mutar la tabla mientras la recorre.
 
+:::caution Este diagrama enseña la mitad de la historia
+
+`PlayerDataInit` no es el único que se conecta a `Players.PlayerRemoving`, ni el que decide
+cuándo un jugador está «listo». Ese papel lo tiene
+[`Data.Main`](./session-orchestrator.md), que conecta un segundo manejador para el mismo
+evento, define la secuencia de salida que ejecuta `finalize`, y es el único escritor del
+registro `DataComplete` que aparece más abajo.
+
+Léelo después de esta página: aquí está el **puente** perfil ↔ `Instance`; allí está el
+**orden** en que se usa.
+
+:::
+
 ## Estado compartido
 
 **HECHO.** `PlayerDataReplicator.DataComplete` es un registro de estado por jugador, y su
@@ -213,12 +226,20 @@ nombre está congelado a propósito:
 frágil: renombrar ese campo rompería dos consumidores que no lo mencionan en su propio
 código de forma buscable.
 
+**HECHO.** El módulo declara la tabla, pero **no la escribe**: los cuatro valores que puede
+tomar y las transiciones entre ellos viven enteros en `Data.Main`. Están descritos en
+[Los tres estados de `DataComplete`](./session-orchestrator.md#los-tres-estados-de-datacomplete),
+junto con la ventana en la que la limpieza no ocurre
+([BUG-CANDIDATE-018](../testing/verification-plan.md#bug-candidate-018)).
+
 ## Puntos de verificación
 
 | Aspecto | Entrada |
 |---|---|
 | La concesión de una compra persiste por una ruta distinta que el cobro | [BUG-CANDIDATE-008](../testing/verification-plan.md#bug-candidate-008) |
 | Los remotes de `Collections` están a un booleano de permitir escritura arbitraria | [BUG-CANDIDATE-015](../testing/verification-plan.md#bug-candidate-015) |
+| Salir durante la carga deja `DataComplete` sucio | [BUG-CANDIDATE-018](../testing/verification-plan.md#bug-candidate-018) |
+| `Collections.Give` no informa de si aplicó algo | [BUG-CANDIDATE-019](../testing/verification-plan.md#bug-candidate-019) |
 
 ## Implementación relacionada
 
@@ -228,6 +249,6 @@ código de forma buscable.
 | Registro de stores | `PlayerDataService.luau`, `load`, `get`, `close`, `closeAll` |
 | Mapeo perfil ↔ Instance | `PlayerDataReplicator.luau`, `SPEC`, `hydrate`, `applyEntry` |
 | Volcado | `PlayerDataReplicator.luau`, `snapshotInto`, `flush`, `finalize` |
-| Enganche al ciclo de vida | `PlayerDataInit.server.luau` |
+| Enganche al ciclo de vida | `PlayerDataInit.server.luau`, `Data/Main/init.server.luau` |
 | Remotes de casas y espacios | `PlayerDataReplicator.server.luau` |
 | Moneda | `Client/EconomySystem/Collections.luau` |

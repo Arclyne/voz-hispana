@@ -11,8 +11,8 @@
 
 ## Fase actual
 
-**Fase 3 — Sistemas** (Casas, Datos del jugador, Eventos e Invitaciones documentados;
-faltan los sistemas de juego). La **Fase 5 — análisis transversal** ya está cerrada: se
+**Fase 3 — Sistemas** (Casas, Datos del jugador, `Data.Main`, Eventos e Invitaciones
+documentados; faltan los sistemas de juego). La **Fase 5 — análisis transversal** ya está cerrada: se
 adelantó porque el grafo de dependencias solo tiene sentido con varios sistemas leídos, y
 ya lo estaban.
 
@@ -20,25 +20,25 @@ ya lo estaban.
 
 ## Progreso general
 
-**38 %**
+**42 %**
 
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **43 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **45 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
 Eso es un 8 % por número de archivos, pero una porción mucho mayor del código que sostiene
 todo lo demás: el arranque completo, el sistema de mundos/casas entero, las capas de
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
-invitaciones. Los ~509 archivos restantes son sistemas de juego (interactuables, karaoke,
+invitaciones, y `Data.Main`, el archivo que ata todo lo demás. Los ~507 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
-del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 3 de sistemas +
-3 de referencia + 17 candidatos a bug con evidencia, frente a un plan que aún necesita
+del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 4 de sistemas +
+3 de referencia + 19 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -48,7 +48,7 @@ del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 3 de sistemas 
 - [x] Fase 0 — Análisis inicial
 - [x] Fase 1 — Infraestructura de documentación
 - [x] Fase 2 — Arquitectura
-- [ ] Fase 3 — Sistemas *(Casas, Datos del jugador, Eventos, Invitaciones hechos)*
+- [ ] Fase 3 — Sistemas *(Casas, Datos del jugador, `Data.Main`, Eventos, Invitaciones hechos)*
 - [ ] Fase 4 — Referencia por script y Moonwave
 - [x] Fase 5 — Análisis transversal
 - [ ] Fase 6 — Validación y planificación de pruebas
@@ -204,6 +204,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Mundos y Casas (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documentado** — 7 páginas, 9 diagramas, 10 candidatos a bug. No `Verificado`: eso exige Studio. |
 | Persistencia (`DataKit`) | `Core/ServerStorage/DataKit` | **Documentado** (capa de arquitectura); `Store.transfer` e `Inbox` siguen sin leerse |
 | Datos del jugador | `Core/ServerStorage/WorldSystem/PlayerData*`, `Core/…/PlayerDataInit.server.luau`, `Client/EconomySystem/Collections.luau` | **Documentado** — `docs/systems/player-data.md`, 2 diagramas |
+| Orquestación de sesión (`Data.Main`) | `Core/ServerScriptService/Data/Main/init.server.luau` | **Documentado** — `docs/systems/session-orchestrator.md`, 1 diagrama |
 | Eventos programados | `Core/ServerStorage/WorldSystem/EventService.luau`, `EventBootstrap`, `EventCommands` | **Documentado** — `docs/systems/events.md`, 2 diagramas |
 | Invitaciones (referidos) | `Core/ServerStorage/WorldSystem/ReferralService.luau`, `Shared/Referrals` | **Documentado** — `docs/systems/referrals.md`, 1 diagrama |
 | Inventario / Herramientas | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | Pendiente |
@@ -311,9 +312,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 2 |
-| Analizado (leído entero, descrito en el sitio) | 34 |
-| Analizado (en parte) | 7 |
-| Pendiente | 509 |
+| Analizado (leído entero, descrito en el sitio) | 35 |
+| Analizado (en parte) | 8 |
+| Pendiente | 507 |
 
 Las lecturas parciales y por qué:
 
@@ -326,6 +327,7 @@ Las lecturas parciales y por qué:
 | `machines/Machine.luau` | `Machine:bind` y la ruta de recompensa | El resto del ciclo de vida de las máquinas |
 | `machines/PopTheLock.luau` | El remote de recompensa | La lógica del minijuego |
 | `EventCommands.server.luau` | La puerta de administrador | El resto de comandos |
+| `AddValues.luau` | `Create`, y cómo restaura atributos | Nada más: el archivo son 59 líneas |
 
 **Ya anotados con Moonwave en el propio código antes de este proyecto** — salen gratis en
 la referencia de API, y son de terceros o empaquetados: `DataKit`, `Store`, `Profile`,
@@ -374,7 +376,7 @@ jugador» — la escribe `ShopServerSystem.ProcessPurchase` en `data.rooms`, y `
 
 ## Problemas encontrados
 
-Diecisiete entradas, todas redactadas al completo en
+Diecinueve entradas, todas redactadas al completo en
 `docs/testing/verification-plan.md`. **Ninguna se afirma como bug confirmado.** Dos están
 clasificadas como *Confirmado por análisis estático*, y aun esas solo afirman lo que el
 código demostrablemente hace: la 011 confirma una inconsistencia, no qué lado de ella está
@@ -404,6 +406,8 @@ lista de pendientes.
 | BUG-CANDIDATE-015 | Un solo booleano separa la economía de escrituras arbitrarias del cliente | Economía / Seguridad | Observación / Requiere pruebas de seguridad | Crítica | Alta |
 | BUG-CANDIDATE-016 | Las máquinas aceptan del cliente el valor de la recompensa sin validarlo | Máquinas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Alta |
 | BUG-CANDIDATE-017 | Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto | Administración / Seguridad | Observación / Requiere verificación en ejecución | Baja | Alta |
+| BUG-CANDIDATE-018 | Salir durante la carga deja el registro sucio y rompe la reconexión al mismo servidor | Datos del jugador / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
+| BUG-CANDIDATE-019 | Donar a un jugador que aún no ha cargado destruye la moneda | Economía / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
 
 ### La pasada de seguridad
 
@@ -429,6 +433,7 @@ Anotadas para que una ejecución futura no las reabra:
 | T-d — «`ImportTemplates` destruye `TemplatesTesting`; algo podría seguir necesitándolo» | **Cerrada — no es defecto.** Un `grep` enseña que `TemplatesTesting` solo se referencia dentro del propio `ImportTemplates.server.luau`. |
 | T-e — «intención frente a comportamiento en el control de chat de voz» | **Mantenida** → BUG-CANDIDATE-001, clasificada como Observación porque el propio código comenta la decisión. |
 | T-f — «los comandos de administrador podrían no comprobar permisos» | **Cerrada — no es defecto.** `EventCommands` pasa por `RoleService`, que consulta el rango en el grupo. Lo único que queda es la caché de 50 s → BUG-CANDIDATE-017. |
+| T-h — «el tope diario de donación vive en un atributo de `Instance`, así que reconectar debería reiniciarlo» | **Cerrada — no es defecto.** `SPEC` mapea `stats` a `leaderstats`, y el serializador guarda los atributos junto al valor (`for index, attribute in value:GetAttributes()`); `AddValues.Create` los restaura al materializar. El tope sobrevive a la reconexión. |
 | T-g — «los precios de tienda podrían venir del cliente» | **Cerrada — no es defecto.** `ProcessPurchase` resuelve el precio desde `currentShopData` en el servidor; el cliente solo manda un identificador. |
 
 ### Observaciones registradas, que no son defectos
@@ -446,7 +451,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 17 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 19 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -465,10 +470,11 @@ y razonado está en la propia página; el resumen es:
    acceso a API desde Studio en este universo?») que puede cerrarla de golpe.
 6. BUG-CANDIDATE-011, 012, 017 — dos cuentas, pocos minutos, sin inyección de fallos.
 7. BUG-CANDIDATE-002, 003, 009 — un jugador y un fallo inyectado.
-8. BUG-CANDIDATE-008, 010, 013 — instrumentación y repetición.
-9. BUG-CANDIDATE-005, 004 — las más caras: crash forzado, timing ajustado, dos cuentas en
+8. BUG-CANDIDATE-019 — dos cuentas y un `task.wait` de instrumentación.
+9. BUG-CANDIDATE-008, 010, 013, 018 — instrumentación y repetición.
+10. BUG-CANDIDATE-005, 004 — las más caras: crash forzado, timing ajustado, dos cuentas en
    dos servidores y más de 20 ejecuciones.
-10. BUG-CANDIDATE-001 — más una decisión de producto que una prueba.
+11. BUG-CANDIDATE-001 — más una decisión de producto que una prueba.
 
 ---
 
@@ -477,14 +483,14 @@ y razonado está en la propia página; el resumen es:
 - **Fase:** 3 — Sistemas (Casas, Datos del jugador, Eventos, Invitaciones) y **Fase 5**
   cerrada con el grafo de dependencias.
 - **Idioma:** todo el sitio, los comentarios Moonwave y los generadores están en español.
-- **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 3 de sistemas,
+- **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 4 de sistemas,
   1 de verificación, 3 de referencia generada.
 - **Archivos anotados (solo comentarios, demostrado por la guarda de CI):**
   - `src/ReplicatedStorage/PlayerInit.luau`
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
-- **Diagramas:** 32 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 17 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 43 de 552
+- **Diagramas:** 33 diagramas Mermaid (flowchart, sequence, state)
+- **Candidatos a bug:** 19 redactados al completo, incluida una pasada de seguridad
+- **Scripts leídos:** 45 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.
@@ -557,15 +563,15 @@ Anotadas aquí para que una ejecución futura no las vuelva a deducir:
 sistemas entendidos a fondo valen más que cincuenta descritos por encima, y quedan sistemas
 que merecen ese trato.
 
-### 1. `Data.Main` — la pieza pendiente más importante
+### 1. `Shared/Stores/init.luau` — la pieza pendiente más importante
 
-`Core/ServerScriptService/Data/Main/init.server.luau` (392 líneas) es el orquestador real
-del arranque de datos del jugador y el **único** consumidor del módulo
-`PlayerDataReplicator`. La página de Datos del jugador está escrita alrededor de sus
-efectos, no de su código. Léelo y ciérrala.
+Ata **13 manejadores de remotes**, la mayor concentración de un solo archivo del
+repositorio, y `Data.Main` le inyecta `DataKit`, `Profiles`, `PlayerDataService`,
+`GlobalDataStore`, `Monetizacion` y `PaintServer`. Es el cruce entre economía,
+monetización y persistencia, y hoy solo se conoce por sus efectos.
 
-Junto a él: `Shared/Stores/init.luau`, que ata 13 manejadores de remotes — la mayor
-concentración de un solo archivo en el repositorio.
+Junto a él, `Shared/Monetization` y `WorldSystem/GamePassService`: la ruta de compras con
+Robux es la superficie de seguridad grande que la primera pasada dejó sin revisar.
 
 ### 2. `GlobalDataStore` y `GiftInbox`
 

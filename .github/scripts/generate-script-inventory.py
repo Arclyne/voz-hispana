@@ -54,6 +54,7 @@ ANALYSED |= {
     t("Core/ServerStorage/WorldSystem/EventService.luau"),
     t("Core/ServerScriptService/ServerScripts/EventBootstrap.server.luau"),
     t("Core/ServerStorage/WorldSystem/ReferralService.luau"),
+    t("Core/ServerScriptService/Data/Main/init.server.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -63,6 +64,7 @@ PARTIAL = {
     t("Core/ServerScriptService/ServerScripts/machines/Machine.luau"),
     t("Core/ServerScriptService/ServerScripts/machines/PopTheLock.luau"),
     t("Core/ServerScriptService/ServerScripts/EventCommands.server.luau"),
+    t("Core/ReplicatedStorage/Shared/AddValues.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
