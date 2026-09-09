@@ -213,7 +213,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Eventos programados | `Core/ServerStorage/WorldSystem/EventService.luau`, `EventBootstrap`, `EventCommands` | **Documentado** — `docs/systems/events.md`, 2 diagramas |
 | Invitaciones (referidos) | `WorldSystem/ReferralService`, `Shared/Referrals`, `ServerScripts/Referrals` | **Documentado** — `docs/systems/referrals.md`, 1 diagrama, incluida la configuración razonada y los tres remotes. Faltan `ReferralCommands`, `ReferralShared` y el cliente |
 | Inventario / Herramientas | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | **Documentado** — `docs/systems/inventory.md`, 1 diagrama. Falta la interfaz de cliente |
-| Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | **Documentado en su estructura** — `docs/systems/interactables.md`, 1 diagrama. Los 36 módulos de tipo, sin leer a propósito |
+| Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | **Documentado** — `docs/systems/interactables.md` (estructura y matriz de validación) + `docs/systems/interactable-types.md` (los 44 módulos de tipo, catalogados con sus acciones y sus remotes) |
 | Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | **Barrido** — `docs/systems/survey.md`; `requestSpinRF` y la ruta de premio |
 | Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | **Documentado** — `docs/systems/karaoke.md`, 1 diagrama |
 | Cuadros (Paint) | `Shared/Paint`, `interactable/Paint` | **Documentado** — `docs/systems/paint.md`. Faltan el editor y la cola de carga, que son de cliente |
@@ -321,9 +321,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 89 |
-| Analizado (en parte) | 71 |
-| Pendiente | 384 |
+| Analizado (leído entero, descrito en el sitio) | 95 |
+| Analizado (en parte) | 110 |
+| Pendiente | 339 |
 
 Las lecturas parciales y por qué:
 

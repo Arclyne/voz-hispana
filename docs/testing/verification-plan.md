@@ -2899,9 +2899,13 @@ distancia.
 3. Repite estando al otro lado del mapa.
 4. Repite apuntando a un modelo que no sea un tocadiscos pero tenga `Emitter.Sound`.
 5. Llama en bucle y observa el efecto para el resto de jugadores.
+6. **Repite los pasos 2 a 5 con un piano.** `Piano.luau` dispara este mismo remote —no
+   tiene uno propio, ni script de servidor propio— así que una prueba que solo mire los
+   tocadiscos no cubre la mitad de la superficie. Ver
+   [Catálogo de tipos](../systems/interactable-types.md#dos-tipos-que-comparten-el-remote-de-otro).
 
 **Pasa:** el servidor rechaza el modelo, la distancia o el id.
-**Falla:** cualquiera de los cuatro pasos produce sonido.
+**Falla:** cualquiera de los pasos produce sonido.
 
 **Instrumentación sugerida:** el `print` que ya está ahí, convertido en `warn` con el nombre
 del jugador y la distancia al modelo, diría de inmediato si esto ya ocurre en producción.

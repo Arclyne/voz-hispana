@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 89 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 71 |
-| Pendiente | Aún sin leer | 384 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 95 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 110 |
+| Pendiente | Aún sin leer | 339 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 157 leídos.
+530 archivos, 76,305 líneas, 202 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -335,65 +335,65 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/</code> — 34 archivo(s) — 1/34 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/</code> — 34 archivo(s) — 34/34 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `BarraBartender.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Client.interactable.BarraBartender` | Pendiente |
-| `Bath.luau` | ModuleScript | — | — | 72 | `ReplicatedStorage.Client.interactable.Bath` | Pendiente |
-| `Bed.luau` | ModuleScript | — | — | 152 | `ReplicatedStorage.Client.interactable.Bed` | Pendiente |
-| `Bin.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.interactable.Bin` | Pendiente |
-| `ButtonVipMoney.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.interactable.ButtonVipMoney` | Pendiente |
-| `CajasWork.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.CajasWork` | Pendiente |
-| `Chair.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Chair` | Pendiente |
-| `ClassicDoor.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Client.interactable.ClassicDoor` | Pendiente |
-| `Computer.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Client.interactable.Computer` | Pendiente |
-| `CuadrosPaint.luau` | ModuleScript | — | — | 147 | `ReplicatedStorage.Client.interactable.CuadrosPaint` | Pendiente |
-| `DoorSalaKaraoke.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Client.interactable.DoorSalaKaraoke` | Pendiente |
-| `DoubleBed.luau` | ModuleScript | — | — | 252 | `ReplicatedStorage.Client.interactable.DoubleBed` | Pendiente |
-| `Fridge.luau` | ModuleScript | — | — | 719 | `ReplicatedStorage.Client.interactable.Fridge` | Pendiente |
-| `IdleToggle.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Client.interactable.IdleToggle` | Pendiente |
-| `Interruptor.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Client.interactable.Interruptor` | Pendiente |
-| `Lamp.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Lamp` | Pendiente |
-| `MusicPlayer.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.MusicPlayer` | Pendiente |
-| `NightClub.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Client.interactable.NightClub` | Pendiente |
-| `NpcDialog.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.Client.interactable.NpcDialog` | Pendiente |
-| `Paint.luau` | ModuleScript | — | — | 251 | `ReplicatedStorage.Client.interactable.Paint` | Pendiente |
-| `Pee.luau` | ModuleScript | — | — | 79 | `ReplicatedStorage.Client.interactable.Pee` | Pendiente |
-| `Piano.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.Piano` | Pendiente |
-| `PlaceTool.luau` | ModuleScript | — | — | 59 | `ReplicatedStorage.Client.interactable.PlaceTool` | Pendiente |
-| `PurchaseGamepass.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Client.interactable.PurchaseGamepass` | Pendiente |
-| `QuestPickable.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.interactable.QuestPickable` | Pendiente |
-| `Shower.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Client.interactable.Shower` | Pendiente |
-| `SmokeMachine.luau` | ModuleScript | — | — | 74 | `ReplicatedStorage.Client.interactable.SmokeMachine` | Pendiente |
-| `Stores.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Stores` | Pendiente |
-| `Toilet.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Client.interactable.Toilet` | Pendiente |
-| `ToolInteractable.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.interactable.ToolInteractable` | Pendiente |
-| `Washbasin.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Washbasin` | Pendiente |
-| `Weight.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.Weight` | Pendiente |
+| `BarraBartender.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Client.interactable.BarraBartender` | Analizado (en parte) |
+| `Bath.luau` | ModuleScript | — | — | 72 | `ReplicatedStorage.Client.interactable.Bath` | Analizado (en parte) |
+| `Bed.luau` | ModuleScript | — | — | 152 | `ReplicatedStorage.Client.interactable.Bed` | Analizado (en parte) |
+| `Bin.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Client.interactable.Bin` | Analizado (en parte) |
+| `ButtonVipMoney.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Client.interactable.ButtonVipMoney` | Analizado |
+| `CajasWork.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.CajasWork` | Analizado (en parte) |
+| `Chair.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Chair` | Analizado (en parte) |
+| `ClassicDoor.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Client.interactable.ClassicDoor` | Analizado (en parte) |
+| `Computer.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Client.interactable.Computer` | Analizado |
+| `CuadrosPaint.luau` | ModuleScript | — | — | 147 | `ReplicatedStorage.Client.interactable.CuadrosPaint` | Analizado (en parte) |
+| `DoorSalaKaraoke.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Client.interactable.DoorSalaKaraoke` | Analizado (en parte) |
+| `DoubleBed.luau` | ModuleScript | — | — | 252 | `ReplicatedStorage.Client.interactable.DoubleBed` | Analizado (en parte) |
+| `Fridge.luau` | ModuleScript | — | — | 719 | `ReplicatedStorage.Client.interactable.Fridge` | Analizado (en parte) |
+| `IdleToggle.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Client.interactable.IdleToggle` | Analizado (en parte) |
+| `Interruptor.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Client.interactable.Interruptor` | Analizado (en parte) |
+| `Lamp.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Lamp` | Analizado (en parte) |
+| `MusicPlayer.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.MusicPlayer` | Analizado (en parte) |
+| `NightClub.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Client.interactable.NightClub` | Analizado (en parte) |
+| `NpcDialog.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.Client.interactable.NpcDialog` | Analizado (en parte) |
+| `Paint.luau` | ModuleScript | — | — | 251 | `ReplicatedStorage.Client.interactable.Paint` | Analizado (en parte) |
+| `Pee.luau` | ModuleScript | — | — | 79 | `ReplicatedStorage.Client.interactable.Pee` | Analizado (en parte) |
+| `Piano.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Client.interactable.Piano` | Analizado (en parte) |
+| `PlaceTool.luau` | ModuleScript | — | — | 59 | `ReplicatedStorage.Client.interactable.PlaceTool` | Analizado |
+| `PurchaseGamepass.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Client.interactable.PurchaseGamepass` | Analizado |
+| `QuestPickable.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Client.interactable.QuestPickable` | Analizado (en parte) |
+| `Shower.luau` | ModuleScript | — | — | 104 | `ReplicatedStorage.Client.interactable.Shower` | Analizado (en parte) |
+| `SmokeMachine.luau` | ModuleScript | — | — | 74 | `ReplicatedStorage.Client.interactable.SmokeMachine` | Analizado (en parte) |
+| `Stores.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Stores` | Analizado |
+| `Toilet.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Client.interactable.Toilet` | Analizado (en parte) |
+| `ToolInteractable.luau` | ModuleScript | — | — | 241 | `ReplicatedStorage.Client.interactable.ToolInteractable` | Analizado (en parte) |
+| `Washbasin.luau` | ModuleScript | — | — | 57 | `ReplicatedStorage.Client.interactable.Washbasin` | Analizado (en parte) |
+| `Weight.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.Weight` | Analizado (en parte) |
 | `init.server.luau` | Script | Client | yes | 20 | `ReplicatedStorage.Client.interactable.init.server` | Analizado |
-| `test.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.test` | Pendiente |
+| `test.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.Client.interactable.test` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/DiscoBall/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/DiscoBall/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Laser.server.luau` | Script | Client | yes | 86 | `ReplicatedStorage.Client.interactable.DiscoBall.Laser.server` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 157 | `ReplicatedStorage.Client.interactable.DiscoBall.init` | Pendiente |
+| `Laser.server.luau` | Script | Client | yes | 86 | `ReplicatedStorage.Client.interactable.DiscoBall.Laser.server` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 157 | `ReplicatedStorage.Client.interactable.DiscoBall.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Display/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Display/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `VideoPlayer.luau` | ModuleScript | — | — | 88 | `ReplicatedStorage.Client.interactable.Display.VideoPlayer` | Pendiente |
-| `Videos.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Client.interactable.Display.Videos` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 167 | `ReplicatedStorage.Client.interactable.Display.init` | Pendiente |
+| `VideoPlayer.luau` | ModuleScript | — | — | 88 | `ReplicatedStorage.Client.interactable.Display.VideoPlayer` | Analizado (en parte) |
+| `Videos.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Client.interactable.Display.Videos` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 167 | `ReplicatedStorage.Client.interactable.Display.init` | Analizado (en parte) |
 
 </details>
 
@@ -407,57 +407,57 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 95 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 95 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 273 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 273 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/UI/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/ActionWheel/Page/UI/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 121 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.UI.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 121 | `ReplicatedStorage.Client.interactable.Interactable.ActionWheel.Page.UI.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/CustomPrompt/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Interactable/CustomPrompt/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 128 | `ReplicatedStorage.Client.interactable.Interactable.CustomPrompt.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 128 | `ReplicatedStorage.Client.interactable.Interactable.CustomPrompt.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Player/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Player/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Tijeras.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Client.interactable.Player.Tijeras` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Client.interactable.Player.init` | Pendiente |
+| `Tijeras.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Client.interactable.Player.Tijeras` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Client.interactable.Player.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Treadmill/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/interactable/Treadmill/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Treadmill.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Client.interactable.Treadmill.init` | Analizado (en parte) |
 
 </details>
 
