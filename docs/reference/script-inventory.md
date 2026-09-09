@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 55 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 14 |
-| Pendiente | Aún sin leer | 481 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 58 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 15 |
+| Pendiente | Aún sin leer | 477 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 60 leídos.
+530 archivos, 76,181 líneas, 64 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1347,7 +1347,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 9/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 10/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -1364,7 +1364,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `ServerDirectory.server.luau` | Script | Server | yes | 432 | `ServerScriptService.ServerScripts.ServerDirectory.server` | Analizado |
 | `ShopServerSystem.server.luau` | Script | Server | yes | 310 | `ServerScriptService.ServerScripts.ShopServerSystem.server` | Analizado (en parte) |
 | `ToolPlacementServer.server.luau` | Script | Server | yes | 881 | `ServerScriptService.ServerScripts.ToolPlacementServer.server` | Pendiente |
-| `ToolsServer.server.luau` | Script | — | yes | 989 | `ServerScriptService.ServerScripts.ToolsServer.server` | Pendiente |
+| `ToolsServer.server.luau` | Script | — | yes | 989 | `ServerScriptService.ServerScripts.ToolsServer.server` | Analizado (en parte) |
 | `WalkieServer.server.luau` | Script | Server | yes | 148 | `ServerScriptService.ServerScripts.WalkieServer.server` | Pendiente |
 | `WorldManager.server.luau` | Script | Server | yes | 228 | `ServerScriptService.ServerScripts.WorldManager.server` | Analizado |
 | `WorldsBrowser.server.luau` | Script | Server | yes | 140 | `ServerScriptService.ServerScripts.WorldsBrowser.server` | Analizado |
@@ -1505,21 +1505,21 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.server.luau` | Script | Server | yes | 95 | `ServerScriptService.ServerScripts.inventory.init.server` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 95 | `ServerScriptService.ServerScripts.inventory.init.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/InventoryManager/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/inventory/InventoryManager/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `DefaultTools.luau` | ModuleScript | — | — | 53 | `ServerScriptService.ServerScripts.inventory.InventoryManager.DefaultTools` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 561 | `ServerScriptService.ServerScripts.inventory.InventoryManager.init` | Pendiente |
+| `DefaultTools.luau` | ModuleScript | — | — | 53 | `ServerScriptService.ServerScripts.inventory.InventoryManager.DefaultTools` | Analizado |
+| `init.luau` | ModuleScript | — | — | 561 | `ServerScriptService.ServerScripts.inventory.InventoryManager.init` | Analizado |
 
 </details>
 

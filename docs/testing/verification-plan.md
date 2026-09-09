@@ -78,6 +78,8 @@ o en un place de pruebas.
 | [023](#bug-candidate-023) | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [024](#bug-candidate-024) | `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
 | [025](#bug-candidate-025) | La distancia de interacción la comprueba solo el cliente | Interactuables | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [026](#bug-candidate-026) | El globo está implementado entero y ningún jugador lo recibe nunca | Inventario | Bug probable / Confirmado por análisis estático | Baja | **Muy alta** |
+| [027](#bug-candidate-027) | `ToolsServer` reparenta y manipula las `Instance` que le diga el cliente | Herramientas / Seguridad | Bug probable / Requiere pruebas de seguridad | Alta | Alta |
 
 ### Entradas de seguridad
 
@@ -96,6 +98,7 @@ formato que el resto: teoría con justificación, no acusaciones.
 | [023](#bug-candidate-023) | Colocación con autoridad de cliente en casa ajena | **Explotable hoy**, impacto de vandalismo |
 | [024](#bug-candidate-024) | `SoundId` y modelo suministrados por el cliente, sin moderación | **Explotable hoy**, acotado por las restricciones de audio de Roblox |
 | [025](#bug-candidate-025) | Reglas de interacción solo en el cliente en 21 de 25 manejadores | **Explotable hoy**, impacto bajo |
+| [027](#bug-candidate-027) | Reparentado arbitrario de `Instance` desde un remote | **Explotable hoy**, control sobre el mundo compartido |
 
 #### Lo que se revisó y salió limpio
 
@@ -117,6 +120,10 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Validación de entrada en el inventario | **Correcto, y es la referencia del proyecto.** Los cinco remotes validan tipo, entereza y rango, y `InventoryManager` **vuelve a validarlo todo** por su cuenta más la propiedad. Es el único sistema leído que valida en las dos capas. |
+| Conceder un objeto que no existe | **Correcto.** `getToolAsset` busca la `Tool` real en `Assets/Tools` antes de `addItem` y `setItemCount`. |
+| Re-conceder objetos que el jugador gastó | **Correcto, y razonado en el propio código.** La bandera `defaultsInitialised` es explícitamente preferida a «¿está vacío el inventario?», con el comentario que lo justifica. |
+| Uso de la herramienta de otro jugador | **Correcto en `Cannon` y `GloveGun`.** Ambos exigen `IsA("Tool")` y `tool.Parent == character`, y el cañón añade un cooldown de 5 s. |
 | Validación de entrada en `Fridge` | **Correcto, y es el modelo a imitar.** Comprueba que el modelo sea una `Model`, que tenga la etiqueta `Fridge` y la distancia al jugador, las tres cosas antes de actuar. |
 | `Bin` como interactuable sin modelo | **Correcto.** No acepta ninguna `Instance` del cliente: actúa sobre la `Tool` equipada, y solo si tiene el atributo `Kitchen`. |
 | Bloqueo permanente de duchas y lavabos al morir dentro | **Correcto.** `humanoid.Died:Once` libera el `Occupant`. |
@@ -2895,6 +2902,283 @@ menciona porque la forma de la solución explica por qué el problema existe: ho
 dónde ponerla.
 
 
+## BUG-CANDIDATE-026
+
+### El globo está implementado entero y ningún jugador lo recibe nunca
+
+**Sistema:** Inventario · **Clasificación:** Bug probable / Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/ServerScripts/inventory/InventoryManager/DefaultTools.luau`,
+la entrada `Ballon`; `InventoryManager/init.luau`, `ensureDefaultInventory`
+**Documentación relacionada:** [Inventario y herramientas](../systems/inventory.md#el-equipamiento-por-defecto-solo-ocurre-una-vez)
+
+#### Comportamiento observado — HECHO
+
+`DefaultTools` declara diez objetos. La entrada `Ballon` dice esto:
+
+```lua
+Ballon = {
+	Name = 'GloveGun',
+	Value = true,
+	DefaultSlot = 6
+},
+```
+
+El campo `Name` dice `GloveGun`. La entrada inmediatamente anterior es:
+
+```lua
+GloveGun = {
+	Name = 'GloveGun',
+	Value = true,
+	DefaultSlot = 5
+},
+```
+
+Y el bucle que concede los objetos **usa el campo `Name`, no la clave de la tabla**:
+
+```lua
+for _, toolData in pairs(DefaultTools) do
+	if toolData.Value == true and typeof(toolData.Name) == "string" then
+		local toolName = toolData.Name
+		inventory.items[toolName] = 1
+		if toolData.DefaultSlot then
+			...
+			inventory.wheel[tostring(slot)] = toolName
+		end
+	end
+end
+```
+
+#### Por qué esto es un problema — HECHO
+
+El resultado es aritmético, no hipotético:
+
+| | Lo que se pretendía | Lo que ocurre |
+|---|---|---|
+| `items` | `GloveGun = 1`, `Ballon = 1` | `GloveGun = 1` escrito dos veces. **`Ballon` no existe** |
+| `wheel["5"]` | `GloveGun` | `GloveGun` |
+| `wheel["6"]` | `Ballon` | `GloveGun` otra vez |
+
+Y `Ballon` **no es un objeto a medio hacer**. Está completo:
+
+| Pieza | Ruta |
+|---|---|
+| Modelo de la herramienta | `Assets/Tools/Toys/Ballon/` |
+| Script de cliente | `Assets/Tools/Toys/Ballon/MainTool.client.luau` |
+| `RemoteEvent` | `Events/Tools/Ballon` |
+| Manejador de servidor | `ToolsServer.server.luau`, `ballonRemote.OnServerEvent` |
+| Malla | `Assets/VisualItems/Ballon.rbxm` |
+
+Un `grep` por `Ballon` sobre todo `src/` no encuentra **ninguna otra vía** de concesión: ni
+tienda, ni recompensa de gamepass, ni comando. `DefaultTools` es el único camino, y está
+roto.
+
+#### Lo que agrava la consecuencia — HECHO
+
+`ensureDefaultInventory` corre **una sola vez en la vida de los datos de cada jugador**:
+
+```lua
+if inventory.defaultsInitialised then
+	return
+end
+```
+
+La bandera es correcta y está bien razonada —evita devolver objetos que alguien gastó a
+propósito—, pero significa que **arreglar el typo no repara a nadie**. Todo jugador que ya
+haya entrado tiene su `defaultsInitialised` a `true` y nunca volverá a pasar por ese bucle.
+Repararlo exigiría una migración explícita.
+
+#### Teoría — TEORÍA
+
+Lo único que la lectura estática no puede confirmar es si algún sistema no leído concede
+`Ballon` por otra vía. La búsqueda dice que no, pero 481 archivos siguen sin leerse.
+
+También cabe que sea deliberado: que el globo se retirase y se dejara la entrada apuntando a
+otro objeto para no tocar los slots. En contra de esa lectura está que `DefaultSlot = 6`
+sigue ahí, produciendo un `GloveGun` duplicado en la rueda, que no beneficia a nadie.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El campo `Name` de `Ballon` dice `GloveGun` |
+| 2 | El bucle de concesión lee `toolData.Name`, no la clave |
+| 3 | El globo tiene modelo, script de cliente, remote y manejador de servidor |
+| 4 | `grep -rn Ballon src/` no muestra ninguna otra ruta de concesión |
+| 5 | `defaultsInitialised` hace la consecuencia permanente para los jugadores existentes |
+| 6 | El resultado colateral —dos slots de rueda con `GloveGun`— no tiene ninguna utilidad |
+
+#### Incógnitas
+
+- Si el globo se retiró a propósito del juego. Es una pregunta para el equipo, no para el
+  código.
+- Cuántos jugadores tienen ya `defaultsInitialised`, que es cuánta gente necesitaría la
+  migración.
+
+#### Escenario de ejemplo
+
+Un jugador nuevo entra. Recibe nueve objetos en vez de diez, y su rueda tiene el mismo
+lanzaguantes en los huecos 5 y 6. Nunca ve el globo, y no hay forma de conseguirlo.
+
+**Comportamiento esperado:** `items.Ballon = 1` y `wheel["6"] = "Ballon"`.
+**Comportamiento posible:** `Ballon` no aparece y el hueco 6 duplica el hueco 5.
+
+#### Plan de verificación — *Funcional*
+
+1. En un place de pruebas, entra con una cuenta que no haya jugado nunca.
+2. Vuelca `PlayerDataService.getData(player).inventory` desde la consola del servidor.
+3. Comprueba si existe la clave `Ballon` en `items`.
+4. Mira qué hay en `wheel["5"]` y `wheel["6"]`.
+5. Mira la mochila: comprueba si hay una `Tool` llamada `Ballon`.
+
+**Pasa:** `items.Ballon` existe y la rueda tiene dos objetos distintos.
+**Falla:** no existe `Ballon` y los huecos 5 y 6 dicen ambos `GloveGun`.
+
+**Instrumentación sugerida:** ninguna. Es una comprobación de dos minutos con un `print`, y
+el diagnóstico ya está cerrado. Lo que hace falta decidir es la migración para las cuentas
+que ya pasaron por ahí.
+
+---
+
+## BUG-CANDIDATE-027
+
+### `ToolsServer` reparenta y manipula las `Instance` que le diga el cliente
+
+**Sistema:** Herramientas / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/ToolsServer.server.luau` —
+`equipRemoteAccesory`, `flyRemote`, `equipRemote`
+**Documentación relacionada:** [Inventario y herramientas → Las herramientas](../systems/inventory.md#las-herramientas)
+
+#### Comportamiento observado — HECHO
+
+El caso más directo son diez líneas:
+
+```lua
+equipRemoteAccesory.OnServerEvent:Connect(function(player: Player, handle: Part, accesory: BasePart, isEquipping: boolean)
+	local character = player.Character or player.CharacterAdded:Wait()
+
+	if not accesory or not handle then return end
+
+	if isEquipping then
+		accesory.Parent = character
+	else
+		accesory.Parent = handle.Parent
+	end
+end)
+```
+
+`accesory` y `handle` son referencias a `Instance` que **elige el cliente**. No se comprueba
+su clase, ni dónde están, ni de quién son. Las anotaciones de tipo `Part` y `BasePart` son
+documentación: Luau no las impone en tiempo de ejecución, y un `RemoteEvent` acepta cualquier
+`Instance`.
+
+Los otros dos tienen la misma forma con menos alcance:
+
+```lua
+equipRemote.OnServerEvent:Connect(function(player, handle: Part)
+	local equipSound = handle:FindFirstChild("EquipSound")
+	if equipSound and equipSound:IsA("Sound") then
+		equipSound:Play()
+	end
+end)
+
+flyRemote.OnServerEvent:Connect(function(player, particles1, particles2, toggle, startSound, runningSound, stopSound)
+	...
+	particles1.Enabled = toggle
+	particles2.Enabled = toggle
+	if toggle then startSound:Play() ...
+```
+
+#### Por qué esto puede ser un problema — HECHO
+
+`equipRemoteAccesory` es una **primitiva de reparentado arbitrario** accesible desde
+cualquier cliente:
+
+| Llamada | Efecto |
+|---|---|
+| `accesory` = una parte del mundo, `isEquipping` = true | Esa parte se mueve al personaje de quien llama |
+| `accesory` = la `Tool` de otro jugador, `isEquipping` = true | La herramienta ajena se reparenta al personaje de quien llama |
+| `accesory` = cualquier cosa, `handle` = cualquier cosa, `isEquipping` = false | Reparentado de A al padre de B: dos referencias arbitrarias, un movimiento arbitrario |
+
+Reparentar es además cómo se destruye lógica en Roblox: mover un modelo fuera de su
+contenedor rompe los `WaitForChild` y las jerarquías que otros scripts asumen. En este
+repositorio hay bastante código que depende de la jerarquía —`model.Emitter.Sound`,
+`model.Occupant`, `self.Added.DataObjects`— y ese código se rompe o cambia de sentido si su
+árbol se mueve.
+
+Lo llamativo es que **el mismo archivo contiene el ejemplo correcto**, dos manejadores más
+abajo:
+
+```lua
+cannonRemote.OnServerEvent:Connect(function(player, action, tool, a, b, c)
+	if not tool or not tool:IsA("Tool") then return end
+	...
+	if tool.Parent ~= character then
+		return
+	end
+```
+
+Clase y propiedad, antes de nada, más un cooldown de cinco segundos. `GloveGun` hace lo
+mismo. La comprobación existe, en el archivo, escrita por la misma mano.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede mover objetos del mundo a su personaje, retirar objetos de otros
+jugadores, y desmontar jerarquías de las que dependen otros sistemas. Con `flyRemote`, además,
+puede activar cualquier `ParticleEmitter` y reproducir cualquier `Sound` del DataModel.
+
+Ninguna de estas rutas concede moneda, así que no es un exploit económico. Es control sobre
+el mundo compartido.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `accesory.Parent = character` sin comprobación de clase, ubicación ni propiedad |
+| 2 | `accesory.Parent = handle.Parent` — las dos referencias vienen del cliente |
+| 3 | Las anotaciones `: Part` y `: BasePart` no se validan en ejecución |
+| 4 | `flyRemote` escribe `.Enabled` y llama a `:Play()` sobre cinco referencias del cliente |
+| 5 | `Cannon` y `GloveGun`, en el mismo archivo, sí comprueban `IsA("Tool")` y `tool.Parent == character` |
+| 6 | No hay límite de frecuencia en ninguno de los tres |
+
+#### Incógnitas
+
+- Si la replicación de Roblox permite al cliente pasar una referencia a una `Instance` que su
+  cliente no ve. Para cualquier cosa en `Workspace` y `ReplicatedStorage`, sí.
+- Qué rompe en la práctica reparentar un modelo de mobiliario: los sistemas de casas escuchan
+  `AncestryChanged` y podrían tratarlo como una eliminación, lo que llevaría el efecto hasta
+  el perfil persistido.
+
+#### Escenario de ejemplo
+
+Un jugador dispara `EquipToolAccesory` con la `Tool` equipada de otro jugador y
+`isEquipping = true`. La herramienta se mueve a su personaje. Repite con muebles de una casa
+para sacarlos de `DataObjects`, que es donde el sistema de casas espera encontrarlos.
+
+**Comportamiento esperado:** el servidor solo reparenta accesorios de una herramienta que el
+jugador tiene equipada.
+**Comportamiento posible:** reparenta lo que se le pida.
+
+#### Plan de verificación — *Seguridad*
+
+1. Con dos cuentas, la segunda con una herramienta equipada.
+2. Desde la consola del cliente de la primera, dispara `Tools.EquipToolAccesory` con esa
+   herramienta y `isEquipping = true`.
+3. Comprueba dónde acaba la herramienta.
+4. Repite con un mueble colocado dentro de una casa y observa si el sistema de casas lo
+   trata como eliminado (y si eso llega al perfil).
+5. Contrasta con `Tools.Cannon` usando la herramienta de otro: debería rechazarte.
+
+**Pasa:** los tres manejadores rechazan `Instance` que no pertenecen al llamante.
+**Falla:** cualquiera de los pasos 3 o 4 tiene efecto.
+
+**Instrumentación sugerida:** registrar el `GetFullName()` de `accesory` y el nombre de quien
+llama. Dos líneas, y diría de inmediato si esto ya se está usando.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -2930,7 +3214,10 @@ completa.
 | Interactuables: registrador, clase base, `bindToTag` | Sí | |
 | Interactuables: los 25 scripts de servidor | En parte | Solo su validación de entrada, para la matriz |
 | Interactuables: los 36 módulos de cliente por tipo | **No** | Decisión deliberada: la pregunta era la estructura, no el catálogo |
-| Sistemas de juego (~440 archivos) | **No** | En cola |
+| Inventario: `init.server`, `InventoryManager`, `DefaultTools` | Sí | |
+| `ToolsServer.server.luau` | En parte | Los ocho manejadores y su validación; no la mecánica del cañón ni del guante |
+| `ToolPlacementServer`, `Client/inventory/`, `ToolUseManagge` | **No** | En cola |
+| Sistemas de juego (~435 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
@@ -2955,6 +3242,9 @@ Los 43 remotes de `Interactable` están revisados **en cuanto a validación de e
 es la matriz de la página de Interactuables y las entradas 024 y 025—, no en cuanto a la
 lógica interna de cada uno.
 
-**Siguen sin revisar:** los remotes de `Karaoke`, `Tools`, `Paint` y la cocina, y
-el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
+Los ocho remotes de `Tools` están revisados en cuanto a validación de entrada (entrada 027),
+y los cinco de `Inventory` enteros.
+
+**Siguen sin revisar:** los remotes de `Karaoke`, `Paint` y la cocina, `ToolPlacementServer`,
+y el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
 hallazgos, así que esta sección debe leerse como un barrido en curso, no como una garantía.

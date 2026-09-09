@@ -75,6 +75,9 @@ ANALYSED |= {
     t("Core/ServerScriptService/ServerScripts/interactable/Bin.server.luau"),
     t("Core/ServerScriptService/ServerScripts/interactable/CuadrosPaint.server.luau"),
     t("Core/ServerScriptService/ServerScripts/interactable/Display.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/inventory/init.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/inventory/InventoryManager/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/inventory/InventoryManager/DefaultTools.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -91,6 +94,7 @@ PARTIAL = {
     t("Core/ServerStorage/SoundInfo.luau"),
     t("Core/ReplicatedStorage/Client/Posicionamientos.luau"),
     t("Core/ReplicatedStorage/Client/interactable/Interactable/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/ToolsServer.server.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
