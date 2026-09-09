@@ -42,7 +42,7 @@ commit.
 
 - **Nada está `Verificado`.** Verificar exige ejecutar los planes de
   `docs/testing/verification-plan.md` en Roblox Studio, y eso no se puede hacer desde aquí.
-  Los 52 candidatos a bug son teorías con evidencia y con criterio de paso y de fallo, no
+  Los 53 candidatos a bug son teorías con evidencia y con criterio de paso y de fallo, no
   hallazgos confirmados.
 - **Hay 320 archivos `.rbxm` que no se pueden leer.** Son modelos binarios de Roblox y el
   código de sus `LocalScript` va comprimido dentro. Toda la interfaz que vive ahí queda fuera
@@ -54,8 +54,8 @@ commit.
 
 ### Lo que sí sostiene
 
-10 páginas de arquitectura + 7 de casas + 21 de sistemas + 3 de referencia + 52 candidatos a
-bug con evidencia + 47 diagramas. Y tres guardianes que corren en cada commit: que ningún
+10 páginas de arquitectura + 7 de casas + 21 de sistemas + 3 de referencia + 53 candidatos a
+bug con evidencia + 49 diagramas. Y tres guardianes que corren en cada commit: que ningún
 `.luau` difiera de `main`, que los 443 enlaces internos resuelvan, y que cada número afirmado
 en el sitio siga cuadrando con el repositorio.
 
@@ -222,7 +222,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Sistema | Ubicación principal | Estado |
 |---|---|---|
 | Arranque / carga de plantillas | `src/ServerScriptService`, `src/ReplicatedStorage` | **Documentado** (capa de arquitectura) |
-| Mundos y Casas (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documentado** — 7 páginas, 9 diagramas, 10 candidatos a bug. No `Verificado`: eso exige Studio. |
+| Mundos y Casas (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documentado + revisión de gravedad** — 7 páginas, 11 diagramas, 11 candidatos. `docs/testing/world-system-severity.md` revisa la gravedad de los 14 que tocan el sistema. No `Verificado`: eso exige Studio. |
 | Persistencia (`DataKit`) | `Core/ServerStorage/DataKit` | **Documentado** (capa de arquitectura); `Store.transfer` e `Inbox` siguen sin leerse |
 | Datos del jugador | `Core/ServerStorage/WorldSystem/PlayerData*`, `Core/…/PlayerDataInit.server.luau`, `Client/EconomySystem/Collections.luau` | **Documentado** — `docs/systems/player-data.md`, 2 diagramas |
 | Orquestación de sesión (`Data.Main`) | `Core/ServerScriptService/Data/Main/init.server.luau` | **Documentado** — `docs/systems/session-orchestrator.md`, 1 diagrama |
@@ -529,7 +529,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 52 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 53 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -566,8 +566,8 @@ y razonado está en la propia página; el resumen es:
 - **Archivos anotados con Moonwave (solo comentarios, demostrado por la guarda de CI):**
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
-- **Diagramas:** 47 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 52 redactados al completo, incluida una pasada de seguridad
+- **Diagramas:** 49 diagramas Mermaid (flowchart, sequence, state)
+- **Candidatos a bug:** 53 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
