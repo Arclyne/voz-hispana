@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 31 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 6 |
-| Pendiente | Aún sin leer | 513 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 33 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 7 |
+| Pendiente | Aún sin leer | 510 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 28 leídos.
+530 archivos, 76,181 líneas, 31 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1347,12 +1347,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 7/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 9/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `EventBootstrap.server.luau` | Script | — | yes | 34 | `ServerScriptService.ServerScripts.EventBootstrap.server` | Pendiente |
-| `EventCommands.server.luau` | Script | — | yes | 180 | `ServerScriptService.ServerScripts.EventCommands.server` | Pendiente |
+| `EventBootstrap.server.luau` | Script | — | yes | 34 | `ServerScriptService.ServerScripts.EventBootstrap.server` | Analizado |
+| `EventCommands.server.luau` | Script | — | yes | 180 | `ServerScriptService.ServerScripts.EventCommands.server` | Analizado (en parte) |
 | `FavoriteService.server.luau` | Script | Server | yes | 55 | `ServerScriptService.ServerScripts.FavoriteService.server` | Pendiente |
 | `GiftHandler.server.luau` | Script | Server | yes | 355 | `ServerScriptService.ServerScripts.GiftHandler.server` | Pendiente |
 | `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Pendiente |
@@ -1624,11 +1624,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 5/8 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 6/8 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `EventService.luau` | ModuleScript | — | — | 456 | `ServerStorage.WorldSystem.EventService` | Pendiente |
+| `EventService.luau` | ModuleScript | — | — | 456 | `ServerStorage.WorldSystem.EventService` | Analizado |
 | `GiftInbox.luau` | ModuleScript | — | — | 89 | `ServerStorage.WorldSystem.GiftInbox` | Pendiente |
 | `PlayerDataReplicator.luau` | ModuleScript | — | — | 555 | `ServerStorage.WorldSystem.PlayerDataReplicator` | Analizado |
 | `PlayerDataService.luau` | ModuleScript | — | — | 90 | `ServerStorage.WorldSystem.PlayerDataService` | Analizado |
