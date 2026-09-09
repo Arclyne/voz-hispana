@@ -194,6 +194,35 @@ for haystack, pattern, label in CLAIMS:
     if not re.search(pattern, haystack):
         fail(f"Un número afirmado ya no cuadra con el repositorio: {label}")
 
+# La tabla de estado de DOCS_PROGRESS se lleva a mano y se ha desviado ya dos
+# veces respecto al inventario generado. Se contrasta contra el inventario, que
+# es la fuente de verdad porque lo produce un script.
+inventory = read("docs/reference/script-inventory.md")
+STATUS_ROWS = [
+    ("**Documentado**", r"\| \*\*Documentado\*\* \| [^|]+ \| (\d+) \|"),
+    ("Analizado", r"\| Analizado \| [^|]+ \| (\d+) \|"),
+    ("Analizado (en parte)", r"\| Analizado \(en parte\) \| [^|]+ \| (\d+) \|"),
+    ("Pendiente", r"\| Pendiente \| [^|]+ \| (\d+) \|"),
+]
+PROGRESS_ROWS = [
+    ("**Documentado**", r"\| \*\*Documentado\*\*[^|]*\| (\d+) \|"),
+    ("Analizado", r"\| Analizado \(leído entero[^|]*\| (\d+) \|"),
+    ("Analizado (en parte)", r"\| Analizado \(en parte\) \| (\d+) \|"),
+    ("Pendiente", r"\| Pendiente \| (\d+) \|"),
+]
+for (label, inv_pat), (_, prog_pat) in zip(STATUS_ROWS, PROGRESS_ROWS):
+    inv_m = re.search(inv_pat, inventory)
+    prog_m = re.search(prog_pat, progress)
+    if not inv_m:
+        fail(f"No se pudo leer «{label}» del inventario generado")
+    elif not prog_m:
+        fail(f"No se pudo leer «{label}» de DOCS_PROGRESS")
+    elif inv_m.group(1) != prog_m.group(1):
+        fail(
+            f"DOCS_PROGRESS dice {prog_m.group(1)} para «{label}» y el inventario "
+            f"generado dice {inv_m.group(1)}. Regenera el inventario y copia sus cifras."
+        )
+
 for cls, count in sorted(class_counts.items()):
     if cls in ("RemoteEvent", "RemoteFunction", "BindableEvent", "BindableFunction"):
         if not re.search(rf"\| `{cls}` \| {count} \|", progress):

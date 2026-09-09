@@ -317,8 +317,8 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 62 |
-| Analizado (en parte) | 36 |
+| Analizado (leído entero, descrito en el sitio) | 61 |
+| Analizado (en parte) | 37 |
 | Pendiente | 446 |
 
 Las lecturas parciales y por qué:
