@@ -116,6 +116,7 @@ PARTIAL = {
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/init.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/FunctActionsTV.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/TV/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/GiftHandler.server.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",

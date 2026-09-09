@@ -150,6 +150,88 @@ return typeof(errormsg) == 'table' and errormsg or filteredItems
 Funciona —devuelve los datos cuando los hay y una tabla vacía cuando no—, pero se lee al
 revés de lo que hace. `filteredItems` nunca llega a llenarse.
 
+## Regalar un artículo a otro jugador
+
+`GiftHandler.server.luau` (355 líneas) es la ruta de regalos, y es también **el único sitio
+del juego que asigna `MarketplaceService.ProcessReceipt`**.
+
+:::caution Ese asignador es global y único
+
+`ProcessReceipt` es **uno por juego**: si dos scripts lo asignan, el último gana y el otro
+deja de recibir recibos en silencio. Un `grep` sobre todo `src/` confirma que hoy solo hay
+una asignación, en la última línea de este archivo.
+
+Quien vaya a manejar una compra de producto tiene que hacerlo **dentro** de esta función, no
+asignando otra.
+
+:::
+
+### El recorrido
+
+```mermaid
+flowchart TD
+    A["Cliente invoca RequestGift<br/>(targetUserId, productId)"] --> B{"Validación"}
+    B -->|falla| B2["devuelve false + motivo"]
+    B -->|pasa| C["pendingGifts[comprador]<br/>con TTL"]
+    C --> D["Prompt de Roblox"]
+    D --> E["ProcessReceipt"]
+    E --> F{"takeIntent<br/>¿hay intención viva<br/>para ESTE producto?"}
+    F -->|no, y es producto de regalo| G["NotProcessedYet<br/>no se otorga a nadie"]
+    F -->|no, producto normal| H["receptor = comprador"]
+    F -->|sí| I["receptor = objetivo"]
+    H --> J{"¿el receptor está conectado?"}
+    I --> J
+    J -->|no| K["GiftInbox.push"]
+    K -->|guardado| L["PurchaseGranted"]
+    K -->|falló| G
+    J -->|sí| M{"¿ya lo tiene?"}
+    M -->|sí| L
+    M -->|no se pudo comprobar| G
+    M -->|no| N["applyItem en pcall"]
+    N -->|true| L
+    N -->|false| G
+```
+
+### Por qué es el camino mejor protegido del repositorio
+
+**Registrado como correcto, y merece leerse antes de escribir cualquier otra ruta de pago.**
+Toda decisión dudosa se resuelve **no otorgando** y dejando que Roblox reintente:
+
+| Situación | Decisión | Por qué importa |
+|---|---|---|
+| Producto de regalo sin destinatario registrado | `NotProcessedYet` | Un producto creado solo para regalar **jamás** cae al comprador por defecto. El código lo marca como *«Seguridad crítica»* |
+| Comprador y receptor coinciden | `NotProcessedYet` | Cierra la vía de convertir un regalo en autocompra |
+| Receptor desconectado | `GiftInbox.push`, y solo se otorga **si se guardó** | Es exactamente el contrato que `GiftInbox` documenta por su lado. Los dos módulos coinciden |
+| No se pudo verificar si ya tiene el gamepass | `NotProcessedYet` | Falla cerrado y espera, en vez de arriesgar una entrega duplicada |
+| Ya lo tiene | `PurchaseGranted` | Cierra el recibo sin entregar dos veces |
+| `applyItem` lanza o devuelve algo que no es `true` | `NotProcessedYet` | Va dentro de `pcall` y se exige `result == true` |
+
+Y la validación de `RequestGift` es igual de completa: normaliza los números, exige que el
+producto exista y esté marcado `Giftable`, prohíbe regalarse a uno mismo, exige que el
+objetivo esté en el servidor, y comprueba que no tenga ya el gamepass.
+
+**HECHO.** La intención de regalo lleva **TTL y se consume una sola vez**:
+
+```lua
+local function takeIntent(buyerId: number, productId: number)
+	local intent = pendingGifts[buyerId]
+	if not intent or intent.ProductId ~= productId then
+		return nil
+	end
+
+	pendingGifts[buyerId] = nil        -- se consume ANTES de mirar el TTL
+
+	if os.clock() - intent.At > GIFT_INTENT_TTL then
+		return nil
+	end
+
+	return intent
+end
+```
+
+Está atada **a ese producto concreto**, y borrarla antes de comprobar la caducidad impide que
+una intención vencida se quede rondando para el siguiente recibo.
+
 ## Puntos de verificación
 
 | Aspecto | Entrada |
@@ -166,6 +248,10 @@ revés de lo que hace. `filteredItems` nunca llega a llenarse.
 | **Los prompts entrelazados no se confunden** | `MarkAdded:decition` compara id e `InfoType` del prompt cerrado contra el abierto |
 | **Un jugador no puede tener dos compras abiertas** | `MarkPrompt` devuelve `nil` si ya hay un prompt registrado para ese jugador |
 | **La caché de propiedad se limpia al salir** | `PlayerRemoving` borra `Gamepass[n].Owner[userId]` y cancela la tarea de carga pendiente |
+| **Un producto de regalo nunca cae al comprador** | `ProcessReceipt` devuelve `NotProcessedYet` si no hay destinatario registrado, y Roblox reintenta |
+| **Una intención de regalo no se reutiliza** | Lleva TTL, está atada a un `productId` concreto, y se consume antes de comprobar la caducidad |
+| **Un regalo con el receptor ausente no se pierde** | Va a `GiftInbox`, y el recibo solo se cierra si se guardó |
+| **Solo hay un `ProcessReceipt` en todo el juego** | Comprobado con `grep` sobre `src/`: una única asignación |
 | **Conceder un pase es idempotente** | `grant` comprueba `table.find` antes de insertar, y `GamePassRewards.ensure` vuelve a decidir por su cuenta |
 
 ## Qué queda por leer
@@ -175,6 +261,7 @@ revés de lo que hace. `filteredItems` nunca llega a llenarse.
 | `Shared/Monetization/init.luau`, `MainModule`, `MarkAdded`, `Beneficios` | Leídos |
 | `WorldSystem/GamePassService/init.luau` | Leído |
 | `GamePassService/GamePassRewards.luau` | **En parte** — `ensure`; falta `ensureAll` |
+| `ServerScripts/GiftHandler.server.luau` | Leído — la ruta de regalos y `ProcessReceipt` |
 | `ShopInfo.luau` | **Pendiente** — la declaración de la tienda que alimenta a `GamePassService` |
 | `ServerScripts/inventory/InventoryManager` | **Pendiente** — quien entrega las herramientas |
 
@@ -188,3 +275,5 @@ revés de lo que hace. `filteredItems` nunca llega a llenarse.
 | Candado de prompts | `Shared/Monetization/MarkAdded.luau` |
 | Catálogo del jugador | `Shared/Monetization/MainModule.luau`, `getItems`, `loadItems` |
 | Acreditación de una venta | `Data/Main/init.server.luau`, `Monetizacion:VerifyVentasPlayer` |
+| Regalos y recibos | `ServerScripts/GiftHandler.server.luau`, `RequestGiftEvent`, `takeIntent`, `processReceipt` |
+| Entrega diferida | `WorldSystem/GiftInbox.luau` — ver [Persistencia fuera de DataKit](./global-storage.md) |

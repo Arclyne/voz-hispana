@@ -20,12 +20,12 @@ ya lo estaban.
 
 ## Progreso general
 
-**86 %**
+**88 %**
 
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **95 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **96 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
 Eso es un 15 % por número de archivos, pero una porción mucho mayor del código que sostiene
@@ -33,7 +33,7 @@ todo lo demás: el arranque completo, el sistema de mundos/casas entero, las cap
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
 invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
 mobiliario, y toda la ruta de monetización, y la estructura de los interactuables, el inventario, la moderación de karaoke, los cuadros, los trabajos, la persistencia de fuera de DataKit, y un barrido de la superficie de red
-del resto. Los ~457 archivos restantes son sistemas de juego (interactuables, karaoke,
+del resto. Los ~456 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
@@ -218,7 +218,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | **Documentado** — `docs/systems/karaoke.md`, 1 diagrama. Falta `BusquedaMusicas` |
 | Cuadros (Paint) | `Shared/Paint`, `interactable/Paint` | **Documentado** — `docs/systems/paint.md`. Faltan el editor y la cola de carga, que son de cliente |
 | Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Falta parte de `Compras.luau` |
-| Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService` | **Documentado** — `docs/systems/monetization.md`, 1 diagrama. Faltan `ShopInfo` e `InventoryManager` |
+| Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService`, `GiftHandler` | **Documentado** — `docs/systems/monetization.md`, 2 diagramas, incluida la ruta de regalos y `ProcessReceipt`. Falta `ShopInfo` |
 | Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | **Barrido** — `docs/systems/survey.md`; leída la ruta de reclamación |
 | Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | **Barrido** — `docs/systems/survey.md`; el servidor leído entero |
 | Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | Pendiente |
@@ -317,8 +317,8 @@ Resumen a día de hoy:
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
 | Analizado (leído entero, descrito en el sitio) | 61 |
-| Analizado (en parte) | 26 |
-| Pendiente | 457 |
+| Analizado (en parte) | 27 |
+| Pendiente | 456 |
 
 Las lecturas parciales y por qué:
 
@@ -538,9 +538,9 @@ y razonado está en la propia página; el resumen es:
 - **Archivos anotados con Moonwave (solo comentarios, demostrado por la guarda de CI):**
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
-- **Diagramas:** 40 diagramas Mermaid (flowchart, sequence, state)
+- **Diagramas:** 41 diagramas Mermaid (flowchart, sequence, state)
 - **Candidatos a bug:** 34 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 95 de 552
+- **Scripts leídos:** 96 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.

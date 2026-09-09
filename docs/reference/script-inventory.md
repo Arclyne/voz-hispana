@@ -27,8 +27,8 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
 | Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 26 |
-| Pendiente | Aún sin leer | 457 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 27 |
+| Pendiente | Aún sin leer | 456 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 84 leídos.
+530 archivos, 76,305 líneas, 85 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1347,14 +1347,14 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 11/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 12/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `EventBootstrap.server.luau` | Script | — | yes | 34 | `ServerScriptService.ServerScripts.EventBootstrap.server` | Analizado |
 | `EventCommands.server.luau` | Script | — | yes | 180 | `ServerScriptService.ServerScripts.EventCommands.server` | Analizado (en parte) |
 | `FavoriteService.server.luau` | Script | Server | yes | 55 | `ServerScriptService.ServerScripts.FavoriteService.server` | Pendiente |
-| `GiftHandler.server.luau` | Script | Server | yes | 355 | `ServerScriptService.ServerScripts.GiftHandler.server` | Pendiente |
+| `GiftHandler.server.luau` | Script | Server | yes | 355 | `ServerScriptService.ServerScripts.GiftHandler.server` | Analizado (en parte) |
 | `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Pendiente |
 | `MicManagerServer.server.luau` | Script | Server | yes | 197 | `ServerScriptService.ServerScripts.MicManagerServer.server` | Pendiente |
 | `NametagServer.server.luau` | Script | Server | yes | 513 | `ServerScriptService.ServerScripts.NametagServer.server` | Pendiente |

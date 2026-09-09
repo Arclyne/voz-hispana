@@ -219,11 +219,11 @@ comprobación de etiqueta ni distancia.
 
 | # | Qué | Por qué |
 |---|---|---|
-| 1 | `KaraokeTV` y `BusquedaMusicas` | Cierran Karaoke, y `BusquedaMusicas` es el único consumidor de `GlobalDataStore` sin leer |
-| 2 | `GiftHandler.server.luau` | Quien llama a `GiftInbox`; cierra la ruta de regalos en Robux |
-| 3 | Los 36 módulos de tipo de Interactuables | Catálogo, no explicación: solo si alguien necesita extender un tipo |
-| 4 | La interfaz de `BuildingSystem` | Ya se sabe qué es y a quién llama; leer sus 2 749 líneas es documentar UI |
-| 5 | Los cuatro módulos de trabajo por dentro | `Bartender`, `LimpiarPiso`, `CajasTransport`, `ButtonMoney` |
+| 1 | `BusquedaMusicas` | Cierra Karaoke, y es el único consumidor de `GlobalDataStore` sin leer |
+| 2 | Los 36 módulos de tipo de Interactuables | Catálogo, no explicación: solo si alguien necesita extender un tipo |
+| 3 | La interfaz de `BuildingSystem` | Ya se sabe qué es y a quién llama; leer sus 2 749 líneas es documentar UI |
+| 4 | Los cuatro módulos de trabajo por dentro | `Bartender`, `LimpiarPiso`, `CajasTransport`, `ButtonMoney` |
 
 **Ya hechos** desde que se escribió esta lista: `JobSystem`, `ToolPlacementServer`,
-`GlobalDataStore` y `GiftInbox`, y el papel de `BuildingSystem`.
+`GlobalDataStore`, `GiftInbox`, `GiftHandler`, los televisores de karaoke, y el papel de
+`BuildingSystem`.

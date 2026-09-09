@@ -133,6 +133,9 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Toda la ruta de regalos en Robux | **Correcto, y es el camino mejor protegido del repositorio.** `ProcessReceipt` resuelve **toda** decisión dudosa no otorgando y dejando que Roblox reintente: producto de regalo sin destinatario, comprador igual al receptor, propiedad no verificable, `applyItem` que no devuelve `true`. Un producto creado solo para regalar jamás cae al comprador por defecto, y el código lo marca como «Seguridad crítica». |
+| Reutilizar una intención de regalo | **Correcto.** Lleva TTL, está atada a un `productId` concreto, y se consume **antes** de comprobar la caducidad, así que una vencida no queda rondando para el siguiente recibo. |
+| Varios `ProcessReceipt` compitiendo | **Correcto.** `grep` sobre todo `src/` confirma una única asignación, en `GiftHandler.server.luau`. Es un asignador global: dos scripts que lo pongan se pisan en silencio. |
 | Entrega de un regalo en Robux con el receptor ausente | **Correcto, y es el módulo mejor razonado del repositorio.** `GiftInbox` documenta por qué no puede ir en el perfil —el lease es de un solo escritor y aquí el servidor del comprador escribe sobre otra identidad—, devuelve `false` si no pudo escribir para que el recibo no se dé por bueno, y no borra el buzón si la lectura falla. |
 | Buzón de regalos creciendo sin límite | **Correcto.** `MAX_ENTRIES = 50`, cancelando la escritura con `nil`, que además no gasta la operación. |
 | Despacho de métodos por nombre en Trabajos | **Correcto, y es el mejor patrón del repositorio para esto.** El cliente manda el nombre del método, pero hay una lista blanca **por instancia** —cuatro o cinco nombres declarados junto al objeto— y quien la burla recibe `Player:Kick("Exploiter detected.")`. `LimpiarPiso` incluso deja la lista vacía para las instancias que no deben aceptar nada. |
@@ -4175,7 +4178,8 @@ completa.
 | `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
 | `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
 | `BuildingSystem` | Su papel, sí | Es interfaz de cliente sin remotes propios; su UI no se ha leído |
-| `BusquedaMusicas`, `GiftHandler` | **No** | En cola |
+| `GiftHandler.server.luau` | Sí | La ruta de regalos y `ProcessReceipt` |
+| `BusquedaMusicas` | **No** | En cola |
 | Sistemas de juego (~420 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
