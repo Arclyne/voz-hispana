@@ -67,6 +67,38 @@ o en un place de pruebas.
 | [012](#bug-candidate-012) | Roles, ajustes y baneos de una casa los puede leer cualquier ocupante | Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [013](#bug-candidate-013) | Un servidor de casa sin `TeleportData` deja tirado a su jugador en silencio | Casas | Posible bug / Requiere verificación en ejecución | Media | Media |
 | [014](#bug-candidate-014) | Un secreto compartido y un host proxy están escritos a fuego en un archivo versionado | Casas / Seguridad | Confirmado por análisis estático | Alta | Alta |
+| [015](#bug-candidate-015) | Un solo booleano separa la economía de escrituras arbitrarias del cliente | Economía / Seguridad | Observación / Requiere pruebas de seguridad | Crítica | Alta |
+| [016](#bug-candidate-016) | Las máquinas aceptan del cliente el valor de la recompensa sin validarlo | Máquinas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Alta |
+| [017](#bug-candidate-017) | Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto | Administración / Seguridad | Observación / Requiere verificación en ejecución | Baja | Alta |
+
+### Entradas de seguridad
+
+Las que tratan superficie de ataque en vez de corrección funcional. Se escriben en el mismo
+formato que el resto: teoría con justificación, no acusaciones.
+
+| ID | Vector | Estado hoy |
+|---|---|---|
+| [012](#bug-candidate-012) | Lectura de roles y baneos de una casa sin comprobación de permisos | **Explotable hoy**, impacto bajo |
+| [014](#bug-candidate-014) | Secreto compartido versionado, proxy en HTTP plano, remote sin límite de frecuencia | **Expuesto hoy**, impacto por determinar |
+| [015](#bug-candidate-015) | Escritura arbitraria de moneda desde el cliente | **Latente** — desactivado por un booleano |
+| [016](#bug-candidate-016) | Valor de recompensa suministrado por el cliente | **Latente** — el manejador de premio es un stub |
+| [017](#bug-candidate-017) | Ventana de revocación de privilegios de administrador | **Presente hoy**, impacto bajo |
+
+#### Lo que se revisó y salió limpio
+
+Registrado con el mismo cuidado, porque una lista de hallazgos sin lo revisado y correcto es
+engañosa:
+
+| Superficie | Resultado |
+|---|---|
+| Comandos de administración (`EventCommands`, `ReferralCommands`) | **Correcto.** Ambos comprueban `Admins:IsRole(player, "Admins")` contra un grupo de Roblox, y rechazan en silencio para no revelar la existencia del comando. |
+| `RoleService` ante fallo de `GroupService` | **Falla cerrado.** Un `pcall` fallido produce una tabla de roles vacía, no un pase libre. |
+| Precios de la tienda | **Correcto.** El precio se lee de `HousesInfo`/`DancesInfo` en el servidor; el cliente solo envía un id de artículo, que además debe estar en la rotación vigente. |
+| `accessCode` de servidores reservados | **Correcto.** Nunca viaja al cliente: `ServerDirectory.toPublicEntry` construye la respuesta campo a campo y lo omite. |
+| Destinos de teleport | **Correcto.** El cliente envía una clave, nunca un `PlaceId`; se resuelve contra `HousesInfo` o `PlaceKeyToPlaceId`. |
+| `Machine:bind` | **Correcto.** Exige que el modelo coincida y que el jugador esté en la lista de participantes de esa máquina. |
+| `SetWorldName` | **Correcto en el saneado**, con la salvedad de que el filtrado de texto falla abierto (ver [Permisos](../systems/housing/permissions.md)). |
+| Apertura de casa ajena | **Correcto.** `hasRoom` se comprueba en el destino contra el perfil del dueño; una clave falsificada no crea ni abre una casa. |
 
 ---
 
@@ -1336,6 +1368,355 @@ pero se registra para que no se pierda:
 
 ---
 
+---
+
+## BUG-CANDIDATE-015
+
+### Un solo booleano separa la economía de escrituras arbitrarias del cliente
+
+**Sistema:** Economía / Seguridad · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Crítica · **Confianza:** Alta
+
+**Código relacionado:** `Core/ReplicatedStorage/Client/EconomySystem/Collections.luau`,
+final del archivo; `Core/ReplicatedStorage/Events/Collections/*`
+**Documentación relacionada:** [Red](../architecture/networking.md)
+
+:::note Hoy no es explotable
+
+El código que lo abriría está **desactivado por una constante**. Esta entrada no dice que
+el juego sea vulnerable ahora. Dice que la distancia entre el estado actual y una
+vulnerabilidad crítica es un `false` que alguien podría cambiar sin darse cuenta de lo que
+habilita.
+
+:::
+
+#### Comportamiento observado — HECHO
+
+`Collections.luau` termina con un enlazado automático de remotes a sus propias funciones:
+
+```lua
+if not IsClient and not Start and ConexionEntreServerYCliente then
+    Start = not Start
+
+    for _,remote in Events:GetChildren() do
+        if not module[remote.Name] then continue end
+        if remote:IsA('RemoteEvent') then
+            remote.OnServerEvent:Connect(module[remote.Name])
+        elseif remote:IsA('RemoteFunction') then
+            remote.OnServerInvoke = module[remote.Name]
+        end
+    end
+end
+```
+
+y arriba del archivo, en la línea 9:
+
+```lua
+local ConexionEntreServerYCliente = false
+```
+
+Los remotes existen y coinciden por nombre con funciones del módulo:
+
+| Remote | Clase | Función del módulo con ese nombre |
+|---|---|---|
+| `Events/Collections/SetAmount` | `RemoteEvent` | `module.SetAmount(_, value, Amount, earned2)` |
+| `Events/Collections/Give` | `RemoteEvent` | `module.Give(Player, List, Level)` |
+| `Events/Collections/charge` | `RemoteFunction` | `module.charge(Player, List, Level)` |
+| `Events/Collections/Get` | `RemoteEvent` | *(no hay `module.Get`; el bucle lo salta)* |
+
+#### Por qué puede ser un problema
+
+Si esa constante pasara a `true`, el bucle enlazaría los remotes directamente a funciones
+que **no fueron escritas para recibir entrada del cliente**. En particular:
+
+- **`SetAmount`.** Su primer parámetro se llama `_` y se ignora. En un `OnServerEvent`, el
+  primer argumento es el jugador que dispara, así que el jugador cae en `_`, y `value` y
+  `Amount` vienen **del cliente**. El cuerpo hace:
+
+  ```lua
+  value.Value = math.clamp(Amount, 0, math.huge)
+  ```
+
+  Es decir: escritura arbitraria sobre cualquier `ValueBase` que el cliente pueda
+  referenciar, con cualquier valor. No hay comprobación de propiedad, ni de tipo, ni de
+  rango superior.
+
+- **`Give`.** Su firma sí empieza por `Player`, así que el jugador llegaría correctamente,
+  pero `List` y `Level` vendrían del cliente. `Give` recorre `List` sumando a cada stat
+  nombrado el valor que el propio cliente indica. Es moneda ilimitada.
+
+#### Teoría — TEORÍA
+
+Un cliente podría concederse cualquier cantidad de Coins, Gems o cualquier otro stat
+replicado, y con `SetAmount` escribir sobre `ValueBase` que ni siquiera le pertenecen. Como
+`PlayerDataReplicator` replica los stats desde y hacia el perfil persistido, el efecto sería
+además duradero, no cosmético.
+
+#### Evidencia
+
+- La constante está a `false` y es el único guardián — **HECHO**. Sin ella, el enlazado
+  ocurre sin más condiciones.
+- La coincidencia por nombre entre remotes y funciones no es casual: los cuatro remotes
+  existen y tres tienen función homónima — **HECHO**. El mecanismo estaba pensado para
+  usarse.
+- `module.SetAmount` tiene `_` como primer parámetro — **HECHO**. Eso demuestra que se
+  diseñó para llamarse desde el servidor (`SetAmount(Player, value, amount)`), no como
+  manejador de remote, donde ese hueco lo ocupa el jugador.
+- El nombre de la constante, *«ConexionEntreServerYCliente»*, indica que el autor sabía
+  exactamente qué habilitaba y decidió dejarlo apagado — **INFERENCIA**.
+
+#### Incógnitas
+
+- Por qué se dejó el código en lugar de borrarlo. Puede ser trabajo a medias, o un
+  interruptor de depuración.
+- Si alguna versión publicada de la plantilla `Core` tiene esa constante a `true`. **Este
+  repositorio solo contiene el override local**; el asset publicado es el que manda en
+  producción, y no se puede leer desde aquí. Esta incógnita es la razón de que la entrada
+  se registre en vez de descartarse.
+
+#### Escenario de ejemplo
+
+1. Alguien pone `ConexionEntreServerYCliente = true` para probar algo, o la versión
+   publicada ya lo tiene.
+2. Un cliente ejecuta
+   `ReplicatedStorage.Events.Collections.Give:FireServer({ Coins = 999999999 }, true)`.
+3. El servidor suma esa cantidad al stat `Coins` del jugador.
+4. `PlayerDataReplicator` la persiste.
+
+#### Esperado frente a posible real
+
+| Esperado | Posible real |
+|---|---|
+| La moneda solo la modifica el servidor, tras validar | Cualquier cliente fija cualquier stat al valor que quiera |
+
+#### Plan de verificación — *Seguridad*, *Integración*
+
+1. **Primero, lo que decide todo:** comprueba el valor de `ConexionEntreServerYCliente` en
+   el asset `Core` **publicado** (`137484964666215`), no en este repositorio. Si allí es
+   `false`, el riesgo es solo latente y esta entrada baja a nota de mantenimiento.
+2. En un place de pruebas aislado, pon la constante a `true`.
+3. Desde el cliente, dispara `Collections/Give` con una tabla de stats y cantidades
+   inventadas. Anota si el stat cambia.
+4. Dispara `Collections/SetAmount` con una referencia a un `ValueBase` que no pertenezca al
+   jugador. Anota si se escribe.
+5. Vuelve a entrar para comprobar si el cambio persistió.
+
+**Pasa:** con la constante a `true` los remotes siguen rechazando la entrada del cliente
+(no es el caso según la lectura del código), o la constante está a `false` en el asset
+publicado y se documenta como interruptor peligroso.
+**Falla:** el paso 3 o el 4 modifican valores.
+
+**Instrumentación sugerida:** ninguna en producción. Lo que corresponde es una comprobación
+en el proceso de publicación que falle si esa constante llega a `true`.
+
+---
+
+## BUG-CANDIDATE-016
+
+### Las máquinas aceptan del cliente el valor de la recompensa sin validarlo
+
+**Sistema:** Máquinas / Seguridad · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/machines/PopTheLock.luau`;
+`Core/…/ServerScripts/machines/Machine.luau`, `Machine:bind`
+**Documentación relacionada:** [Red](../architecture/networking.md)
+
+:::note Hoy no concede nada
+
+El manejador de premio es un stub que solo escribe en el log. Esta entrada documenta la
+**forma** del flujo, porque el valor del cliente ya llega hasta el borde de la ruta de
+recompensa y solo falta que alguien implemente el premio.
+
+:::
+
+#### Comportamiento observado — HECHO
+
+```lua
+self._machine:bind(remotes.Machines.PopTheLockFinish, function(player, tickets)
+    fireExcept(remotes.Machines.PopTheLockFinish, player, model, tickets)
+    if tickets > 0 then
+        self:_handle(player, tickets)
+    end
+    self:stop()
+end)
+```
+
+`tickets` viene íntegramente del cliente. Y el manejador de premio, hoy:
+
+```lua
+function PopTheLock:_handle(player: Player, tickets: number)
+    warn(`[pop the lock] player({player}) tickets({tickets})`)
+end
+```
+
+#### Por qué puede ser un problema
+
+Dos cosas distintas:
+
+1. **La cantidad de premio la decide el cliente.** El servidor no simula la partida, no
+   acota `tickets`, y no comprueba que el resultado sea alcanzable. El día que `_handle`
+   conceda algo, concederá lo que el cliente diga.
+2. **`tickets > 0` no comprueba el tipo.** Si un cliente envía una cadena o `nil`, la
+   comparación lanza un error de Luau («attempt to compare»), que aborta el manejador. Todos
+   los demás remotes revisados en `WorldManager` sí comprueban tipo antes de usar el valor.
+
+#### Lo que sí está bien
+
+**HECHO.** `Machine:bind` no es ingenuo:
+
+```lua
+remote.OnServerEvent:Connect(function(player, model, ...)
+    if model == self.model and table.find(self._players, player) then
+        callback(player, ...)
+    end
+end)
+```
+
+Exige que el modelo coincida con esa máquina y que el jugador esté en su lista de
+participantes. Así que un jugador cualquiera no puede disparar el premio de una máquina en
+la que no está jugando. Eso acota el problema a los participantes legítimos, no lo elimina.
+
+#### Teoría — TEORÍA
+
+Cuando se implemente el premio, un participante podrá enviar el número de tickets que
+quiera. El patrón —el cliente reporta su propia puntuación— es el mismo en el resto de
+máquinas, así que el arreglo probablemente no sea puntual sino de diseño: la puntuación
+debería derivarse en el servidor, o al menos acotarse por lo que la partida permite.
+
+#### Evidencia
+
+- `tickets` va del remote a `_handle` sin ninguna transformación — **HECHO**.
+- `_handle` es un stub — **HECHO**, y por eso la clasificación es Observación y no bug.
+- Ninguna máquina otorga moneda hoy: un `grep` de `Collections`/`SetAmount` sobre
+  `ServerScripts/machines` no devuelve nada — **HECHO**. La única que cobra es
+  `LootBoxService`, y lo hace con `Collections.charge` del lado servidor.
+
+#### Incógnitas
+
+- Si el diseño previsto es que el servidor simule la partida o que confíe en el cliente y
+  acote el resultado.
+- Si las demás máquinas (`Stacker`, `Basketball`) siguen el mismo patrón en sus finales.
+  No se han leído en detalle.
+
+#### Escenario de ejemplo
+
+1. Alguien implementa `_handle` para que conceda tickets.
+2. Un jugador entra legítimamente en la máquina.
+3. Dispara `PopTheLockFinish` con `tickets = 1e9` sin haber jugado.
+4. Recibe la recompensa completa.
+
+#### Esperado frente a posible real
+
+| Esperado | Posible real |
+|---|---|
+| El servidor decide la recompensa | El cliente la decide |
+
+#### Plan de verificación — *Seguridad*, *Funcional*
+
+1. Lee `Stacker.luau`, `Basketball/init.luau` y `Roulette.luau` y comprueba si sus rutas de
+   final tienen la misma forma. `Roulette` ya valida el modelo en `requestSpinRF`, así que
+   puede ser el patrón a seguir.
+2. En un place de pruebas, implementa `_handle` con una concesión de prueba.
+3. Únete a la máquina y dispara `PopTheLockFinish` con un valor absurdo, sin jugar.
+4. Anota si se concede.
+5. Repite enviando una cadena en vez de un número y comprueba si el manejador lanza error.
+
+**Pasa:** el servidor recalcula o acota la recompensa; un valor no numérico se rechaza
+limpiamente.
+**Falla:** se concede lo que el cliente dijo, o un valor no numérico produce un error de
+Luau.
+
+**Instrumentación sugerida:** registrar `tickets` junto con la duración de la partida en el
+servidor; una recompensa alta con una partida de cero segundos es la señal buscada.
+
+---
+
+## BUG-CANDIDATE-017
+
+### Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto
+
+**Sistema:** Administración / Seguridad · **Clasificación:** Observación / Requiere verificación en ejecución
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/ServerStorage/RoleService/init.luau` — `PlayerAdded`,
+`IsRole`, `TimeHold`
+**Documentación relacionada:** —
+
+#### Comportamiento observado — HECHO
+
+`IsRole` no consulta a Roblox: lee una caché.
+
+```lua
+function module:IsRole(Player:Player, NameRole)
+    assert(typeof(NameRole) == "string", "Only string")
+    return self:GetInfoPlayer(Player).Roles[NameRole] or false
+end
+```
+
+y `GetInfoPlayer` → `PlayerAdded` solo refresca si la entrada es más vieja que `TimeHold`:
+
+```lua
+if not LastData or GetElapsedTime(LastData.UpdateTime) >= self.TimeHold then
+    local Sucess, DataGroup = pcall(GroupService.GetRolesInGroupAsync, GroupService, Player.UserId, self.GroupId)
+```
+
+`TimeHold = 50` segundos, y un bucle aparte llama a `Updating()` cada 10 segundos.
+
+#### Por qué puede ser un problema
+
+Quitar a alguien del rango de administrador en el grupo de Roblox no le retira los permisos
+de inmediato: sigue pasando `IsRole` hasta que su entrada de caché caduque.
+
+#### Teoría — TEORÍA
+
+Existe una ventana de hasta 50 segundos en la que un administrador recién degradado
+—posiblemente por abuso, que es justo cuando importa— conserva acceso a `EventCommands` y
+`ReferralCommands`.
+
+#### Lo que sí está bien
+
+**HECHO.** El servicio **falla cerrado**. Si `GetRolesInGroupAsync` da error, `Sucess` es
+`false` y `GetRoles(nil)` devuelve `{}`, así que el jugador queda sin roles en vez de con
+todos. Es la dirección segura.
+
+**OBSERVACIÓN.** El reverso de eso es que un fallo transitorio de `GroupService` también se
+cachea 50 segundos, así que un administrador legítimo puede quedarse sin permisos durante
+ese rato. Es una molestia de disponibilidad, no un agujero.
+
+#### Evidencia
+
+- `TimeHold = 50` y la condición de refresco son explícitos — **HECHO**.
+- `IsRole` no tiene ninguna vía para forzar un refresco — **HECHO**.
+
+#### Incógnitas
+
+- Si 50 segundos es una elección deliberada de compromiso entre cuota de `GroupService` y
+  frescura. Muy probablemente sí, dado que hay un bucle de actualización periódica.
+- Si el modelo de amenaza del equipo contempla la revocación urgente.
+
+#### Escenario de ejemplo
+
+1. Se retira a un administrador del rango en el grupo de Roblox.
+2. Dentro de los 50 segundos siguientes ejecuta un comando de evento.
+3. `IsRole` lee la caché y lo permite.
+
+#### Plan de verificación — *Seguridad*, *Ejecución*
+
+1. Con dos cuentas, una administradora, entra en un servidor.
+2. Ejecuta un comando de administración y confirma que funciona.
+3. Retira el rango en el grupo de Roblox.
+4. Vuelve a ejecutar el comando de inmediato, y luego cada 10 segundos.
+5. Anota cuándo empieza a rechazarse.
+
+**Pasa:** el rechazo llega dentro de la ventana que el equipo considere aceptable.
+**Falla:** el acceso persiste bastante más de 50 segundos, lo que indicaría que la caché no
+caduca como se espera.
+
+**Instrumentación sugerida:** registrar la antigüedad de la entrada de caché junto a cada
+comando administrativo aceptado, para conocer la frescura real en producción.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -1354,10 +1735,29 @@ completa.
 | `playerManager`, `Client/PlayerManager` | Sí | |
 | `EventService`, `ReferralService` | **No** | En cola |
 | `PlayerDataService`, `WorldSystem/PlayerDataReplicator.luau` | **No** | En cola |
-| `Collections` (moneda) | **No** | Necesario para cerrar BUG-CANDIDATE-008 |
+| `Collections` (moneda) | **En parte** | Leído para la pasada de seguridad (BUG-CANDIDATE-015); falta trazar dónde persiste la moneda para cerrar BUG-CANDIDATE-008 |
+| `RoleService`, `EventCommands`, `ReferralCommands` | **En parte** | Solo la ruta de autorización, para la pasada de seguridad |
+| `machines/Machine`, `machines/PopTheLock` | **En parte** | Solo las rutas de enlace y de premio |
 | `GlobalDataStore`, `GiftInbox` | **No** | Ambos usan DataStoreService fuera de DataKit |
 | Sistemas de juego (~480 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
 esté limpia.
+
+### Alcance de la revisión de seguridad
+
+La pasada de seguridad no fue una auditoría. Se buscaron patrones concretos sobre la
+superficie ya leída:
+
+- remotes que conceden valor (moneda, artículos, recompensas);
+- remotes que aceptan cantidades, precios o identificadores del cliente;
+- comandos de administración y cómo se autorizan;
+- secretos y credenciales en el código;
+- límites de frecuencia en remotes que provocan trabajo caro;
+- comprobaciones de propiedad antes de actuar sobre datos de otro jugador.
+
+**No** se han revisado: los ~200 remotes de `Interactable`, `Karaoke`, `Stores`, `Tools` y
+`Paint`; la ruta de `Monetization` y compras con Robux; ni el sistema de construcción. Son
+exactamente el tipo de superficie donde suelen aparecer más hallazgos, así que esta sección
+debe leerse como un primer barrido, no como una garantía.
