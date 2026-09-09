@@ -20,26 +20,26 @@ ya lo estaban.
 
 ## Progreso general
 
-**50 %**
+**53 %**
 
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **58 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **63 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
 Eso es un 11 % por número de archivos, pero una porción mucho mayor del código que sostiene
 todo lo demás: el arranque completo, el sistema de mundos/casas entero, las capas de
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
 invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
-mobiliario, y toda la ruta de monetización. Los ~494 archivos restantes son sistemas de juego (interactuables, karaoke,
+mobiliario, y toda la ruta de monetización. Los ~489 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
 del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 6 de sistemas +
-3 de referencia + 22 candidatos a bug con evidencia, frente a un plan que aún necesita
+3 de referencia + 23 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -214,7 +214,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | Leído en parte (pasada de seguridad → BUG-CANDIDATE-016) |
 | Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | Pendiente |
 | Paint | `Shared/Paint`, `interactable/Paint`, `ServerStorage/Paint` | Pendiente |
-| Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. `Added`, `DecorFuncs/` y `DecorsPlayer` siguen pendientes |
+| Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Faltan `Added.luau` y parte de `Compras.luau` |
 | Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService` | **Documentado** — `docs/systems/monetization.md`, 1 diagrama. Faltan `ShopInfo` e `InventoryManager` |
 | Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | Pendiente |
 | Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | Pendiente |
@@ -313,9 +313,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 2 |
-| Analizado (leído entero, descrito en el sitio) | 44 |
-| Analizado (en parte) | 12 |
-| Pendiente | 494 |
+| Analizado (leído entero, descrito en el sitio) | 48 |
+| Analizado (en parte) | 13 |
+| Pendiente | 489 |
 
 Las lecturas parciales y por qué:
 
@@ -332,6 +332,7 @@ Las lecturas parciales y por qué:
 | `Stores/Compras.luau` | `Comprar` y la forma general de la clase | `Update`, `Like`, `ClosePurchased`, `Works` |
 | `GamePassService/GamePassRewards.luau` | `ensure` | `ensureAll` |
 | `Data/Main/PlayerGamesFetcher.luau`, `ServerStorage/SoundInfo.luau` | Solo las constantes del proxy y `fetchAPI`, para BUG-CANDIDATE-014 | Todo lo demás |
+| `Client/Posicionamientos.luau` | `GetScale`, `IsInArea`, `GetFusion`, `getFace` | El resto del módulo |
 
 **Ya anotados con Moonwave en el propio código antes de este proyecto** — salen gratis en
 la referencia de API, y son de terceros o empaquetados: `DataKit`, `Store`, `Profile`,
@@ -401,7 +402,7 @@ Los cinco que de verdad bloquean documentación:
 
 ## Problemas encontrados
 
-Veintidós entradas, todas redactadas al completo en
+Veintitrés entradas, todas redactadas al completo en
 `docs/testing/verification-plan.md`. **Ninguna se afirma como bug confirmado.** Dos están
 clasificadas como *Confirmado por análisis estático*, y aun esas solo afirman lo que el
 código demostrablemente hace: la 011 confirma una inconsistencia, no qué lado de ella está
@@ -439,6 +440,7 @@ proyecto, que no cambia código, pero no debería quedarse en una lista de pendi
 | BUG-CANDIDATE-020 | El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual | Tiendas / Casas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Media |
 | BUG-CANDIDATE-021 | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
 | BUG-CANDIDATE-022 | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
+| BUG-CANDIDATE-023 | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
 
 ### La pasada de seguridad
 
@@ -482,7 +484,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 22 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 23 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -520,8 +522,8 @@ y razonado está en la propia página; el resumen es:
   - `src/ReplicatedStorage/PlayerInit.luau`
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
 - **Diagramas:** 35 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 22 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 58 de 552
+- **Candidatos a bug:** 23 redactados al completo, incluida una pasada de seguridad
+- **Scripts leídos:** 63 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.
@@ -596,9 +598,9 @@ que merecen ese trato.
 
 ### 1. Cerrar `Shared/Stores`
 
-Quedan `Added.luau` (los puestos del place de donaciones), `DecorFuncs/` (colocación física
-y colisiones), `DecorsPlayer.luau` y el resto de `Compras.luau`. La página existe y señala
-exactamente qué falta.
+Quedan `Added.luau` (los puestos del place de donaciones) y el resto de `Compras.luau`
+(`Update`, `Like`, `ClosePurchased`, `Works`). La página existe y señala exactamente qué
+falta.
 
 Junto a ello, `ShopInfo.luau` e `inventory/InventoryManager`, que son de quienes depende
 `GamePassService` y ahora mismo son cajas negras en la página de Monetización.

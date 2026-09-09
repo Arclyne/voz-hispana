@@ -64,6 +64,10 @@ ANALYSED |= {
     t("Core/ReplicatedStorage/Shared/Monetization/MarkAdded.luau"),
     t("Core/ReplicatedStorage/Shared/Monetization/Beneficios.luau"),
     t("Core/ServerStorage/WorldSystem/GamePassService/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorsPlayer.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/Collitions.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -78,6 +82,7 @@ PARTIAL = {
     t("Core/ServerStorage/WorldSystem/GamePassService/GamePassRewards.luau"),
     t("Core/ServerScriptService/Data/Main/PlayerGamesFetcher.luau"),
     t("Core/ServerStorage/SoundInfo.luau"),
+    t("Core/ReplicatedStorage/Client/Posicionamientos.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",

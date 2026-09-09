@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 44 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 12 |
-| Pendiente | Aún sin leer | 494 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 48 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 13 |
+| Pendiente | Aún sin leer | 489 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 47 leídos.
+530 archivos, 76,181 líneas, 52 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -177,7 +177,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/</code> — 19 archivo(s) — 2/19 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/</code> — 19 archivo(s) — 3/19 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -193,7 +193,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `NametagMicClient.server.luau` | Script | Client | yes | 259 | `ReplicatedStorage.Client.NametagMicClient.server` | Pendiente |
 | `PaintActives.luau` | ModuleScript | — | — | 3 | `ReplicatedStorage.Client.PaintActives` | Pendiente |
 | `PlayerManager.server.luau` | Script | Client | yes | 59 | `ReplicatedStorage.Client.PlayerManager.server` | Analizado |
-| `Posicionamientos.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Client.Posicionamientos` | Pendiente |
+| `Posicionamientos.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Client.Posicionamientos` | Analizado (en parte) |
 | `SettingsInfo.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Client.SettingsInfo` | Pendiente |
 | `SurfacePlacer.server.luau` | Script | Client | yes | 63 | `ReplicatedStorage.Client.SurfacePlacer.server` | Pendiente |
 | `UiManager.server.luau` | Script | Client | yes | 166 | `ReplicatedStorage.Client.UiManager.server` | Pendiente |
@@ -1272,35 +1272,35 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 archivo(s) — 4/6 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 archivo(s) — 5/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Added.luau` | ModuleScript | — | — | 205 | `ReplicatedStorage.Shared.Stores.Added` | Pendiente |
 | `ColorTexture.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Stores.ColorTexture` | Analizado |
 | `Compras.luau` | ModuleScript | — | — | 487 | `ReplicatedStorage.Shared.Stores.Compras` | Analizado (en parte) |
-| `DecorsPlayer.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.Stores.DecorsPlayer` | Pendiente |
+| `DecorsPlayer.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.Stores.DecorsPlayer` | Analizado |
 | `HouseAdded.luau` | ModuleScript | — | — | 297 | `ReplicatedStorage.Shared.Stores.HouseAdded` | Analizado |
 | `init.luau` | ModuleScript | — | — | 992 | `ReplicatedStorage.Shared.Stores.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 117 | `ReplicatedStorage.Shared.Stores.DecorFuncs.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 117 | `ReplicatedStorage.Shared.Stores.DecorFuncs.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Collitions.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.Collitions` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 341 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.init` | Pendiente |
+| `Collitions.luau` | ModuleScript | — | — | 17 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.Collitions` | Analizado |
+| `init.luau` | ModuleScript | — | — | 341 | `ReplicatedStorage.Shared.Stores.DecorFuncs.AddedDecor.init` | Analizado |
 
 </details>
 

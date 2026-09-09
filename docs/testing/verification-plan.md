@@ -75,6 +75,7 @@ o en un place de pruebas.
 | [020](#bug-candidate-020) | El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual | Tiendas / Casas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Media |
 | [021](#bug-candidate-021) | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
 | [022](#bug-candidate-022) | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
+| [023](#bug-candidate-023) | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
 
 ### Entradas de seguridad
 
@@ -90,6 +91,7 @@ formato que el resto: teoría con justificación, no acusaciones.
 | [017](#bug-candidate-017) | Ventana de revocación de privilegios de administrador | **Presente hoy**, impacto bajo |
 | [020](#bug-candidate-020) | Dato de tamaño arbitrario, controlado por el cliente, persistido en el perfil de una casa ajena | **Presente hoy**, impacto por determinar |
 | [022](#bug-candidate-022) | Id de asset suministrado por el cliente, sin comprobación de propiedad | **Explotable hoy** si un `EnumItem` viaja por el remote |
+| [023](#bug-candidate-023) | Colocación con autoridad de cliente en casa ajena | **Explotable hoy**, impacto de vandalismo |
 
 #### Lo que se revisó y salió limpio
 
@@ -109,6 +111,9 @@ engañosa:
 | Precios de mobiliario y materiales | **Correcto.** `BuyStore`, `BuyDecors` y `ComprarMaterial` resuelven el precio en el servidor desde `StoreTemplates`, `verificarExistencia` y `DesingData`. El cliente solo manda un nombre. |
 | Precio vacío como compra gratis | **Correcto, y deliberado.** `Collections.requirements` devuelve la bandera `vacio`, que solo se activa dentro del bucle: una tabla de precio vacía devuelve `false` y el cobro no se da por bueno. |
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
+| Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
+| Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Recolorear partes arbitrarias de un mueble | **Correcto.** Solo se aceptan partes llamadas `LightColor` o terminadas en dígito, y un valor que no sea `Color3` se sustituye por blanco. |
 | Amueblar la casa de otro como vía de transferencia de moneda | **Correcto.** Pasa por `donacion.GetState` y `donacion.Quitar`: consume el mismo tope diario de 1 000 que una donación directa. |
 | Importe de las compras en Robux | **Correcto.** `Compras.Comprar` usa `self.ProductActive`, estado de servidor, y lee el precio de `GetProduct`. |
 | Concesión de gamepasses persistidos | **Correcto.** `GamePassService` no tiene remotes. `syncFromRoblox` verifica con `UserOwnsGamePassAsync`, y la ruta de compra exige `wasPurchased` y que el id esté declarado en `ShopInfo`. |
@@ -2541,6 +2546,116 @@ siguientes sesiones porque está en su perfil.
 ids.
 
 
+## BUG-CANDIDATE-023
+
+### La posición de un mueble la decide el cliente y el servidor no la comprueba
+
+**Sistema:** Tiendas / Casas · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Stores/DecorFuncs/AddedDecor/init.luau`,
+`module:Update`; `Core/…/Shared/Stores/init.luau`, `fn:UpdateDecor`
+**Documentación relacionada:** [Tiendas y decoración](../systems/stores.md#los-trece-remotes)
+
+#### Comportamiento observado — HECHO
+
+El remote `Update` lleva una tabla del cliente hasta `AddedDecor:Update`, y ahí la posición
+se aplica sin más:
+
+```lua
+model:PivotTo(Data.Position or model:GetPivot())
+if not self.Data.NoScale then model:ScaleTo(Data.Scale) end
+```
+
+Lo llamativo es el **contraste con lo que sí se valida** en las líneas de alrededor:
+
+| Campo del cliente | Qué se le hace |
+|---|---|
+| `Data.Scale` | `Positions.GetScale` lo pasa por `math.clamp` contra el rango declarado en el `Settings` del modelo |
+| `Data.Colors` | Solo se aplican partes cuyo nombre sea `LightColor` o termine en dígito, y el color se sustituye por blanco si no es un `Color3` |
+| `Data.IsOn` | Solo se acepta si el modelo tiene la etiqueta `Lamp` o `Interruptor` |
+| El nombre del mueble | `verificarExistencia` lo resuelve contra `decoration template` o `Assets/ToolsModels` en el servidor |
+| **`Data.Position`** | **Nada.** Se aplica tal cual |
+
+#### Por qué esto puede ser un problema — HECHO
+
+Toda la lógica de colocación vive en el cliente. `Client/Posicionamientos.luau` tiene
+`IsInArea`, `GetFusion` y `getFace`; `Stores/init.luau` construye `RaycastParams` con
+`fn:RayParams`; `AddedDecor/Collitions.luau` marca qué caras aceptan apoyo.
+
+El servidor no ejecuta nada de eso. `Collitions.General` solo escribe un atributo
+`Whitelist`, que es un dato **para** el cliente:
+
+```lua
+function module:General()
+	if self.Disabled then
+		local Part = self.Disabled.PrimaryPart or self.Disabled:FindFirstChild("Primary")
+		if Part then
+			Part:SetAttribute("Whitelist", table.concat({"Back","Front","Left","Right","Top"}, ","))
+		end
+	end
+end
+```
+
+Y el resultado **se persiste**: `UpdateData` escribe el atributo `Position` en el `BoolValue`
+del mueble, que acaba en `content.Objects` del perfil `World`.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede colocar mobiliario en cualquier CFrame: atravesando paredes,
+flotando fuera de la casa, dentro de otro mueble, o a coordenadas extremas. Como el permiso
+lo concede `GetStore` a cualquier rol distinto de `46`, un invitado puede hacerlo en casa
+ajena, y el resultado sobrevive al reinicio del servidor.
+
+No es un exploit de economía: el mueble se paga igual. Es que **todas las reglas de
+colocación son sugerencias**, porque quien las aplica es la parte que no manda.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `model:PivotTo(Data.Position or …)` sin ninguna comprobación previa |
+| 2 | `Data.Scale` sí pasa por `math.clamp`: la validación de rango existe en el mismo bloque, para otro campo |
+| 3 | `Posicionamientos`, `RayParams` y `Collitions` viven en el lado cliente o solo producen datos para él |
+| 4 | `UpdateData` persiste `Position` como atributo, y de ahí va a `content.Objects` |
+| 5 | El único punto donde se exige un `CFrame` es la primera colocación (`typeof(Data.Position)=="CFrame"`); en las actualizaciones posteriores un valor de otro tipo simplemente conserva la posición actual |
+
+#### Incógnitas
+
+- Si el juego se apoya en la física para corregir posiciones imposibles. Los muebles anclados
+  no se mueven solos, así que probablemente no.
+- Qué hace Roblox con un `CFrame` de coordenadas extremas o con `NaN`. `PivotTo` puede lanzar
+  error, en cuyo caso el caso más burdo falla cerrado por accidente.
+- Si existe una comprobación de límites en el sistema de construcción de parcelas
+  (`BuildingSystem`), que es otro camino y no se ha leído.
+
+#### Escenario de ejemplo
+
+Un invitado con rol de constructor coloca una veintena de muebles atravesando las paredes y
+flotando sobre el tejado de la casa de otro. El dueño vuelve a entrar al día siguiente y
+siguen ahí, porque están guardados en el perfil.
+
+**Comportamiento esperado:** el servidor rechaza una posición que el cliente no habría podido
+producir jugando con normalidad.
+**Comportamiento posible:** la acepta y la guarda.
+
+#### Plan de verificación — *Seguridad*, *Funcional*
+
+1. Entra en una casa con permiso de construcción y coloca un mueble por el camino normal.
+2. Desde la consola del cliente, dispara `Decors.Update` con el mismo `BoolValue` y una tabla
+   `{ Position = CFrame.new(0, 500, 0) }`.
+3. Comprueba si el mueble se mueve ahí.
+4. Reinicia el servidor de la casa y vuelve a entrar.
+5. Comprueba si sigue en esa posición.
+
+**Pasa:** la posición se rechaza o se corrige.
+**Falla:** el mueble aparece a 500 studs de altura, y sigue ahí tras el reinicio.
+
+**Instrumentación sugerida:** registrar la distancia entre `Data.Position` y el centro de la
+casa en cada actualización. Un umbral generoso bastaría para detectar el abuso sin tener
+que reimplementar las reglas de colocación en el servidor.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -2567,7 +2682,9 @@ completa.
 | `GlobalDataStore`, `GiftInbox` | **No** | Ambos usan DataStoreService fuera de DataKit |
 | `Shared/Stores`: `init`, `HouseAdded`, `ColorTexture` | Sí | Los trece manejadores de remotes y el ciclo de `content` |
 | `Shared/Stores`: `Compras` | En parte | Solo `Comprar` y la forma general |
-| `Shared/Stores`: `Added`, `DecorFuncs/`, `DecorsPlayer` | **No** | En cola |
+| `Shared/Stores`: `DecorFuncs/` (3 archivos), `DecorsPlayer` | Sí | La colocación y el índice por jugador |
+| `Client/Posicionamientos` | En parte | `GetScale`, `IsInArea`, `GetFusion`, `getFace` |
+| `Shared/Stores`: `Added` | **No** | En cola — los puestos del place de donaciones |
 | `Shared/Monetization` (4 archivos), `WorldSystem/GamePassService/init` | Sí | |
 | `GamePassService/GamePassRewards` | En parte | Solo `ensure` |
 | `ShopInfo`, `inventory/InventoryManager` | **No** | En cola; alimentan a `GamePassService` |

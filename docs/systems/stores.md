@@ -180,6 +180,9 @@ que funciona es engañosa.
 | **El precio en Robux lo pone Roblox** | `Compras.Comprar` usa `self.ProductActive` —estado de servidor— y `GetProduct` para leer `Product.price`. El cliente no interviene en el importe. |
 | **Amueblar la casa de otro cuenta como donación** | Colocar un mueble de pago en una casa ajena pasa por `donacion.GetState` y `donacion.Quitar`: consume el mismo tope diario de 1 000 que una transferencia directa de moneda. Es un reconocimiento explícito de que regalar mobiliario **es** transferir valor. |
 | **Solo se persisten claves conocidas** | `ChangeDesing` ignora cualquier clave que no esté en `ColorTexture` (`Color`, `Material`), y `Material` además tiene que resolverse contra el catálogo y estar comprada o incluida en un gamepass. |
+| **La escala de un mueble se recorta** | `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
+| **El mueble que se coloca tiene que existir** | `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor, y cachea el resultado. Un nombre inventado no produce nada. |
+| **No se puede recolorear cualquier parte** | Solo se aplican partes llamadas `LightColor` o terminadas en dígito, y un valor que no sea `Color3` se sustituye por blanco. |
 | **`BreakDown.Set` no deja pasar tablas** | Un valor que no sea `boolean`, `string`, `number` o uno de los seis tipos con descomposición declarada devuelve `nil`. Un cliente no puede inyectar estructuras arbitrarias en el perfil. |
 
 ## Puntos de verificación
@@ -187,6 +190,7 @@ que funciona es engañosa.
 | Aspecto | Entrada |
 |---|---|
 | El valor de `Color` llega del cliente sin límite de tamaño y se persiste tal cual | [BUG-CANDIDATE-020](../testing/verification-plan.md#bug-candidate-020) |
+| La posición de un mueble no se comprueba en el servidor | [BUG-CANDIDATE-023](../testing/verification-plan.md#bug-candidate-023) |
 | El dueño de una casa puede vender el mueble de un invitado y cobrar el reembolso | [BUG-CANDIDATE-021](../testing/verification-plan.md#bug-candidate-021) |
 | `GetInfoHouse` entrega la tabla de roles a cualquier cliente que la pida | [BUG-CANDIDATE-012](../testing/verification-plan.md#bug-candidate-012) |
 
@@ -198,6 +202,8 @@ que funciona es engañosa.
 | En `SellDecors` y en `BuyDecors`, la rama «soy el dueño de la casa» queda fuera del `and self.Added:IsA("House")` por precedencia de operadores | Hoy es inocuo: en el place de donaciones `self.Added.DataBaseHouse` es `nil`. La forma se repite en los dos sitios |
 | `ComprarMaterial` indexa `Player:FindFirstChild("Materials").Value` sin comprobar que exista | Falla cerrado: si los datos no han cargado, lanza error antes de cobrar |
 | `AccionarCompras` deja una rama vacía con una línea comentada para el caso «soy el dueño y no mando actualización» | No hace nada; el comentario apunta a un remote de comandos |
+| `AddedDecor/Collitions.luau` no comprueba colisiones | Escribe un atributo `Whitelist` con las caras admitidas; es un dato **para** el cliente, que es quien decide dónde encaja algo |
+| `DecorsPlayer.luau` devuelve `{}` en el servidor | `return not Client and {} or module.new()` — el índice por jugador es una estructura de cliente; el servidor usa una tabla plana `self.DecorsPlayer[UserId]` |
 | `false and IsStudio` en dos líneas de `fn.new` | Interruptor de pruebas desactivado; `IsStudio` queda sin uso real |
 
 ## Qué queda por leer de este sistema
@@ -207,10 +213,10 @@ que funciona es engañosa.
 | `init.luau` | 991 | Leído |
 | `HouseAdded.luau` | 296 | Leído |
 | `ColorTexture.luau` | 25 | Leído |
+| `DecorFuncs/` (3 archivos) | 469 | Leídos |
+| `DecorsPlayer.luau` | 92 | Leído |
 | `Compras.luau` | 487 | **En parte** — `Comprar` y la forma general; falta `Update`, `Like`, `ClosePurchased`, `Works` |
 | `Added.luau` | 205 | **Pendiente** — los puestos del place de donaciones |
-| `DecorFuncs/` (3 archivos) | 469 | **Pendiente** — la colocación física y las colisiones |
-| `DecorsPlayer.luau` | 92 | **Pendiente** |
 
 ## Implementación relacionada
 
