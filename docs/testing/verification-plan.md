@@ -84,6 +84,7 @@ o en un place de pruebas.
 | [029](#bug-candidate-029) | Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos | Cuadros | Posible bug / Requiere inyección de fallos | Media | Alta |
 | [030](#bug-candidate-030) | El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos | Cuadros / Seguridad | Posible bug / Requiere pruebas de seguridad | Media | Alta |
 | [031](#bug-candidate-031) | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
+| [032](#bug-candidate-032) | Una condición de trabajo mal escrita permite la acción en silencio | Trabajos | Observación / Requiere verificación en ejecución | Baja | Alta |
 
 ### Entradas de seguridad
 
@@ -128,6 +129,9 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Despacho de métodos por nombre en Trabajos | **Correcto, y es el mejor patrón del repositorio para esto.** El cliente manda el nombre del método, pero hay una lista blanca **por instancia** —cuatro o cinco nombres declarados junto al objeto— y quien la burla recibe `Player:Kick("Exploiter detected.")`. `LimpiarPiso` incluso deja la lista vacía para las instancias que no deben aceptar nada. |
+| Acumular trabajos | **Correcto.** `UsosPlayer` es uno por jugador y empezar otro renuncia al anterior; la limpieza compara `== getMetatable` antes de borrar, para que una señal tardía no pise el trabajo nuevo. |
+| Pago del botón VIP | **Correcto.** Solo se paga si `state == "Success"`, y `Proccess[Player]` más `MarkPrompt` impiden compras solapadas. |
 | Reclamar una misión | **Correcto, y de lo más completo del repositorio.** Lista blanca de grupos, tipo del hueco, la misión existe, no está reclamada, el progreso llega al objetivo, y la recompensa sale de la configuración del servidor. |
 | Doble reclamación de una misión | **Correcto hoy, por una propiedad frágil.** `Claimed = true` se escribe después de conceder, pero en todo el recorrido no hay un solo punto de suspensión, así que dos llamadas no se entrelazan. Añadir cualquier espera a `Collections.Give` o a `saveData` abriría la ventana. |
 | Giro de la ruleta | **Correcto.** `requestSpinRF` valida en cadena con un motivo por rechazo, comprueba el recurso **antes** de cobrarlo, y usa `CooldownManager` para el giro gratuito. |
@@ -3706,6 +3710,138 @@ propio personaje — que es también la información necesaria para decidir si s
 comprueba.
 
 
+## BUG-CANDIDATE-032
+
+### Una condición de trabajo mal escrita permite la acción en silencio
+
+**Sistema:** Trabajos · **Clasificación:** Observación / Requiere verificación en ejecución
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/JobSystem/init.luau`, el bucle de condicionales
+dentro de `Interaccion`; `Core/…/Shared/JobSystem/ConditionsUses.luau`
+**Documentación relacionada:** [Trabajos → El escalón que sí conviene conocer](../systems/jobs.md#el-escalón-que-sí-conviene-conocer)
+
+#### Comportamiento observado — HECHO
+
+El modelo declara sus condiciones en un atributo, y cada una se busca por nombre compuesto y
+se llama de inmediato:
+
+```lua
+local condicionalTag = string.split(getMetatable.model:GetAttribute('conditional') or 'NoConditional', ",")
+for _, condicional in condicionalTag do
+	local modifi = EliminarEspacios(condicional)
+	if modifi then
+		if not condicionales[string.format("%s_%s", modifi, Key)](getMetatable, Player) then
+			return warn(modifi)
+		end
+	end
+end
+```
+
+No se comprueba que la clave exista antes de invocarla. Lo que impide el error es todo el
+contenido de `ConditionsUses`, que son doce líneas:
+
+```lua
+local module = {}
+...
+setmetatable(module, {__index = function() return function() return true end end})
+
+function module:NoSignalClient_SetFinishLocation()
+	return IsClient
+end
+
+return module
+```
+
+Cualquier clave desconocida devuelve una función que devuelve `true`.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El respaldo es **necesario** para el caso normal. Cuando un modelo no declara nada, el valor
+por defecto es `'NoConditional'`, y sin el metatable habría que escribir
+`NoConditional_trabajar`, `NoConditional_renunciar`, `NoConditional_Preparar`… una entrada
+por cada método de cada trabajo. La solución es razonable.
+
+El coste es que **el valor por defecto ante lo desconocido es permitir**, y no hay forma de
+distinguir «esta acción no tiene condiciones» de «la condición está mal escrita»:
+
+| Situación | Qué ocurre |
+|---|---|
+| Modelo sin atributo `conditional` | `NoConditional_X` → permitido. Correcto |
+| Condición escrita bien | Se evalúa la función real |
+| Condición **con una errata** | → permitido, sin aviso |
+| Condición correcta, método equivocado | → permitido, sin aviso |
+| Condición nueva declarada en el modelo antes de implementarla | → permitido, sin aviso |
+
+Las tres últimas filas son el problema, y ninguna deja rastro: no hay `warn`, no hay error,
+no hay nada en el registro. La guarda simplemente no está.
+
+#### Teoría — TEORÍA
+
+Hoy el alcance es mínimo: existe una sola condición real,
+`NoSignalClient_SetFinishLocation`, usada por `CajasTransport`, que la declara en dos sitios
+con la cadena literal `"NoSignalClient"`. Si esa cadena se escribiera mal en uno de los dos,
+`SetFinishLocation` pasaría a aceptarse desde el cliente sin restricción, y nada lo diría.
+
+El riesgo real es de crecimiento: es el escalón donde este sistema pondrá sus reglas de
+negocio —«solo si estás trabajando», «solo si llevas una caja»—, y cada una que se añada
+hereda el mismo modo de fallo. Es la misma forma que
+[BUG-CANDIDATE-001](#bug-candidate-001) para el chat de voz: fallar abierto cuando no se
+sabe.
+
+Merece registrarse precisamente porque el resto del sistema es de lo mejor del repositorio.
+La lista blanca de métodos es explícita, corta y se aplica expulsando a quien la burla. El
+escalón de al lado hace lo contrario ante lo desconocido.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `condicionales[...]` se indexa y se llama en la misma expresión, sin comprobar existencia |
+| 2 | El `__index` del metatable devuelve una función que devuelve `true` para **cualquier** clave |
+| 3 | Solo existe una condición real implementada |
+| 4 | El nombre compuesto es `"<condición>_<método>"`, así que una errata en **cualquiera** de los dos lados cae en el respaldo |
+| 5 | No hay ningún `warn` en la ruta del respaldo |
+| 6 | La lista blanca de métodos, en el mismo bucle, sí falla cerrado y además expulsa |
+
+#### Incógnitas
+
+- Si el respaldo permisivo fue deliberado o es un efecto colateral de querer evitar el
+  error. El comentario no existe, así que es una pregunta para quien lo escribió.
+- Cuántas condiciones piensa añadir el equipo. Con una, esto es una nota; con quince, es
+  una fuente de fallos silenciosos.
+
+#### Escenario de ejemplo
+
+Alguien añade una condición «solo el que está trabajando puede entregar la caja» y la
+declara en el modelo como `"EstaTrabajando"`, pero implementa
+`module:EstaTrabajando_Entregar` cuando el método se llama `GiveBox`. La condición nunca se
+evalúa. La entrega funciona para todos, la prueba manual pasa —porque el caso normal
+también funciona— y nadie se entera hasta que alguien la explota.
+
+**Comportamiento esperado:** una condición declarada y no encontrada debería avisar, o
+denegar.
+**Comportamiento posible:** se permite en silencio.
+
+#### Plan de verificación — *Ejecución*
+
+1. En un place de pruebas, pon el atributo `conditional` de un modelo de trabajo a un valor
+   inventado, por ejemplo `"NoExiste"`.
+2. Usa ese trabajo con normalidad.
+3. Comprueba si funciona y si aparece algo en el registro del servidor.
+4. Repite con `"NoSignalClient"` bien escrito sobre `SetFinishLocation` y confirma que la
+   condición real **sí** rechaza desde el servidor.
+5. Repite con `"NoSignalCliente"` —una letra de más— y comprueba si vuelve a permitirse.
+
+**Pasa:** el paso 2 se rechaza o al menos avisa; el paso 5 se comporta como el 4.
+**Falla:** los pasos 2 y 5 funcionan sin dejar rastro.
+
+**Instrumentación sugerida:** que el `__index` avise en vez de callar. Devolver la misma
+función permisiva y además hacer `warn` con la clave buscada mantendría el comportamiento
+actual y convertiría cada errata en algo visible en el registro. Es un **cambio de código**,
+así que queda registrado aquí y no aplicado.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -3750,7 +3886,9 @@ completa.
 | `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
 | `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
 | Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
-| `JobSystem`, `ToolPlacementServer`, `BuildingSystem`, `KaraokeTV` | **No** | En cola, por ese orden |
+| `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
+| `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
+| `ToolPlacementServer`, `BuildingSystem`, `KaraokeTV` | **No** | En cola, por ese orden |
 | Sistemas de juego (~420 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 

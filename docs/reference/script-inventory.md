@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 57 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 20 |
-| Pendiente | Aún sin leer | 467 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 59 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 21 |
+| Pendiente | Aún sin leer | 464 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 74 leídos.
+530 archivos, 76,305 líneas, 77 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -875,23 +875,23 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/</code> — 4 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/</code> — 4 archivo(s) — 2/4 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Bartender.luau` | ModuleScript | — | — | 447 | `ReplicatedStorage.Shared.JobSystem.Bartender` | Pendiente |
-| `ConditionsUses.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.JobSystem.ConditionsUses` | Pendiente |
+| `ConditionsUses.luau` | ModuleScript | — | — | 12 | `ReplicatedStorage.Shared.JobSystem.ConditionsUses` | Analizado |
 | `LimpiarPiso.luau` | ModuleScript | — | — | 246 | `ReplicatedStorage.Shared.JobSystem.LimpiarPiso` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Shared.JobSystem.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Shared.JobSystem.init` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 245 | `ReplicatedStorage.Shared.JobSystem.ButtonMoney.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 245 | `ReplicatedStorage.Shared.JobSystem.ButtonMoney.init` | Analizado (en parte) |
 
 </details>
 

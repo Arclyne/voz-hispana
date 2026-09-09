@@ -82,6 +82,8 @@ ANALYSED |= {
     t("Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/init.luau"),
     t("Core/ServerScriptService/ServerScripts/AnimationSystem/init.server.luau"),
     t("Core/ServerScriptService/ServerScripts/Quests/QuestMain.server.luau"),
+    t("Core/ReplicatedStorage/Shared/JobSystem/init.luau"),
+    t("Core/ReplicatedStorage/Shared/JobSystem/ConditionsUses.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -106,6 +108,7 @@ PARTIAL = {
     t("Core/ServerScriptService/ServerScripts/machines/init.server.luau"),
     t("Core/ServerScriptService/ServerScripts/cooking/CookingStation.luau"),
     t("Core/ServerScriptService/ServerScripts/cooking/CuttingBoard.server.luau"),
+    t("Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/init.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
