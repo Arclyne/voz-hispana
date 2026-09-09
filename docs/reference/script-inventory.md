@@ -26,9 +26,10 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 116 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 180 |
-| Pendiente | Aún sin leer | 248 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 118 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 181 |
+| Frontera (terceros) | Librería externa: se documenta qué es y quién la usa, **no se lee por dentro** — ver [Librerías de terceros](../architecture/third-party.md) | 160 |
+| Pendiente | Aún sin leer | 85 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +79,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 293 leídos.
+530 archivos, 76,305 líneas, 456 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -564,78 +565,78 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `debug.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Kinetic.debug` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 338 | `ReplicatedStorage.Kinetic.init` | Pendiente |
-| `types.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Kinetic.types` | Pendiente |
+| `debug.luau` | ModuleScript | — | — | 160 | `ReplicatedStorage.Kinetic.debug` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 338 | `ReplicatedStorage.Kinetic.init` | Frontera (terceros) |
+| `types.luau` | ModuleScript | — | — | 181 | `ReplicatedStorage.Kinetic.types` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/animatable/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/animatable/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `adapters.luau` | ModuleScript | — | — | 169 | `ReplicatedStorage.Kinetic.animatable.adapters` | Pendiente |
-| `color.luau` | ModuleScript | — | — | 87 | `ReplicatedStorage.Kinetic.animatable.color` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 77 | `ReplicatedStorage.Kinetic.animatable.init` | Pendiente |
+| `adapters.luau` | ModuleScript | — | — | 169 | `ReplicatedStorage.Kinetic.animatable.adapters` | Frontera (terceros) |
+| `color.luau` | ModuleScript | — | — | 87 | `ReplicatedStorage.Kinetic.animatable.color` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 77 | `ReplicatedStorage.Kinetic.animatable.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/constants/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/constants/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `configs.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Kinetic.constants.configs` | Pendiente |
-| `easings.luau` | ModuleScript | — | — | 150 | `ReplicatedStorage.Kinetic.constants.easings` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Kinetic.constants.init` | Pendiente |
+| `configs.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Kinetic.constants.configs` | Frontera (terceros) |
+| `easings.luau` | ModuleScript | — | — | 150 | `ReplicatedStorage.Kinetic.constants.easings` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 13 | `ReplicatedStorage.Kinetic.constants.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/core/</code> — 5 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/core/</code> — 5 archivo(s) — 5/5 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `AnimationConfig.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Kinetic.core.AnimationConfig` | Pendiente |
-| `Controller.luau` | ModuleScript | — | — | 835 | `ReplicatedStorage.Kinetic.core.Controller` | Pendiente |
-| `FrameLoop.luau` | ModuleScript | — | — | 146 | `ReplicatedStorage.Kinetic.core.FrameLoop` | Pendiente |
-| `Interpolation.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Kinetic.core.Interpolation` | Pendiente |
-| `SpringValue.luau` | ModuleScript | — | — | 758 | `ReplicatedStorage.Kinetic.core.SpringValue` | Pendiente |
+| `AnimationConfig.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Kinetic.core.AnimationConfig` | Frontera (terceros) |
+| `Controller.luau` | ModuleScript | — | — | 835 | `ReplicatedStorage.Kinetic.core.Controller` | Frontera (terceros) |
+| `FrameLoop.luau` | ModuleScript | — | — | 146 | `ReplicatedStorage.Kinetic.core.FrameLoop` | Frontera (terceros) |
+| `Interpolation.luau` | ModuleScript | — | — | 224 | `ReplicatedStorage.Kinetic.core.Interpolation` | Frontera (terceros) |
+| `SpringValue.luau` | ModuleScript | — | — | 758 | `ReplicatedStorage.Kinetic.core.SpringValue` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/orchestration/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/orchestration/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Transition.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Kinetic.orchestration.Transition` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Kinetic.orchestration.init` | Pendiente |
+| `Transition.luau` | ModuleScript | — | — | 305 | `ReplicatedStorage.Kinetic.orchestration.Transition` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 130 | `ReplicatedStorage.Kinetic.orchestration.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/targets/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/targets/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `instance.luau` | ModuleScript | — | — | 183 | `ReplicatedStorage.Kinetic.targets.instance` | Pendiente |
+| `instance.luau` | ModuleScript | — | — | 183 | `ReplicatedStorage.Kinetic.targets.instance` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/util/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Kinetic/util/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Completion.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Kinetic.util.Completion` | Pendiente |
-| `Signal.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Kinetic.util.Signal` | Pendiente |
-| `timeGuard.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Kinetic.util.timeGuard` | Pendiente |
+| `Completion.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Kinetic.util.Completion` | Frontera (terceros) |
+| `Signal.luau` | ModuleScript | — | — | 78 | `ReplicatedStorage.Kinetic.util.Signal` | Frontera (terceros) |
+| `timeGuard.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Kinetic.util.timeGuard` | Frontera (terceros) |
 
 </details>
 
@@ -670,14 +671,14 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `RutaCreate.luau` | ModuleScript | — | — | 135 | `ReplicatedStorage.Shared.RutaCreate` | Analizado (en parte) |
 | `SellHousePrompt.luau` | ModuleScript | — | — | 289 | `ReplicatedStorage.Shared.SellHousePrompt` | Analizado (en parte) |
 | `ShopHighlight.luau` | ModuleScript | — | — | 377 | `ReplicatedStorage.Shared.ShopHighlight` | Analizado (en parte) |
-| `Signal.luau` | ModuleScript | — | — | 432 | `ReplicatedStorage.Shared.Signal` | Analizado (en parte) |
+| `Signal.luau` | ModuleScript | — | — | 432 | `ReplicatedStorage.Shared.Signal` | Frontera (terceros) |
 | `SignalsGame.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.SignalsGame` | Analizado |
 | `SizeManager.luau` | ModuleScript | — | — | 165 | `ReplicatedStorage.Shared.SizeManager` | Analizado (en parte) |
 | `SmoothShiftLock.luau` | ModuleScript | — | — | 232 | `ReplicatedStorage.Shared.SmoothShiftLock` | Analizado (en parte) |
 | `SoundManager.luau` | ModuleScript | — | — | 230 | `ReplicatedStorage.Shared.SoundManager` | Analizado (en parte) |
 | `Spring.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Spring` | Analizado |
 | `ToolUseManagge.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.ToolUseManagge` | Analizado (en parte) |
-| `Trove.luau` | ModuleScript | — | — | 612 | `ReplicatedStorage.Shared.Trove` | Analizado (en parte) |
+| `Trove.luau` | ModuleScript | — | — | 612 | `ReplicatedStorage.Shared.Trove` | Frontera (terceros) |
 | `UpdatingCountText.luau` | ModuleScript | — | — | 136 | `ReplicatedStorage.Shared.UpdatingCountText` | Analizado (en parte) |
 | `VoiceModulator.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Shared.VoiceModulator` | Analizado |
 | `attach.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.attach` | Analizado |
@@ -721,12 +722,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Cooldown/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Cooldown/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `CooldownManager.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Shared.Cooldown.CooldownManager` | Pendiente |
-| `CooldownShared.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Cooldown.CooldownShared` | Pendiente |
+| `CooldownManager.luau` | ModuleScript | — | — | 76 | `ReplicatedStorage.Shared.Cooldown.CooldownManager` | Analizado |
+| `CooldownShared.luau` | ModuleScript | — | — | 55 | `ReplicatedStorage.Shared.Cooldown.CooldownShared` | Analizado |
 
 </details>
 
@@ -740,26 +741,26 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Dialogs/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Dialogs/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `FrameShop.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Dialogs.FrameShop` | Pendiente |
-| `KaraokeRoomRent.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Dialogs.KaraokeRoomRent` | Pendiente |
+| `FrameShop.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Dialogs.FrameShop` | Analizado (en parte) |
+| `KaraokeRoomRent.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Dialogs.KaraokeRoomRent` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/FastCastRedux/</code> — 6 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/FastCastRedux/</code> — 6 archivo(s) — 6/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `ActiveCast.luau` | ModuleScript | — | — | 770 | `ReplicatedStorage.Shared.FastCastRedux.ActiveCast` | Pendiente |
-| `Signal.luau` | ModuleScript | — | — | 153 | `ReplicatedStorage.Shared.FastCastRedux.Signal` | Pendiente |
-| `Table.luau` | ModuleScript | — | — | 108 | `ReplicatedStorage.Shared.FastCastRedux.Table` | Pendiente |
-| `TypeDefinitions.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Shared.FastCastRedux.TypeDefinitions` | Pendiente |
-| `TypeMarshaller.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.FastCastRedux.TypeMarshaller` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Shared.FastCastRedux.init` | Pendiente |
+| `ActiveCast.luau` | ModuleScript | — | — | 770 | `ReplicatedStorage.Shared.FastCastRedux.ActiveCast` | Frontera (terceros) |
+| `Signal.luau` | ModuleScript | — | — | 153 | `ReplicatedStorage.Shared.FastCastRedux.Signal` | Frontera (terceros) |
+| `Table.luau` | ModuleScript | — | — | 108 | `ReplicatedStorage.Shared.FastCastRedux.Table` | Frontera (terceros) |
+| `TypeDefinitions.luau` | ModuleScript | — | — | 89 | `ReplicatedStorage.Shared.FastCastRedux.TypeDefinitions` | Frontera (terceros) |
+| `TypeMarshaller.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.FastCastRedux.TypeMarshaller` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 145 | `ReplicatedStorage.Shared.FastCastRedux.init` | Frontera (terceros) |
 
 </details>
 
@@ -814,63 +815,63 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/</code> — 6 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/</code> — 6 archivo(s) — 6/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Attribute.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.Icon.Attribute` | Pendiente |
-| `Reference.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Icon.Reference` | Pendiente |
-| `Types.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.Icon.Types` | Pendiente |
-| `Utility.luau` | ModuleScript | — | — | 462 | `ReplicatedStorage.Shared.Icon.Utility` | Pendiente |
-| `VERSION.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Icon.VERSION` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 1253 | `ReplicatedStorage.Shared.Icon.init` | Pendiente |
+| `Attribute.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.Icon.Attribute` | Frontera (terceros) |
+| `Reference.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Icon.Reference` | Frontera (terceros) |
+| `Types.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.Icon.Types` | Frontera (terceros) |
+| `Utility.luau` | ModuleScript | — | — | 462 | `ReplicatedStorage.Shared.Icon.Utility` | Frontera (terceros) |
+| `VERSION.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Icon.VERSION` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 1253 | `ReplicatedStorage.Shared.Icon.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Elements/</code> — 8 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Elements/</code> — 8 archivo(s) — 8/8 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Caption.luau` | ModuleScript | — | — | 316 | `ReplicatedStorage.Shared.Icon.Elements.Caption` | Pendiente |
-| `Container.luau` | ModuleScript | — | — | 215 | `ReplicatedStorage.Shared.Icon.Elements.Container` | Pendiente |
-| `Dropdown.luau` | ModuleScript | — | — | 315 | `ReplicatedStorage.Shared.Icon.Elements.Dropdown` | Pendiente |
-| `Indicator.luau` | ModuleScript | — | — | 91 | `ReplicatedStorage.Shared.Icon.Elements.Indicator` | Pendiente |
-| `Menu.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.Shared.Icon.Elements.Menu` | Pendiente |
-| `Notice.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Shared.Icon.Elements.Notice` | Pendiente |
-| `Selection.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Icon.Elements.Selection` | Pendiente |
-| `Widget.luau` | ModuleScript | — | — | 437 | `ReplicatedStorage.Shared.Icon.Elements.Widget` | Pendiente |
+| `Caption.luau` | ModuleScript | — | — | 316 | `ReplicatedStorage.Shared.Icon.Elements.Caption` | Frontera (terceros) |
+| `Container.luau` | ModuleScript | — | — | 215 | `ReplicatedStorage.Shared.Icon.Elements.Container` | Frontera (terceros) |
+| `Dropdown.luau` | ModuleScript | — | — | 315 | `ReplicatedStorage.Shared.Icon.Elements.Dropdown` | Frontera (terceros) |
+| `Indicator.luau` | ModuleScript | — | — | 91 | `ReplicatedStorage.Shared.Icon.Elements.Indicator` | Frontera (terceros) |
+| `Menu.luau` | ModuleScript | — | — | 180 | `ReplicatedStorage.Shared.Icon.Elements.Menu` | Frontera (terceros) |
+| `Notice.luau` | ModuleScript | — | — | 113 | `ReplicatedStorage.Shared.Icon.Elements.Notice` | Frontera (terceros) |
+| `Selection.luau` | ModuleScript | — | — | 49 | `ReplicatedStorage.Shared.Icon.Elements.Selection` | Frontera (terceros) |
+| `Widget.luau` | ModuleScript | — | — | 437 | `ReplicatedStorage.Shared.Icon.Elements.Widget` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Gamepad.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.Shared.Icon.Features.Gamepad` | Pendiente |
-| `Overflow.luau` | ModuleScript | — | — | 360 | `ReplicatedStorage.Shared.Icon.Features.Overflow` | Pendiente |
+| `Gamepad.luau` | ModuleScript | — | — | 201 | `ReplicatedStorage.Shared.Icon.Features.Gamepad` | Frontera (terceros) |
+| `Overflow.luau` | ModuleScript | — | — | 360 | `ReplicatedStorage.Shared.Icon.Features.Overflow` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/Themes/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Features/Themes/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Classic.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Icon.Features.Themes.Classic` | Pendiente |
-| `Default.luau` | ModuleScript | — | — | 75 | `ReplicatedStorage.Shared.Icon.Features.Themes.Default` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 353 | `ReplicatedStorage.Shared.Icon.Features.Themes.init` | Pendiente |
+| `Classic.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Icon.Features.Themes.Classic` | Frontera (terceros) |
+| `Default.luau` | ModuleScript | — | — | 75 | `ReplicatedStorage.Shared.Icon.Features.Themes.Default` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 353 | `ReplicatedStorage.Shared.Icon.Features.Themes.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Packages/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Icon/Packages/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `GoodSignal.luau` | ModuleScript | — | — | 182 | `ReplicatedStorage.Shared.Icon.Packages.GoodSignal` | Pendiente |
-| `Janitor.luau` | ModuleScript | — | — | 322 | `ReplicatedStorage.Shared.Icon.Packages.Janitor` | Pendiente |
+| `GoodSignal.luau` | ModuleScript | — | — | 182 | `ReplicatedStorage.Shared.Icon.Packages.GoodSignal` | Frontera (terceros) |
+| `Janitor.luau` | ModuleScript | — | — | 322 | `ReplicatedStorage.Shared.Icon.Packages.Janitor` | Frontera (terceros) |
 
 </details>
 
@@ -1008,16 +1009,16 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Observers/</code> — 6 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Observers/</code> — 6 archivo(s) — 6/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Observers.init` | Pendiente |
-| `observeAttribute.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Shared.Observers.observeAttribute` | Pendiente |
-| `observeCharacter.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Observers.observeCharacter` | Pendiente |
-| `observePlayer.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Observers.observePlayer` | Pendiente |
-| `observeProperty.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.Observers.observeProperty` | Pendiente |
-| `observeTag.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.Observers.observeTag` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Observers.init` | Frontera (terceros) |
+| `observeAttribute.luau` | ModuleScript | — | — | 119 | `ReplicatedStorage.Shared.Observers.observeAttribute` | Frontera (terceros) |
+| `observeCharacter.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Observers.observeCharacter` | Frontera (terceros) |
+| `observePlayer.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Observers.observePlayer` | Frontera (terceros) |
+| `observeProperty.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.Observers.observeProperty` | Frontera (terceros) |
+| `observeTag.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.Observers.observeTag` | Frontera (terceros) |
 
 </details>
 
@@ -1081,31 +1082,31 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PartCache/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PartCache/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Table.luau` | ModuleScript | — | — | 107 | `ReplicatedStorage.Shared.PartCache.Table` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.PartCache.init` | Pendiente |
+| `Table.luau` | ModuleScript | — | — | 107 | `ReplicatedStorage.Shared.PartCache.Table` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.Shared.PartCache.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Promise/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Promise/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 2068 | `ReplicatedStorage.Shared.Promise.init` | Pendiente |
-| `init.spec.luau` | ModuleScript | — | — | 1844 | `ReplicatedStorage.Shared.Promise.init.spec` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 2068 | `ReplicatedStorage.Shared.Promise.init` | Frontera (terceros) |
+| `init.spec.luau` | ModuleScript | — | — | 1844 | `ReplicatedStorage.Shared.Promise.init.spec` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PrompBuy/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/PrompBuy/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.PrompBuy.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.PrompBuy.init` | Analizado (en parte) |
 
 </details>
 
@@ -1131,143 +1132,143 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `None.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.None` | Pendiente |
-| `Types.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.Types` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.Sift.init` | Pendiente |
+| `None.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.None` | Frontera (terceros) |
+| `Types.luau` | ModuleScript | — | — | 16 | `ReplicatedStorage.Shared.Sift.Types` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 58 | `ReplicatedStorage.Shared.Sift.init` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Array/</code> — 48 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Array/</code> — 48 archivo(s) — 48/48 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `at.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Array.at` | Pendiente |
-| `concat.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Array.concat` | Pendiente |
-| `concatDeep.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.concatDeep` | Pendiente |
-| `copy.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.copy` | Pendiente |
-| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.copyDeep` | Pendiente |
-| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.count` | Pendiente |
-| `create.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.create` | Pendiente |
-| `difference.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.difference` | Pendiente |
-| `differenceSymmetric.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.differenceSymmetric` | Pendiente |
-| `equals.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equals` | Pendiente |
-| `equalsDeep.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equalsDeep` | Pendiente |
-| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.every` | Pendiente |
-| `filter.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.filter` | Pendiente |
-| `find.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.find` | Pendiente |
-| `findLast.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.findLast` | Pendiente |
-| `findWhere.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.findWhere` | Pendiente |
-| `findWhereLast.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.findWhereLast` | Pendiente |
-| `first.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.first` | Pendiente |
-| `flatten.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Shared.Sift.Array.flatten` | Pendiente |
-| `freeze.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.freeze` | Pendiente |
-| `freezeDeep.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.freezeDeep` | Pendiente |
-| `includes.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.includes` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Sift.Array.init` | Pendiente |
-| `insert.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.insert` | Pendiente |
-| `is.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Array.is` | Pendiente |
-| `last.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.last` | Pendiente |
-| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.map` | Pendiente |
-| `pop.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.pop` | Pendiente |
-| `push.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.push` | Pendiente |
-| `reduce.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.reduce` | Pendiente |
-| `reduceRight.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.Sift.Array.reduceRight` | Pendiente |
-| `removeIndex.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.removeIndex` | Pendiente |
-| `removeIndices.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Array.removeIndices` | Pendiente |
-| `removeValue.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.removeValue` | Pendiente |
-| `removeValues.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.removeValues` | Pendiente |
-| `reverse.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Array.reverse` | Pendiente |
-| `set.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.set` | Pendiente |
-| `shift.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.shift` | Pendiente |
-| `shuffle.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.shuffle` | Pendiente |
-| `slice.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.slice` | Pendiente |
-| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.some` | Pendiente |
-| `sort.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.sort` | Pendiente |
-| `splice.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.splice` | Pendiente |
-| `toSet.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.toSet` | Pendiente |
-| `unshift.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.unshift` | Pendiente |
-| `update.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Shared.Sift.Array.update` | Pendiente |
-| `zip.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.zip` | Pendiente |
-| `zipAll.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Array.zipAll` | Pendiente |
+| `at.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Array.at` | Frontera (terceros) |
+| `concat.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Array.concat` | Frontera (terceros) |
+| `concatDeep.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.concatDeep` | Frontera (terceros) |
+| `copy.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.copy` | Frontera (terceros) |
+| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.copyDeep` | Frontera (terceros) |
+| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.count` | Frontera (terceros) |
+| `create.luau` | ModuleScript | — | — | 19 | `ReplicatedStorage.Shared.Sift.Array.create` | Frontera (terceros) |
+| `difference.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.difference` | Frontera (terceros) |
+| `differenceSymmetric.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Array.differenceSymmetric` | Frontera (terceros) |
+| `equals.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equals` | Frontera (terceros) |
+| `equalsDeep.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.Sift.Array.equalsDeep` | Frontera (terceros) |
+| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.every` | Frontera (terceros) |
+| `filter.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.filter` | Frontera (terceros) |
+| `find.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.find` | Frontera (terceros) |
+| `findLast.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.findLast` | Frontera (terceros) |
+| `findWhere.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.findWhere` | Frontera (terceros) |
+| `findWhereLast.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.findWhereLast` | Frontera (terceros) |
+| `first.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.first` | Frontera (terceros) |
+| `flatten.luau` | ModuleScript | — | — | 44 | `ReplicatedStorage.Shared.Sift.Array.flatten` | Frontera (terceros) |
+| `freeze.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.freeze` | Frontera (terceros) |
+| `freezeDeep.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.freezeDeep` | Frontera (terceros) |
+| `includes.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.includes` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 82 | `ReplicatedStorage.Shared.Sift.Array.init` | Frontera (terceros) |
+| `insert.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.insert` | Frontera (terceros) |
+| `is.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Array.is` | Frontera (terceros) |
+| `last.luau` | ModuleScript | — | — | 23 | `ReplicatedStorage.Shared.Sift.Array.last` | Frontera (terceros) |
+| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.map` | Frontera (terceros) |
+| `pop.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.pop` | Frontera (terceros) |
+| `push.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.push` | Frontera (terceros) |
+| `reduce.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.reduce` | Frontera (terceros) |
+| `reduceRight.luau` | ModuleScript | — | — | 48 | `ReplicatedStorage.Shared.Sift.Array.reduceRight` | Frontera (terceros) |
+| `removeIndex.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Array.removeIndex` | Frontera (terceros) |
+| `removeIndices.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Array.removeIndices` | Frontera (terceros) |
+| `removeValue.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.removeValue` | Frontera (terceros) |
+| `removeValues.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.removeValues` | Frontera (terceros) |
+| `reverse.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Array.reverse` | Frontera (terceros) |
+| `set.luau` | ModuleScript | — | — | 39 | `ReplicatedStorage.Shared.Sift.Array.set` | Frontera (terceros) |
+| `shift.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.Sift.Array.shift` | Frontera (terceros) |
+| `shuffle.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Array.shuffle` | Frontera (terceros) |
+| `slice.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.Shared.Sift.Array.slice` | Frontera (terceros) |
+| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Array.some` | Frontera (terceros) |
+| `sort.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.sort` | Frontera (terceros) |
+| `splice.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Array.splice` | Frontera (terceros) |
+| `toSet.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Array.toSet` | Frontera (terceros) |
+| `unshift.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Array.unshift` | Frontera (terceros) |
+| `update.luau` | ModuleScript | — | — | 68 | `ReplicatedStorage.Shared.Sift.Array.update` | Frontera (terceros) |
+| `zip.luau` | ModuleScript | — | — | 47 | `ReplicatedStorage.Shared.Sift.Array.zip` | Frontera (terceros) |
+| `zipAll.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Array.zipAll` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Dictionary/</code> — 30 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Dictionary/</code> — 30 archivo(s) — 30/30 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `copy.luau` | ModuleScript | — | — | 20 | `ReplicatedStorage.Shared.Sift.Dictionary.copy` | Pendiente |
-| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Dictionary.copyDeep` | Pendiente |
-| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Dictionary.count` | Pendiente |
-| `entries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.entries` | Pendiente |
-| `equals.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equals` | Pendiente |
-| `equalsDeep.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equalsDeep` | Pendiente |
-| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.every` | Pendiente |
-| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Dictionary.filter` | Pendiente |
-| `flatten.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Dictionary.flatten` | Pendiente |
-| `flip.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.flip` | Pendiente |
-| `freeze.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.freeze` | Pendiente |
-| `freezeDeep.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Dictionary.freezeDeep` | Pendiente |
-| `fromArrays.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.fromArrays` | Pendiente |
-| `fromEntries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.fromEntries` | Pendiente |
-| `has.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Dictionary.has` | Pendiente |
-| `includes.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.includes` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Dictionary.init` | Pendiente |
-| `keys.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.keys` | Pendiente |
-| `map.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Sift.Dictionary.map` | Pendiente |
-| `merge.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Shared.Sift.Dictionary.merge` | Pendiente |
-| `mergeDeep.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.Sift.Dictionary.mergeDeep` | Pendiente |
-| `removeKey.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKey` | Pendiente |
-| `removeKeys.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKeys` | Pendiente |
-| `removeValue.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValue` | Pendiente |
-| `removeValues.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValues` | Pendiente |
-| `set.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.set` | Pendiente |
-| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.some` | Pendiente |
-| `update.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Sift.Dictionary.update` | Pendiente |
-| `values.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.values` | Pendiente |
-| `withKeys.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.withKeys` | Pendiente |
+| `copy.luau` | ModuleScript | — | — | 20 | `ReplicatedStorage.Shared.Sift.Dictionary.copy` | Frontera (terceros) |
+| `copyDeep.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Dictionary.copyDeep` | Frontera (terceros) |
+| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Dictionary.count` | Frontera (terceros) |
+| `entries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.entries` | Frontera (terceros) |
+| `equals.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equals` | Frontera (terceros) |
+| `equalsDeep.luau` | ModuleScript | — | — | 64 | `ReplicatedStorage.Shared.Sift.Dictionary.equalsDeep` | Frontera (terceros) |
+| `every.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.every` | Frontera (terceros) |
+| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Dictionary.filter` | Frontera (terceros) |
+| `flatten.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Sift.Dictionary.flatten` | Frontera (terceros) |
+| `flip.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.flip` | Frontera (terceros) |
+| `freeze.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.freeze` | Frontera (terceros) |
+| `freezeDeep.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Dictionary.freezeDeep` | Frontera (terceros) |
+| `fromArrays.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.fromArrays` | Frontera (terceros) |
+| `fromEntries.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.fromEntries` | Frontera (terceros) |
+| `has.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Dictionary.has` | Frontera (terceros) |
+| `includes.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.includes` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.Shared.Sift.Dictionary.init` | Frontera (terceros) |
+| `keys.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.keys` | Frontera (terceros) |
+| `map.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Sift.Dictionary.map` | Frontera (terceros) |
+| `merge.luau` | ModuleScript | — | — | 45 | `ReplicatedStorage.Shared.Sift.Dictionary.merge` | Frontera (terceros) |
+| `mergeDeep.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.Sift.Dictionary.mergeDeep` | Frontera (terceros) |
+| `removeKey.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKey` | Frontera (terceros) |
+| `removeKeys.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Dictionary.removeKeys` | Frontera (terceros) |
+| `removeValue.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValue` | Frontera (terceros) |
+| `removeValues.luau` | ModuleScript | — | — | 36 | `ReplicatedStorage.Shared.Sift.Dictionary.removeValues` | Frontera (terceros) |
+| `set.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.set` | Frontera (terceros) |
+| `some.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Dictionary.some` | Frontera (terceros) |
+| `update.luau` | ModuleScript | — | — | 60 | `ReplicatedStorage.Shared.Sift.Dictionary.update` | Frontera (terceros) |
+| `values.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Dictionary.values` | Frontera (terceros) |
+| `withKeys.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Dictionary.withKeys` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Set/</code> — 16 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Set/</code> — 16 archivo(s) — 16/16 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `add.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Set.add` | Pendiente |
-| `copy.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.Sift.Set.copy` | Pendiente |
-| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Set.count` | Pendiente |
-| `delete.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.delete` | Pendiente |
-| `difference.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Set.difference` | Pendiente |
-| `differenceSymmetric.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.differenceSymmetric` | Pendiente |
-| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.filter` | Pendiente |
-| `fromArray.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Set.fromArray` | Pendiente |
-| `has.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Shared.Sift.Set.has` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.init` | Pendiente |
-| `intersection.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Set.intersection` | Pendiente |
-| `isSubset.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Set.isSubset` | Pendiente |
-| `isSuperset.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Set.isSuperset` | Pendiente |
-| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.map` | Pendiente |
-| `merge.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.merge` | Pendiente |
-| `toArray.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Set.toArray` | Pendiente |
+| `add.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Set.add` | Frontera (terceros) |
+| `copy.luau` | ModuleScript | — | — | 21 | `ReplicatedStorage.Shared.Sift.Set.copy` | Frontera (terceros) |
+| `count.luau` | ModuleScript | — | — | 42 | `ReplicatedStorage.Shared.Sift.Set.count` | Frontera (terceros) |
+| `delete.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.delete` | Frontera (terceros) |
+| `difference.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.Sift.Set.difference` | Frontera (terceros) |
+| `differenceSymmetric.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.differenceSymmetric` | Frontera (terceros) |
+| `filter.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.Sift.Set.filter` | Frontera (terceros) |
+| `fromArray.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Sift.Set.fromArray` | Frontera (terceros) |
+| `has.luau` | ModuleScript | — | — | 22 | `ReplicatedStorage.Shared.Sift.Set.has` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.init` | Frontera (terceros) |
+| `intersection.luau` | ModuleScript | — | — | 46 | `ReplicatedStorage.Shared.Sift.Set.intersection` | Frontera (terceros) |
+| `isSubset.luau` | ModuleScript | — | — | 29 | `ReplicatedStorage.Shared.Sift.Set.isSubset` | Frontera (terceros) |
+| `isSuperset.luau` | ModuleScript | — | — | 25 | `ReplicatedStorage.Shared.Sift.Set.isSuperset` | Frontera (terceros) |
+| `map.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.Sift.Set.map` | Frontera (terceros) |
+| `merge.luau` | ModuleScript | — | — | 38 | `ReplicatedStorage.Shared.Sift.Set.merge` | Frontera (terceros) |
+| `toArray.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.Sift.Set.toArray` | Frontera (terceros) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Util/</code> — 4 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Sift/Util/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `equalObjects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Util.equalObjects` | Pendiente |
-| `func.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Sift.Util.func` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.Sift.Util.init` | Pendiente |
-| `isEmpty.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Sift.Util.isEmpty` | Pendiente |
+| `equalObjects.luau` | ModuleScript | — | — | 32 | `ReplicatedStorage.Shared.Sift.Util.equalObjects` | Frontera (terceros) |
+| `func.luau` | ModuleScript | — | — | 15 | `ReplicatedStorage.Shared.Sift.Util.func` | Frontera (terceros) |
+| `init.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.Sift.Util.init` | Frontera (terceros) |
+| `isEmpty.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Sift.Util.isEmpty` | Frontera (terceros) |
 
 </details>
 

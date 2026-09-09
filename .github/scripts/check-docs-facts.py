@@ -202,12 +202,14 @@ STATUS_ROWS = [
     ("**Documentado**", r"\| \*\*Documentado\*\* \| [^|]+ \| (\d+) \|"),
     ("Analizado", r"\| Analizado \| [^|]+ \| (\d+) \|"),
     ("Analizado (en parte)", r"\| Analizado \(en parte\) \| [^|]+ \| (\d+) \|"),
+    ("Frontera (terceros)", r"\| Frontera \(terceros\) \| [^|]+ \| (\d+) \|"),
     ("Pendiente", r"\| Pendiente \| [^|]+ \| (\d+) \|"),
 ]
 PROGRESS_ROWS = [
     ("**Documentado**", r"\| \*\*Documentado\*\*[^|]*\| (\d+) \|"),
     ("Analizado", r"\| Analizado \(leído entero[^|]*\| (\d+) \|"),
     ("Analizado (en parte)", r"\| Analizado \(en parte\) \| (\d+) \|"),
+    ("Frontera (terceros)", r"\| Frontera \(terceros\)[^|]*\| (\d+) \|"),
     ("Pendiente", r"\| Pendiente \| (\d+) \|"),
 ]
 for (label, inv_pat), (_, prog_pat) in zip(STATUS_ROWS, PROGRESS_ROWS):

@@ -233,8 +233,8 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Cliente — interfaz y utilidades | `ReplicatedStorage/Client/*.luau` y sus carpetas pequeñas | **Documentado** — `docs/systems/client-ui.md`, 1 candidato (045). Las carpetas grandes tienen página propia |
 | Servidor — piezas sueltas | `WalkieServer`, `collisions`, `ToolModelGenerator`, `Ragdoll`, `stats`, `AnimationSystem`, `Shared/Nametag`, `Assets/**` | **Documentado** — `docs/systems/server-misc.md`, 2 candidatos (046, 047). **No estaba en esta tabla hasta ahora** |
 | Place de donaciones (teletipo y tablas) | `Shared/ComprasTablero`, `ReplicatedStorage/ShopInfo` | **Documentado** — `docs/systems/donations-place.md`, 1 diagrama, 1 candidato confirmado (040). **No estaba en esta tabla hasta ahora** |
-| Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
-| Librerías de terceros | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pendiente (marcar como terceros, documentar solo la frontera) |
+| Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | **Frontera documentada** — `docs/architecture/third-party.md`. `Icon` es TopbarPlus v3, con 12 consumidores |
+| Librerías de terceros | `Sift`, `Icon`, `Kinetic`, `Promise`, `FastCastRedux`, `Observers`, `PartCache` | **Frontera documentada** — `docs/architecture/third-party.md`, 1 diagrama de dependencias. 160 archivos, 19 303 líneas: qué son y quién las usa, **sin leer por dentro** |
 
 Ningún sistema ha llegado a `Verificado`. Verificar exige ejecutar los planes de
 `docs/testing/verification-plan.md`, y eso necesita Roblox Studio.
@@ -323,9 +323,10 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 116 |
-| Analizado (en parte) | 180 |
-| Pendiente | 248 |
+| Analizado (leído entero, descrito en el sitio) | 118 |
+| Analizado (en parte) | 181 |
+| Frontera (terceros) — documentada por fuera, sin leer por dentro | 160 |
+| Pendiente | 85 |
 
 Las lecturas parciales y por qué:
 
@@ -549,7 +550,7 @@ y razonado está en la propia página; el resumen es:
 - **Archivos anotados con Moonwave (solo comentarios, demostrado por la guarda de CI):**
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
-- **Diagramas:** 45 diagramas Mermaid (flowchart, sequence, state)
+- **Diagramas:** 46 diagramas Mermaid (flowchart, sequence, state)
 - **Candidatos a bug:** 47 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`

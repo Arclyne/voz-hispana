@@ -34,9 +34,10 @@ Es el mismo aviso que lleva el [censo de remotes](../reference/remotes.md).
 | `lerp.luau` | 5 | Interpolación lineal con `math.clamp` | 3 |
 
 No se documentan por dentro, por la misma razón que
-[DataKit](../architecture/datakit.md) —tienen su documentación aguas arriba— y por la misma
-que las carpetas `Promise`, `Sift`, `Icon`, `Kinetic`, `FastCastRedux`, `Observers` y
-`PartCache`.
+[DataKit](../architecture/datakit.md): tienen su documentación aguas arriba. Las carpetas
+`Promise`, `Sift`, `Icon`, `Kinetic`, `FastCastRedux`, `Observers` y `PartCache` reciben el
+mismo trato, y su mapa de dependencias está en
+[Librerías de terceros](../architecture/third-party.md).
 
 ## Las que sujetan comportamiento
 
@@ -183,6 +184,59 @@ pregunta que este proyecto tenga abierta.
 | `KeyGenerator.luau` | 28 | Seis dígitos al azar, sin repetir dentro del proceso | Sin consumidor encontrado |
 | `InfoCoins.luau` | 9 | Icono y color de `Coins` y `Gems` | |
 | `AssetsToPreload.luau` | 13 | Lista de imágenes a precargar | Sin consumidor encontrado |
+
+## Tres carpetas pequeñas que sí son de este proyecto
+
+Además de los archivos sueltos, `Shared/` tiene tres carpetas que no dan para página propia
+pero tampoco son de terceros.
+
+### `Cooldown/` — enfriamientos persistentes
+
+**HECHO.** Dos archivos, 131 líneas. `CooldownManager` es de servidor y su encabezado lo
+dice en mayúsculas: «ESTE SCRIPT SOLO SE USA DESDE UN SERVIDOR PARA EVITAR EXPLOITS». Guarda
+cada enfriamiento como un `IntValue` en una carpeta `Cooldowns` colgada del jugador.
+`CooldownShared` calcula y formatea lo que queda, y se puede usar desde los dos lados.
+
+**Registrado como correcto**, en tres puntos:
+
+| Control | Cómo |
+|---|---|
+| El reloj es el del servidor | `workspace:GetServerTimeNow()`, no `os.time()` ni `tick()`: cambiar la hora del cliente no adelanta nada |
+| Los enfriamientos **sobreviven a la reconexión** | `PlayerDataReplicator` los persiste (`key = "cooldowns"`, `kind = "folder"`) |
+| Un valor corrupto no rompe el manejador | El `coerce` del SPEC es `math.floor(tonumber(value) or 0)`, con este comentario en el archivo: «CooldownManager asume IntValue; un Value corrupto crearia un StringValue» |
+
+Ese tercer punto merece leerse dos veces: alguien se dio cuenta de que el cargador genérico
+habría creado el tipo equivocado, y lo arregló **en el sitio correcto** —la especificación de
+carga— en vez de parchear el consumidor. Quien use `CooldownManager` no tiene que saber nada
+de esto.
+
+Lo usa hoy la tirada gratis de la ruleta, con `FREE_SPIN_COOLDOWN = 24 * 60 * 60`. Ver
+[Máquinas](./machines.md#dos-formas-de-entrar-escritas-con-doce-meses-de-diferencia).
+
+### `Dialogs/` — dos guiones de NPC
+
+**HECHO.** 111 líneas de datos: `FrameShop` (el vendedor de marcos) y `KaraokeRoomRent` (el
+alquiler de salas). Un grafo de nodos con `text`, `responses` y un `next` que puede ser un
+número o una función:
+
+```lua
+next = function(respIdx)
+	if respIdx == 3 then return "__CLOSE__" end
+end
+```
+
+Los consume `DialogModule` — ver [Bar, NPC y diálogos](./bar-npcs.md#los-diálogos). Los dos
+archivos empiezan con el mismo comentario copiado, `-- ReplicatedStorage/Dialogs/Shopkeeper.lua`,
+que no corresponde ni a su ruta ni a su nombre.
+
+### `PrompBuy/` — el diálogo de confirmar compra
+
+**HECHO.** 109 líneas de cliente. Monta una GUI a partir de `FrameBuy.rbxm`, muestra precio
+y nombre de artículo, y devuelve la respuesta. `self.YaHayFuncion` impide abrir dos a la vez.
+Usa `InputPlayer` del catálogo de arriba.
+
+Es interfaz: quien decide si la compra procede es el servidor. Ver
+[Tiendas](./stores.md#controles-económicos-que-sí-sujetan).
 
 ## Las que quizá no use nadie
 
