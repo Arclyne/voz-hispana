@@ -83,7 +83,7 @@ Two facts worth pulling out:
 
 ## Player houses
 
-Covered in depth under **Systems → Housing**. In lifecycle terms:
+Covered in depth under [Housing](../systems/housing/overview.md). In lifecycle terms:
 
 **FACT.** `PlayerWorld_Init.lua.server.luau` does not start on server start. It starts
 when the *first player arrives*, because the house's identity travels in that player's

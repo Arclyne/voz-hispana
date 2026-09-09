@@ -48,7 +48,7 @@ shape everything else:
 3. **The game spans multiple places.** A player's house runs in a *reserved server* of a
    different `PlaceId` (declared in `ReplicatedStorage/HousesInfo`), reached through
    `TeleportService`. The lobby, karaoke, arcade and donation places are separate
-   `PlaceId`s too. See **Systems → Housing**.
+   `PlaceId`s too. See [Housing](./systems/housing/overview.md).
 
 Because of (1), a reader who only greps `src/` will misjudge what runs where. Because of
 (2), a script's file suffix does not tell you whether it is enabled — or even whether it

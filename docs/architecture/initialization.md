@@ -322,6 +322,6 @@ decision rather than an oversight. Recorded as
 | | |
 |---|---|
 | **UNKNOWN** | Whether the published contents of assets `137484964666215`, `92258948630058` and `94091855508048` match `TemplatesTesting/Core`, `/GameWorlds` and `/BuildingSystem` on disk. The override only applies when a same-named folder exists locally; in production the published asset is what ships. |
-| **UNKNOWN** | Where `PlayerHouses` is imported. It exists under `TemplatesTesting/` but no asset ID in `TEMPLATES_IDS` is commented as such, and `PlayerHouses` is not one of the three. See **Systems → Housing**. |
+| **UNKNOWN** | Where `PlayerHouses` is imported. It exists under `TemplatesTesting/` but no asset ID in `TEMPLATES_IDS` is commented as such, and `PlayerHouses` is not one of the three. See [Housing](../systems/housing/overview.md). |
 | **UNKNOWN** | What is inside `src/StarterPlayer/StarterPlayerScripts.rbxm` and `StarterCharacterScripts.rbxm`. Binary. See [Client lifecycle](./client-lifecycle.md). |
 | **OBSERVATION** | `default.project.json` maps `StarterPack` to `src/StarterPack`, which does not exist in the repository. |

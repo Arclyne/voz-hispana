@@ -11,7 +11,7 @@ servers** — private Roblox server instances reached with a
 and **events**.
 
 This page covers the mechanism. The house *entity* — ownership, persistence, permissions —
-is covered under **Systems → Housing**.
+is covered under [Housing](../systems/housing/overview.md).
 
 ## The three identities
 
@@ -282,7 +282,8 @@ to arrive. A player teleported into a house they may not enter is therefore reje
 the destination rather than at the source. That is a coherent design — the destination is
 the only place that has the world data loaded — but the user-visible consequence differs
 (a teleport then a kick, rather than a refusal), and permissions for *non-first* players
-are a separate question examined under **Systems → Housing**.
+are a separate question examined under
+[Housing → Permissions](../systems/housing/permissions.md).
 
 ## Related implementation
 

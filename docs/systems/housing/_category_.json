@@ -1,0 +1,10 @@
+{
+  "label": "Housing",
+  "position": 1,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Housing",
+    "description": "Player houses: the persistent entity, the temporary server that hosts it, and everything in between."
+  }
+}
