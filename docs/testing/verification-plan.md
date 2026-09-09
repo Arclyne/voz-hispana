@@ -83,6 +83,7 @@ o en un place de pruebas.
 | [028](#bug-candidate-028) | Tres cargadores de moderación comprueban que haya un administrador conectado, no que quien llama lo sea | Karaoke / Seguridad | Posible bug / Requiere pruebas de seguridad | Baja | Alta |
 | [029](#bug-candidate-029) | Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos | Cuadros | Posible bug / Requiere inyección de fallos | Media | Alta |
 | [030](#bug-candidate-030) | El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos | Cuadros / Seguridad | Posible bug / Requiere pruebas de seguridad | Media | Alta |
+| [031](#bug-candidate-031) | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
 
 ### Entradas de seguridad
 
@@ -127,6 +128,11 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Reclamar una misión | **Correcto, y de lo más completo del repositorio.** Lista blanca de grupos, tipo del hueco, la misión existe, no está reclamada, el progreso llega al objetivo, y la recompensa sale de la configuración del servidor. |
+| Doble reclamación de una misión | **Correcto hoy, por una propiedad frágil.** `Claimed = true` se escribe después de conceder, pero en todo el recorrido no hay un solo punto de suspensión, así que dos llamadas no se entrelazan. Añadir cualquier espera a `Collections.Give` o a `saveData` abriría la ventana. |
+| Giro de la ruleta | **Correcto.** `requestSpinRF` valida en cadena con un motivo por rechazo, comprueba el recurso **antes** de cobrarlo, y usa `CooldownManager` para el giro gratuito. |
+| Posesión de un baile | **Correcto.** Se comprueba contra la carpeta `Animations` del jugador y el intento fallido se registra con su nombre. El remote `AddAnimation` se eliminó a propósito, con el motivo anotado en el código. |
+| Consumo de ingredientes en la cocina | **Correcto.** Pasa por `InventoryManager.removeItem`, la ruta validada del inventario, no por manipulación directa. |
 | Autorización para editar un cuadro | **Correcto.** `UpdateCuadros` exige que el modelo tenga la etiqueta `Paint`/`CuadrosPaint` y que su atributo `Owner`/`InInUse` —puesto por el servidor— sea el `UserId` del llamante. |
 | Borrado de un cuadro ajeno | **Correcto.** `Remove` comprueba `Format.IsOwner` contra el dato **leído del DataStore**, no contra lo que manda el cliente, y además que no esté colgado en una casa. |
 | Pago de una venta de cuadro con el vendedor desconectado | **Correcto, y es el mejor patrón del juego para esto.** Viaja por el buzón idempotente del perfil de DataKit, con `sellerHere` para no pagar dos veces. |
@@ -3575,6 +3581,131 @@ que ya existe en el cliente. La estructura está escrita; lo que falta es aplica
 que decide.
 
 
+## BUG-CANDIDATE-031
+
+### Se puede hacer bailar al personaje de otro jugador
+
+**Sistema:** Animación · **Clasificación:** Posible bug / Requiere pruebas multijugador
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/AnimationSystem/init.server.luau` —
+`playAnimation`, `stopAnimation` y el manejador de `Animator.PlayAnimation`
+**Documentación relacionada:** [Barrido → Animación y bailes](../systems/survey.md#animación-y-bailes)
+
+#### Comportamiento observado — HECHO
+
+El remote acepta un `Humanoid` del cliente y lo pasa tal cual:
+
+```lua
+remotes.Animator.PlayAnimation.OnServerEvent:Connect(function(player, name: string?, humanoid: Humanoid?)
+	if name then
+		stopAnimation(player, humanoid)
+		playAnimation(player, name, humanoid)
+	end
+end)
+```
+
+Y `playAnimation` usa ese `humanoid` como destino, mientras comprueba la posesión contra
+**quien llama**:
+
+```lua
+local function playAnimation(player: Player, name: string, humanoid: Humanoid?)
+	if not humanoid then
+		humanoid = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	end
+
+	local animFolder = player:FindFirstChild("Animations")
+	local animValue = animFolder and animFolder:FindFirstChild(name)
+
+	if not animValue then
+		warn(player.Name .. " intentó bailar " .. name .. " sin tenerlo.")
+		return
+	end
+	...
+	local animator = humanoid and humanoid:FindFirstChildOfClass("Animator")
+	...
+	local track = animator:LoadAnimation(animation)
+	track:Play()
+```
+
+Las dos mitades miran a personas distintas: **la posesión se comprueba contra el llamante, y
+la animación se carga sobre el `Humanoid` que el llamante eligió.**
+
+#### Por qué esto puede ser un problema — HECHO
+
+El respaldo `if not humanoid then humanoid = player.Character…` demuestra la intención: el
+parámetro existe para el caso normal, en el que se omite y se usa el propio personaje. Lo que
+no hay es nada que rechace un `Humanoid` ajeno cuando sí se manda.
+
+`stopAnimation(player, humanoid)` tiene la misma forma, así que también se puede cortar el
+baile de otro.
+
+Lo que hace de esto una inconsistencia y no un descuido general es que **este archivo es de
+los que más cuidado tienen**: comprueba la posesión, registra el intento fallido con el
+nombre del jugador, y lleva escrita una decisión de seguridad previa:
+
+```lua
+-- Eliminamos AddAnimation remote por seguridad.
+```
+
+Alguien ya endureció este sistema. El parámetro `humanoid` quedó fuera de esa revisión.
+
+#### Teoría — TEORÍA
+
+Un jugador que posea al menos un baile puede reproducirlo en el personaje de cualquier otro,
+y detener los bailes ajenos. Es vandalismo, no robo: no concede nada ni accede a datos.
+
+El alcance está acotado por dos cosas. Las pistas se marcan con
+`track:SetAttribute("Dance", true)` y `stopAnimation` solo detiene las marcadas así, de modo
+que no se pueden cortar animaciones que no sean bailes. Y hay que poseer el baile, así que no
+se puede reproducir cualquier `AnimationId`: solo los que el atacante haya comprado.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El manejador declara `humanoid: Humanoid?` y lo reenvía sin comprobar |
+| 2 | La comprobación de posesión usa `player`, el destino usa `humanoid` |
+| 3 | El respaldo `if not humanoid then …` enseña que el caso previsto es omitirlo |
+| 4 | `stopAnimation` repite la forma |
+| 5 | `remotes.Animate`, el otro remote de baile, **no** acepta destino: usa siempre el personaje del llamante. Los dos caminos existen y solo uno tiene el agujero |
+| 6 | El comentario sobre `AddAnimation` prueba que este archivo ya pasó una revisión de seguridad |
+
+#### Incógnitas
+
+- Para qué se añadió el parámetro. Puede haber un uso legítimo —bailes en pareja, un NPC—
+  que exigiría una comprobación en vez de quitarlo.
+- Si `LoadAnimation` sobre el `Animator` de otro jugador replica a todos los clientes o solo
+  al servidor. Determina si los demás lo ven.
+
+#### Escenario de ejemplo
+
+Un jugador compra un baile y, desde la consola, lo reproduce en el personaje de otro cada
+pocos segundos. La víctima ve a su avatar bailando sin haberlo pedido y no encuentra en la
+interfaz nada que lo detenga, porque no salió de su interfaz.
+
+**Comportamiento esperado:** el baile se reproduce en el personaje de quien lo pide.
+**Comportamiento posible:** se reproduce en el personaje que se indique.
+
+#### Plan de verificación — *Multijugador*
+
+1. Dos cuentas en el mismo servidor. La primera con al menos un baile comprado.
+2. Desde su consola de cliente, dispara `Animator.PlayAnimation` con el nombre del baile y el
+   `Humanoid` de la segunda cuenta.
+3. Comprueba si la segunda cuenta baila, y si lo ven los dos clientes.
+4. Prueba `stopAnimation` mientras la segunda cuenta baila algo suyo.
+5. Repite con un baile que la primera cuenta **no** posea: debería rechazarse y dejar un
+   `warn`.
+
+**Pasa:** el paso 2 no tiene efecto sobre la segunda cuenta.
+**Falla:** la segunda cuenta baila.
+
+**Instrumentación sugerida:** en el `warn` que ya existe, añadir a quién se dirigía la
+animación. Con eso se ve en producción si el parámetro se está usando para algo distinto del
+propio personaje — que es también la información necesaria para decidir si se quita o se
+comprueba.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -3618,7 +3749,9 @@ completa.
 | `KaraokeTV/`, `BusquedaMusicas` | **No** | En cola |
 | `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
 | `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
-| Sistemas de juego (~425 archivos) | **No** | En cola |
+| Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
+| `JobSystem`, `ToolPlacementServer`, `BuildingSystem`, `KaraokeTV` | **No** | En cola, por ese orden |
+| Sistemas de juego (~420 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que

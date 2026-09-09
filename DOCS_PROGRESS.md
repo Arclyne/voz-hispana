@@ -20,26 +20,26 @@ ya lo estaban.
 
 ## Progreso general
 
-**68 %**
+**72 %**
 
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **80 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **85 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
-Eso es un 14 % por número de archivos, pero una porción mucho mayor del código que sostiene
+Eso es un 15 % por número de archivos, pero una porción mucho mayor del código que sostiene
 todo lo demás: el arranque completo, el sistema de mundos/casas entero, las capas de
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
 invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
-mobiliario, y toda la ruta de monetización, y la estructura de los interactuables, el inventario, la moderación de karaoke, y los cuadros. Los ~472 archivos restantes son sistemas de juego (interactuables, karaoke,
+mobiliario, y toda la ruta de monetización, y la estructura de los interactuables, el inventario, la moderación de karaoke, los cuadros, y un barrido de la superficie de red del resto. Los ~467 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
-del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 10 de sistemas +
-3 de referencia + 30 candidatos a bug con evidencia, frente a un plan que aún necesita
+del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 11 de sistemas +
+3 de referencia + 31 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -211,18 +211,18 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Invitaciones (referidos) | `Core/ServerStorage/WorldSystem/ReferralService.luau`, `Shared/Referrals` | **Documentado** — `docs/systems/referrals.md`, 1 diagrama |
 | Inventario / Herramientas | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | **Documentado** — `docs/systems/inventory.md`, 1 diagrama. Faltan `ToolPlacementServer` y la interfaz de cliente |
 | Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | **Documentado en su estructura** — `docs/systems/interactables.md`, 1 diagrama. Los 36 módulos de tipo, sin leer a propósito |
-| Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | Leído en parte (pasada de seguridad → BUG-CANDIDATE-016) |
+| Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | **Barrido** — `docs/systems/survey.md`; `requestSpinRF` y la ruta de premio |
 | Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | **Documentado** — `docs/systems/karaoke.md`, 1 diagrama. Faltan `KaraokeTV/` y `BusquedaMusicas` |
 | Cuadros (Paint) | `Shared/Paint`, `interactable/Paint` | **Documentado** — `docs/systems/paint.md`. Faltan el editor y la cola de carga, que son de cliente |
 | Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Falta parte de `Compras.luau` |
 | Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService` | **Documentado** — `docs/systems/monetization.md`, 1 diagrama. Faltan `ShopInfo` e `InventoryManager` |
-| Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | Pendiente |
-| Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | Pendiente |
+| Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | **Barrido** — `docs/systems/survey.md`; leída la ruta de reclamación |
+| Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | **Barrido** — `docs/systems/survey.md`; el servidor leído entero |
 | Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | Pendiente |
 | Trabajos | `Shared/JobSystem`, `Events/Jobs` | Pendiente |
 | Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | Pendiente |
 | Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | Pendiente |
-| Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | Pendiente |
+| Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | **Barrido** — `docs/systems/survey.md`; solo los `bind` |
 | Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
 | Librerías de terceros | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pendiente (marcar como terceros, documentar solo la frontera) |
 
@@ -313,9 +313,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 2 |
-| Analizado (leído entero, descrito en el sitio) | 60 |
-| Analizado (en parte) | 18 |
-| Pendiente | 472 |
+| Analizado (leído entero, descrito en el sitio) | 62 |
+| Analizado (en parte) | 21 |
+| Pendiente | 467 |
 
 Las lecturas parciales y por qué:
 
@@ -402,7 +402,7 @@ Los cinco que de verdad bloquean documentación:
 
 ## Problemas encontrados
 
-Treinta entradas, todas redactadas al completo en
+Treinta y una entradas, todas redactadas al completo en
 `docs/testing/verification-plan.md`. **Ninguna se afirma como bug confirmado.** Dos están
 clasificadas como *Confirmado por análisis estático*, y aun esas solo afirman lo que el
 código demostrablemente hace: la 011 confirma una inconsistencia, no qué lado de ella está
@@ -448,6 +448,7 @@ proyecto, que no cambia código, pero no debería quedarse en una lista de pendi
 | BUG-CANDIDATE-028 | Tres cargadores de moderación comprueban que haya un administrador conectado, no que quien llama lo sea | Karaoke / Seguridad | Posible bug / Requiere pruebas de seguridad | Baja | Alta |
 | BUG-CANDIDATE-029 | Borrar un cuadro reintenta por recursión, sin límite y sin cortacircuitos | Cuadros | Posible bug / Requiere inyección de fallos | Media | Alta |
 | BUG-CANDIDATE-030 | El límite de ritmo al editar un cuadro solo existe en el cliente, y el servidor difunde a todos | Cuadros / Seguridad | Posible bug / Requiere pruebas de seguridad | Media | Alta |
+| BUG-CANDIDATE-031 | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
 
 ### La pasada de seguridad
 
@@ -491,7 +492,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 30 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 31 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -523,14 +524,14 @@ y razonado está en la propia página; el resumen es:
 - **Fase:** 3 — Sistemas (Casas, Datos del jugador, Eventos, Invitaciones) y **Fase 5**
   cerrada con el grafo de dependencias.
 - **Idioma:** todo el sitio, los comentarios Moonwave y los generadores están en español.
-- **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 10 de sistemas,
+- **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 11 de sistemas,
   1 de verificación, 3 de referencia generada.
 - **Archivos anotados (solo comentarios, demostrado por la guarda de CI):**
   - `src/ReplicatedStorage/PlayerInit.luau`
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
 - **Diagramas:** 38 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 30 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 80 de 552
+- **Candidatos a bug:** 31 redactados al completo, incluida una pasada de seguridad
+- **Scripts leídos:** 85 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.
@@ -618,8 +619,10 @@ de `docs/architecture/persistence.md`.
 
 ### 3. Los sistemas de juego que quedan
 
-Máquinas, Misiones, Trabajos, Animación, Cocina, Construcción,
-`ToolPlacementServer` (880 líneas) y los televisores de karaoke. Unos 425 archivos. De uno en uno, y un commit por sistema.
+El orden razonado está en `docs/systems/survey.md`, que además dice de cada sistema qué se
+miró y qué no. En resumen: `JobSystem` (1 515 líneas, toca economía y no se sabe nada de
+él), `ToolPlacementServer` (880), `GlobalDataStore` y `GiftInbox` (cierran U-008),
+`BuildingSystem`, y los televisores de karaoke. Un commit por sistema.
 
 De Interactuables ya está la estructura; lo que falta ahí son los 36 módulos de tipo, y
 eso es un catálogo, no una explicación: hacerlo solo merece la pena si alguien necesita

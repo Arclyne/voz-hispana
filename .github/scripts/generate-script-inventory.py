@@ -80,6 +80,8 @@ ANALYSED |= {
     t("Core/ServerScriptService/ServerScripts/inventory/InventoryManager/DefaultTools.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/init.luau"),
     t("Core/ReplicatedStorage/Shared/Paint/FormatPinturaData/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/AnimationSystem/init.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/Quests/QuestMain.server.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -100,6 +102,10 @@ PARTIAL = {
     t("Core/ReplicatedStorage/Shared/Karaoke/RevisarCanciones/init.luau"),
     t("Core/ReplicatedStorage/Shared/Karaoke/CrearCancion/init.luau"),
     t("Core/ReplicatedStorage/Shared/Paint/ServerClient/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/Quests/QuestService.luau"),
+    t("Core/ServerScriptService/ServerScripts/machines/init.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/cooking/CookingStation.luau"),
+    t("Core/ServerScriptService/ServerScripts/cooking/CuttingBoard.server.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
