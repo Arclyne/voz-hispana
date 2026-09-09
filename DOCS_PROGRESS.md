@@ -344,10 +344,11 @@ la referencia de API, y son de terceros o empaquetados: `DataKit`, `Store`, `Pro
 
 :::caution `DataKit` no es nuestro para documentar
 
-`DataKit` es un paquete externo instalado con wally y **trae su propia documentación
-Moonwave completa**, en español, escrita por sus autores. Su `init.luau` declara
-explícitamente qué es superficie pública (`Profile`, `Store`, `transfer`) y qué es interno
-(`BaseStore`, `Health`, `Mutex`, `Signal`, `Lease`, `Adapters`, `Util`).
+`DataKit` es un paquete externo instalado con wally y **tiene su propio sitio de
+documentación**: <https://arclyne.github.io/data-kit/>. Trae además anotaciones Moonwave
+completas en español, escritas por sus autores, y su `init.luau` declara explícitamente qué
+es superficie pública (`Profile`, `Store`, `transfer`) y qué es interno (`BaseStore`,
+`Health`, `Mutex`, `Signal`, `Lease`, `Adapters`, `Util`).
 
 **No añadas ni modifiques anotaciones dentro de `DataKit`, y no copies el contrato de sus
 funciones a la documentación conceptual** — para eso están los enlaces `/api/<Clase>`.

@@ -43,11 +43,14 @@ agrupadas por sistema en la barra lateral:
 | Roles y monetización | `RoleService`, `GamePassService` |
 | DataKit (paquete externo) | Sus trece clases |
 
-`DataKit` es un caso aparte: es un paquete externo instalado con wally que **ya viene
-documentado por sus autores**. Sus trece clases aparecen en la referencia sin que este
-proyecto haya escrito ni tocado una línea de ellas. Qué resuelve, cómo funciona y qué
-sistema usa cada identidad está explicado, con diagramas, en
-[DataKit — qué hace y quién lo usa](./architecture/datakit.md).
+`DataKit` es un caso aparte: es un paquete externo instalado con wally, con **su propio
+sitio de documentación** en
+[arclyne.github.io/data-kit](https://arclyne.github.io/data-kit/). Sus trece clases
+aparecen también en la referencia de este sitio, sin que este proyecto haya escrito ni
+tocado una línea de ellas.
+
+Qué resuelve, cómo funciona y qué sistema del juego usa cada identidad está explicado, con
+diagramas, en [DataKit — qué hace y quién lo usa](./architecture/datakit.md).
 
 Buena parte de `Core/ReplicatedStorage` es anterior a este proyecto y usa líneas `---`
 como separadores visuales, que el extractor de Moonwave lee como comentarios de

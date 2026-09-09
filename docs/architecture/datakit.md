@@ -11,14 +11,20 @@ el juego: por qué una casa «converge» en vez de robarse, por qué el pago de 
 aunque el vendedor esté desconectado, y por qué el perfil de un jugador nunca se duplica al
 saltar de servidor.
 
-:::info Su documentación detallada es suya, no de este sitio
+:::info Su documentación detallada vive aparte
 
-`DataKit` es un paquete externo instalado con **wally** y trae su propia documentación
-Moonwave, escrita por sus autores: trece clases anotadas, con el contrato de cada función.
-Se publica tal cual en la [Referencia de API](/api/DataKit) de este sitio.
+`DataKit` es un paquete externo instalado con **wally**, y tiene **su propio sitio de
+documentación**:
 
-Esta página explica **para qué lo usa Voz Hispana y cómo encaja**. Para la firma exacta de
-un método, sigue los enlaces `/api/`.
+### 📘 [arclyne.github.io/data-kit](https://arclyne.github.io/data-kit/)
+
+Ese es el sitio canónico, escrito por sus autores, con el contrato de cada función. Sus
+trece clases aparecen además en la [Referencia de API](/api/DataKit) de este sitio, porque
+las anotaciones viajan con el código y Moonwave las extrae — pero **la fuente es la de
+arriba**.
+
+Esta página explica otra cosa: **para qué lo usa Voz Hispana y cómo encaja** con el resto
+del juego. Para la firma exacta de un método, ve a su sitio.
 
 :::
 
@@ -198,6 +204,7 @@ Está desarrollado en [Persistencia fuera de DataKit](../systems/global-storage.
 | Aspecto | Código |
 |---|---|
 | Las cuatro identidades | `Core/ServerStorage/WorldSystem/Profiles.luau` — [Profiles](/api/Profiles) |
+| Documentación canónica del paquete | [arclyne.github.io/data-kit](https://arclyne.github.io/data-kit/) |
 | Fachada y superficie pública | `Core/ServerStorage/DataKit/init.luau` — [DataKit](/api/DataKit) |
 | Sesión y ciclo de vida | [Store](/api/Store) |
 | Candado y directorio | [Lease](/api/Lease) |

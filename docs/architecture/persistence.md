@@ -21,9 +21,11 @@ adaptadores de `DataKit`. Los dos de fuera son `GlobalDataStore/init.luau` y
 mecanismo (lease + fence durable), las dos políticas de conflicto y qué sistema usa cada
 identidad, con diagramas.
 
-`DataKit` es además un paquete externo instalado con wally que **trae su propia
-documentación Moonwave**, escrita por sus autores, con el contrato de cada función. Se
-publica tal cual en la [Referencia de API](/api/DataKit) y este proyecto no la modifica.
+`DataKit` es además un paquete externo instalado con wally, con **su propio sitio de
+documentación**: [arclyne.github.io/data-kit](https://arclyne.github.io/data-kit/). Ahí está
+el contrato de cada función. Sus clases aparecen también en la
+[Referencia de API](/api/DataKit) de este sitio, porque las anotaciones viajan con el
+código, pero la fuente canónica es la suya.
 
 Esta página se queda con lo que es responsabilidad de Voz Hispana: qué identidades declara,
 con qué políticas, quién escribe cada una y qué pasa cuando falla.
