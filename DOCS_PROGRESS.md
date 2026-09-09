@@ -1,89 +1,95 @@
-# Documentation Progress
+# Progreso de la documentación
 
-> Persistent memory for the Voz Hispana technical-documentation project.
-> **Read this file completely before doing any documentation work.**
+> Memoria persistente del proyecto de documentación técnica de Voz Hispana.
+> **Léelo entero antes de hacer cualquier trabajo de documentación.**
 >
-> Working branch: `docs/moonwave-documentation`
-> Rule in force: **documentation only** — no executable Lua/Luau may change.
+> Rama de trabajo: `docs/moonwave-documentation`
+> Regla vigente: **solo documentación** — ningún Lua/Luau ejecutable puede cambiar.
+> Idioma: **español**, tanto en el sitio como en los comentarios que se añaden al código.
 
 ---
 
-## Current Phase
+## Fase actual
 
-**Phase 3 — Systems** (Housing complete; other systems pending)
-
----
-
-## Overall Progress
-
-**28 %**
-
-Rationale for the number (kept deliberately conservative):
-the repository holds **552 inspectable `.luau` files / ~80 500 lines** plus
-**320 non-inspectable `.rbxm` binaries**. Phases 0–2 are complete and Housing —
-the system the brief singles out — is documented in depth. **32 of 552 files have
-been read** (see `docs/reference/script-inventory.md` for the per-file status).
-
-That is 6 % by file count but a far larger share of the load-bearing code:
-the entire bootstrap, the entire world/housing system, the reservation and
-presence layers, and the persistence package. The remaining ~520 files are
-gameplay systems (interactables, karaoke, machines, tools, shops, quests, jobs)
-plus vendored third-party libraries.
-
-The percentage is deliberately *not* file-count-weighted, because 480 of the
-remaining files are gameplay leaves whose documentation value per file is much
-lower than the bootstrap's. It reflects: 7 architecture pages + 7 housing pages
-+ 3 reference pages + 14 evidenced bug candidates, against a plan that still
-needs ~8 more systems and the per-script Moonwave sweep.
+**Fase 3 — Sistemas** (Casas, Datos del jugador, Eventos e Invitaciones documentados;
+faltan los sistemas de juego). La **Fase 5 — análisis transversal** ya está cerrada: se
+adelantó porque el grafo de dependencias solo tiene sentido con varios sistemas leídos, y
+ya lo estaban.
 
 ---
 
-## Phases
+## Progreso general
 
-- [x] Phase 0 — Initial Analysis
-- [x] Phase 1 — Documentation Infrastructure
-- [x] Phase 2 — Architecture
-- [ ] Phase 3 — Systems
-- [ ] Phase 4 — Script & Moonwave Reference
-- [ ] Phase 5 — Cross-System Analysis
-- [ ] Phase 6 — Validation & Test Planning
+**38 %**
+
+Justificación del número (deliberadamente conservadora): el repositorio tiene
+**552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
+inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
+documentados a fondo. **43 de 552 archivos leídos** (estado por archivo en
+`docs/reference/script-inventory.md`).
+
+Eso es un 8 % por número de archivos, pero una porción mucho mayor del código que sostiene
+todo lo demás: el arranque completo, el sistema de mundos/casas entero, las capas de
+reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
+invitaciones. Los ~509 archivos restantes son sistemas de juego (interactuables, karaoke,
+máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
+empaquetadas.
+
+El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
+lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
+del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 3 de sistemas +
+3 de referencia + 17 candidatos a bug con evidencia, frente a un plan que aún necesita
+~8 sistemas más y la pasada Moonwave por script.
 
 ---
 
-## Repository Facts (Phase 0 — established by direct inspection)
+## Fases
 
-### Build / sync tooling
+- [x] Fase 0 — Análisis inicial
+- [x] Fase 1 — Infraestructura de documentación
+- [x] Fase 2 — Arquitectura
+- [ ] Fase 3 — Sistemas *(Casas, Datos del jugador, Eventos, Invitaciones hechos)*
+- [ ] Fase 4 — Referencia por script y Moonwave
+- [x] Fase 5 — Análisis transversal
+- [ ] Fase 6 — Validación y planificación de pruebas
 
-| Fact | Evidence |
+---
+
+## Hechos del repositorio (Fase 0 — establecidos por inspección directa)
+
+### Herramientas de build / sincronización
+
+| Hecho | Evidencia |
 |---|---|
-| Rojo project, Rojo `7.7.0` pinned via Rokit | `rokit.toml`, `default.project.json` |
-| Mapped services: `ReplicatedFirst`, `ReplicatedStorage`, `ServerScriptService`, `ServerStorage`, `StarterGui`, `StarterPack`, `StarterPlayer` | `default.project.json` |
-| `StarterPack` is declared in `default.project.json` but **`src/StarterPack` does not exist on disk** | `default.project.json` vs `find src -maxdepth 1` |
-| A committed `sourcemap.json` (~1.1 MB) exists at the repo root | root listing |
+| Proyecto Rojo, Rojo `7.7.0` fijado con Rokit | `rokit.toml`, `default.project.json` |
+| Servicios mapeados: `ReplicatedFirst`, `ReplicatedStorage`, `ServerScriptService`, `ServerStorage`, `StarterGui`, `StarterPack`, `StarterPlayer` | `default.project.json` |
+| `StarterPack` está declarado en `default.project.json` pero **`src/StarterPack` no existe en disco** | `default.project.json` vs `find src -maxdepth 1` |
+| Hay un `sourcemap.json` versionado (~1,1 MB) en la raíz | listado de la raíz |
 
-### File inventory
+### Inventario de archivos
 
-| Extension | Count |
+| Extensión | Cantidad |
 |---|---|
 | `.luau` | 552 |
-| `.json` (`.meta.json` / `.model.json` / other) | 503 |
-| `.rbxm` (**binary, not inspectable**) | 320 |
+| `.json` (`.meta.json` / `.model.json` / otros) | 503 |
+| `.rbxm` (**binario, no inspeccionable**) | 320 |
 | `.gitkeep` | 11 |
 | `.txt` | 2 |
 
-`.luau` classification (by filename convention, since Rojo derives class from suffix):
+Clasificación de los `.luau` (por convención de nombre, que es de donde Rojo deriva la
+clase):
 
-| Kind | Count |
+| Tipo | Cantidad |
 |---|---|
 | `ModuleScript` | 445 |
 | `Script` (`*.server.luau`) | 96 |
 | `LocalScript` (`*.client.luau`) | 11 |
 
-Total inspectable Luau: **~80 556 lines**.
+Total de Luau inspeccionable: **~80 450 líneas**.
 
-### Luau distribution by area
+### Distribución del Luau por zona
 
-| Files | Lines | Area |
+| Archivos | Líneas | Zona |
 |---|---|---|
 | 416 | 56 896 | `TemplatesTesting/Core/ReplicatedStorage` |
 | 80 | 12 322 | `TemplatesTesting/Core/ServerScriptService` |
@@ -94,65 +100,66 @@ Total inspectable Luau: **~80 556 lines**.
 | 1 | 68 | `TemplatesTesting/GameWorlds/ServerScriptService` |
 | 1 | 10 | `TemplatesTesting/PlayerHouses/ReplicatedStorage` |
 | 1 | 26 | `TemplatesTesting/Core/StarterGui` |
-| 5 | 366 | root bootstrap (`ServerScriptService/*`, `ReplicatedStorage/*`) |
+| 5 | 366 | arranque en la raíz (`ServerScriptService/*`, `ReplicatedStorage/*`) |
 
-### Remotes / Bindables (declared as Rojo `.model.json`)
+### Remotes / Bindables (declarados como `.model.json` de Rojo)
 
-| ClassName | Count |
+| ClassName | Cantidad |
 |---|---|
 | `RemoteEvent` | 174 |
 | `RemoteFunction` | 40 |
 | `BindableEvent` | 11 |
 | `BindableFunction` | 1 |
 
-Full extracted list: `docs/reference/remotes.md` *(not yet generated — Phase 4)*.
+Lista completa extraída: `docs/reference/remotes.md`.
 
-### `.meta.json` facts
+### Hechos sobre los `.meta.json`
 
-- 170 `.meta.json` files.
-- **104 of them set `Disabled: true`.** This is load-bearing: `InitScripts.server.luau`
-  re-enables disabled `BaseScript`s after templates finish importing.
-- `RunContext` is set explicitly on 74 scripts: **47 `Server`, 27 `Client`**.
-  Consequence (FACT): many files named `*.server.luau` under
-  `Core/ReplicatedStorage/Client/` are actually **client-context `Script`s**, not server
-  scripts. Filename suffix alone is not a reliable client/server discriminator in this
-  repository — the sibling `.meta.json` must be consulted.
-- Tags observed: `IgnoreAutoEnable` (4), `IgnoreLoader` (2), `Weight` (2),
+- Hay 170 archivos `.meta.json`.
+- **104 de ellos ponen `Disabled: true`.** Esto sostiene todo el arranque:
+  `InitScripts.server.luau` reactiva los `BaseScript` desactivados cuando las plantillas
+  terminan de importarse.
+- `RunContext` está puesto explícitamente en 74 scripts: **47 `Server`, 27 `Client`**.
+  Consecuencia (HECHO): muchos archivos llamados `*.server.luau` bajo
+  `Core/ReplicatedStorage/Client/` son en realidad `Script` **de contexto cliente**. El
+  sufijo del archivo no distingue cliente de servidor en este repositorio — hay que mirar
+  el `.meta.json` hermano.
+- Etiquetas observadas: `IgnoreAutoEnable` (4), `IgnoreLoader` (2), `Weight` (2),
   `TagEditorTagContainer` (1), `Configuration` (1), `InteractiveTool` (1).
 
-### Entry points (FACT)
+### Puntos de entrada (HECHO)
 
-Only **two** server `Script`s exist outside the templates, both in
-`ServerScriptService`, both tagged `IgnoreLoader`:
+Solo existen **dos** `Script` de servidor fuera de las plantillas, ambos en
+`ServerScriptService` y ambos etiquetados `IgnoreLoader`:
 
 1. `src/ServerScriptService/ImportTemplates.server.luau`
 2. `src/ServerScriptService/InitScripts.server.luau`
 
-Plus two shared modules in `ReplicatedStorage`:
+Más dos módulos compartidos en `ReplicatedStorage`:
 
-3. `src/ReplicatedStorage/PlayerInit.luau` — deferred `PlayerAdded` fan-out
-4. `src/ReplicatedStorage/InitAfterTemplates.luau` — blocking "templates ready" barrier
+3. `src/ReplicatedStorage/PlayerInit.luau` — reparto diferido de `PlayerAdded`
+4. `src/ReplicatedStorage/InitAfterTemplates.luau` — barrera bloqueante «plantillas listas»
 
-And one client-context script: `src/ReplicatedStorage/Client/visualsManager.server.luau`
+Y un script de contexto cliente: `src/ReplicatedStorage/Client/visualsManager.server.luau`
 (`RunContext: Client`, `Disabled: true`).
 
-### Template system (FACT)
+### Sistema de plantillas (HECHO)
 
-`ImportTemplates.server.luau` loads three Roblox assets by ID with
-`InsertService:LoadAsset` and merges their contents into live services:
+`ImportTemplates.server.luau` carga tres assets de Roblox por ID con
+`InsertService:LoadAsset` y fusiona su contenido dentro de los servicios vivos:
 
-| Asset ID | Template | Local override folder |
+| ID del asset | Plantilla | Carpeta de override local |
 |---|---|---|
-| `137484964666215` | `Core` (comment: "siempre el primero") | `ServerStorage/TemplatesTesting/Core` |
+| `137484964666215` | `Core` (comentario: «siempre el primero») | `ServerStorage/TemplatesTesting/Core` |
 | `92258948630058` | `GameWorlds` | `ServerStorage/TemplatesTesting/GameWorlds` |
 | `94091855508048` | `BuildingSystem` | `ServerStorage/TemplatesTesting/BuildingSystem` |
 
-`ServerStorage/TemplatesTesting/PlayerHouses` exists on disk but is **not** in
-`TEMPLATES_IDS`. **UNKNOWN** — see *Unknowns* below.
+`ServerStorage/TemplatesTesting/PlayerHouses` existe en disco pero **no** está en
+`TEMPLATES_IDS`. **DESCONOCIDO** — ver *Incógnitas* más abajo.
 
-### Roblox service usage (files touching each API)
+### Uso de servicios de Roblox (archivos que tocan cada API)
 
-| API | Files |
+| API | Archivos |
 |---|---|
 | `MessagingService` | 9 |
 | `MemoryStoreService` | 6 |
@@ -167,413 +174,429 @@ And one client-context script: `src/ReplicatedStorage/Client/visualsManager.serv
 
 ---
 
-## Architecture
+## Arquitectura
 
-| Page | File | Status |
+| Página | Archivo | Estado |
 |---|---|---|
-| Overview | `docs/architecture/overview.md` | Documented |
-| Initialization | `docs/architecture/initialization.md` | Documented (2 diagrams) |
-| Server Lifecycle | `docs/architecture/server-lifecycle.md` | Documented (3 diagrams) |
-| Player Lifecycle | `docs/architecture/player-lifecycle.md` | Documented (3 diagrams) |
-| Character Lifecycle | `docs/architecture/character-lifecycle.md` | Documented (2 diagrams) |
-| Client Lifecycle | `docs/architecture/client-lifecycle.md` | Documented (1 diagram) — **incomplete by construction**, see U-001 |
-| Networking | `docs/architecture/networking.md` | Documented — scope-limited, ~200 gameplay remotes unreviewed |
-| Persistence | `docs/architecture/persistence.md` | Documented (2 diagrams) |
-| Reserved Servers | `docs/architecture/reserved-servers.md` | Documented (3 diagrams) |
-| Data Flow | — | **Not written.** Folded into Persistence and Networking; a separate page is only worth adding if Phase 3 shows flows those two do not cover. |
-| Dependencies | — | **Not written.** Deferred to Phase 5, where it can be built from real evidence across systems rather than from the bootstrap alone. |
+| Visión general | `docs/architecture/overview.md` | Documentada |
+| Inicialización | `docs/architecture/initialization.md` | Documentada (2 diagramas) |
+| Ciclo de vida del servidor | `docs/architecture/server-lifecycle.md` | Documentada (3 diagramas) |
+| Ciclo de vida del jugador | `docs/architecture/player-lifecycle.md` | Documentada (4 diagramas) |
+| Ciclo de vida del personaje | `docs/architecture/character-lifecycle.md` | Documentada (2 diagramas) |
+| Ciclo de vida del cliente | `docs/architecture/client-lifecycle.md` | Documentada (1 diagrama) — **incompleta por construcción**, ver U-001 |
+| Red | `docs/architecture/networking.md` | Documentada — alcance acotado, ~200 remotes de gameplay sin revisar |
+| Persistencia | `docs/architecture/persistence.md` | Documentada (2 diagramas) |
+| Servidores reservados | `docs/architecture/reserved-servers.md` | Documentada (2 diagramas) |
+| Dependencias | `docs/architecture/dependencies.md` | Documentada (1 diagrama) — Fase 5 |
+| Flujo de datos | — | **No escrita.** Absorbida por Persistencia y Red; solo merece página propia si un sistema posterior enseña un flujo que esas dos no cubran. |
 
-Diagram count: **17 Mermaid diagrams** across the architecture layer.
+Total de la capa de arquitectura: **18 diagramas Mermaid**.
 
 ---
 
-## Systems
+## Sistemas
 
-Preliminary system list, derived from real directory/namespace boundaries in the
-repository. Not yet validated — Phase 3 confirms or merges these.
+Lista de sistemas derivada de los límites reales de directorio/namespace del repositorio.
 
-| System | Primary location | Status |
+| Sistema | Ubicación principal | Estado |
 |---|---|---|
-| Bootstrap / Template Loading | `src/ServerScriptService`, `src/ReplicatedStorage` | **Documented** (architecture layer) |
-| World & Housing (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documented** — 7 pages, 9 diagrams (plus 3 on the reserved-servers page), 10 bug candidates. Not `Verified`: that needs Studio. |
-| Persistence (`DataKit`) | `Core/ServerStorage/DataKit` | **Documented** (architecture layer); `Store.transfer` and `Inbox` still unread |
-| Player Data | `Core/ServerStorage/WorldSystem/PlayerData*`, `Core/…/PlayerDataInit.server.luau`, `Core/ServerScriptService/Data` | Pending |
-| Referrals | `Core/ServerStorage/WorldSystem/ReferralService.luau`, `Core/…/Referrals`, `Shared/Referrals` | Pending |
-| Events (in-game scheduled events) | `Core/ServerStorage/WorldSystem/EventService.luau`, `EventBootstrap`, `EventCommands` | Pending |
-| Inventory / Tools | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | Pending |
-| Interactables | `Core/…/ServerScripts/interactable`, `Client/interactable` | Pending |
-| Arcade Machines | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | Pending |
-| Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | Pending |
-| Paint | `Shared/Paint`, `interactable/Paint`, `ServerStorage/Paint` | Pending |
-| Shops / Stores / Economy | `ShopServerSystem`, `Shared/Stores`, `Shared/ComprasTablero`, `ShopInfo` | Pending |
-| Monetization | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService` | Pending |
-| Quests | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | Pending |
-| Animation | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | Pending |
-| Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | Pending |
-| Jobs | `Shared/JobSystem`, `Events/Jobs` | Pending |
-| Nametags / Mic | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | Pending |
-| Building System | `BuildingSystem/ReplicatedStorage/BuildInterface` | Pending |
-| Cooking / Food | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | Pending |
-| UI framework (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pending (likely vendored third-party) |
-| Vendored libraries | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pending (mark as third-party, document boundary only) |
+| Arranque / carga de plantillas | `src/ServerScriptService`, `src/ReplicatedStorage` | **Documentado** (capa de arquitectura) |
+| Mundos y Casas (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documentado** — 7 páginas, 9 diagramas, 10 candidatos a bug. No `Verificado`: eso exige Studio. |
+| Persistencia (`DataKit`) | `Core/ServerStorage/DataKit` | **Documentado** (capa de arquitectura); `Store.transfer` e `Inbox` siguen sin leerse |
+| Datos del jugador | `Core/ServerStorage/WorldSystem/PlayerData*`, `Core/…/PlayerDataInit.server.luau`, `Client/EconomySystem/Collections.luau` | **Documentado** — `docs/systems/player-data.md`, 2 diagramas |
+| Eventos programados | `Core/ServerStorage/WorldSystem/EventService.luau`, `EventBootstrap`, `EventCommands` | **Documentado** — `docs/systems/events.md`, 2 diagramas |
+| Invitaciones (referidos) | `Core/ServerStorage/WorldSystem/ReferralService.luau`, `Shared/Referrals` | **Documentado** — `docs/systems/referrals.md`, 1 diagrama |
+| Inventario / Herramientas | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | Pendiente |
+| Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | Pendiente |
+| Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | Leído en parte (pasada de seguridad → BUG-CANDIDATE-016) |
+| Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | Pendiente |
+| Paint | `Shared/Paint`, `interactable/Paint`, `ServerStorage/Paint` | Pendiente |
+| Tiendas / Economía | `ShopServerSystem`, `Shared/Stores`, `Shared/ComprasTablero`, `ShopInfo` | Leído en parte (`ProcessPurchase`) |
+| Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService` | Pendiente |
+| Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | Pendiente |
+| Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | Pendiente |
+| Ragdoll | `ServerScripts/Ragdoll`, `Client/Ragdoll` | Pendiente |
+| Trabajos | `Shared/JobSystem`, `Events/Jobs` | Pendiente |
+| Nametags / Micrófono | `NametagServer`, `Shared/Nametag`, `MicManagerServer`, `NametagMicClient` | Pendiente |
+| Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | Pendiente |
+| Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | Pendiente |
+| Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
+| Librerías de terceros | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pendiente (marcar como terceros, documentar solo la frontera) |
 
-No system has reached `Verified`. Verification requires running the plans in
-`docs/testing/verification-plan.md`, which needs Roblox Studio.
+Ningún sistema ha llegado a `Verificado`. Verificar exige ejecutar los planes de
+`docs/testing/verification-plan.md`, y eso necesita Roblox Studio.
 
-### Housing — detail
+### Casas — detalle
 
-**Status:** Documented (not Verified — verification requires Roblox Studio)
+**Estado:** Documentado (no Verificado — verificar exige Roblox Studio)
 
-Pages: `docs/systems/housing/` — `overview.md`, `identity.md`, `persistence.md`,
+Páginas: `docs/systems/housing/` — `overview.md`, `identity.md`, `persistence.md`,
 `entry-flow.md`, `server-lifecycle.md`, `permissions.md`, `error-handling.md`.
 
-Conceptual documentation:
+Documentación conceptual:
 
-- [x] Overview, responsibilities, components, architecture
-- [x] House identity, creation, ownership, purchase (houses **and** slots)
-- [x] House persistent lifecycle
-- [x] Reserved-server lifecycle, including reserved-but-never-joined and last-player
-- [x] Networking (`JoinServer` / `JoinWorld` / the administrative remotes)
-- [x] Persistence (`Profiles.World`, `onConflict = "deny"`, the card projection,
-      the four storage locations)
-- [x] Permissions — all four checks, roles, bans, guests, private/public
-- [x] Concurrency
-- [x] Cleanup / shutdown ordering
-- [x] Error handling — full failure matrix
+- [x] Visión general, responsabilidades, componentes, arquitectura
+- [x] Identidad de la casa, creación, propiedad, compra (casas **y** espacios)
+- [x] Ciclo de vida persistente de la casa
+- [x] Ciclo de vida del servidor reservado, incluidos «reservado y nunca visitado» y
+      «último jugador»
+- [x] Red (`JoinServer` / `JoinWorld` y los remotes administrativos)
+- [x] Persistencia (`Profiles.World`, `onConflict = "deny"`, la proyección de tarjeta, las
+      cuatro ubicaciones de almacenamiento)
+- [x] Permisos — los cuatro controles, roles, baneos, invitados, privada/pública
+- [x] Concurrencia
+- [x] Limpieza y orden de apagado
+- [x] Manejo de errores — matriz completa de fallos
 
-Diagrams (9 on the housing pages, plus 3 on the reserved-servers architecture page):
+Diagramas (9 en las páginas de casas, más 2 en la página de arquitectura de servidores
+reservados):
 
-- [x] Housing architecture
-- [x] House persistent lifecycle (state)
-- [x] Reserved-server lifecycle (state)
-- [x] Server reservation sequence
-- [x] Reserved-server startup sequence (inside the entry-flow sequence)
-- [x] Player entry flow
-- [x] Guest entry (documented in prose — it is the same path, with a different
-      `canHostWorld` outcome; a separate diagram would duplicate the entry sequence)
-- [x] Shutdown flow
-- [x] Concurrency / reservation decision flow
-- [x] House browser assembly flow
-- [x] House purchase sequence
-- [x] `canHostWorld` decision flow
-- [x] `canPlayerEnter` decision flow, with its triggers
-- [ ] A dedicated registry/lease diagram — **deliberately not added**: the two
-      registries are already covered by a comparison table plus the reservation
-      sequence, and a third view would restate them.
+| # | Diagrama | Página |
+|---|---|---|
+| 1 | Arquitectura de casas | `overview.md` |
+| 2 | Secuencia de compra de casa | `identity.md` |
+| 3 | Montaje del navegador de casas | `identity.md` |
+| 4 | Ciclo de vida persistente de la casa (estados) | `persistence.md` |
+| 5 | Ciclo de vida del servidor reservado (estados) | `server-lifecycle.md` |
+| 6 | Flujo de apagado | `server-lifecycle.md` |
+| 7 | Flujo de entrada del jugador, con el arranque del servidor reservado dentro | `entry-flow.md` |
+| 8 | Decisión de `canHostWorld` | `permissions.md` |
+| 9 | Decisión de `canPlayerEnter`, con sus disparadores | `permissions.md` |
+| 10 | Secuencia de reserva de servidor | `architecture/reserved-servers.md` |
+| 11 | Decisión de concurrencia / reserva | `architecture/reserved-servers.md` |
+
+Dos vistas que **no** se dibujaron, a propósito:
+
+- **Entrada de invitados** — es el mismo camino con otro resultado de `canHostWorld`; un
+  diagrama aparte duplicaría la secuencia de entrada, que ya está.
+- **Registro / lease** — los dos registros ya están cubiertos por una tabla comparativa
+  más la secuencia de reserva; una tercera vista solo los repetiría.
 
 Scripts:
 
-- `WorldManager.server.luau` — Analyzed
-- `ServerPresence.luau` — **Documented** (Moonwave)
-- `Profiles.luau` — Analyzed
-- `PlayerSchema.luau` — Analyzed
-- `PlayerWorld_Init.lua.server.luau` — Analyzed
-- `WorldService.luau` — Analyzed
-- `WorldDataReplicator.server.luau` — Analyzed
-- `ModeratorManager.server.luau` — Analyzed
-- `PublicServerInit.lua.server.luau` — Analyzed
-- `ServerDirectory.server.luau` — Analyzed
-- `WorldsBrowser.server.luau` — Analyzed
-- `PlayerDataReplicator.server.luau` — Analyzed
-- `ShopServerSystem.server.luau` — Analyzed (partly: `ProcessPurchase` only)
-- `HousesInfo.luau`, `RolesInfo.luau`, `GeneralConfiguration.luau` — Analyzed
-- `GamePassService/*` — Pending
-- `EventService.luau` — Pending (events share the reservation machinery)
+- `WorldManager.server.luau` — Analizado
+- `ServerPresence.luau` — **Documentado** (Moonwave)
+- `Profiles.luau` — Analizado
+- `PlayerSchema.luau` — Analizado
+- `PlayerWorld_Init.lua.server.luau` — Analizado
+- `WorldService.luau` — Analizado
+- `WorldDataReplicator.server.luau` — Analizado
+- `ModeratorManager.server.luau` — Analizado
+- `PublicServerInit.lua.server.luau` — Analizado
+- `ServerDirectory.server.luau` — Analizado
+- `WorldsBrowser.server.luau` — Analizado
+- `PlayerDataReplicator.server.luau` — Analizado
+- `ShopServerSystem.server.luau` — Analizado en parte (solo `ProcessPurchase`)
+- `HousesInfo.luau`, `RolesInfo.luau`, `GeneralConfiguration.luau` — Analizados
+- `GamePassService/*` — Pendiente
 
-Unknowns still open: **U-002** (how `PlayerHouses` is imported), **U-007**
-(nothing enforces `slots` as a cap on open houses), and the `content` section of
-the `World` profile, which is declared and never written by any script read so far —
-`BuildingSystem` is the likely writer.
+Incógnitas todavía abiertas: **U-002** (cómo se importa `PlayerHouses`), **U-007** (nada
+impone `slots` como límite de casas abiertas) y la sección `content` del perfil `World`,
+que está declarada y ningún script leído hasta ahora escribe — el candidato a escritor es
+`BuildingSystem`.
 
-Possible bugs: BUG-CANDIDATE-004, 005, 006, 008, 009, 010, 011, 012, 013, 014.
+Posibles bugs: BUG-CANDIDATE-004, 005, 006, 008, 009, 010, 011, 012, 013, 014.
 
 ---
 
 ## Scripts
 
-**Per-file status now lives in `docs/reference/script-inventory.md`**, which is generated
-by `.github/scripts/generate-script-inventory.py` and lists all 552 files with their
-runtime DataModel path, `RunContext`, `Disabled` flag, line count and status.
+**El estado por archivo vive en `docs/reference/script-inventory.md`**, que genera
+`.github/scripts/generate-script-inventory.py` y lista los 552 archivos con su ruta en
+ejecución dentro del DataModel, su `RunContext`, si está desactivado, sus líneas y su
+estado.
 
-Summary as of this run:
+Resumen a día de hoy:
 
-| Status | Count |
+| Estado | Cantidad |
 |---|---|
-| **Documented** (read in full + Moonwave-annotated by this project) | 2 |
-| Analyzed (read in full, described on the site) | 27 |
-| Analyzed (partly) | 3 |
-| Pending | 520 |
+| **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 2 |
+| Analizado (leído entero, descrito en el sitio) | 34 |
+| Analizado (en parte) | 7 |
+| Pendiente | 509 |
 
-The 3 partial reads and why:
+Las lecturas parciales y por qué:
 
-| File | What was read | What was not |
+| Archivo | Qué se leyó | Qué no |
 |---|---|---|
-| `DataKit/Store.luau` (1 237 lines) | Ownership resolution, staging, save/close, heartbeat | `transfer`, the message pipeline, projections |
-| `DataKit/BaseStore.luau` (330) | The durable envelope format (`__dkFence` / `__dkData` / `__dkMsgs`) | Commit, fencing, inbox mechanics |
-| `ShopServerSystem.server.luau` (?) | `ProcessPurchase` | Shop rotation, `MessagingService` sync, `MemoryStore` use |
+| `DataKit/Store.luau` (1 237 líneas) | Resolución de propiedad, staging, guardado/cierre, heartbeat | `transfer`, la tubería de mensajes, las proyecciones |
+| `DataKit/BaseStore.luau` (330) | El formato del sobre durable (`__dkFence` / `__dkData` / `__dkMsgs`) | Commit, fencing, mecánica del inbox |
+| `ShopServerSystem.server.luau` | `ProcessPurchase` | Rotación de la tienda, sincronización con `MessagingService`, uso de `MemoryStore` |
+| `RoleService/init.luau` | La comprobación de grupo y su caché de 50 s | El resto del módulo |
+| `machines/Machine.luau` | `Machine:bind` y la ruta de recompensa | El resto del ciclo de vida de las máquinas |
+| `machines/PopTheLock.luau` | El remote de recompensa | La lógica del minijuego |
+| `EventCommands.server.luau` | La puerta de administrador | El resto de comandos |
 
-**Already Moonwave-annotated in-source before this project** — they appear in the API
-reference for free, and are third-party or vendored: `DataKit`, `Store`, `Profile`,
+**Ya anotados con Moonwave en el propio código antes de este proyecto** — salen gratis en
+la referencia de API, y son de terceros o empaquetados: `DataKit`, `Store`, `Profile`,
 `Lease`, `Mutex`, `Health`, `BaseStore`, `Signal`, `Inbox`, `Adapters`, `Promise`, `Sift`,
 `Trove`, `Observers`, `Kinetic`, `Icon`.
 
 ---
 
-## Binary Assets
+## Assets binarios
 
-**320 `.rbxm` files — Binary / Not Inspectable.** Full enumeration, grouped by directory
-with runtime paths, is in `docs/reference/binary-assets.md` (generated by
-`.github/scripts/generate-reference.py`).
+**320 archivos `.rbxm` — binarios / no inspeccionables.** La enumeración completa,
+agrupada por directorio y con rutas en ejecución, está en
+`docs/reference/binary-assets.md` (lo genera `.github/scripts/generate-reference.py`).
 
-The five that actually block documentation:
+Los cinco que de verdad bloquean documentación:
 
-| Path | Blocks |
+| Ruta | Qué bloquea |
 |---|---|
-| `src/StarterPlayer/StarterPlayerScripts.rbxm` | The client loader and the `LoadCharacterRequest` sender → BUG-CANDIDATE-007 |
-| `src/StarterPlayer/StarterCharacterScripts.rbxm` | The full character lifecycle |
-| `src/ReplicatedFirst/LoadingScreenUI.rbxm` | The first thing a client sees |
-| `src/StarterGui/ScreenGui.rbxm`, `BuildMenu.rbxm` | Root UI |
-| `…/PlayerHouses/StarterGui/PermsGui.rbxm` | The client half of housing permissions |
+| `src/StarterPlayer/StarterPlayerScripts.rbxm` | El cargador del cliente y el emisor de `LoadCharacterRequest` → BUG-CANDIDATE-007 |
+| `src/StarterPlayer/StarterCharacterScripts.rbxm` | El ciclo de vida del personaje al completo |
+| `src/ReplicatedFirst/LoadingScreenUI.rbxm` | Lo primero que ve un cliente |
+| `src/StarterGui/ScreenGui.rbxm`, `BuildMenu.rbxm` | La UI raíz |
+| `…/PlayerHouses/StarterGui/PermsGui.rbxm` | La mitad cliente de los permisos de casa |
 
 ---
 
-## Unknowns
+## Incógnitas
 
-| # | Unknown | Why it cannot be resolved statically |
+| # | Incógnita | Por qué no se puede resolver estáticamente |
 |---|---|---|
-| U-001 | Contents of `StarterPlayerScripts.rbxm` / `StarterCharacterScripts.rbxm` | Binary. The real client entry point may live here, and it cannot be read. Client-lifecycle documentation will be explicitly incomplete until these are inspected in Studio. |
-| U-002 | Which template asset ID ships `PlayerHouses` | `PlayerHouses` exists under `TemplatesTesting` (the override folder) but is absent from `TEMPLATES_IDS` in `ImportTemplates.server.luau`. It is plausible that the house `PlaceId`s (`126499097860226`, `80492586639096`) run a *different* Rojo project/place whose own `ImportTemplates` includes it — **not verifiable from this repository**. |
-| U-003 | Whether the three template asset IDs' published contents match `TemplatesTesting/` on disk | The disk copies are only used as *overrides*; the authoritative content is the published Roblox asset. |
-| U-004 | `src/StarterPack` declared in `default.project.json` but missing on disk | Cannot tell whether Rojo tolerates this or whether a file is missing from the commit. |
-| U-005 | Actual runtime ordering between `ImportTemplates` and `InitScripts` | Both are top-level `Script`s in `ServerScriptService`; Roblox does not guarantee an order between sibling scripts. `InitScripts` blocks on `InitAfterTemplates`, which suggests intent, but the exact interleaving is a runtime property. **Partly resolved:** the barrier makes the order irrelevant for the templates-ready dependency. What remains open is ordering *between* template scripts as the enable sweep walks `GetDescendants()`. |
-| U-006 | Which script enables the 27 client-context scripts | No `.luau` here assigns `Enabled = true`. Promoted to a formal entry: **BUG-CANDIDATE-007**, with a two-minute Studio plan. |
-| U-007 | How a house is purchased and recorded on the player profile | `BuySlot` and `HouseBuyLoad` remotes exist and `PlayerWorld_Init.hasRoom` reads `data.rooms`, but the writer of `rooms` has not been located yet. Phase 3. |
-| U-008 | Whether `GlobalDataStore` and `GiftInbox` duplicate `DataKit`'s guarantees | Both call `DataStoreService` directly, outside `DataKit`. Neither has been read. |
+| U-001 | Contenido de `StarterPlayerScripts.rbxm` / `StarterCharacterScripts.rbxm` | Binario. El punto de entrada real del cliente puede estar ahí y no se puede leer. La documentación del ciclo de vida del cliente será explícitamente incompleta hasta inspeccionarlos en Studio. |
+| U-002 | Qué asset de plantilla trae `PlayerHouses` | `PlayerHouses` existe bajo `TemplatesTesting` (la carpeta de overrides) pero no aparece en `TEMPLATES_IDS` de `ImportTemplates.server.luau`. Es plausible que los `PlaceId` de casas (`126499097860226`, `80492586639096`) ejecuten *otro* proyecto/place de Rojo cuyo propio `ImportTemplates` sí lo incluya — **no verificable desde este repositorio**. |
+| U-003 | Si el contenido publicado de los tres assets coincide con `TemplatesTesting/` en disco | Las copias en disco solo se usan como *override*; el contenido autoritativo es el asset publicado en Roblox. |
+| U-004 | `src/StarterPack` está declarado en `default.project.json` pero no existe en disco | No se puede saber si Rojo lo tolera o si falta un archivo en el commit. |
+| U-005 | Orden real de ejecución entre `ImportTemplates` e `InitScripts` | Ambos son `Script` de primer nivel en `ServerScriptService`; Roblox no garantiza orden entre hermanos. **Resuelta en parte:** la barrera hace irrelevante el orden para la dependencia «plantillas listas». Queda abierto el orden *entre* scripts de plantilla según los recorre la pasada de activación. |
+| U-006 | Qué script activa los 27 scripts de contexto cliente | Ningún `.luau` de aquí asigna `Enabled = true`. Promovida a entrada formal: **BUG-CANDIDATE-007**, con un plan de dos minutos en Studio. |
+| U-007 | Si algo impone `slots` como límite de casas abiertas a la vez | `slots` se lee, se vende y se replica, pero ningún código revisado lo contrasta contra las casas abiertas. Si la validación existe, estaría en una UI de cliente (posiblemente en un `.rbxm`) o en ninguna parte. |
+| U-008 | Si `GlobalDataStore` y `GiftInbox` duplican las garantías de `DataKit` | Ambos llaman a `DataStoreService` directamente, fuera de `DataKit`. Ninguno se ha leído. |
+| U-009 | Quién escribe la sección `content` del perfil `World` | Está declarada en el esquema y ningún script leído la escribe. El candidato es `BuildingSystem`, que aún no se ha leído. |
+
+**Cerrada durante esta fase:** «cómo se compra una casa y dónde se anota en el perfil del
+jugador» — la escribe `ShopServerSystem.ProcessPurchase` en `data.rooms`, y `buySlot` de
+`PlayerDataReplicator` escribe `slots`. Eso es lo que sostiene BUG-CANDIDATE-008.
 
 ---
 
-## Problems Found
+## Problemas encontrados
 
-Fourteen entries, all written up in full in `docs/testing/verification-plan.md`.
-**None is asserted as a confirmed bug.** Two are classified *Confirmed by Static
-Analysis*, and even those state only what the code demonstrably does — 011 confirms an
-inconsistency, not which side of it is wrong; 014 confirms an exposure, not its impact.
+Diecisiete entradas, todas redactadas al completo en
+`docs/testing/verification-plan.md`. **Ninguna se afirma como bug confirmado.** Dos están
+clasificadas como *Confirmado por análisis estático*, y aun esas solo afirman lo que el
+código demostrablemente hace: la 011 confirma una inconsistencia, no qué lado de ella está
+mal; la 014 confirma una exposición, no su impacto.
 
-**BUG-CANDIDATE-014 is the one to act on first.** It is a committed credential, and
-unlike the others its remediation does not wait on a test result. It is out of scope for
-this documentation project, which changes no code, but it should not sit in a backlog.
+**BUG-CANDIDATE-014 es la primera sobre la que actuar.** Es una credencial versionada y,
+a diferencia del resto, su remediación no espera al resultado de ninguna prueba. Queda
+fuera del alcance de este proyecto, que no cambia código, pero no debería quedarse en una
+lista de pendientes.
 
-| ID | Title | System | Classification | Severity if confirmed | Confidence |
+| ID | Título | Sistema | Clasificación | Gravedad si se confirma | Confianza |
 |---|---|---|---|---|---|
-| BUG-CANDIDATE-001 | Voice-chat gate fails open when the Roblox check errors | Bootstrap | Observation / Requires Failure Injection | Low | High |
-| BUG-CANDIDATE-002 | Presence entry can outlive its server by up to the TTL | World System | Possible Bug / Requires Lifecycle Testing | Medium | Medium |
-| BUG-CANDIDATE-003 | A failed respawn leaves the player with no character | Character | Possible Bug / Requires Failure Injection | Medium | Medium |
-| BUG-CANDIDATE-004 | Convergence after a denied host may strand players | Housing | Possible Bug / Requires Multiplayer Testing | High | Low |
-| BUG-CANDIDATE-005 | Teleport with an access code whose instance has shut down | Housing | Requires Teleport Testing | Medium | Low |
-| BUG-CANDIDATE-006 | A Studio session can publish a fake access code to the live registry | Housing | Likely Bug / Requires Integration Testing | High | Medium |
-| BUG-CANDIDATE-007 | The client script loader is not in this repository | Client | Observation / Requires Runtime Verification | — | High |
-| BUG-CANDIDATE-008 | A purchase grants the item before it charges for it | Housing / Economy | Possible Bug / Requires Failure Injection | Medium | Medium |
-| BUG-CANDIDATE-009 | A first-boot name lookup failure names the house permanently | Housing | Possible Bug / Requires Failure Injection | Low | High |
-| BUG-CANDIDATE-010 | `WorldDataReplicator` misses an already-`ready` server | Housing | Likely Bug / Requires Lifecycle Testing | Medium | Medium |
-| BUG-CANDIDATE-011 | The `moderator` role cannot moderate | Housing | Likely Bug / Confirmed by Static Analysis | Medium | High |
-| BUG-CANDIDATE-012 | House roles, settings and bans readable by any occupant | Housing | Observation / Requires Security Testing | Low | High |
-| BUG-CANDIDATE-013 | A house server with no `TeleportData` strands its player silently | Housing | Possible Bug / Requires Runtime Verification | Medium | Medium |
-| BUG-CANDIDATE-014 | A shared secret and proxy host hardcoded in a committed file | Housing / Security | Confirmed by Static Analysis | High | High |
+| BUG-CANDIDATE-001 | El control de chat de voz falla abierto cuando la comprobación de Roblox da error | Arranque | Observación / Requiere inyección de fallos | Baja | Alta |
+| BUG-CANDIDATE-002 | Una entrada de presencia puede sobrevivir a su servidor hasta el TTL | World System | Posible bug / Requiere pruebas de ciclo de vida | Media | Media |
+| BUG-CANDIDATE-003 | Un respawn fallido deja al jugador sin personaje y nada reintenta | Character | Posible bug / Requiere inyección de fallos | Media | Media |
+| BUG-CANDIDATE-004 | La convergencia tras un anfitrión denegado puede dejar tirados a los jugadores | Casas | Posible bug / Requiere pruebas multijugador | Alta | Baja |
+| BUG-CANDIDATE-005 | Teleport con un código de acceso cuya instancia ya se apagó | Casas | Requiere pruebas de teleport | Media | Baja |
+| BUG-CANDIDATE-006 | Una sesión de Studio puede publicar un código de acceso falso en el registro real | Casas | Bug probable / Requiere pruebas de integración | Alta | Media |
+| BUG-CANDIDATE-007 | El cargador de scripts del cliente no está en este repositorio | Cliente | Observación / Requiere verificación en ejecución | — | Alta |
+| BUG-CANDIDATE-008 | Una compra concede el artículo antes de cobrarlo | Casas / Economía | Bug probable / Requiere pruebas de persistencia | Media | Alta |
+| BUG-CANDIDATE-009 | Un fallo al resolver el nombre en el primer arranque bautiza la casa para siempre | Casas | Posible bug / Requiere inyección de fallos | Baja | Alta |
+| BUG-CANDIDATE-010 | `WorldDataReplicator` se pierde un servidor que ya está `ready` | Casas | Bug probable / Requiere pruebas de ciclo de vida | Media | Media |
+| BUG-CANDIDATE-011 | El rol `moderator` no puede moderar | Casas | Bug probable / Confirmado por análisis estático | Media | Alta |
+| BUG-CANDIDATE-012 | Roles, ajustes y baneos de una casa los puede leer cualquier ocupante | Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| BUG-CANDIDATE-013 | Un servidor de casa sin `TeleportData` deja tirado a su jugador en silencio | Casas | Posible bug / Requiere verificación en ejecución | Media | Media |
+| BUG-CANDIDATE-014 | Un secreto compartido y un host proxy escritos a fuego en un archivo versionado | Casas / Seguridad | Confirmado por análisis estático | Alta | Alta |
+| BUG-CANDIDATE-015 | Un solo booleano separa la economía de escrituras arbitrarias del cliente | Economía / Seguridad | Observación / Requiere pruebas de seguridad | Crítica | Alta |
+| BUG-CANDIDATE-016 | Las máquinas aceptan del cliente el valor de la recompensa sin validarlo | Máquinas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Alta |
+| BUG-CANDIDATE-017 | Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto | Administración / Seguridad | Observación / Requiere verificación en ejecución | Baja | Alta |
 
-### Leads investigated and closed during Phases 1–2
+### La pasada de seguridad
 
-Recorded so a future run does not re-open them:
+Las entradas 014 a 017 salen de una revisión específica de vulnerabilidades, hecha con el
+mismo formato que el resto: teoría y justificación, nunca afirmación. Esa revisión también
+dejó por escrito **lo que se miró y estaba bien**, en
+`docs/testing/verification-plan.md`: los comandos de administrador sí están cerrados por
+grupo, los precios de tienda se resuelven en el servidor, el `accessCode` no llega nunca
+al cliente, los destinos de teleport se resuelven en el servidor, `Machine:bind`
+comprueba la distancia y la propiedad, y `hasRoom` se vuelve a comprobar en el destino.
+Registrar los controles que sí existen importa tanto como registrar los que faltan: evita
+que una pasada futura los vuelva a auditar desde cero.
 
-| Lead | Outcome |
+### Pistas investigadas y cerradas
+
+Anotadas para que una ejecución futura no las reabra:
+
+| Pista | Resultado |
 |---|---|
-| T-a — "housing reservation may lack a cross-server guard" | **Closed — not a defect.** `Profiles.World.claimStaged` claims a `staged/World/{key}` MemoryStore key through `Lease.tryClaim`, a single atomic `UpdateAsync` compare-and-set. The residual non-atomic window is explicitly documented in `Store.luau` and absorbed by `onConflict = "deny"` plus `convergeToOwner`. Only the *mitigation's* behaviour under load remains open → BUG-CANDIDATE-004. |
-| T-b — "MemoryStore registry may go stale" | **Kept, narrowed** → BUG-CANDIDATE-002. Bounded by the 120 s TTL by design. |
-| T-c — "Studio fake access code" | **Kept, sharpened** → BUG-CANDIDATE-006. The reserve and teleport calls *are* Studio-guarded; the MemoryStore write between them is not. |
-| T-d — "`ImportTemplates` destroys `TemplatesTesting`; something may still need it" | **Closed — not a defect.** `grep` shows `TemplatesTesting` is referenced only inside `ImportTemplates.server.luau` itself. |
-| T-e — "voice-chat gate intent vs behaviour" | **Kept** → BUG-CANDIDATE-001, classified as an Observation because the source comments on the open decision itself. |
+| T-a — «la reserva de casas puede no tener guarda entre servidores» | **Cerrada — no es defecto.** `Profiles.World.claimStaged` reclama una clave `staged/World/{key}` de MemoryStore con `Lease.tryClaim`, un único `UpdateAsync` atómico de comparar-y-fijar. La ventana no atómica residual está documentada explícitamente en `Store.luau` y la absorben `onConflict = "deny"` más `convergeToOwner`. Solo queda abierto el comportamiento de *la mitigación* bajo carga → BUG-CANDIDATE-004. |
+| T-b — «el registro de MemoryStore puede quedarse obsoleto» | **Mantenida, acotada** → BUG-CANDIDATE-002. Acotada por diseño al TTL de 120 s. |
+| T-c — «código de acceso falso desde Studio» | **Mantenida, afinada** → BUG-CANDIDATE-006. Las llamadas de reserva y teleport *sí* están protegidas contra Studio; la escritura a MemoryStore que va entre medias, no. |
+| T-d — «`ImportTemplates` destruye `TemplatesTesting`; algo podría seguir necesitándolo» | **Cerrada — no es defecto.** Un `grep` enseña que `TemplatesTesting` solo se referencia dentro del propio `ImportTemplates.server.luau`. |
+| T-e — «intención frente a comportamiento en el control de chat de voz» | **Mantenida** → BUG-CANDIDATE-001, clasificada como Observación porque el propio código comenta la decisión. |
+| T-f — «los comandos de administrador podrían no comprobar permisos» | **Cerrada — no es defecto.** `EventCommands` pasa por `RoleService`, que consulta el rango en el grupo. Lo único que queda es la caché de 50 s → BUG-CANDIDATE-017. |
+| T-g — «los precios de tienda podrían venir del cliente» | **Cerrada — no es defecto.** `ProcessPurchase` resuelve el precio desde `currentShopData` en el servidor; el cliente solo manda un identificador. |
 
-### Observations recorded, not defects
+### Observaciones registradas, que no son defectos
 
-| Observation | Where |
+| Observación | Dónde |
 |---|---|
-| `folderTest:Destroy()` followed by `Debris:AddItem(folderTest)` is redundant | `ImportTemplates.server.luau` |
-| The `IgnoreLoader` tag has no consumer in this repository | Both bootstrap scripts |
-| 3 of the 4 `IgnoreAutoEnable`-tagged scripts are under `ReplicatedStorage/Client`, which the server sweep already skips wholesale — evidence for the client loader theory | supports BUG-CANDIDATE-007 |
-| `GetSlots` is declared in both the `Core` and `PlayerHouses` event folders, same class, one binder, one consumer | `docs/architecture/networking.md` |
-| `default.project.json` maps `StarterPack`, which does not exist on disk | root |
-
-## Verification & Test Plan
-
-`docs/testing/verification-plan.md` — **created**, 7 entries, each with pass/fail
-conditions and suggested instrumentation. Every entry is `Unverified`.
-
-Roblox Studio is **not available in this environment**, so no plan has been executed.
-Each is written to be run by hand.
-
-**Recommended execution order** (cheapest and most informative first):
-
-1. BUG-CANDIDATE-007 — ~2 minutes in Studio, and it unblocks the whole client-lifecycle
-   chapter.
-2. BUG-CANDIDATE-006 — starts with a configuration question ("is Studio API access on for
-   this universe?") that may close it outright.
-3. BUG-CANDIDATE-002 — single-player, observable from a MemoryStore reader.
-4. BUG-CANDIDATE-003 — single-player with one injected failure.
-5. BUG-CANDIDATE-005 — needs a forced crash and tight timing.
-6. BUG-CANDIDATE-004 — needs two accounts on two servers, 20+ runs.
-7. BUG-CANDIDATE-001 — a product decision more than a test.
-
-Housing entries, in the same spirit — cheapest first:
-
-8. BUG-CANDIDATE-014 — no test needed; check whether the repository is private and
-   whether the secret has been rotated. **Do this first regardless of order.**
-9. BUG-CANDIDATE-011 — two accounts, five minutes, and it needs no failure injection.
-10. BUG-CANDIDATE-012 — one account, invoke four remotes from the client console.
-11. BUG-CANDIDATE-009 — one stubbed call, one fresh house.
-12. BUG-CANDIDATE-010 — add two log lines, open a house 20 times.
-13. BUG-CANDIDATE-008 — read `Collections` first; that may shrink or close it.
-14. BUG-CANDIDATE-013 — starts with "is this even reachable?", which may close it.
+| `folderTest:Destroy()` seguido de `Debris:AddItem(folderTest)` es redundante | `ImportTemplates.server.luau` |
+| La etiqueta `IgnoreLoader` no tiene ningún consumidor en este repositorio | Ambos scripts de arranque |
+| 3 de los 4 scripts etiquetados `IgnoreAutoEnable` están bajo `ReplicatedStorage/Client`, que la pasada del servidor ya se salta entera — evidencia a favor de la teoría del cargador de cliente | apoya BUG-CANDIDATE-007 |
+| `GetSlots` está declarado en las carpetas de eventos de `Core` y de `PlayerHouses`, misma clase, un solo binder, un solo consumidor | `docs/architecture/networking.md` |
+| `default.project.json` mapea `StarterPack`, que no existe en disco | raíz |
+| El bloque de auto-enlazado de remotes de `Collections` está inactivo tras `ConexionEntreServerYCliente = false` | `docs/systems/player-data.md`, sostiene BUG-CANDIDATE-015 |
 
 ---
 
-## Last Completed Work
+## Verificación y plan de pruebas
 
-- **Phase:** 3 — Systems. Housing complete. Phases 0, 1 and 2 complete.
-- **Systems touched:** Bootstrap / Template Loading; World & Housing; Persistence
-  (`DataKit`); Player Data (partly, via the housing path)
-- **Files created this run:**
-  - `DOCS_PROGRESS.md`, `moonwave.toml`, `.github/workflows/docs.yml`
-  - `.github/scripts/` — `enable-mermaid.py`, `check-luau-code-unchanged.py`,
-    `check-docs-links.py`, `generate-reference.py`, `generate-script-inventory.py`
-  - `docs/intro.md`
-  - `docs/architecture/` — 9 files (`_category_.json` + 8 pages)
-  - `docs/systems/` — `_category_.json`, `housing/_category_.json` + 7 pages
-  - `docs/testing/` — `_category_.json`, `verification-plan.md`
-  - `docs/reference/` — `_category_.json` + 3 generated pages
-- **Files annotated (comments only, proven by the CI guard):**
+`docs/testing/verification-plan.md` — **creado**, 17 entradas, cada una con condiciones de
+paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
+
+Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
+plan. Cada uno está escrito para ejecutarse a mano.
+
+**Orden de ejecución recomendado** (lo más barato e informativo primero). El orden completo
+y razonado está en la propia página; el resumen es:
+
+1. BUG-CANDIDATE-014 — no necesita prueba: comprobar si el repositorio es privado y si el
+   secreto se ha rotado. **Hazlo primero, pase lo que pase con el resto.**
+2. BUG-CANDIDATE-015 — leer un booleano y confirmar que sigue en `false`. Dos minutos, y
+   es el de gravedad más alta.
+3. BUG-CANDIDATE-007 — ~2 minutos en Studio, y desbloquea todo el capítulo del cliente.
+4. BUG-CANDIDATE-016 — un remote invocado desde la consola del cliente.
+5. BUG-CANDIDATE-006 — empieza por una pregunta de configuración («¿está activado el
+   acceso a API desde Studio en este universo?») que puede cerrarla de golpe.
+6. BUG-CANDIDATE-011, 012, 017 — dos cuentas, pocos minutos, sin inyección de fallos.
+7. BUG-CANDIDATE-002, 003, 009 — un jugador y un fallo inyectado.
+8. BUG-CANDIDATE-008, 010, 013 — instrumentación y repetición.
+9. BUG-CANDIDATE-005, 004 — las más caras: crash forzado, timing ajustado, dos cuentas en
+   dos servidores y más de 20 ejecuciones.
+10. BUG-CANDIDATE-001 — más una decisión de producto que una prueba.
+
+---
+
+## Último trabajo completado
+
+- **Fase:** 3 — Sistemas (Casas, Datos del jugador, Eventos, Invitaciones) y **Fase 5**
+  cerrada con el grafo de dependencias.
+- **Idioma:** todo el sitio, los comentarios Moonwave y los generadores están en español.
+- **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 3 de sistemas,
+  1 de verificación, 3 de referencia generada.
+- **Archivos anotados (solo comentarios, demostrado por la guarda de CI):**
   - `src/ReplicatedStorage/PlayerInit.luau`
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
-- **Diagrams:** 26 Mermaid diagrams (flowchart, sequence, state)
-- **Bug candidates:** 14 written up in full; 2 Phase-0 leads closed as not-defects
-- **Scripts read:** 32 of 552
-- **Last commit:** `docs: add generated reference inventories`
+- **Diagramas:** 32 diagramas Mermaid (flowchart, sequence, state)
+- **Candidatos a bug:** 17 redactados al completo, incluida una pasada de seguridad
+- **Scripts leídos:** 43 de 552
+- **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
+  fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
+  GitHub Pages está configurado con `Source: GitHub Actions`.
 
-### Answers to the brief's headline questions
+### Respuestas a las preguntas centrales del encargo
 
-Recorded here so a future run does not re-derive them:
+Anotadas aquí para que una ejecución futura no las vuelva a deducir:
 
-| Question | Answer | Where |
+| Pregunta | Respuesta | Dónde |
 |---|---|---|
-| What starts first on a server? | Two sibling `Script`s with **no guaranteed order**; a `BoolValue` barrier makes the order irrelevant | `docs/architecture/initialization.md` |
-| How is a player initialised? | No central bootstrap — systems register with `PlayerInit` and start concurrently and unordered | `docs/architecture/player-lifecycle.md` |
-| How is the client initialised? | **Cannot be answered from this repository.** Nothing here enables the 27 client scripts | `docs/architecture/client-lifecycle.md`, BUG-CANDIDATE-007 |
-| Can two players reserve the same house at once? | **No — it is guarded**, by an atomic MemoryStore compare-and-set, plus deny-and-converge for the residual window | `docs/architecture/reserved-servers.md` |
-| How is a stale server reference detected? | It is not — it is **prevented**. Nothing durable points at a server; reachability *is* a lease and liveness *is* its TTL | `docs/systems/housing/server-lifecycle.md` |
-| What happens when the last player leaves? | Nothing housing-specific. No handler exists, and none is needed | `docs/systems/housing/server-lifecycle.md` |
-| How is a house reopened? | There is no reopen path. A closed house is one with no lease | `docs/systems/housing/server-lifecycle.md` |
+| ¿Qué arranca primero en un servidor? | Dos `Script` hermanos **sin orden garantizado**; un `BoolValue` de barrera hace que el orden dé igual | `docs/architecture/initialization.md` |
+| ¿Cómo se inicializa un jugador? | No hay arranque central: los sistemas se registran en `PlayerInit` y empiezan a la vez y sin orden | `docs/architecture/player-lifecycle.md` |
+| ¿Cómo se inicializa el cliente? | **No se puede responder desde este repositorio.** Aquí no hay nada que active los 27 scripts de cliente | `docs/architecture/client-lifecycle.md`, BUG-CANDIDATE-007 |
+| ¿Pueden dos jugadores reservar la misma casa a la vez? | **No, está guardado**, por un comparar-y-fijar atómico de MemoryStore, más denegar-y-converger para la ventana residual | `docs/architecture/reserved-servers.md` |
+| ¿Cómo se detecta una referencia a un servidor muerto? | No se detecta: se **previene**. Nada durable apunta a un servidor; la alcanzabilidad *es* un lease y la vida *es* su TTL | `docs/systems/housing/server-lifecycle.md` |
+| ¿Qué pasa cuando se va el último jugador? | Nada específico de casas. No existe manejador, y no hace falta | `docs/systems/housing/server-lifecycle.md` |
+| ¿Cómo se reabre una casa? | No hay camino de reapertura. Una casa cerrada es una casa sin lease | `docs/systems/housing/server-lifecycle.md` |
+| ¿Cómo se comunican cliente y servidor? | 174 `RemoteEvent` y 40 `RemoteFunction` declarados como `.model.json`, sin capa de red compartida: cada sistema los ata a mano | `docs/architecture/networking.md` |
+| ¿Qué depende de qué? | Grafo real de `require`: `PlayerInit` (20 consumidores) y `PlayerDataService` (10) son los cimientos; no hay ciclos entre los sistemas revisados | `docs/architecture/dependencies.md` |
 
-### Tooling notes for the next run
+### Notas de herramientas para la próxima ejecución
 
-- **The Moonwave API layer is scoped, and this is load-bearing.** The workflow passes
+- **La capa de API de Moonwave está acotada, y eso sostiene el build.** El workflow pasa
   `--code src/ReplicatedStorage src/ServerStorage/TemplatesTesting/Core/ServerStorage`
-  (`DOC_CODE_PATHS` in `.github/workflows/docs.yml`), **not** all of `src/`. The first
-  real CI build proved why: Moonwave's extractor treats every `---` comment and every
-  `--[=[ ]=]` block as a doc comment and aborts on the first batch of diagnostics. It
-  found **16 errors**, every one of them in `Core/ReplicatedStorage`, in files this
-  project never touched:
+  (`DOC_CODE_PATHS` en `.github/workflows/docs.yml`), **no** todo `src/`. El primer build
+  real de CI demostró por qué: el extractor de Moonwave trata cada comentario `---` y cada
+  bloque `--[=[ ]=]` como comentario de documentación, y aborta con el primer lote de
+  diagnósticos. Encontró **16 errores**, todos en `Core/ReplicatedStorage`, en archivos que
+  este proyecto no ha tocado:
 
-  | Cause | Files |
+  | Causa | Archivos |
   |---|---|
-  | `---` used as a visual separator with text on the line | `Icon/Types`, `Icon/init`, `PartCache/init`, `FastCastRedux/init`, `FastCastRedux/ActiveCast`, `Karaoke/RevisarCanciones/init`, `Karaoke/CrearCancion/init`, `Paint/ServerClient/init`, `DancesInfo`, `Client/BusquedaSettings` |
-  | `--[=[ ]=]` block whose parent class has no `@class` entry | `CardSlots`, `Carousel`, `ButtonMotion`, `AreaSystem` |
-  | Duplicate `@class Signal` | `Shared/Signal.luau` vs `DataKit/Signal.luau` |
+  | `---` usado como separador visual con texto en la línea | `Icon/Types`, `Icon/init`, `PartCache/init`, `FastCastRedux/init`, `FastCastRedux/ActiveCast`, `Karaoke/RevisarCanciones/init`, `Karaoke/CrearCancion/init`, `Paint/ServerClient/init`, `DancesInfo`, `Client/BusquedaSettings` |
+  | Bloque `--[=[ ]=]` cuya clase padre no tiene entrada `@class` | `CardSlots`, `Carousel`, `ButtonMotion`, `AreaSystem` |
+  | `@class Signal` duplicada | `Shared/Signal.luau` frente a `DataKit/Signal.luau` |
 
-  A bare `-----` line with no text does **not** error — `WorldSystem/EventService` and
-  `ReferralService` use those and were clean. It is only `---` followed by text.
+  Una línea `-----` a secas, sin texto, **no** da error — `WorldSystem/EventService` y
+  `ReferralService` las usan y salieron limpios. El problema es solo `---` seguido de
+  texto.
 
-  **Before widening `DOC_CODE_PATHS`**, fix the comments in the files being brought in,
-  or the build fails for everyone. `check-docs-links.py` validates `/api/<Class>` links
-  against exactly these paths, so the two must be kept in step.
+  **Antes de ampliar `DOC_CODE_PATHS`**, arregla los comentarios de los archivos que
+  entran, o el build falla para todo el mundo. `check-docs-links.py` valida los enlaces
+  `/api/<Clase>` contra exactamente esas rutas, así que las dos cosas van juntas.
 
-- **Moonwave cannot be built locally in this environment.** The CLI installs from npm, but
-  `moonwave build` fetches its extractor binary from `latest-github-release.eryn.io` /
-  `github.com`, both outside the network allowlist (HTTP 403). The build is validated on
-  GitHub Actions runners instead. **Run these two before every commit** — they are the
-  local stand-in, and both are wired into CI:
-  - `python3 .github/scripts/check-docs-links.py`
-  - `python3 .github/scripts/check-luau-code-unchanged.py main`
-- **Regenerate the reference pages** after reading new files, and update the `ANALYSED` /
-  `PARTIAL` / `DOCUMENTED` sets at the top of `generate-script-inventory.py`:
+- **Moonwave no se puede construir localmente en este entorno.** La CLI se instala desde
+  npm, pero `moonwave build` descarga su binario extractor de
+  `latest-github-release.eryn.io` / `github.com`, ambos fuera de la lista permitida de red
+  (HTTP 403). El build se valida en los runners de GitHub Actions. **Ejecuta estos dos
+  antes de cada commit** — son el sustituto local, y los dos están cableados en CI:
+  - `python3 .github/scripts/check-docs-links.py docs $DOC_CODE_PATHS`
+  - `python3 .github/scripts/check-luau-code-unchanged.py origin/main`
+- **Regenera las páginas de referencia** después de leer archivos nuevos, y actualiza los
+  conjuntos `ANALYSED` / `PARTIAL` / `DOCUMENTED` de la cabecera de
+  `generate-script-inventory.py`:
   - `python3 .github/scripts/generate-reference.py`
   - `python3 .github/scripts/generate-script-inventory.py`
-- **Mermaid** is not in Moonwave 1.4.2's Docusaurus template. The workflow builds twice: a
-  warm-up populates Moonwave's cached project, the theme is installed into it with
-  `--no-save --no-package-lock` so the cache survives, then the real build runs. A failed
-  install warns rather than failing.
-- **`git push` is blocked, and this has not changed.** Every attempt returns HTTP 403:
-  *"Claude doesn't have GitHub access to Arclyne/voz-hispana for your organization."*
-  All work is committed locally on `docs/moonwave-documentation`. **Nothing reaches GitHub,
-  and GitHub Pages cannot build, until an org admin installs the Claude GitHub App for this
-  repository** (https://github.com/apps/claude/installations/select_target). The
-  documentation workflow is otherwise ready and will run on the first successful push.
+- **Mermaid** no está en la plantilla de Docusaurus de Moonwave 1.4.2. El workflow
+  construye dos veces: una pasada de calentamiento puebla el proyecto cacheado de
+  Moonwave, el tema se instala dentro con `--no-save --no-package-lock` para que la caché
+  sobreviva, y entonces corre el build real. Si la instalación falla, avisa en vez de
+  romper el build.
+- **El push ya funciona.** La app de GitHub de Claude está instalada en el repositorio; el
+  403 que bloqueaba todo durante la primera ejecución está resuelto.
 
 ---
 
-## Next Recommended Work
+## Trabajo recomendado a continuación
 
-Housing is done. **Do not start Phase 4's per-script sweep yet** — the brief is explicit
-that five systems understood deeply beat fifty described shallowly, and there are more
-systems worth that treatment.
+**No empieces todavía la pasada por script de la Fase 4.** El encargo es explícito: cinco
+sistemas entendidos a fondo valen más que cincuenta descritos por encima, y quedan sistemas
+que merecen ese trato.
 
-### 1. Player Data (recommended next — small, and everything depends on it)
+### 1. `Data.Main` — la pieza pendiente más importante
 
-Read, in this order:
+`Core/ServerScriptService/Data/Main/init.server.luau` (392 líneas) es el orquestador real
+del arranque de datos del jugador y el **único** consumidor del módulo
+`PlayerDataReplicator`. La página de Datos del jugador está escrita alrededor de sus
+efectos, no de su código. Léelo y ciérrala.
 
-- `Core/ServerStorage/WorldSystem/PlayerDataService.luau` (1.9 KB)
-- `Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau` (555 lines) — the
-  DataStore-to-`Instance` replication whose contract `PlayerSchema` describes
-- `Core/ServerScriptService/ServerScripts/PlayerDataInit.server.luau`
-- `Core/ServerScriptService/Data/Main/init.server.luau` (392 lines)
-- `Core/ReplicatedStorage/Client/EconomySystem/Collections.luau` — **also closes
-  BUG-CANDIDATE-008**, which cannot be assessed without knowing where currency lives
+Junto a él: `Shared/Stores/init.luau`, que ata 13 manejadores de remotes — la mayor
+concentración de un solo archivo en el repositorio.
 
-Then write `docs/systems/player-data.md` and finish
-`docs/architecture/persistence.md`'s open question about `GlobalDataStore` and
-`GiftInbox`, which call `DataStoreService` outside `DataKit`.
+### 2. `GlobalDataStore` y `GiftInbox`
 
-### 2. Referrals
+Llaman a `DataStoreService` fuera de `DataKit`. Cierra U-008 y termina la pregunta abierta
+de `docs/architecture/persistence.md`.
 
-`Core/ServerStorage/WorldSystem/ReferralService.luau` is **1 243 lines**, the largest
-non-vendored module in the repository. Its message-driven half is already partly described
-in `docs/architecture/persistence.md` (the `onMessage` idempotence contract). Pair it with
-`ServerScripts/Referrals/*` and `Shared/Referrals/*`.
+### 3. Los sistemas de juego
 
-### 3. Events
+Inventario/Herramientas, Interactuables (44 remotes; `Interactable` es el módulo con más
+consumidores del repositorio, 37), Máquinas, Karaoke (25 remotes), Paint, Tiendas,
+Misiones, Trabajos, Animación, Construcción. Unos 480 archivos. De uno en uno, y un commit
+por sistema.
 
-`Core/ServerStorage/WorldSystem/EventService.luau` — the third `ReserveServer` caller, and
-the only one not yet documented. It shares all the reservation machinery already written
-up, so this should be fast. Pair with `EventBootstrap.server.luau` and
-`EventCommands.server.luau`.
+### 4. Fase 4 y Fase 6
 
-### 4. Then the gameplay systems
+Pasada Moonwave por script, `classOrder` en `moonwave.toml` una vez exista el conjunto
+completo de `@class`, y la validación final.
 
-Inventory / Tools, Interactables (44 remotes), Machines, Karaoke (25 remotes), Paint,
-Shops, Quests, Jobs, Animation, Building. Roughly 480 files. Take one at a time, and
-commit per system.
+### Diferido a propósito, con motivos
 
-### Deferred deliberately, with reasons
-
-| Deferred | Why |
+| Diferido | Por qué |
 |---|---|
-| `docs/architecture/data-flow.md` | Persistence and Networking already cover the flows found. Add it only if a later system shows one they do not. |
-| `docs/architecture/dependencies.md` | Phase 5. Building it now, from four systems, would produce a graph that has to be redrawn. |
-| `classOrder` in `moonwave.toml` | Phase 4, once the full set of `@class` annotations exists. Naming a class that does not exist would fail the build. |
-| Per-script Moonwave sweep | Phase 4. Two modules are annotated so far; ~16 more are already annotated in-source by their vendors. |
+| `docs/architecture/data-flow.md` | Persistencia y Red ya cubren los flujos encontrados. Añadirla solo si un sistema posterior enseña uno que no cubran. |
+| `classOrder` en `moonwave.toml` | Fase 4, cuando exista el conjunto completo de anotaciones `@class`. Nombrar una clase que no existe rompería el build. |
+| Pasada Moonwave por script | Fase 4. Van dos módulos anotados por este proyecto; ~16 más ya venían anotados por sus autores. |
 
-### Before finishing any future run
+### Antes de terminar cualquier ejecución futura
 
-1. Run both check scripts.
-2. Regenerate the two reference pages and update the status sets.
-3. Update *Current Phase*, *Last Completed Work*, *Next Recommended Work*, *Unknowns*, and
-   any new bug candidates in **both** this file and `docs/testing/verification-plan.md`.
-4. Commit. Attempt a push; if it still returns 403, say so explicitly in the summary so the
-   access problem stays visible rather than being quietly absorbed.
+1. Ejecuta los dos scripts de comprobación.
+2. Regenera las dos páginas de referencia y actualiza los conjuntos de estado.
+3. Actualiza *Fase actual*, *Último trabajo completado*, *Trabajo recomendado a
+   continuación*, *Incógnitas* y cualquier candidato nuevo **tanto en este archivo como en**
+   `docs/testing/verification-plan.md`.
+4. Haz commit y push a `docs/moonwave-documentation`.
