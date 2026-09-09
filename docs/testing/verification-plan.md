@@ -94,9 +94,12 @@ o en un place de pruebas.
 | [039](#bug-candidate-039) | El servidor marca un tutorial como terminado porque el cliente se lo dice | Tutoriales / Seguridad | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
 | [042](#bug-candidate-042) | `typee` de comando suministrado por el cliente, sin la comprobación de rol que sí hace el camino del chat | **Explotable hoy**, impacto por determinar |
 | [043](#bug-candidate-043) | Condición de victoria suministrada por el cliente, con manejador de premio **puesto** (no stub) | **Explotable hoy**, entrega un objeto de inventario |
+| [046](#bug-candidate-046) | Canal de voz y `Tool` suministrados por el cliente, sin comprobar posesión | **Explotable hoy**, acotado a voz |
 | [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
 | [045](#bug-candidate-045) | El caché de assets pierde el filtro de tipo al reintentar, y puede dejar colgado a quien espera | Karaoke / Assets | Confirmado (el filtro) + Requiere pruebas de concurrencia (el bloqueo) | Baja / Media | **Muy alta** / baja |
+| [046](#bug-candidate-046) | Cualquiera puede entrar en cualquier canal de walkie, y el objeto en el que escribe el servidor lo elige el cliente | Walkie-talkie / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
+| [047](#bug-candidate-047) | 46 muebles y todas las herramientas colocables comparten una descripción de relleno | Tiendas / Construcción | Confirmado por análisis estático | Baja (presentación) | **Muy alta** |
 | [040](#bug-candidate-040) | Las dos tablas globales del place de donaciones llaman a un método que no existe | Donaciones / Persistencia | Confirmado por análisis estático | Media | **Muy alta** |
 | [041](#bug-candidate-041) | El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno | Utilidades compartidas | Confirmado por análisis estático | Media | **Muy alta** |
 | [042](#bug-candidate-042) | El comando de administración se comprueba en el chat y no en el remote | Comandos / Seguridad | Posible bug / Requiere pruebas de seguridad | Por determinar | Alta en la forma |
@@ -5753,6 +5756,303 @@ recursión, y mover el `Destroy` a después de que los que esperan hayan vuelto�
 de código** y aquí no se aplican.
 
 
+## BUG-CANDIDATE-046
+
+### Cualquiera puede entrar en cualquier canal de walkie, y el objeto en el que escribe el servidor lo elige el cliente
+
+**Sistema:** Walkie-talkie / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/WalkieServer.server.luau`, el manejador de
+`Events/Tools/Walkie` y `joinChannel`;
+`Core/ReplicatedStorage/Assets/Tools/Toys/Walkie/LocalScript.client.luau`
+**Documentación relacionada:** [Servidor — piezas sueltas](../systems/server-misc.md#el-walkie-talkie)
+
+#### Comportamiento observado — HECHO
+
+El manejador completo:
+
+```lua
+RemoteEvent.OnServerEvent:Connect(function(player, channel, tool)
+	if #channel == 3 then
+		leaveChannel(player)
+		joinChannel(player, channel, tool)
+	end
+end)
+```
+
+Y lo que `joinChannel` hace con el segundo argumento:
+
+```lua
+local receiver = tool:FindFirstChild("Receiver") or Instance.new("AudioListener")
+receiver.Name = "Receiver"
+receiver.Parent = tool
+```
+
+El cliente legítimo manda `(CurrentChannel, Tool)`, donde `Tool` es la herramienta en la que
+vive su `LocalScript`.
+
+#### Por qué esto es un problema — HECHO
+
+Son tres cosas distintas, y conviene separarlas:
+
+**1. No se comprueba que el jugador tenga un walkie.** No hay ni un `FindFirstChild`, ni una
+consulta al inventario, ni una comprobación de que `tool` esté equipado por quien llama.
+Cualquiera puede entrar en cualquier canal sin poseer el objeto.
+
+**2. `tool` es una `Instance` elegida por el cliente y el servidor le escribe dentro.** Un
+`AudioListener` llamado `Receiver` se parentea en lo que sea que llegue. No se comprueba que
+sea un `Tool`, ni que sea del jugador, ni que sea suyo siquiera.
+
+**3. El primero que entra en un canal se queda de transmisor.**
+
+```lua
+if not channels[channel] then
+	channels[channel] = {transmitter = player, receivers = {}}
+end
+```
+
+Y el transmisor es **el único que habla**: `connectTransmitterToReceivers` cablea su emisor
+a los oídos de los demás, nunca al revés. Quien ocupe un canal primero es el único con voz en
+él mientras siga dentro.
+
+**4. `#channel == 3` no comprueba que sea una cadena.** `#` sobre una tabla de tres elementos
+también vale 3, y esa tabla sirve como clave de `channels`. Sobre un número, `#` lanza y la
+llamada muere ahí —falla cerrado—. Es más una rareza que un problema, pero significa que
+`channel` no es necesariamente texto.
+
+#### Lo que acota el impacto — HECHO
+
+| Control | Qué cubre |
+|---|---|
+| El espacio de canales es 1 000 | Tres cifras; se pueden recorrer todos, y son pocos |
+| Solo se transmite voz | No hay datos, ni economía, ni escrituras persistentes |
+| `PlayerRemoving` limpia | `leaveChannel` + `cleanWires` destruyen los `Wire` |
+| Roblox exige chat de voz habilitado | Sin él, la cadena de audio no lleva nada |
+
+Y la contraparte: **el walkie es un objeto que se concede** —está en `DefaultTools`—, así que
+esto no da acceso a algo que de otro modo estuviera cerrado; da acceso sin tener el objeto y,
+sobre todo, permite **ocupar** un canal.
+
+#### Teoría — TEORÍA
+
+Dos cosas se pueden hacer con esto:
+
+**Ocupar canales.** Un script que recorra los 1 000 canales y entre en cada uno se queda de
+transmisor en todos los que estén vacíos. Los jugadores que entren después son receptores
+suyos: oyen a quien ocupó el canal y no pueden hablar entre ellos. Con mil canales y un
+bucle, el walkie deja de funcionar para todo el servidor.
+
+**Escuchar sin walkie.** Entrar en un canal ajeno como receptor y oír a su transmisor sin
+tener el objeto. Es escucha de voz sin consentimiento, que es la parte que más importa de esta
+entrada: [BUG-CANDIDATE-001](#bug-candidate-001) y
+[BUG-CANDIDATE-038](#bug-candidate-038) ya señalan que en este repositorio lo relacionado con
+voz tiende a fallar hacia el lado abierto, y ésta es la tercera.
+
+El tercer efecto —parentear un `AudioListener` en una instancia arbitraria— es el menos claro:
+depende de qué acepte Roblox como padre de un `AudioListener` y de qué haga uno colgado de
+algo raro. Va como incógnita, no como afirmación.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El manejador solo comprueba `#channel == 3` |
+| 2 | No hay ninguna comprobación de posesión del walkie |
+| 3 | `tool` llega del cliente y se usa como padre de un `AudioListener` |
+| 4 | El cliente legítimo manda su `Tool`, así que el servidor está diseñado para fiarse |
+| 5 | `channels[channel].transmitter` se fija al primero y solo cambia si se va |
+| 6 | `connectTransmitterToReceivers` cablea en un solo sentido |
+| 7 | El espacio de canales son tres cifras: 1 000 posibilidades |
+| 8 | `#` sobre una tabla también puede valer 3 |
+
+#### Incógnitas
+
+- Si Roblox permite parentear un `AudioListener` en cualquier clase de instancia, y qué pasa
+  entonces. Puede que la asignación falle sola.
+- Si el chat de voz está habilitado en esta experiencia. Sin él nada de esto suena —ver
+  [BUG-CANDIDATE-001](#bug-candidate-001)—, pero la ocupación de canales seguiría dejando el
+  walkie inservible para los demás.
+- Qué oye realmente un receptor cableado a un emisor lejano: si la atenuación por distancia
+  del `AudioEmitter` del walkie lo hace inaudible a distancia, la escucha ajena se acota sola.
+- Si el walkie es de uso extendido en el juego. Si casi nadie lo usa, la gravedad baja.
+
+#### Escenario de ejemplo
+
+Alguien escribe cuatro líneas que disparan el remote con `"000"`, `"001"`, … `"999"`. Se
+queda de transmisor en todos los canales vacíos. Un grupo de amigos entra al canal `"123"`
+para hablar y descubre que se oyen a un desconocido y no entre ellos. Nadie sabe por qué:
+el walkie «no va».
+
+**Comportamiento esperado:** entrar en un canal exige tener el walkie, y el servidor identifica
+la herramienta por su cuenta.
+**Comportamiento posible:** basta con disparar el remote con tres caracteres.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero si el chat de voz está habilitado. Si no, todo lo de sonido queda en
+   teoría y solo aplica la ocupación de canales.
+2. Con una cuenta **sin** walkie en el inventario, dispara
+   `Events.Tools.Walkie:FireServer("123", workspace)`.
+3. Comprueba en el servidor si `channels["123"]` existe y si su `transmitter` eres tú.
+4. Mira si aparece un `AudioListener` llamado `Receiver` dentro de `workspace`.
+5. Repite con `nil` y con `123` (número) como segundo y primer argumento, y comprueba que
+   falla cerrado.
+6. Con dos cuentas más, entra en el mismo canal y comprueba quién oye a quién.
+7. Recorre 50 canales desde una cuenta y comprueba que quedas de transmisor en todos.
+8. Sal de la partida y comprueba que `leaveChannel` deshace los 50.
+9. Prueba con una tabla de tres elementos como `channel` y mira si `channels` acepta esa clave.
+
+**Pasa:** el paso 2 no crea canal y el paso 4 no encuentra nada.
+**Falla:** cualquiera de los dos ocurre.
+
+**Instrumentación sugerida:** ninguna. La corrección —resolver la herramienta desde el
+personaje en el servidor, como ya hace `connectTransmitterToReceivers`, y comprobar posesión—
+es un **cambio de código** y aquí no se aplica. Nótese que la mitad de la solución ya está
+escrita en el mismo archivo: esa función **no** se fía del cliente para encontrar la
+herramienta del receptor.
+
+
+## BUG-CANDIDATE-047
+
+### 46 muebles y todas las herramientas colocables comparten una descripción de relleno
+
+**Sistema:** Tiendas / Construcción · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja (presentación) · **Confianza:** **Muy alta**
+
+**Código relacionado:** `src/ServerStorage/Templates/SettingsTemplate.luau`;
+`Core/…/ServerScripts/ToolModelGenerator/Settings.luau` y `init.server.luau` línea 153;
+`BuildingSystem/…/Main/FurnitureFrame/init.luau` líneas 108–109
+**Documentación relacionada:** [Servidor — piezas sueltas](../systems/server-misc.md#el-generador-de-modelos-de-herramienta)
+
+#### Comportamiento observado — HECHO
+
+La plantilla de ajustes de un objeto colocable trae esto:
+
+```lua
+module.Gui = {
+	Name = script.Parent.Name,
+	Description = [[
+	uawhuduoahwudhouhnasuobd baouwb dawnduoabuyowid aw
+	awdouabwudalw cadbaiybuob3oabouaousnocubo ap3
+	...
+	]],
+	Icon = nil,
+}
+```
+
+Es texto de relleno: alguien pasó la mano por el teclado para tener algo que enseñar mientras
+maquetaba la ficha.
+
+Y la interfaz de construcción lo muestra tal cual:
+
+```lua
+local DescriptionText:TextLabel = infoFrame.Information.DescriptionProduct
+DescriptionText.Text = setting.Gui.Description
+```
+
+#### Por dónde llega a los jugadores — HECHO
+
+Por dos caminos independientes.
+
+**Los muebles.** Cada modelo de decoración lleva su propio `Settings` dentro. Buscando la
+cadena de relleno en el árbol:
+
+```
+grep -rl "uawhuduoahwudhouhnasuobd" src --include=*.rbxm  →  46 archivos
+find src -path '*decoration template*' -name '*.rbxm'     →  51 archivos
+```
+
+**46 de los 51 muebles** conservan el texto de la plantilla. Entre ellos `Bar.rbxm`,
+`Berth.rbxm`, `Interruptor.rbxm`, `Nevera Polo Culinario.rbxm` y ocho camas y cunas con
+nombre propio — es decir, objetos terminados y bautizados, no bocetos.
+
+**Las herramientas colocables.** `ToolModelGenerator` fabrica en el arranque un modelo por
+cada `Tool` con `Colocable = true`, y a todos les mete el mismo `Settings`:
+
+```lua
+script:FindFirstChild("Settings"):Clone().Parent = model
+```
+
+Ese `Settings` es una copia sin modificar de la plantilla. Así que **todas** las herramientas
+colocables comparten descripción — y también precio: `Price = {Coins = 30, Gems = 10}`,
+idéntico para todas, sea lo que sea la herramienta.
+
+#### Por qué está aquí y no en una lista de tareas — HECHO
+
+Porque el precio va en el mismo archivo. Un texto feo es contenido; que todas las herramientas
+colocables cuesten exactamente 30 monedas y 10 gemas **es una decisión económica tomada por
+omisión**, y quien la mire pensando que es intencionada no tiene forma de saber que no lo es.
+
+`Name` sí se resuelve bien —`script.Parent.Name`, y el `Settings` se parentea dentro del
+modelo, así que cada uno toma el suyo—. Lo que no se resuelve es nada de lo demás.
+
+#### Teoría — TEORÍA
+
+Un jugador abre el catálogo de construcción y ve, bajo el nombre de un mueble con nombre
+cuidado, un párrafo de letras al azar. No es un fallo funcional: se compra, se coloca, todo
+va. Es de las cosas que hacen que un juego parezca sin terminar aunque funcione, y de las que
+nadie reporta como bug porque es evidente que nadie lo escribió a propósito.
+
+Y por debajo, todas las herramientas colocables valen lo mismo.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `SettingsTemplate.luau` trae la cadena de relleno como `Gui.Description` |
+| 2 | `ToolModelGenerator/Settings.luau` es una copia sin tocar de esa plantilla |
+| 3 | La línea 153 de `ToolModelGenerator/init.server.luau` la clona en **cada** modelo generado |
+| 4 | `FurnitureFrame` asigna `setting.Gui.Description` a un `TextLabel` visible |
+| 5 | 46 de los 51 `.rbxm` de decoración contienen la cadena |
+| 6 | Los afectados incluyen objetos con nombre propio y terminado, no bocetos |
+| 7 | `Price = {Coins = 30, Gems = 10}` es el mismo para todas las herramientas generadas |
+| 8 | `Name = script.Parent.Name` sí se resuelve por objeto, lo que confirma que el archivo se pensó para personalizarse |
+
+#### Incógnitas
+
+- Si los 5 muebles restantes tienen descripción de verdad o simplemente no llevan `Settings`.
+  Hay que abrirlos en Studio.
+- Si el precio de las herramientas colocables se sobrescribe en otro sitio antes de mostrarse.
+  No se ha encontrado, pero `Compras.luau` está leído solo en parte.
+- Cuántas herramientas tienen `Colocable = true`. El atributo vive en los `.rbxm`, así que el
+  número exacto solo se ve en Studio.
+- Si hay una lista de descripciones escrita en otro sitio esperando a conectarse.
+
+#### Escenario de ejemplo
+
+Se publica el sistema de construcción. El primer vídeo que alguien graba abriendo el catálogo
+muestra doce muebles seguidos con el mismo párrafo de letras al azar en la ficha. La respuesta
+es «es un placeholder, lo cambiamos», y sigue ahí seis meses después porque no está en ninguna
+lista.
+
+**Comportamiento esperado:** cada objeto tiene su descripción y su precio.
+**Comportamiento posible:** 46 muebles comparten un texto de relleno, y todas las herramientas
+colocables comparten además el precio.
+
+#### Plan de verificación — *Contenido y economía*
+
+1. En Studio, abre el catálogo de construcción y recorre las fichas. Cuenta cuántas muestran
+   el texto de relleno.
+2. Compara con los 46 que da el `grep`. Si salen más, es que alguna herramienta generada
+   también aparece ahí.
+3. Comprueba el precio que muestra la ficha de dos herramientas colocables distintas.
+4. Si coinciden en 30 monedas y 10 gemas, confirma que viene del `Settings` clonado y no de
+   otro sitio.
+5. Abre los 5 `.rbxm` que **no** contienen la cadena y comprueba si tienen `Settings` propio.
+6. Comprueba si `Gui.Icon` (nulo en la plantilla) causa algún problema en la ficha, o si la
+   interfaz lo tolera.
+
+**Pasa:** cada objeto muestra su propia descripción y su propio precio.
+**Falla:** aparecen descripciones repetidas de relleno, o precios idénticos entre herramientas
+distintas.
+
+**Instrumentación sugerida:** ninguna. Esto se arregla escribiendo contenido y decidiendo
+precios, no tocando lógica — pero conviene decidir antes si `ToolModelGenerator` debe seguir
+clonando un `Settings` común o si cada herramienta debe traer el suyo, porque eso sí es un
+**cambio de código** y aquí no se aplica.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -5821,6 +6121,10 @@ completa.
 | `Client/InsertService.luau` | Sí | El caché, la deduplicación y el borrado de scripts |
 | `Client/topbar.server.luau`, `Event`, `Disconnects` | Sí | |
 | `Client/` — los otros 15 archivos sueltos y 13 carpetas pequeñas | **Superficie** | Su papel y a qué sistema pertenecen |
+| `WalkieServer`, `collisions`, `fireExcept`, `ToolModelGenerator` | Sí | |
+| `ServerScripts/Ragdoll/`, `stats/`, `AnimationSystem/` | En parte | Su papel y sus fuentes de datos |
+| `Shared/Nametag/` (3) | En parte | Qué son; las tablas no se transcriben |
+| `Assets/**/*.luau` (10) | En parte | El del walkie entero; los otros nueve en superficie |
 | `Shared/ComprasTablero/` (2 archivos) | Sí | El teletipo entre servidores y la tabla global |
 | `ReplicatedStorage/ShopInfo.luau` | Sí | Las 18 entradas y sus tres consumidores |
 | `Shared/Nametag/`, `NametagMicClient` | **No** | En cola |

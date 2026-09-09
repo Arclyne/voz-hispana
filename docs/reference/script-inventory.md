@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 110 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 163 |
-| Pendiente | Aún sin leer | 271 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 116 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 180 |
+| Pendiente | Aún sin leer | 248 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 270 leídos.
+530 archivos, 76,305 líneas, 293 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -95,84 +95,84 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Food/Kitchen/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Food/Kitchen/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Notas_Creacion_Plato.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Assets.Tools.Food.Kitchen.Notas_Creacion_Plato.server` | Pendiente |
+| `Notas_Creacion_Plato.server.luau` | Script | — | yes | 3 | `ReplicatedStorage.Assets.Tools.Food.Kitchen.Notas_Creacion_Plato.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Ballon/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Ballon/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MainTool.client.luau` | LocalScript | — | yes | 78 | `ReplicatedStorage.Assets.Tools.Toys.Ballon.MainTool.client` | Pendiente |
+| `MainTool.client.luau` | LocalScript | — | yes | 78 | `ReplicatedStorage.Assets.Tools.Toys.Ballon.MainTool.client` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/BigPotion/MainTool/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/BigPotion/MainTool/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.client.luau` | LocalScript | — | yes | 59 | `ReplicatedStorage.Assets.Tools.Toys.BigPotion.MainTool.init.client` | Pendiente |
+| `init.client.luau` | LocalScript | — | yes | 59 | `ReplicatedStorage.Assets.Tools.Toys.BigPotion.MainTool.init.client` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Cannon/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Cannon/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MainTool.client.luau` | LocalScript | — | yes | 203 | `ReplicatedStorage.Assets.Tools.Toys.Cannon.MainTool.client` | Pendiente |
+| `MainTool.client.luau` | LocalScript | — | yes | 203 | `ReplicatedStorage.Assets.Tools.Toys.Cannon.MainTool.client` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/GloveGun/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/GloveGun/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `MainTool.client.luau` | LocalScript | — | yes | 75 | `ReplicatedStorage.Assets.Tools.Toys.GloveGun.MainTool.client` | Pendiente |
+| `MainTool.client.luau` | LocalScript | — | yes | 75 | `ReplicatedStorage.Assets.Tools.Toys.GloveGun.MainTool.client` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/MiniPotion/MainTool/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/MiniPotion/MainTool/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.client.luau` | LocalScript | — | yes | 62 | `ReplicatedStorage.Assets.Tools.Toys.MiniPotion.MainTool.init.client` | Pendiente |
+| `init.client.luau` | LocalScript | — | yes | 62 | `ReplicatedStorage.Assets.Tools.Toys.MiniPotion.MainTool.init.client` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SlimeBomb/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SlimeBomb/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `LocalScript.client.luau` | LocalScript | — | yes | 29 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.LocalScript.client` | Pendiente |
-| `Script.server.luau` | Script | — | yes | 347 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.Script.server` | Pendiente |
+| `LocalScript.client.luau` | LocalScript | — | yes | 29 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.LocalScript.client` | Analizado (en parte) |
+| `Script.server.luau` | Script | — | yes | 347 | `ReplicatedStorage.Assets.Tools.Toys.SlimeBomb.Script.server` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SpyJetpack/MainTool/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/SpyJetpack/MainTool/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `init.client.luau` | LocalScript | — | yes | 304 | `ReplicatedStorage.Assets.Tools.Toys.SpyJetpack.MainTool.init.client` | Pendiente |
+| `init.client.luau` | LocalScript | — | yes | 304 | `ReplicatedStorage.Assets.Tools.Toys.SpyJetpack.MainTool.init.client` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Walkie/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Assets/Tools/Toys/Walkie/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `LocalScript.client.luau` | LocalScript | — | yes | 93 | `ReplicatedStorage.Assets.Tools.Toys.Walkie.LocalScript.client` | Pendiente |
+| `LocalScript.client.luau` | LocalScript | — | yes | 93 | `ReplicatedStorage.Assets.Tools.Toys.Walkie.LocalScript.client` | Analizado |
 
 </details>
 
@@ -988,13 +988,13 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Nametag/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Countries.luau` | ModuleScript | — | — | 209 | `ReplicatedStorage.Shared.Nametag.Countries` | Pendiente |
-| `LevelStyler.luau` | ModuleScript | — | — | 164 | `ReplicatedStorage.Shared.Nametag.LevelStyler` | Pendiente |
-| `MicStatus.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Nametag.MicStatus` | Pendiente |
+| `Countries.luau` | ModuleScript | — | — | 209 | `ReplicatedStorage.Shared.Nametag.Countries` | Analizado (en parte) |
+| `LevelStyler.luau` | ModuleScript | — | — | 164 | `ReplicatedStorage.Shared.Nametag.LevelStyler` | Analizado (en parte) |
+| `MicStatus.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.Shared.Nametag.MicStatus` | Analizado (en parte) |
 
 </details>
 
@@ -1347,7 +1347,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 17/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 20/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -1365,21 +1365,21 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `ShopServerSystem.server.luau` | Script | Server | yes | 310 | `ServerScriptService.ServerScripts.ShopServerSystem.server` | Analizado (en parte) |
 | `ToolPlacementServer.server.luau` | Script | Server | yes | 881 | `ServerScriptService.ServerScripts.ToolPlacementServer.server` | Analizado (en parte) |
 | `ToolsServer.server.luau` | Script | — | yes | 989 | `ServerScriptService.ServerScripts.ToolsServer.server` | Analizado (en parte) |
-| `WalkieServer.server.luau` | Script | Server | yes | 148 | `ServerScriptService.ServerScripts.WalkieServer.server` | Pendiente |
+| `WalkieServer.server.luau` | Script | Server | yes | 148 | `ServerScriptService.ServerScripts.WalkieServer.server` | Analizado |
 | `WorldManager.server.luau` | Script | Server | yes | 228 | `ServerScriptService.ServerScripts.WorldManager.server` | Analizado |
 | `WorldsBrowser.server.luau` | Script | Server | yes | 140 | `ServerScriptService.ServerScripts.WorldsBrowser.server` | Analizado |
-| `collisions.server.luau` | Script | Server | yes | 37 | `ServerScriptService.ServerScripts.collisions.server` | Pendiente |
-| `fireExcept.luau` | ModuleScript | — | — | 11 | `ServerScriptService.ServerScripts.fireExcept` | Pendiente |
+| `collisions.server.luau` | Script | Server | yes | 37 | `ServerScriptService.ServerScripts.collisions.server` | Analizado |
+| `fireExcept.luau` | ModuleScript | — | — | 11 | `ServerScriptService.ServerScripts.fireExcept` | Analizado |
 | `playerManager.server.luau` | Script | — | yes | 208 | `ServerScriptService.ServerScripts.playerManager.server` | Analizado |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/AnimationSystem/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/AnimationSystem/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `AnimationManager.luau` | ModuleScript | — | — | 73 | `ServerScriptService.ServerScripts.AnimationSystem.AnimationManager` | Pendiente |
+| `AnimationManager.luau` | ModuleScript | — | — | 73 | `ServerScriptService.ServerScripts.AnimationSystem.AnimationManager` | Analizado (en parte) |
 | `init.server.luau` | Script | Server | yes | 104 | `ServerScriptService.ServerScripts.AnimationSystem.init.server` | Analizado |
 
 </details>
@@ -1404,12 +1404,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Ragdoll/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/Ragdoll/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `DisableJointsWhenFalling.server.luau` | Script | — | yes | 63 | `ServerScriptService.ServerScripts.Ragdoll.DisableJointsWhenFalling.server` | Pendiente |
-| `PhysicallySimulatedUpperBody.server.luau` | Script | — | yes | 47 | `ServerScriptService.ServerScripts.Ragdoll.PhysicallySimulatedUpperBody.server` | Pendiente |
+| `DisableJointsWhenFalling.server.luau` | Script | — | yes | 63 | `ServerScriptService.ServerScripts.Ragdoll.DisableJointsWhenFalling.server` | Analizado (en parte) |
+| `PhysicallySimulatedUpperBody.server.luau` | Script | — | yes | 47 | `ServerScriptService.ServerScripts.Ragdoll.PhysicallySimulatedUpperBody.server` | Analizado (en parte) |
 
 </details>
 
@@ -1424,12 +1424,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/ToolModelGenerator/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/ToolModelGenerator/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Settings.luau` | ModuleScript | — | — | 32 | `ServerScriptService.ServerScripts.ToolModelGenerator.Settings` | Pendiente |
-| `init.server.luau` | Script | Server | yes | 170 | `ServerScriptService.ServerScripts.ToolModelGenerator.init.server` | Pendiente |
+| `Settings.luau` | ModuleScript | — | — | 32 | `ServerScriptService.ServerScripts.ToolModelGenerator.Settings` | Analizado |
+| `init.server.luau` | Script | Server | yes | 170 | `ServerScriptService.ServerScripts.ToolModelGenerator.init.server` | Analizado |
 
 </details>
 
@@ -1542,12 +1542,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/stats/</code> — 3 archivo(s) — 1/3 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/stats/</code> — 3 archivo(s) — 3/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Stats.luau` | ModuleScript | — | — | 71 | `ServerScriptService.ServerScripts.stats.Stats` | Pendiente |
-| `Timer.luau` | ModuleScript | — | — | 56 | `ServerScriptService.ServerScripts.stats.Timer` | Pendiente |
+| `Stats.luau` | ModuleScript | — | — | 71 | `ServerScriptService.ServerScripts.stats.Stats` | Analizado (en parte) |
+| `Timer.luau` | ModuleScript | — | — | 56 | `ServerScriptService.ServerScripts.stats.Timer` | Analizado (en parte) |
 | `init.server.luau` | Script | Server | yes | 84 | `ServerScriptService.ServerScripts.stats.init.server` | Analizado (en parte) |
 
 </details>
