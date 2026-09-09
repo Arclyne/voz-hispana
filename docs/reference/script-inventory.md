@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 48 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 49 |
 | Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 13 |
-| Pendiente | Aún sin leer | 489 |
+| Pendiente | Aún sin leer | 488 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 52 leídos.
+530 archivos, 76,181 líneas, 53 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1272,11 +1272,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 archivo(s) — 5/6 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 archivo(s) — 6/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Added.luau` | ModuleScript | — | — | 205 | `ReplicatedStorage.Shared.Stores.Added` | Pendiente |
+| `Added.luau` | ModuleScript | — | — | 205 | `ReplicatedStorage.Shared.Stores.Added` | Analizado |
 | `ColorTexture.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Stores.ColorTexture` | Analizado |
 | `Compras.luau` | ModuleScript | — | — | 487 | `ReplicatedStorage.Shared.Stores.Compras` | Analizado (en parte) |
 | `DecorsPlayer.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.Stores.DecorsPlayer` | Analizado |

@@ -202,6 +202,9 @@ que funciona es engañosa.
 | En `SellDecors` y en `BuyDecors`, la rama «soy el dueño de la casa» queda fuera del `and self.Added:IsA("House")` por precedencia de operadores | Hoy es inocuo: en el place de donaciones `self.Added.DataBaseHouse` es `nil`. La forma se repite en los dos sitios |
 | `ComprarMaterial` indexa `Player:FindFirstChild("Materials").Value` sin comprobar que exista | Falla cerrado: si los datos no han cargado, lanza error antes de cobrar |
 | `AccionarCompras` deja una rama vacía con una línea comentada para el caso «soy el dueño y no mando actualización» | No hace nada; el comentario apunta a un remote de comandos |
+| `Added:ChangeDesing` filtra el nombre del atributo pero no su valor, igual que la variante de casas | El destino es el perfil del propio jugador (`StoresData`), no el de una casa ajena; ver la nota en BUG-CANDIDATE-020 |
+| El puesto de un jugador con el gamepass `Premium` borra las partes marcadas `RemoveWithGamepass` y desbloquea las `AddWithGamepass` | `Added:RemoveWithGamepass`, invocado desde `Beneficios:Premium` y al construir el puesto |
+| `Added` expulsa a quien esté dentro del volumen del puesto al cerrarlo | `RetirarJugadores` comprueba una caja de 36,1 × 17,2 × 58,6 studs y mueve a los jugadores a `PositionATT` |
 | `AddedDecor/Collitions.luau` no comprueba colisiones | Escribe un atributo `Whitelist` con las caras admitidas; es un dato **para** el cliente, que es quien decide dónde encaja algo |
 | `DecorsPlayer.luau` devuelve `{}` en el servidor | `return not Client and {} or module.new()` — el índice por jugador es una estructura de cliente; el servidor usa una tabla plana `self.DecorsPlayer[UserId]` |
 | `false and IsStudio` en dos líneas de `fn.new` | Interruptor de pruebas desactivado; `IsStudio` queda sin uso real |
@@ -216,7 +219,7 @@ que funciona es engañosa.
 | `DecorFuncs/` (3 archivos) | 469 | Leídos |
 | `DecorsPlayer.luau` | 92 | Leído |
 | `Compras.luau` | 487 | **En parte** — `Comprar` y la forma general; falta `Update`, `Like`, `ClosePurchased`, `Works` |
-| `Added.luau` | 205 | **Pendiente** — los puestos del place de donaciones |
+| `Added.luau` | 205 | Leído |
 
 ## Implementación relacionada
 

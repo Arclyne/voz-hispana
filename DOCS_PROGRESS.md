@@ -25,14 +25,14 @@ ya lo estaban.
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **63 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **64 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
 Eso es un 11 % por número de archivos, pero una porción mucho mayor del código que sostiene
 todo lo demás: el arranque completo, el sistema de mundos/casas entero, las capas de
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
 invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
-mobiliario, y toda la ruta de monetización. Los ~489 archivos restantes son sistemas de juego (interactuables, karaoke,
+mobiliario, y toda la ruta de monetización. Los ~488 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
@@ -214,7 +214,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | Leído en parte (pasada de seguridad → BUG-CANDIDATE-016) |
 | Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | Pendiente |
 | Paint | `Shared/Paint`, `interactable/Paint`, `ServerStorage/Paint` | Pendiente |
-| Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Faltan `Added.luau` y parte de `Compras.luau` |
+| Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Falta parte de `Compras.luau` |
 | Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService` | **Documentado** — `docs/systems/monetization.md`, 1 diagrama. Faltan `ShopInfo` e `InventoryManager` |
 | Misiones | `ServerScripts/Quests`, `Shared/Quests`, `Client/QuestClient` | Pendiente |
 | Animación | `ServerScripts/AnimationSystem`, `Client/Animator`, `Client/animation` | Pendiente |
@@ -313,9 +313,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 2 |
-| Analizado (leído entero, descrito en el sitio) | 48 |
+| Analizado (leído entero, descrito en el sitio) | 49 |
 | Analizado (en parte) | 13 |
-| Pendiente | 489 |
+| Pendiente | 488 |
 
 Las lecturas parciales y por qué:
 
@@ -523,7 +523,7 @@ y razonado está en la propia página; el resumen es:
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
 - **Diagramas:** 35 diagramas Mermaid (flowchart, sequence, state)
 - **Candidatos a bug:** 23 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 63 de 552
+- **Scripts leídos:** 64 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.
@@ -598,9 +598,8 @@ que merecen ese trato.
 
 ### 1. Cerrar `Shared/Stores`
 
-Quedan `Added.luau` (los puestos del place de donaciones) y el resto de `Compras.luau`
-(`Update`, `Like`, `ClosePurchased`, `Works`). La página existe y señala exactamente qué
-falta.
+Solo queda el resto de `Compras.luau` (`Update`, `Like`, `ClosePurchased`, `Works`). La
+página existe y señala exactamente qué falta.
 
 Junto a ello, `ShopInfo.luau` e `inventory/InventoryManager`, que son de quienes depende
 `GamePassService` y ahora mismo son cajas negras en la página de Monetización.

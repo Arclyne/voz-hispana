@@ -68,6 +68,7 @@ ANALYSED |= {
     t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/init.luau"),
     t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/init.luau"),
     t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/Collitions.luau"),
+    t("Core/ReplicatedStorage/Shared/Stores/Added.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),

@@ -2255,6 +2255,30 @@ lo acumulable.
 | 5 | No hay límite de frecuencia en el remote `ChangeDesing` |
 | 6 | El lado que renderiza **sí** es robusto: `ColorTexture.Color` sustituye cualquier valor que no sea `Color3` por blanco. El problema es de almacenamiento, no de renderizado |
 
+:::note Un segundo camino, con otro destino
+
+`Stores/Added.luau` —la variante del place de donaciones— tiene la misma forma y el mismo
+hueco:
+
+```lua
+for Name, Valor in ColorTexture do
+	if not Changes[Name] then continue end
+	v.Value:SetAttribute(Name, Valor)
+end
+```
+
+Filtra el **nombre** contra `ColorTexture` y no toca el **valor**. El destino cambia: aquí
+va a un `BoolValue` bajo `StoresData`, que `SPEC` persiste en el perfil `WorldsPlayer` del
+propio jugador, no en el de una casa ajena. El daño sería a los datos de quien lo hace, lo
+que baja mucho la gravedad de esta variante, pero el patrón es idéntico y conviene arreglar
+los dos a la vez.
+
+Una diferencia técnica que hay que comprobar: aquí el valor pasa por `Instance:SetAttribute`,
+que impone sus propios límites de tipo y quizá de tamaño, mientras que en la ruta de casas
+va directo a una tabla del DataStore.
+
+:::
+
 #### Incógnitas
 
 - Qué hace DataKit ante una escritura que supera el límite del DataStore: si rechaza
@@ -2262,6 +2286,8 @@ lo acumulable.
 - Si `UpdateStore` valida el tamaño de la sección antes de escribir. `WorldService.UpdateStore`
   no se ha releído con esta pregunta en mente.
 - Cuántas ranuras `(carpeta, modelo)` tiene una casa real. Determina el techo acumulable.
+- Si `Instance:SetAttribute` limita la longitud de una cadena. Decide si la variante de
+  `Added.luau` es explotable o se cierra sola.
 
 #### Escenario de ejemplo
 
@@ -2684,7 +2710,7 @@ completa.
 | `Shared/Stores`: `Compras` | En parte | Solo `Comprar` y la forma general |
 | `Shared/Stores`: `DecorFuncs/` (3 archivos), `DecorsPlayer` | Sí | La colocación y el índice por jugador |
 | `Client/Posicionamientos` | En parte | `GetScale`, `IsInArea`, `GetFusion`, `getFace` |
-| `Shared/Stores`: `Added` | **No** | En cola — los puestos del place de donaciones |
+| `Shared/Stores`: `Added` | Sí | Los puestos del place de donaciones |
 | `Shared/Monetization` (4 archivos), `WorldSystem/GamePassService/init` | Sí | |
 | `GamePassService/GamePassRewards` | En parte | Solo `ensure` |
 | `ShopInfo`, `inventory/InventoryManager` | **No** | En cola; alimentan a `GamePassService` |
