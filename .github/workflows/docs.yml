@@ -8,6 +8,12 @@ name: Documentation
 #
 # One-time repository setup required before the first deploy succeeds:
 #   Settings → Pages → Build and deployment → Source: "GitHub Actions".
+#
+# The path filters below include DOCS_PROGRESS.md and .github/scripts/**, and
+# that is deliberate: check-docs-facts.py reads DOCS_PROGRESS.md and asserts the
+# numbers in it against the repository, so a change there can fail this workflow.
+# A check that can fail must be able to run. The same goes for the scripts
+# themselves — editing a checker has to re-validate it.
 
 on:
   push:
@@ -17,13 +23,17 @@ on:
       - "docs/**"
       - "src/**"
       - "moonwave.toml"
+      - "DOCS_PROGRESS.md"
       - ".github/workflows/docs.yml"
+      - ".github/scripts/**"
   pull_request:
     paths:
       - "docs/**"
       - "src/**"
       - "moonwave.toml"
+      - "DOCS_PROGRESS.md"
       - ".github/workflows/docs.yml"
+      - ".github/scripts/**"
   workflow_dispatch:
 
 permissions:
