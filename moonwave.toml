@@ -38,7 +38,19 @@ tagline = "Technical documentation"
 url = "https://arclyne.github.io"
 baseUrl = "/voz-hispana/"
 onBrokenLinks = "throw"
-onBrokenMarkdownLinks = "warn"
+
+# Mermaid rendering is NOT configured here on purpose.
+#
+# Moonwave 1.4.2 generates its Docusaurus project from a fixed template whose
+# package.json does not include @docusaurus/theme-mermaid, and the cached project
+# is wiped whenever that package.json changes. Declaring the theme here would
+# therefore fail the build with "module not found".
+#
+# The Documentation workflow installs the theme into Moonwave's cached project and
+# injects `themes` + `markdown.mermaid` into a throwaway copy of this file. If that
+# install fails the workflow only warns, and the ```mermaid blocks degrade to code
+# blocks instead of failing the build. They still render natively when the Markdown
+# is read on GitHub.
 
 [navbar]
 title = "Voz Hispana"

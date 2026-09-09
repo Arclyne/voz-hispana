@@ -53,8 +53,35 @@ jobs:
       # extract or when Docusaurus cannot compile the site (including broken
       # internal links, which moonwave.toml sets to `throw`). No `|| true`,
       # no `continue-on-error`: a documentation build failure must fail the job.
+      #
+      # Two passes, because Mermaid needs a theme Moonwave does not ship:
+      #   1. A warm-up build creates and populates Moonwave's cached Docusaurus
+      #      project. Its output is discarded.
+      #   2. @docusaurus/theme-mermaid is installed into that cached project with
+      #      --no-save --no-package-lock, so its package.json stays byte-identical
+      #      to Moonwave's template and the cache is reused rather than wiped.
+      #      Only if that succeeds is the theme enabled in moonwave.toml.
+      #   3. The real build runs and is the one that gates the job.
+      # A failure to install the theme is a warning, not an error: the diagrams
+      # then render as code blocks instead of taking the whole site down.
       - name: Build site
-        run: moonwave build --out-dir build --code src
+        run: |
+          set -euo pipefail
+
+          moonwave build --out-dir .moonwave-warmup --code src
+          rm -rf .moonwave-warmup
+
+          CACHE="$HOME/.cache/moonwave/$(basename "$PWD")"
+          if [ -d "$CACHE/node_modules" ] && npm install \
+               --prefix "$CACHE" --no-save --no-package-lock \
+               @docusaurus/theme-mermaid@^3.7.0; then
+            python3 .github/scripts/enable-mermaid.py
+            echo "Mermaid rendering enabled."
+          else
+            echo "::warning::Could not install @docusaurus/theme-mermaid — Mermaid diagrams will render as code blocks."
+          fi
+
+          moonwave build --out-dir build --code src
 
       - name: Verify build output exists
         run: |

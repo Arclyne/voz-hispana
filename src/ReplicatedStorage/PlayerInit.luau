@@ -33,7 +33,11 @@ local Players = game:GetService("Players")
 	Callbacks are invoked through `task.defer` and wrapped in `pcall`, so one failing
 	listener neither blocks nor breaks the others.
 
-	@server
+	The module is required from both sides. On the server it announces every player.
+	On the client `Players.PlayerAdded` fires for *all* players, so client-context
+	consumers filter for `Players.LocalPlayer` themselves — this module does not do
+	that filtering for them.
+
 	@class PlayerInit
 ]=]
 local PlayerInit = {}
