@@ -123,6 +123,72 @@ mejor lo hace, y su comprobación está escrita a mano dentro del propio archivo
 
 Ver [BUG-CANDIDATE-025](../testing/verification-plan.md#bug-candidate-025).
 
+## Lo que hay detrás de las filas vacías
+
+**HECHO.** Una fila sin marcas en la matriz no dice qué se puede hacer con ella. Leídos los
+25 scripts enteros, las filas vacías se reparten en tres grupos muy distintos:
+
+| Grupo | Scripts | Qué se puede hacer |
+|---|---|---|
+| **Mueven al personaje** | `Bath`, `Toilet`, `Shower`, `Washbasin` | Llegar a donde esté el objeto — [048](../testing/verification-plan.md#bug-candidate-048) |
+| **Conceden estadística** | los cuatro de arriba, más `Weight` y `Treadmill` | Rellenar `hygiene`, `bladder` y `physic` sin moverse — [049](../testing/verification-plan.md#bug-candidate-049) |
+| **Cambian el estado de un objeto ajeno** | `Lamp`, `ClassicDoor`, `DiscoBall`, `SmokeMachine`, `Display`, `Seat` | Encender, abrir, apagar a distancia — el caso que ya cubre la [025](../testing/verification-plan.md#bug-candidate-025) |
+
+### Mover, no solo actuar
+
+**HECHO.** `Bath` toma el modelo del cliente y hace esto:
+
+```lua
+local seat = model:FindFirstChildOfClass("Seat")
+if seat.Occupant then return end
+...
+seat:Sit(humanoid)
+```
+
+`Seat:Sit` **teletransporta**. `Toilet` hace lo mismo; `Shower` y `Washbasin` usan
+`character:PivotTo(playerPart:GetPivot())`.
+
+**Lo que acota la superficie** es que el cliente no puede inventarse la `Instance`: solo puede
+nombrar objetos que el servidor ya conoce. Un modelo sin la forma esperada hace que el
+manejador lance —`seat.Occupant` sobre `nil`— y la llamada muere ahí. **Falla cerrado**, y hoy
+eso es lo único que limita el destino.
+
+Pero `Bath` y `Toilet` aceptan **cualquier modelo con un hijo `Seat`**, y `Seat` es de las
+clases más comunes que hay en un mapa.
+
+**HECHO.** De los cuatro, tres devuelven al personaje a donde estaba. `Washbasin` **no**:
+espera dos segundos, concede la higiene y suelta al ocupante, sin ningún `PivotTo` de vuelta.
+
+### El que no recibe modelo
+
+**HECHO.** `Weight.server.luau` no tiene segundo parámetro:
+
+```lua
+remotes.Interactable.Weight.OnServerEvent:Connect(function(player)
+	...
+	track:Play()
+	track.Stopped:Wait()
+	stats:increment("physic", 10)
+end)
+```
+
+Ni pesas, ni sitio, ni antirrebote. Estar vivo es todo lo que hace falta.
+
+### Lo que sí sujeta
+
+**Registrado como correcto**, porque es lo que mantiene esto en Media y no más arriba:
+
+| Control | Dónde |
+|---|---|
+| `Stats:increment` corta en 100 | `stats/Stats.luau` — el techo es «lleno», no hay valores absurdos |
+| Las estadísticas no se persisten | Son atributos del jugador; no están en `PlayerSchema` |
+| Un modelo de forma equivocada lanza | Los manejadores mueren sin efecto |
+| `getAliveHumanoid` en cinco de ellos | Un personaje muerto o ausente no pasa |
+| `Toilet` comprueba el ocupante **dos veces** | Antes y después del `task.wait(0.5)` de la bisagra, con este comentario: «a previous that requested the toiled before can be the occupant while we wait for the hinge» |
+
+Esa última fila merece leerse: es exactamente la clase de condición de carrera que el resto
+del repositorio no siempre contempla, y aquí está vista, comentada y cerrada.
+
 ## El caso peor: `MusicPlayer`
 
 **HECHO.** Diecisiete líneas, y todo lo que decide viene del cliente:

@@ -196,6 +196,156 @@ motivo:
 debe fallar, no robarse el candado.
 ```
 
+## Los comandos: el manejador mejor escrito del repositorio
+
+**HECHO.** `ReferralCommands.server.luau` (333) expone siete comandos de chat —`/invites`,
+`/socio`, `/pagar`, `/codigo`, `/link`, `/testinvite`, `/testprogress`— y su despacho es
+este:
+
+```lua
+local function onChatted(player: Player, message: string)
+	local command, rest = message:match("^/(%a+)%s*(.*)$")
+	if not command then return end
+
+	local handler = COMMANDS[command:lower()]
+	if not handler then return end
+
+	if not Admins:IsRole(player, "Admins") then return end
+
+	local ok, err = pcall(handler, player, rest)
+	if not ok then
+		warn("[ReferralCommands] Error en /" .. command .. ":", err)
+		notify(player, "Error interno ejecutando el comando.")
+	end
+end
+```
+
+**Registrado como correcto, en cuatro puntos**, y merece compararse con lo que hacen otros:
+
+| Control | Por qué importa |
+|---|---|
+| La comprobación de rol está **una sola vez**, antes del despacho | Un comando nuevo no puede olvidarse de comprobarlo: no es suyo. Al contrario que [`Commands.luau`](./shared-utilities.md#commandsluau-los-comandos-de-chat), donde la comprobación va por comando |
+| **No hay segunda vía** | Los comandos entran solo por `Chatted`. No existe un remote paralelo, que es justo el hueco de [BUG-CANDIDATE-042](../testing/verification-plan.md#bug-candidate-042) |
+| Cada manejador va en `pcall` | Un error no rompe la conexión `Chatted` del jugador, y se avisa |
+| Los argumentos se parsean con patrones estrictos | `cmdPagar` exige `^(%S+)%s+(-?%d+)$`: usuario y número, o nada |
+
+Es, de todos los caminos de administración leídos en este repositorio, el único al que no hay
+que ponerle ninguna salvedad. Ver por contraste
+[BUG-CANDIDATE-028](../testing/verification-plan.md#bug-candidate-028) y
+[BUG-CANDIDATE-042](../testing/verification-plan.md#bug-candidate-042).
+
+**OBSERVACIÓN.** `cmdPagar` acepta cantidades **negativas** (`-?%d+`), lo que resta de
+`PointsPaid`. Siendo un comando de administrador, lo más probable es que sea deliberado —
+deshacer un pago mal apuntado—, pero no está dicho en ninguna parte.
+
+## La configuración, que es el único archivo que hay que tocar
+
+**HECHO.** `Shared/Referrals/ReferralConfig.luau` concentra todo lo ajustable, y **se
+documenta a sí mismo mejor que la mayoría de este sitio**: cada constante lleva escrito no
+solo qué hace, sino por qué vale lo que vale. Aquí solo se resume; para decidir un cambio,
+léelo.
+
+| Ajuste | Valor | Lo que dice su propio comentario |
+|---|---|---|
+| `RequiredSeconds` | 15 min | Lo que tiene que jugar el invitado |
+| `AccumulateAcrossSessions` | `true` | «Acumular convierte muchas más invitaciones; de una sentada es más difícil de falsear. Con el chat de voz obligatorio y la cuenta mínima, acumular sale bien parado» |
+| `PendingWindowSeconds` | 48 h | Cuánto vive la invitación antes de caducar sin premio |
+| `ReconnectGraceSeconds` | 90 s | Para que un teleport a una casa o al karaoke no cuente como irse |
+| `ProgressCheckpointSeconds` | 180 s | «Más bajo = barra más fina y más escrituras» |
+| `MinAccountAgeDays` | **0** | Desactivado a propósito, y razonado abajo |
+| `MaxPendingPerInviter` | 50 | Acota las lecturas de DataStore de la tablet, no el total de amigos |
+
+**El caso de `MinAccountAgeDays = 0` merece leerse**, porque es una decisión deliberada que
+parece un descuido:
+
+> Se comprueba AL COMPLETAR, no al entrar. Ojo: con la ventana de 48 h, cualquier valor
+> mayor que 2 deja fuera para siempre a quien se cree la cuenta para el vídeo de un
+> youtuber. El chat de voz ya exige cuenta verificada, que es el filtro real.
+
+Es exactamente el tipo de razonamiento que esta documentación busca registrar: el filtro no
+se quitó por dejadez, se quitó porque duplicaba otro que funciona mejor y rompía el caso de
+uso principal.
+
+### La escalera de recompensas
+
+**HECHO.** Catorce hitos, de 1 a 14 amigos, y después una recompensa por defecto de 400
+Coins por cada amigo adicional.
+
+**OBSERVACIÓN.** La curva **no es monótona**: el sexto amigo paga 400 y el quinto pagaba
+500; el undécimo paga 700 y el décimo pagaba 1 200. No es un error — el comentario declara
+«saltos gordos en el 5, el 10 y el 14 para que haya metas visibles», así que los hitos
+sobresalen y los intermedios vuelven a la curva base. Se anota porque a primera vista parece
+una errata.
+
+**HECHO.** Y hay un aviso escrito que conviene respetar:
+
+> `Id` es permanente y es por lo que se guarda lo reclamado. **NUNCA reutilices un Id
+> borrado**, o alguien podría reclamar dos veces.
+
+## Los tres remotes, y por qué el de compartir vive en el servidor
+
+| Remote | Tipo | Qué hace |
+|---|---|---|
+| `GetReferralState` | `RemoteFunction` | Devuelve el estado del propio jugador |
+| `ShareReferralLink` | `RemoteEvent` | Abre la hoja de compartir de Roblox |
+| `ClaimReferralReward` | `RemoteEvent` | Reclama un hito, delegando en `ReferralService.ClaimReward` |
+
+**HECHO.** `PromptLinkSharingAsync` **solo se puede llamar desde el servidor**, de ahí que
+compartir sea un remote y no una acción de cliente. Y está bien protegido:
+
+| Control | Cómo |
+|---|---|
+| No se solapan dos compartires | El mapa `sharing[player]`, limpiado también en `PlayerRemoving` |
+| Studio no enseña un error falso | Roblox devuelve 403 a los share links fuera de un servidor publicado, así que se detecta y se avisa con `"studio"` |
+| Un valor de caducidad que Roblox rechace no deja sin link | Se reintenta una vez sin `ExpirationSeconds`, con el valor por defecto de Roblox |
+| No se responde a quien ya se fue | `if player.Parent == Players` antes de `FireClient` |
+
+## Tres decisiones del bucle que merecen leerse
+
+`ReferralMain.server.luau` explica sus tres decisiones no obvias, y las tres son correctas:
+
+**1. Se suma lo que `task.wait` durmió de verdad, no el nominal.**
+
+```lua
+local elapsed = task.wait(TICK_SECONDS)
+ReferralService.Tick(player, elapsed)
+```
+
+> `task.wait` devuelve lo que durmió de verdad, que con el servidor cargado es más que
+> `TICK_SECONDS`; sumar el nominal haría los 15 minutos más largos.
+
+**2. No se recorre `Players:GetPlayers()` al arrancar.**
+
+> `PlayerInit` ya reejecuta el callback para los jugadores que estaban dentro cuando se
+> registra, así que **NO** hay que recorrer `Players:GetPlayers()` aparte: serían dos bucles
+> sumando segundos al mismo jugador.
+
+Es una consecuencia directa de lo que documenta [`PlayerInit`](/api/PlayerInit), y de las
+pocas veces en el repositorio en que un consumidor demuestra haber leído ese contrato.
+
+**3. El volcado va por `onBeforeClose`, no por `PlayerRemoving`.**
+
+Y esta es la importante:
+
+> `PlayerDataInit` también escucha `PlayerRemoving` para cerrar el perfil, y **el orden
+> entre dos conexiones al mismo evento no está garantizado**. Si el perfil se cerrara
+> primero, los segundos de la sesión se perderían y un teleport a una casa reiniciaría la
+> cuenta. `onBeforeClose` corre siempre antes del cierre.
+
+:::tip Aquí está la solución a un problema registrado en otro sistema
+
+Ese es **exactamente** el riesgo que
+[BUG-CANDIDATE-018](../testing/verification-plan.md#bug-candidate-018) describe en
+[`Data.Main`](./session-orchestrator.md): dos manejadores de `Players.PlayerRemoving`, sin
+orden garantizado, y una limpieza que se pierde según cuál gane.
+
+Este sistema se topó con el mismo problema, lo entendió y lo resolvió usando
+`PlayerDataService.onBeforeClose`, que sí tiene orden garantizado respecto al cierre del
+perfil. **El patrón de arreglo ya está en el repositorio**, escrito y razonado, a dos
+directorios de distancia del sitio donde falta.
+
+:::
+
 ## Puntos de verificación
 
 Ninguna entrada nueva. Este sistema es el mejor defendido de los revisados, y sus

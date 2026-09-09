@@ -245,6 +245,68 @@ mantiene la cola vacía en condiciones normales.
 | `AdminsActive` es por servidor, no global | Un administrador en otro servidor no cuenta. Es lo que hace que el fallo de BUG-CANDIDATE-028 dependa de quién esté conectado |
 | Hay dos remotes duplicados en la carpeta | `CargarMusicas` y `ObtenerMusicas` aparecen dos veces en el listado de `.model.json` |
 
+## El esquema de publicación, que sí existe y sí se comprueba
+
+**HECHO.** `RevisarCanciones/AttributesRequerest.luau` declara qué tiene que traer una canción
+para poder publicarse, **con su tipo**:
+
+```lua
+return {
+	['NameSong'] = 'string',
+	['Description'] = 'string',
+	['Artista'] = 'string',
+	['Genero'] = 'string',
+	['Fechalanzamiento'] = 'string',
+	['Miniatura'] = 'number',
+	['SoundId'] = 'number',
+	['UltimaModificacionLyrics'] = 'string',
+	["Language"] = "string",
+}
+```
+
+Y se comprueba, atributo por atributo:
+
+```lua
+for AtributoNecesario, tipoInfo in self.RequerestPublishSong do
+	TotalRequermientos += 1
+	local Attribute = song:GetAttribute(AtributoNecesario)
+	if not Attribute or typeof(Attribute) ~= tipoInfo then
+		Aceptado = false
+		table.insert(requerimientosFaltantes, AtributoNecesario)
+	end
+end
+return Aceptado, requerimientosFaltantes, TotalRequermientos
+```
+
+**Registrado como correcto.** Un esquema declarado en un archivo aparte, recorrido en bucle en
+vez de con nueve `if`, que comprueba **presencia y tipo**, y que además devuelve **qué falta**
+para poder decírselo al jugador. Es la mejor validación de datos de usuario del repositorio, y
+la única que tiene forma de esquema.
+
+Es lo que hace, por ejemplo, que `Miniatura` y `SoundId` no puedan llegar como cadena —lo que
+importa para lo que registra
+[BUG-CANDIDATE-045](../testing/verification-plan.md#bug-candidate-045), donde el `AssetId` se
+espera número.
+
+**HECHO.** Los géneros y los idiomas también están declarados aparte, en
+`CrearCancion/Generos.luau`: dieciséis géneros y dos idiomas, en una lista cerrada. Un género
+inventado no encaja.
+
+## La normalización de la búsqueda
+
+**HECHO.** Hay **dos** rutas de normalización de texto en el sistema y no dan el mismo
+resultado. La del servidor quita los símbolos antes de quitar los acentos, y como los bytes de
+una vocal acentuada no son `%w`, el filtro de símbolos **los borra** en vez de dejar que
+`quitarAcentos` los convierta: `canción` acaba en `cancin`, no en `cancion`.
+
+Queda registrado como
+[BUG-CANDIDATE-052](../testing/verification-plan.md#bug-candidate-052). En un juego en
+español, no es un detalle.
+
+**Registrado como correcto en el mismo sitio:** ese filtro de símbolos sí hace falta, porque
+el texto del jugador se usa después como patrón de Lua en `string.match`, y quitar lo no
+alfanumérico elimina de paso los caracteres mágicos. El problema es el orden, no la función.
+
 ## Qué queda por leer
 
 | Archivo | Líneas | Estado |

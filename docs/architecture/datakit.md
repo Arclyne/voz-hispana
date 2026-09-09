@@ -13,12 +13,14 @@ saltar de servidor.
 
 :::info Su documentación detallada vive aparte
 
-`DataKit` es un paquete externo instalado con **wally**, y tiene **su propio sitio de
-documentación**:
+`DataKit` es un paquete externo con **su propio sitio de documentación**:
 
 ### 📘 [arclyne.github.io/data-kit](https://arclyne.github.io/data-kit/)
 
-Ese es el sitio canónico, escrito por sus autores, con el contrato de cada función. Sus
+Ese es el sitio canónico, escrito por sus autores, con el contrato de cada función. En
+**este** repositorio está copiado al árbol, no traído por un gestor de paquetes: no hay ningún
+`wally.toml`, así que actualizarlo es manual. Ver
+[Librerías de terceros](./third-party.md). Sus
 trece clases aparecen además en la [Referencia de API](/api/DataKit) de este sitio, porque
 las anotaciones viajan con el código y Moonwave las extrae — pero **la fuente es la de
 arriba**.

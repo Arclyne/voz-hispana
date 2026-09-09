@@ -173,6 +173,41 @@ dependencias en los cuatro módulos. `enabled` / `disabled` son un interruptor g
 recorre todas las instancias, y `Jobs.disabled()` es **la primera línea** del `BindToClose`:
 se detiene el trabajo antes de empezar a guardar.
 
+## Dónde sale el dinero — la pregunta que quedaba abierta
+
+**HECHO.** Los cuatro módulos de trabajo pagan, y **ninguno de los cuatro pagos lo pide el
+cliente**:
+
+| Trabajo | Pago | Qué lo dispara |
+|---|---|---|
+| `Bartender` | La mitad del precio del pedido: `self.cobros.Give(Player, self.cobros.Lerp(Pedidodata.Settings.Price, .5), true)` | Preparar la bebida. `Pedidodata` sale de la mesa de pedidos del servidor, no de la carga útil — ver [Bar](./bar-npcs.md#pedir-una-bebida) |
+| `LimpiarPiso` | `{Coins = 20}` | Un `AncestryChanged` sobre una basura que **clonó el servidor**, con `IsComplete` puesto por el servidor |
+| `ButtonMoney` | `{Coins = 10}` | Un `GetPropertyChangedSignal("Parent")` sobre un billete que clonó el servidor |
+| `CajasTransport` | Por caja entregada | La entrega, comprobada en el servidor |
+
+**Registrado como correcto**, y no por poco. Los dos que pagan por «terminar algo en el mundo»
+—`LimpiarPiso` y `ButtonMoney`— no escuchan un aviso del cliente: escuchan que **una instancia
+que creó el servidor deje de existir**. Un cliente no puede provocar eso sobre una instancia
+del servidor.
+
+Y `LimpiarPiso` añade la comprobación que faltaría:
+
+```lua
+local Player = Players:GetPlayerByUserId(clone:GetAttribute("PlayerCleaning") or 0)
+if not Player or not table.find(list.PlayersActive, tostring(Player.UserId)) then
+	return warn("no se encontro el jugador")
+end
+self.cobros.Give(Player, {Coins = 20}, true)
+```
+
+Quien cobra tiene que **seguir fichado en el trabajo**. Ni el que limpió y renunció, ni un
+tercero.
+
+Esto cierra la duda que dejaba abierta [BUG-CANDIDATE-032](../testing/verification-plan.md#bug-candidate-032):
+la lista blanca de métodos protege el **despacho**, y las rutas de pago están protegidas
+aparte, por no depender del cliente en absoluto. Un fallo en la lista blanca no se convertiría
+en dinero.
+
 ## Controles que sí sujetan
 
 | Control | Cómo |

@@ -88,6 +88,29 @@ o en un place de pruebas.
 | [033](#bug-candidate-033) | Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva | Persistencia | Posible bug / Requiere pruebas de concurrencia | Media | Alta |
 | [034](#bug-candidate-034) | Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado | Karaoke | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
 | [035](#bug-candidate-035) | El limitador de ritmo de la búsqueda de canciones está invertido | Karaoke / Persistencia | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
+| [036](#bug-candidate-036) | La lista de favoritos crece sin tope, con cadenas que elige el cliente | Casas / Persistencia | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [037](#bug-candidate-037) | La caja de botín es estrictamente mejor que la tienda de bailes | Economía | Observación / Pregunta de diseño | Media | Alta |
+| [038](#bug-candidate-038) | El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado | Chat de voz | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
+| [039](#bug-candidate-039) | El servidor marca un tutorial como terminado porque el cliente se lo dice | Tutoriales / Seguridad | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
+| [042](#bug-candidate-042) | `typee` de comando suministrado por el cliente, sin la comprobación de rol que sí hace el camino del chat | **Explotable hoy**, impacto por determinar |
+| [043](#bug-candidate-043) | Condición de victoria suministrada por el cliente, con manejador de premio **puesto** (no stub) | **Explotable hoy**, entrega un objeto de inventario |
+| [046](#bug-candidate-046) | Canal de voz y `Tool` suministrados por el cliente, sin comprobar posesión | **Explotable hoy**, acotado a voz |
+| [048](#bug-candidate-048) | `Instance` de destino suministrada por el cliente, y el servidor ejecuta el movimiento | **Explotable hoy**, acotado a objetos reales del place |
+| [049](#bug-candidate-049) | Concesión de estadística a petición del cliente; `Weight` ni siquiera recibe modelo | **Explotable hoy**, con techo en 100 |
+| [050](#bug-candidate-050) | Modelo de estación suministrado por el cliente, sin propietario ni distancia | **Explotable hoy**, es robo y no falsificación |
+| [051](#bug-candidate-051) | El nivel del jugador no sube nunca, y el requisito de nivel solo existe en el cliente | Construcción / Progresión | Confirmado por análisis estático | Baja | **Muy alta** |
+| [052](#bug-candidate-052) | La búsqueda de canciones borra las letras acentuadas en vez de normalizarlas | Karaoke / Búsqueda | Confirmado (el orden) / Requiere pruebas (el efecto) | Baja | **Muy alta** / media |
+| [050](#bug-candidate-050) | Cualquiera puede recoger el plato de cualquier cocina del servidor | Cocina / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
+| [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
+| [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
+| [045](#bug-candidate-045) | El caché de assets pierde el filtro de tipo al reintentar, y puede dejar colgado a quien espera | Karaoke / Assets | Confirmado (el filtro) + Requiere pruebas de concurrencia (el bloqueo) | Baja / Media | **Muy alta** / baja |
+| [046](#bug-candidate-046) | Cualquiera puede entrar en cualquier canal de walkie, y el objeto en el que escribe el servidor lo elige el cliente | Walkie-talkie / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
+| [047](#bug-candidate-047) | 46 muebles y todas las herramientas colocables comparten una descripción de relleno | Tiendas / Construcción | Confirmado por análisis estático | Baja (presentación) | **Muy alta** |
+| [048](#bug-candidate-048) | Cuatro interactuables mueven al personaje a donde diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
+| [049](#bug-candidate-049) | Las estadísticas de supervivencia se rellenan desde cualquier sitio, y una sin objeto siquiera | Estadísticas / Seguridad | Confirmado por análisis estático | Media | **Muy alta** |
+| [040](#bug-candidate-040) | Las dos tablas globales del place de donaciones llaman a un método que no existe | Donaciones / Persistencia | Confirmado por análisis estático | Media | **Muy alta** |
+| [041](#bug-candidate-041) | El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno | Utilidades compartidas | Confirmado por análisis estático | Media | **Muy alta** |
+| [042](#bug-candidate-042) | El comando de administración se comprueba en el chat y no en el remote | Comandos / Seguridad | Posible bug / Requiere pruebas de seguridad | Por determinar | Alta en la forma |
 
 ### Entradas de seguridad
 
@@ -105,6 +128,7 @@ formato que el resto: teoría con justificación, no acusaciones.
 | [022](#bug-candidate-022) | Id de asset suministrado por el cliente, sin comprobación de propiedad | **Explotable hoy** si un `EnumItem` viaja por el remote |
 | [023](#bug-candidate-023) | Colocación con autoridad de cliente en casa ajena | **Explotable hoy**, impacto de vandalismo |
 | [024](#bug-candidate-024) | `SoundId` y modelo suministrados por el cliente, sin moderación | **Explotable hoy**, acotado por las restricciones de audio de Roblox |
+| [039](#bug-candidate-039) | Clave y estado de tutorial suministrados por el cliente, persistidos en el perfil | **Latente** — la tabla de recompensas es un stub |
 | [025](#bug-candidate-025) | Reglas de interacción solo en el cliente en 21 de 25 manejadores | **Explotable hoy**, impacto bajo |
 | [027](#bug-candidate-027) | Reparentado arbitrario de `Instance` desde un remote | **Explotable hoy**, control sobre el mundo compartido |
 | [028](#bug-candidate-028) | Guarda de autorización que mira al servidor en vez de al llamante | **Explotable hoy**, pero sin fuga de datos: el llamante acaba expulsado |
@@ -134,6 +158,9 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Orden entre dos manejadores de `PlayerRemoving` en Invitaciones | **Correcto, y es el patrón a imitar.** `ReferralMain` usa `PlayerDataService.onBeforeClose` en vez de `Players.PlayerRemoving`, con el motivo escrito: el orden entre dos conexiones al mismo evento no está garantizado. Es la forma del arreglo que le falta a BUG-CANDIDATE-018. |
+| Doble conteo de segundos al arrancar Invitaciones | **Correcto.** No recorre `Players:GetPlayers()` porque `PlayerInit` ya reejecuta el callback: hacerlo sería sumar dos veces. Es de las pocas veces que un consumidor demuestra haber leído el contrato de `PlayerInit`. |
+| Apertura de la hoja de compartir | **Correcto.** Un mapa `sharing` impide solapes, Studio recibe un aviso en vez de un 403 confuso, y si Roblox rechaza la caducidad se reintenta con la suya por defecto para no dejar al jugador sin link. |
 | Toda la ruta de regalos en Robux | **Correcto, y es el camino mejor protegido del repositorio.** `ProcessReceipt` resuelve **toda** decisión dudosa no otorgando y dejando que Roblox reintente: producto de regalo sin destinatario, comprador igual al receptor, propiedad no verificable, `applyItem` que no devuelve `true`. Un producto creado solo para regalar jamás cae al comprador por defecto, y el código lo marca como «Seguridad crítica». |
 | Reutilizar una intención de regalo | **Correcto.** Lleva TTL, está atada a un `productId` concreto, y se consume **antes** de comprobar la caducidad, así que una vencida no queda rondando para el siguiente recibo. |
 | Varios `ProcessReceipt` compitiendo | **Correcto.** `grep` sobre todo `src/` confirma una única asignación, en `GiftHandler.server.luau`. Es un asignador global: dos scripts que lo pongan se pisan en silencio. |
@@ -142,6 +169,10 @@ engañosa:
 | Despacho de métodos por nombre en Trabajos | **Correcto, y es el mejor patrón del repositorio para esto.** El cliente manda el nombre del método, pero hay una lista blanca **por instancia** —cuatro o cinco nombres declarados junto al objeto— y quien la burla recibe `Player:Kick("Exploiter detected.")`. `LimpiarPiso` incluso deja la lista vacía para las instancias que no deben aceptar nada. |
 | Acumular trabajos | **Correcto.** `UsosPlayer` es uno por jugador y empezar otro renuncia al anterior; la limpieza compara `== getMetatable` antes de borrar, para que una señal tardía no pise el trabajo nuevo. |
 | Pago del botón VIP | **Correcto.** Solo se paga si `state == "Success"`, y `Proccess[Player]` más `MarkPrompt` impiden compras solapadas. |
+| Peticiones solapadas de permisos de micrófono | **Correcto, y es un patrón de coalescencia bien hecho.** Cada petición incrementa una versión y los resultados viejos se descartan; una bandera impide dos trabajadores; y si llega otra petición durante la espera, el bucle repite. |
+| Superficie de red del micrófono y del nametag | **Correcto.** `UpdateMicEvent` es solo servidor → cliente, y cada jugador recibe únicamente su fila de la matriz. `NametagServer` no declara ningún remote. |
+| Precio de una caja de botín | **Correcto.** El cliente elige moneda, no importe, y `LOOTBOX_PRICES` actúa como lista blanca; se cobra antes de conceder y se rechaza antes de cobrar si no queda nada por dar. |
+| Reconectar para cobrar el sueldo antes de tiempo | **Correcto.** `PlaytimeRewardSystem` compara `GetJoinData().SourceGameId` con `game.GameId`: un teleport interno respeta el temporizador, un inicio de sesión nuevo lo reinicia. |
 | Reclamar una misión | **Correcto, y de lo más completo del repositorio.** Lista blanca de grupos, tipo del hueco, la misión existe, no está reclamada, el progreso llega al objetivo, y la recompensa sale de la configuración del servidor. |
 | Doble reclamación de una misión | **Correcto hoy, por una propiedad frágil.** `Claimed = true` se escribe después de conceder, pero en todo el recorrido no hay un solo punto de suspensión, así que dos llamadas no se entrelazan. Añadir cualquier espera a `Collections.Give` o a `saveData` abriría la ventana. |
 | Giro de la ruleta | **Correcto.** `requestSpinRF` valida en cadena con un motivo por rechazo, comprueba el recurso **antes** de cobrarlo, y usa `CooldownManager` para el giro gratuito. |
@@ -1762,6 +1793,14 @@ recompensa y solo falta que alguien implemente el premio.
 
 :::
 
+**Actualización.** Al leer las seis máquinas enteras se comprobó que la clasificación
+«latente» **no vale para todas**: `ToyMachine` sí tiene manejador de premio, y entrega un
+objeto de inventario. Ese caso se separó en
+[BUG-CANDIDATE-043](#bug-candidate-043). Esta entrada sigue describiendo a las otras cuatro
+—`Stacker`, `PopTheLock`, `Basketball` y `Pong`—, y ahí sí sigue siendo latente. La tabla de
+qué llega del cliente en cada una está en
+[Máquinas de arcade](../systems/machines.md#las-otras-cuatro).
+
 #### Comportamiento observado — HECHO
 
 ```lua
@@ -2076,6 +2115,37 @@ interfaz: el cliente sigue esperando un `StartClientPlayer` que ya no va a llega
 **Comportamiento esperado:** la reconexión inicializa al jugador con normalidad.
 **Comportamiento posible:** el jugador queda en un estado inerte hasta que le toque otro
 servidor.
+
+:::tip El patrón de arreglo ya existe en este repositorio
+
+`ReferralMain.server.luau` se topó con **exactamente este riesgo** y lo resolvió, dejando
+escrito el porqué:
+
+```lua
+--[[
+	El volcado va por onBeforeClose y no por PlayerRemoving: PlayerDataInit tambien
+	escucha PlayerRemoving para cerrar el perfil, y el orden entre dos conexiones
+	al mismo evento no esta garantizado. Si el perfil se cerrara primero, los
+	segundos de la sesion se perderian y un teleport a una casa reiniciaria la
+	cuenta. onBeforeClose corre siempre antes del cierre.
+]]
+PlayerDataService.onBeforeClose(function(player)
+	ReferralService.OnPlayerLeaving(player)
+end)
+```
+
+`PlayerDataService.onBeforeClose` **sí** tiene orden garantizado: `close` ejecuta los
+callbacks antes de soltar el store, y lo hace dentro de `pcall`.
+
+Aplicado aquí, la limpieza de `DataComplete` dejaría de depender de qué manejador de
+`Players.PlayerRemoving` gane la carrera. `Data.Main` ya usa ese mecanismo para su secuencia
+de salida —`setExitSequence`, que corre dentro de `finalize`—; lo que quedó fuera es
+justamente el borrado de la entrada.
+
+Es una observación sobre la forma del arreglo, no una corrección aplicada: este proyecto no
+cambia código.
+
+:::
 
 #### Plan de verificación — *Ciclo de vida*
 
@@ -2852,9 +2922,13 @@ distancia.
 3. Repite estando al otro lado del mapa.
 4. Repite apuntando a un modelo que no sea un tocadiscos pero tenga `Emitter.Sound`.
 5. Llama en bucle y observa el efecto para el resto de jugadores.
+6. **Repite los pasos 2 a 5 con un piano.** `Piano.luau` dispara este mismo remote —no
+   tiene uno propio, ni script de servidor propio— así que una prueba que solo mire los
+   tocadiscos no cubre la mitad de la superficie. Ver
+   [Catálogo de tipos](../systems/interactable-types.md#dos-tipos-que-comparten-el-remote-de-otro).
 
 **Pasa:** el servidor rechaza el modelo, la distancia o el id.
-**Falla:** cualquiera de los cuatro pasos produce sonido.
+**Falla:** cualquiera de los pasos produce sonido.
 
 **Instrumentación sugerida:** el `print` que ya está ahí, convertido en `warn` con el nombre
 del jugador y la distancia al modelo, diría de inmediato si esto ya ocurre en producción.
@@ -2871,6 +2945,17 @@ del jugador y la distancia al modelo, diría de inmediato si esto ya ocurre en p
 **Código relacionado:** `Core/…/Client/interactable/Interactable/init.luau`, constantes de
 distancia y línea de visión; los 25 scripts de `Core/…/ServerScripts/interactable/`
 **Documentación relacionada:** [Interactuables → La matriz de validación](../systems/interactables.md#la-matriz-de-validación)
+
+**Actualización.** Al leer los 25 scripts de servidor enteros se comprobó que la gravedad
+**Baja** de esta entrada no vale para todos. Cuatro de ellos —`Bath`, `Toilet`, `Shower` y
+`Washbasin`— no solo actúan sobre el modelo que les da el cliente: **mueven al personaje
+hasta él**. Eso deja de ser «actuar a distancia» y pasa a ser «llegar», y se separa en
+[BUG-CANDIDATE-048](#bug-candidate-048). Otros seis conceden estadísticas de supervivencia
+sin comprobar nada: [BUG-CANDIDATE-049](#bug-candidate-049).
+
+Esta entrada sigue siendo la correcta para el resto —encender una lámpara ajena, abrir una
+puerta lejana— y sigue siendo la que señala la causa común: la validación no está en el
+framework.
 
 #### Comportamiento observado — HECHO
 
@@ -4251,6 +4336,2505 @@ que sí conviene, al corregirlo, es extraer esa división a una función con nom
 número doce.
 
 
+## BUG-CANDIDATE-036
+
+### La lista de favoritos crece sin tope, con cadenas que elige el cliente
+
+**Sistema:** Casas / Persistencia · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/FavoriteService.server.luau`, `onGiveFavorite`
+**Documentación relacionada:** [Recompensas → Favoritos](../systems/rewards.md#favoritos)
+
+#### Comportamiento observado — HECHO
+
+El manejador comprueba el **tipo** de lo que llega y que no esté repetido, y nada más:
+
+```lua
+local function onGiveFavorite(player: Player, serverKey: string)
+	if typeof(serverKey) ~= "string" then return false end
+
+	local store = PlayerDataService.get(player)
+	if not store or not store:isReady() then return false end
+
+	local data = store:get()
+	if table.find(data.favorites, serverKey) then return false end
+
+	store:update(function(current)
+		if not table.find(current.favorites, serverKey) then
+			table.insert(current.favorites, serverKey)
+		end
+		return current
+	end)
+```
+
+No comprueba que `serverKey` corresponda a una casa que exista, ni cuánto mide, ni cuántos
+favoritos lleva ya el jugador.
+
+#### Por qué esto puede ser un problema — HECHO
+
+`favorites` es una clave del perfil `WorldsPlayer`, es decir **se persiste**. Un cliente
+puede añadir cadenas arbitrarias, de longitud arbitraria, hasta llenar el perfil.
+
+El contraste está en el propio repositorio, que sí acota en todas las estructuras
+equivalentes:
+
+| Estructura | Tope | Dónde |
+|---|---|---|
+| Cuadros por jugador | `maxSlots = 9` | `Paint/ServerClient` |
+| Buzón de regalos | `MAX_ENTRIES = 50` | `GiftInbox` |
+| Mensajes del perfil | `maxMessages = 2000` | `Profiles.WorldsPlayer` |
+| Huecos de la rueda | `WHEEL_SLOTS = 8` | `InventoryManager` |
+| Construcciones por invitado | `MaxBuildPlace = 5` | `Stores` |
+| **Favoritos** | **ninguno** | `FavoriteService` |
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede llamar a `GiveFavorite` en bucle con cadenas distintas y hacer
+crecer su propio perfil hasta acercarse al límite de 4 MB por clave de DataStore. A partir
+de ahí, **los guardados de ese jugador empezarían a fallar** — y con ellos su moneda, su
+inventario y sus casas, porque van todos en el mismo perfil.
+
+Es el mismo patrón que [BUG-CANDIDATE-020](#bug-candidate-020), con dos diferencias que lo
+hacen menos grave: aquí el daño es al perfil **de quien lo hace**, no al de un tercero, y no
+hace falta ningún permiso.
+
+Que el daño sea autoinfligido no lo vuelve inofensivo: un jugador que se rompa el perfil se
+convierte en una incidencia de soporte, y no hay nada en el código que lo impida ni que lo
+detecte.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | No hay comprobación de longitud de `serverKey` |
+| 2 | No hay tope en el número de elementos de `favorites` |
+| 3 | No se valida que la clave corresponda a una casa existente |
+| 4 | `favorites` va en el perfil persistido, no en memoria de sesión |
+| 5 | Cinco estructuras equivalentes del mismo repositorio **sí** llevan tope |
+| 6 | `RemoveFavorite` existe, así que el jugador puede deshacerlo — pero solo si sabe qué claves metió |
+
+#### Incógnitas
+
+- Qué hace DataKit ante un perfil que supera el límite del DataStore. La misma incógnita que
+  BUG-CANDIDATE-020, y responderla vale para las dos.
+- Si la interfaz limita cuántos favoritos se pueden marcar. Aunque lo hiciera, el remote es
+  invocable directamente.
+- Cuál sería un tope razonable. Es una decisión de producto: en el repositorio conviven
+  topes de 5, 8, 9, 50 y 2 000.
+
+#### Escenario de ejemplo
+
+Un jugador con un cliente modificado llama a `GiveFavorite` diez mil veces con cadenas
+generadas. Su perfil crece hasta que DataKit no puede guardarlo. A partir de ese momento
+pierde monedas, objetos y progreso en cada sesión, y desde fuera parece un fallo del juego.
+
+**Comportamiento esperado:** el remote rechaza pasado un tope, o valida que la clave exista.
+**Comportamiento posible:** acepta indefinidamente.
+
+#### Plan de verificación — *Seguridad*, *Persistencia*
+
+1. En un place de pruebas, invoca `GiveFavorite` en bucle con cadenas aleatorias.
+2. Vuelca `PlayerDataService.getData(player).favorites` y comprueba que crecen.
+3. Sigue hasta que el guardado falle, y anota en cuántos elementos ocurre.
+4. Comprueba si el fallo se reporta o pasa en silencio.
+5. Comprueba si el jugador puede recuperarse: ¿se le carga el perfil la siguiente vez?
+
+**Pasa:** hay un tope, o las claves inexistentes se rechazan.
+**Falla:** la lista crece sin límite hasta romper el guardado.
+
+**Instrumentación sugerida:** registrar el tamaño de `favorites` al guardar, junto al del
+resto de secciones. Es la misma instrumentación que pide BUG-CANDIDATE-020 y cubre las dos.
+
+---
+
+## BUG-CANDIDATE-037
+
+### La caja de botín es estrictamente mejor que la tienda de bailes
+
+**Sistema:** Economía · **Clasificación:** Observación / Pregunta de diseño
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+:::note Esto puede ser exactamente lo que se quiere
+
+Una caja de botín **debe** ser atractiva. Lo que esta entrada señala no es que sea buena
+compra, sino que hace la tienda de bailes **inútil por completo**, y que eso puede no
+haberse calculado. Es una pregunta de diseño con los números delante, no una acusación.
+
+:::
+
+**Código relacionado:** `Core/…/ServerScripts/LootBoxService.server.luau`, `LOOTBOX_PRICES`
+y `getUnownedLoot`; `Core/ReplicatedStorage/DancesInfo.luau`
+**Documentación relacionada:** [Recompensas → La caja de botín](../systems/rewards.md#la-caja-de-botín)
+
+#### Comportamiento observado — HECHO
+
+Los números están todos en el código, y no hace falta interpretarlos:
+
+| | Valor | Dónde |
+|---|---|---|
+| Precio de la caja | **500 Coins** (o 1 ChestKey) | `LOOTBOX_PRICES` |
+| Precio de un baile en la tienda | **1 000 Coins**, los 14 | `DancesInfo` |
+| Bailes a la venta | 14 de 14 (`IsForSale = true`) | `DancesInfo` |
+| ¿La caja puede dar repetidos? | **No** | `getUnownedLoot` filtra lo ya poseído |
+| ¿La caja puede fallar? | No, si queda algo por conseguir | Rechaza **antes** de cobrar si el catálogo está agotado |
+
+#### Por qué esto puede ser un problema — HECHO
+
+La caja cuesta **la mitad** que el artículo más barato que puede entregar, **nunca repite**,
+y además puede dar juguetes. Como el catálogo se filtra contra lo que el jugador ya tiene,
+cada compra es un artículo nuevo garantizado.
+
+De ahí se sigue algo aritmético: **no existe ninguna situación en la que comprar un baile en
+la tienda sea mejor que comprar una caja.** La tienda solo aporta elegir *cuál*, y esa
+ventaja se agota sola: comprando cajas se acaban teniendo todos.
+
+Conseguir los 14 bailes cuesta 14 000 Coins en la tienda. Por cajas cuesta **7 000 como
+máximo**, y de camino salen todos los juguetes.
+
+#### Teoría — TEORÍA
+
+Con el sueldo por tiempo jugado a 150 Coins/hora, la diferencia es de unas 46 horas de juego
+frente a unas 93. No es un matiz de balance: es un factor de dos sobre el precio de todo el
+contenido cosmético.
+
+Lo que hace pensar que no está calculado —y no que sea una promoción deliberada— es que
+`DancesInfo` declara `rarityWeight` para cada baile, y la caja **no lo usa**: reparte
+uniforme con `math.random(1, #lootList)`. Ese campo sí lo honra `ShopServerSystem` para
+ponderar su rotación. Alguien previó que las cajas tuvieran rarezas; el código que las
+reparte no llegó a leerlas.
+
+Con pesos aplicados, un baile raro podría costar muchas cajas y el equilibrio sería otro.
+Sin ellos, todo vale lo mismo y la caja es simplemente un descuento del 50 %.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `LOOTBOX_PRICES.Coins = 500`; los 14 bailes valen 1 000 |
+| 2 | `getUnownedLoot` garantiza que nunca se repite |
+| 3 | Se rechaza antes de cobrar si no queda nada por conseguir, así que tampoco se puede desperdiciar |
+| 4 | `getRandomReward` es uniforme: no consulta `rarityWeight` |
+| 5 | `rarityWeight` **sí** lo usa `ShopServerSystem` para su rotación, así que el campo funciona: es este consumidor el que lo ignora |
+| 6 | Los 14 bailes tienen `rarityWeight = 100`, de modo que hoy aplicarlo no cambiaría nada — el problema aparece al añadir uno raro |
+
+#### Incógnitas
+
+- Si `ChestKey` se consigue de alguna forma que cambie el cálculo. No se ha encontrado dónde
+  se concede.
+- Cuántos juguetes hay en `Assets/Tools/Toys`, que es lo que determina el tamaño real del
+  catálogo y por tanto cuántas cajas hacen falta.
+- Si la tienda de bailes tiene alguna ventaja que no se vea en el código —una rotación
+  limitada, por ejemplo— que justifique el doble de precio.
+
+#### Escenario de ejemplo
+
+Un jugador quiere el baile del robot. En la tienda son 1 000 Coins. Compra dos cajas por el
+mismo dinero, se lleva dos cosmética distintos, y una de ellas puede ser justo ese baile. La
+tienda nunca es la opción razonable.
+
+**Comportamiento esperado:** la caja compensa el azar con precio, no lo contrario.
+**Comportamiento posible:** la caja es mejor en todos los ejes a la vez.
+
+#### Plan de verificación — *Funcional*
+
+Esto no se verifica ejecutando, se verifica decidiendo. Aun así conviene medirlo:
+
+1. Cuenta los juguetes de `Assets/Tools/Toys` para conocer el tamaño del catálogo.
+2. Calcula el coste medio de completarlo por cajas y compáralo con comprarlo suelto.
+3. Comprueba cómo se consigue `ChestKey` y qué vale en Coins equivalentes.
+4. Decide si `rarityWeight` debe aplicarse en la caja; si sí, es un cambio de una línea en
+   `getRandomReward`.
+5. Decide precios con esos números delante.
+
+**Pasa:** los números salen de una decisión consciente.
+**Falla:** nadie los había puesto uno al lado del otro.
+
+**Instrumentación sugerida:** registrar cuántas cajas se abren y cuántos bailes se compran
+en la tienda. Si la segunda cifra es cerca de cero, la pregunta está respondida sin
+necesidad de discutir el balance.
+
+
+## BUG-CANDIDATE-038
+
+### El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado
+
+**Sistema:** Chat de voz · **Clasificación:** Bug probable / Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/ServerScripts/MicManagerServer.server.luau`, dentro de
+`requestMicUpdate`
+**Documentación relacionada:** [Nametags y micrófono](../systems/nametags.md#lo-que-sí-falla)
+
+#### Comportamiento observado — HECHO
+
+```lua
+local success, result = pcall(function()
+	return (VoiceChatService :: any):GetChatGroupsAsync(allPlayers)
+end)
+
+if not success then
+	if not RunService:IsStudio() and tostring(result):find("disabled") then
+		warn("[MicServer] ❌ Error en GetChatGroupsAsync. Detalles:", result)
+	end
+elseif myVersion ~= requestVersion then
+	...
+```
+
+La condición para avisar es que el mensaje de error **contenga** `"disabled"`.
+
+#### Por qué esto es un problema — HECHO
+
+`"disabled"` es el mensaje del caso **esperado y benigno**: el chat de voz no está activado
+en ese universo o para ese jugador. Es justo el que no interesa registrar, y es el único que
+se registra.
+
+Cualquier otro fallo —throttling, un error transitorio de Roblox, un cambio en la API, un
+`allPlayers` inesperado— **no imprime nada**. El `pcall` lo traga y el código sigue.
+
+| Tipo de fallo | ¿Se avisa? | ¿Debería? |
+|---|---|---|
+| Chat de voz desactivado | **Sí** | No — es el caso normal cuando está apagado |
+| Throttling o error transitorio | **No** | Sí |
+| Cambio o retirada de la API | **No** | Sí |
+| Cualquier otra excepción | **No** | Sí |
+
+La forma que tendría sentido es la contraria: `not tostring(result):find("disabled")`.
+
+#### Lo que agrava la consecuencia — HECHO
+
+Un fallo no solo es silencioso: **no se reintenta**. Tras el `pcall` fallido el flujo cae al
+final del bucle:
+
+```lua
+if myVersion == requestVersion then
+	break
+end
+```
+
+Como el fallo no incrementa `requestVersion`, la condición se cumple y el trabajador
+termina. No hay reintento, no hay retroceso, no hay nada hasta que alguien entre o salga del
+servidor y dispare otra pasada.
+
+Y mientras tanto, `sendMicPermissions` no llega a llamarse, así que **`UpdateMicEvent` no se
+dispara**. Los clientes conservan la matriz anterior; un jugador recién entrado no tiene
+ninguna.
+
+#### Teoría — TEORÍA
+
+Si `GetChatGroupsAsync` empieza a fallar por un motivo que no sea «desactivado», el sistema
+de permisos de micrófono se queda congelado **sin dejar rastro en el registro**. Los
+jugadores nuevos no aparecen en la matriz de nadie, y los que ya estaban mantienen una foto
+vieja: gente que debería poder hablar no puede, o al revés.
+
+Desde fuera se ve como «el chat de voz va raro», que es de las incidencias más difíciles de
+diagnosticar, y en el registro del servidor no hay absolutamente nada que apunte a la causa.
+
+Es la misma familia que [BUG-CANDIDATE-001](#bug-candidate-001) —el control de chat de voz
+del arranque, que falla abierto— y refuerza lo que ya señala
+[Dependencias](../systems/../architecture/dependencies.md): en este repositorio los fallos
+relacionados con `VoiceChatService` tienden a pasar desapercibidos.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La condición es `tostring(result):find("disabled")` sin negar |
+| 2 | `"disabled"` corresponde al caso esperado, no al excepcional |
+| 3 | No hay ninguna rama `else` que registre los demás fallos |
+| 4 | Un fallo no incrementa `requestVersion`, así que el bucle termina sin reintentar |
+| 5 | Sin `sendMicPermissions`, `UpdateMicEvent` no se dispara y las matrices quedan como estaban |
+| 6 | El resto del archivo está cuidadosamente escrito —coalescencia por versión, bandera de trabajador, comprobación de presencia— lo que hace pensar en una condición mal tecleada, no en un descuido general |
+
+#### Incógnitas
+
+- El texto exacto que devuelve Roblox cuando el chat de voz está desactivado. Si no contiene
+  `"disabled"`, entonces **no se avisa de nada nunca**, y el problema es aún más simple de lo
+  descrito.
+- Con qué frecuencia falla `GetChatGroupsAsync` en producción por motivos distintos. Hoy no
+  hay forma de saberlo, que es precisamente el problema.
+- Si el cliente hace algo sensato cuando nunca recibe una matriz. `NametagMicClient` no se
+  ha leído.
+
+#### Escenario de ejemplo
+
+Roblox tiene una incidencia y `GetChatGroupsAsync` empieza a lanzar durante veinte minutos.
+Nadie ve nada en el registro. Los jugadores que entran en ese rato no pueden hablar con
+nadie —o pueden hablar con todos, según lo que hiciera el cliente sin matriz— y cuando pasa
+la incidencia el problema desaparece solo. En el postmortem no hay ni una línea.
+
+**Comportamiento esperado:** se avisa de los fallos inesperados y se calla el esperado.
+**Comportamiento posible:** exactamente lo contrario.
+
+#### Plan de verificación — *Recuperación ante fallos*
+
+1. En un place de pruebas, sustituye la llamada por una que lance un error que **no**
+   contenga `"disabled"`. *(Instrumentación para la prueba.)*
+2. Entra con dos cuentas y comprueba el registro del servidor: no debería aparecer nada.
+3. Comprueba si los clientes reciben alguna matriz.
+4. Repite lanzando un error que **sí** contenga `"disabled"` y confirma que ese sí se avisa.
+5. Comprueba si una tercera entrada al servidor recupera el sistema, o si sigue congelado.
+
+**Pasa:** los fallos inesperados aparecen en el registro.
+**Falla:** solo aparece el de «disabled».
+
+**Instrumentación sugerida:** negar la condición y añadir un contador de fallos consecutivos.
+Es un **cambio de código**, así que queda registrado aquí y no aplicado; se menciona porque
+la corrección es de un carácter y el resto del archivo ya está bien construido para
+aprovecharla.
+
+
+## BUG-CANDIDATE-039
+
+### El servidor marca un tutorial como terminado porque el cliente se lo dice
+
+**Sistema:** Tutoriales / Seguridad · **Clasificación:** Confirmado por análisis estático — **latente**
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja hoy, Alta el día que haya recompensas · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/GuideService/Server/init.luau`,
+`CloseGuide`; `Core/ReplicatedStorage/Shared/GuideService/Server/Rewards.luau`
+**Documentación relacionada:** [Tutoriales y guías](../systems/tutorials.md#lo-que-el-servidor-no-comprueba)
+
+#### Comportamiento observado — HECHO
+
+El único remote del sistema se conecta así, sin envoltorio:
+
+```lua
+if not IsClient then
+	event:WaitForChild('EndAction').OnServerEvent:Connect(module.CloseGuide)
+end
+```
+
+Y el manejador, en su rama de servidor:
+
+```lua
+local parametro = {...}
+local Guide:BoolValue = module.GetGuide(parametro[1])
+local Key:string = quitarEspacios(parametro[2])
+local IsDone = parametro[3] or "pending"
+if Guide and typeof(Key)=='string' then
+	if module.GetState(parametro[1], Key) ~= UserInputState.End then
+		Guide:SetAttribute(Key,IsDone)
+		if IsDone == "ended" then
+			Rewards[Key](parametro[1])
+		end
+	end
+end
+```
+
+`OnServerEvent` antepone el `Player`, así que `parametro[2]` es la **clave** y
+`parametro[3]` el **estado**, y los dos vienen del cliente tal cual.
+
+#### Por qué esto es un problema — HECHO
+
+El recorrido del tutorial —`Bind`, `AddPage`, `Start`, pasar páginas, llegar al final— vive
+**entero en el cliente**. El servidor no ve ni una página. Lo único que le llega es el
+aviso final, y ese aviso es el que decide qué se escribe.
+
+| Lo que el servidor comprueba | Lo que no |
+|---|---|
+| Que la clave sea una cadena | Que el tutorial exista |
+| Que el estado guardado no sea ya `"ended"` | Que el jugador lo haya empezado |
+| | Que lo haya recorrido |
+| | Que el estado enviado sea uno de los tres válidos |
+
+Es decir: `EndAction:FireServer("LoQueSea", "ended")` escribe el atributo `LoQueSea = "ended"`
+y llama a la entrada `"LoQueSea"` de `Rewards` con el jugador como argumento.
+
+#### Lo que hoy lo mantiene inofensivo — HECHO
+
+`Rewards.luau` completo:
+
+```lua
+local module = {}
+setmetatable(module, {__index = function() return print end})
+return module
+```
+
+Cualquier índice devuelve `print`. Ningún tutorial concede nada, así que la escritura
+falsificada no vale moneda ni objetos. Es exactamente la misma forma que
+[BUG-CANDIDATE-016](#bug-candidate-016): superficie abierta, manejador vacío.
+
+El metatable también explica por qué una clave inventada **no lanza error**: si `Rewards`
+fuera una tabla normal, `Rewards["LoQueSea"]` sería `nil` y llamarlo reventaría el hilo del
+remote. El `__index` convierte lo que sería un fallo ruidoso en un `print` silencioso.
+
+#### Lo que agrava la consecuencia — HECHO
+
+Lo escrito **se persiste**. `PlayerSchema` declara `guide = { Name = "GuideService", Value = false }`
+y `PlayerDataReplicator` lo trata como `kind = "record"`, cuyo serializador recorre
+`GetAttributes()` y guarda todos. El atributo falsificado entra en el perfil del jugador y
+vuelve en la siguiente sesión.
+
+Y como la clave es libre, el número de atributos distintos que un cliente puede sembrar en
+su propio perfil **no tiene tope declarado en este código**. El límite real lo pone el
+tamaño máximo del perfil en DataKit; ver [Persistencia](../architecture/persistence.md).
+Es la misma familia que
+[BUG-CANDIDATE-036](#bug-candidate-036) —lista sin tope con cadenas elegidas por el
+cliente— y que [BUG-CANDIDATE-020](#bug-candidate-020).
+
+#### Teoría — TEORÍA
+
+Hoy: un jugador puede saltarse el tutorial de bienvenida, o marcarse como «ya lo vi» sin
+verlo, o llenar su propio perfil de atributos basura. Nada de eso le da ventaja.
+
+El día que alguien rellene `Rewards` —que es evidentemente para lo que está— cada entrada
+se convierte en un concesor de recompensa invocable desde el cliente, una vez por clave y
+por jugador. Y la persona que rellene esa tabla estará mirando `Rewards.luau`, no
+`CloseGuide`, así que no hay razón para que se dé cuenta.
+
+Lo que hace esta entrada distinta de las demás de su familia es que la guarda que falta no
+se puede añadir en el sitio obvio: el servidor **no dispone del dato** con el que
+comprobarlo. Cerrarlo bien exige que el recorrido —o al menos su inicio y su avance— pase
+por el servidor. Eso es rediseño, no un parche, y por eso queda registrado y no propuesto.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `OnServerEvent:Connect(module.CloseGuide)` conecta el manejador sin ninguna capa intermedia |
+| 2 | `parametro[2]` (clave) y `parametro[3]` (estado) vienen del cliente |
+| 3 | La única guarda de estado es `~= UserInputState.End`: limita a una escritura por clave, no a claves legítimas |
+| 4 | No existe ninguna lista de tutoriales válidos en el lado servidor |
+| 5 | `Bind`, `AddPage` y `Start` son código de cliente; el servidor no ve el recorrido |
+| 6 | `Rewards` devuelve `print` para cualquier índice, lo que hoy anula el impacto y silencia el error |
+| 7 | `PlayerSchema` y `PlayerDataReplicator` persisten el `BoolValue` y sus atributos |
+| 8 | `IsDone` no se valida contra `{"pending","cancel","ended"}`: cualquier cadena se guarda |
+
+#### Incógnitas
+
+- Si `Rewards` está pensado para rellenarse o si el diseño es que los tutoriales nunca den
+  nada. El `READ ME` del autor dice que el recorrido «se guardará en el dataStore», pero no
+  menciona recompensas.
+- El tope real de tamaño de un perfil de DataKit, y qué ocurre al superarlo: si el guardado
+  falla entero o si se trunca. `Store.luau` está leído solo en parte.
+- Si algún otro sistema lee estos atributos para decidir algo. La única lectura encontrada
+  es la del propio `GuideService`.
+
+#### Escenario de ejemplo
+
+Meses después alguien añade al tutorial de bienvenida una recompensa de 500 monedas
+rellenando `Rewards.Bienvenida = function(p) Collections.Give(p, "Coins", 500) end`. La
+prueba pasa: se hace el tutorial, llegan las monedas. Lo que no se prueba es que
+`EndAction:FireServer("Bienvenida", "ended")` desde la consola del cliente hace lo mismo sin
+ver una sola página, y que si se añaden diez tutoriales con recompensa son diez cobros de
+una línea cada uno.
+
+**Comportamiento esperado:** el servidor concede porque le consta que el tutorial se recorrió.
+**Comportamiento posible:** el servidor concede porque el cliente afirma que se recorrió.
+
+#### Plan de verificación — *Seguridad*
+
+1. En un place de pruebas, añade a `Rewards` una entrada con un `print` distinguible para la
+   clave `Bienvenida`. *(Instrumentación para la prueba.)*
+2. Entra y **no** hagas el tutorial. Desde un `LocalScript`, dispara
+   `EndAction:FireServer("Bienvenida", "ended")`.
+3. Comprueba el registro del servidor: ¿aparece la entrada instrumentada?
+4. Comprueba el atributo `Bienvenida` sobre el `BoolValue` `GuideService` del jugador.
+5. Dispara con una clave inventada (`"NoExiste"`) y confirma que se escribe el atributo y que
+   no se lanza ningún error.
+6. Repite el paso 2 y confirma que la segunda vez **no** vuelve a conceder.
+7. Sal y vuelve a entrar: comprueba si el atributo falsificado ha sobrevivido al perfil.
+
+**Pasa:** el paso 3 no registra nada y el paso 4 no encuentra el atributo.
+**Falla:** cualquiera de los dos ocurre.
+
+**Instrumentación sugerida:** ninguna que sea un parche. Lo mínimo honesto sería una lista
+blanca de claves en el lado servidor y validar `IsDone` contra los tres valores; eso corta
+las claves inventadas, pero **no** cierra el problema de fondo, que es que el servidor no
+presencia el recorrido. Es un **cambio de código** y aquí no se aplica.
+
+
+## BUG-CANDIDATE-040
+
+### Las dos tablas globales del place de donaciones llaman a un método que no existe
+
+**Sistema:** Donaciones / Persistencia · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/ComprasTablero/init.luau`,
+`SaveChangePlayer` (línea 248) y el bucle de `UpdateLeaderboards`;
+`Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau`
+**Documentación relacionada:** [Place de donaciones](../systems/donations-place.md#las-tablas-globales)
+
+#### Comportamiento observado — HECHO
+
+```lua
+function module:SaveChangePlayer(Player:Player, Data)
+	if Client or not Player then return end
+	if not self.UpdateUpdatePlayer[Player] or tick()-self.UpdateUpdatePlayer[Player] >= 40 then
+		self.UpdateUpdatePlayer[Player] = Player:IsDescendantOf(game) and tick() or nil
+		Data = typeof(Data)=='table' and Data or (self.DataBase.Bye(Player) or {SaveAllStats = function() return {} end}):SaveAllStats()
+		self.GlobalData:SetData("TopSellers", tostring(Player.UserId), self:GetStat(Data,"Sell"))
+		self.GlobalData:SetData("TopBuyers",  tostring(Player.UserId), self:GetStat(Data,"Buy"))
+```
+
+`self.DataBase` lo inyecta `Data/Main/init.server.luau`:
+
+```lua
+Tablero.DataBase = PlayerDataReplicator
+```
+
+#### Por qué esto es un problema — HECHO
+
+`PlayerDataReplicator` no tiene `Bye`. Su superficie pública, entera:
+
+| Miembro | |
+|---|---|
+| `PlayerDataReplicator.hydrate(player)` | |
+| `PlayerDataReplicator.markReady(player)` | |
+| `PlayerDataReplicator.setExitSequence(fn)` | |
+| `PlayerDataReplicator.flush(player)` | |
+| `PlayerDataReplicator.finalize(player)` | |
+| `PlayerDataReplicator.DataComplete` | tabla |
+| `PlayerDataReplicator.KaraokeFactory` | inyectada |
+
+`Bye` no está. Y `SaveAllStats` tampoco existe en ningún archivo del repositorio, salvo en
+el respaldo escrito en esa misma línea.
+
+**El respaldo no protege de esto.** En `A.Bye(Player) or B`, Lua evalúa la llamada primero;
+llamar a `nil` lanza `attempt to call a nil value` antes de que el `or` mire la alternativa.
+El `or` cubre el caso «`Bye` devolvió `nil`», no el caso «`Bye` no existe».
+
+`SaveChangePlayer` solo se llama desde un sitio, y siempre sin `Data`:
+
+```lua
+if self.DataBase.DataComplete[Player.UserId] then
+	self:SaveChangePlayer(Player)
+end
+```
+
+Con `Data` nulo, la rama del `or` es la única que se evalúa. Siempre.
+
+#### Lo que agrava la consecuencia — HECHO
+
+El bucle que lo llama vive en un `task.spawn` **sin `pcall`**:
+
+```lua
+self.SpawnUpdateLeaderboard = self.SpawnUpdateLeaderboard or task.spawn(function()
+	while true do
+		for _,Player:Player in Players:GetPlayers() do
+			if self.DataBase.DataComplete[Player.UserId] then
+				self:SaveChangePlayer(Player)
+			end
+		end
+		local list = {}
+		for index,value in {Buyings = "TopBuyers",Sellers ="TopSellers"} do
+			list[index] = self:GetLeaderboard(value)
+		end
+		self.LeaderActual = list
+		self.LeaderSignal:FireAllClients(self.LeaderActual)
+		task.wait(60 * 3)
+	end
+end)
+```
+
+El error mata el hilo en la primera vuelta en que haya un jugador con datos cargados, que en
+la práctica es la primera vuelta. Y **la guarda perezosa impide que se reintente**:
+`self.SpawnUpdateLeaderboard` sigue siendo verdadera —apunta a un hilo muerto— así que
+ningún `UpdateLeaderboards` posterior vuelve a arrancarlo.
+
+Cadena completa:
+
+| Efecto | |
+|---|---|
+| `GetLeaderboard` | no llega a ejecutarse nunca |
+| `self.LeaderActual` | se queda en `nil` para siempre |
+| `LeaderSignal:FireClient(Player, self.LeaderActual or {})` | manda `{}` a cada cliente que lo pide |
+| El cliente | ve `NoPlayers.Visible = true` en las dos tablas |
+| `RatingBuyers` / `RatingSellers` en `GlobalDataStore` | no las escribe **nadie más** en el repositorio |
+
+#### Teoría — TEORÍA
+
+Las dos tablas globales del place de donaciones —mayores compradores y mayores
+vendedores— están vacías desde siempre y no se van a llenar solas. No es que muestren datos
+viejos: es que no hay datos, porque el único escritor es el mismo bucle que muere antes de
+escribir.
+
+Desde fuera se ve como «las tablas no funcionan», sin ningún síntoma más. El teletipo de
+compras, que es la parte visible del mismo módulo, **sí funciona**: va por otra ruta
+(`AddCompras` ← `MessagingService`) que no toca `SaveChangePlayer`. Eso hace fácil creer que
+`ComprasTablero` está bien.
+
+Lo más probable es que `ComprasTablero` se escribiera contra una versión anterior de la capa
+de datos, con un `Bye(Player)` que devolvía un objeto de sesión, y que la reescritura de
+`PlayerDataReplicator` a `hydrate` / `flush` / `finalize` no arrastrara esta llamada. Es la
+misma familia que [BUG-CANDIDATE-034](#bug-candidate-034) —código correcto en su día que
+quedó colgando de un nombre que ya no está— pero aquí el efecto **no es latente: es hoy**.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `grep -rn "Bye" --include=*.luau src` devuelve exactamente una línea: la llamada |
+| 2 | `grep -rn "SaveAllStats"` devuelve la misma línea y ninguna más |
+| 3 | `PlayerDataReplicator` declara cinco funciones, ninguna llamada `Bye` |
+| 4 | `Tablero.DataBase = PlayerDataReplicator` es la única asignación de `DataBase` en el módulo |
+| 5 | `SaveChangePlayer` se llama desde un solo sitio y siempre sin el segundo argumento |
+| 6 | El `or` no protege: la llamada se evalúa antes que la alternativa |
+| 7 | El bucle no tiene `pcall` |
+| 8 | La guarda `self.SpawnUpdateLeaderboard or task.spawn(...)` no distingue un hilo vivo de uno muerto |
+| 9 | `SaveChangePlayer` es el único escritor de `TopBuyers` y `TopSellers` en todo el repositorio |
+
+#### Incógnitas
+
+- Si el place de donaciones está publicado y en uso. Si nunca se abrió al público, esto no ha
+  afectado a nadie todavía.
+- Si `GlobalDataStore` contiene datos de `RatingBuyers` / `RatingSellers` escritos por una
+  versión anterior del código. Solo se puede saber leyendo el DataStore real.
+- Si el error aparece en el registro del servidor. Un error en un `task.spawn` sí se imprime
+  en Roblox, así que debería haber un rastro — pero solo uno, en el arranque, y luego
+  silencio.
+
+#### Escenario de ejemplo
+
+Se abre el place de donaciones. El teletipo de compras funciona: las tarjetas aparecen,
+cambian de color según el importe y se van. Las dos tablas de la pared dicen «no hay
+jugadores» y siguen diciéndolo al día siguiente, y al mes. En el registro del servidor hay
+un `attempt to call a nil value` de hace semanas, perdido entre el ruido del arranque.
+
+**Comportamiento esperado:** las tablas se refrescan cada 3 minutos con los totales del perfil.
+**Comportamiento posible:** el bucle muere en la primera vuelta y las tablas nunca se llenan.
+
+#### Plan de verificación — *Ciclo de vida*
+
+1. Abre el place de donaciones (`PlaceId` 82871403803520) en Studio con **Enable Studio
+   Access to API Services** activado.
+2. Entra con una cuenta y espera a que `DataComplete[UserId]` deje de ser `'no complete'`.
+3. Mira la salida: debería aparecer un error de `attempt to call a nil value` procedente de
+   `ComprasTablero`, línea 248.
+4. Comprueba `Tablero.SpawnUpdateLeaderboard`: debería seguir siendo un `thread` cuyo estado
+   es `dead`.
+5. Espera más de 3 minutos y comprueba que `Tablero.LeaderActual` sigue siendo `nil`.
+6. Comprueba las dos GUI etiquetadas `TopBuyersGUI` y `TopSellersGUI`: `NoPlayers` visible.
+7. Comprueba en `GlobalDataStore` si `RatingBuyers` tiene alguna entrada.
+8. Confirma por contraste que el **teletipo sí funciona**: haz una compra y comprueba que la
+   tarjeta aparece. Eso separa este fallo del resto del módulo.
+
+**Pasa:** las tablas se pueblan y `LeaderActual` deja de ser `nil`.
+**Falla:** el error del paso 3 aparece y el paso 5 sigue en `nil`.
+
+**Instrumentación sugerida:** ninguna hace falta para observarlo — basta mirar la salida. La
+corrección exige decidir de dónde salen los totales ahora que `Bye` no existe, y eso es un
+**cambio de código** que aquí no se aplica. Cuando se haga, conviene envolver el bucle en un
+`pcall` y comprobar `coroutine.status` en la guarda perezosa, porque las dos cosas que lo
+hicieron invisible siguen ahí.
+
+
+## BUG-CANDIDATE-041
+
+### El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno
+
+**Sistema:** Utilidades compartidas · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/Running.luau`, la función `Running`
+**Documentación relacionada:** [Utilidades compartidas](../systems/shared-utilities.md#runningluau-el-bucle-compartido)
+
+#### Comportamiento observado — HECHO
+
+```lua
+for _,v in module.Functions do
+	if not v.aviable or (now - v.startTime) < v.cold then continue end
+	v.startTime = now
+	local nice, ErrorMessage = pcall(task.spawn, v.fun, delta)
+	if not nice then
+		warn(ErrorMessage)
+		module:ElimineFunct(v)
+	end
+end
+```
+
+La intención se lee sola: si una tarea del bucle falla, se avisa y se saca de la lista para
+que no siga fallando cada fotograma.
+
+#### Por qué esto es un problema — HECHO
+
+`pcall(task.spawn, v.fun, delta)` protege la llamada a **`task.spawn`**, no la ejecución de
+`v.fun`. `task.spawn` arranca un hilo nuevo; un error dentro de ese hilo se reporta a la
+salida de Roblox pero **no vuelve** al llamante, así que el `pcall` no lo ve.
+
+| Qué falla | ¿Lo ve el `pcall`? |
+|---|---|
+| `v.fun` lanza un error | **No** — está en otro hilo |
+| `v.fun` lanza tras un `task.wait` | **No** |
+| `task.spawn` recibe algo que no es función ni hilo | Sí — pero `AddFunct` ya lo filtra con `typeof(fun) ~= 'function'` |
+
+El único caso que el `pcall` puede atrapar es justo el que `AddFunct` ya hizo imposible. La
+rama `if not nice` es **código muerto**: nunca se entra en ella.
+
+#### Lo que agrava la consecuencia — HECHO
+
+`Running` es compartido. Lo usan `ComprasTablero`, `AreaSystem` y tres consumidores más, y
+es **una sola lista y una sola conexión** por contexto: `Heartbeat` en el servidor,
+`RenderStepped` en el cliente.
+
+Una tarea que empiece a lanzar sigue en la lista para siempre, se relanza cada fotograma —o
+cada `cold` segundos— y llena la salida. Nada la retira. En el cliente eso es 60 errores por
+segundo si su `cold` es cero.
+
+**OBSERVACIÓN, dentro de lo mismo.** `ElimineFunct` hace `table.remove` sobre
+`module.Functions`, y algunas tareas se retiran a sí mismas desde dentro de su propia
+ejecución —`ComprasTablero:CreateRunning` lo hace—. Como `task.spawn` ejecuta el cuerpo de
+forma síncrona hasta el primer `yield`, esa retirada ocurre **durante** el `for` que recorre
+la lista, y el elemento siguiente se salta ese fotograma. Con `aviable` y el enfriamiento por
+medio el efecto es un fotograma de retraso, no una pérdida. Se anota, no se eleva.
+
+#### Teoría — TEORÍA
+
+Cuando una tarea del bucle empiece a fallar —un `Gui` destruido que se sigue indexando, un
+jugador que se fue— el juego no se cae, pero la salida se inunda y no hay nada que corte la
+sangría. Y como la rama de retirada existe y está escrita, quien lea el archivo buscando por
+qué no se retiró va a concluir que la tarea no falló, cuando lo que pasa es que el bucle
+nunca se enteró.
+
+La forma correcta sería `task.spawn(function() ... pcall(v.fun, delta) ... end)` o
+`local ok, err = pcall(v.fun, delta)` sin `task.spawn`, según se quiera que la tarea pueda
+ceder o no. Las dos son **cambios de código**, y aquí no se aplican.
+
+Es la misma familia que [BUG-CANDIDATE-038](#bug-candidate-038): una guarda escrita al
+revés que convierte un fallo ruidoso en uno invisible — con el matiz de que aquí el fallo
+**sí** se imprime (lo imprime Roblox, no el `warn` del archivo) y lo que se pierde es la
+retirada.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `pcall(task.spawn, v.fun, delta)` pasa `v.fun` como argumento de `task.spawn`, no lo llama dentro del `pcall` |
+| 2 | `task.spawn` no repropaga los errores del hilo que crea |
+| 3 | `AddFunct` ya rechaza lo que no sea función, así que el único fallo posible de `task.spawn` no puede darse |
+| 4 | La rama `if not nice then warn(...); ElimineFunct(v) end` es por tanto inalcanzable |
+| 5 | `module.Functions` y `active` son de módulo: una sola lista y una sola conexión por contexto |
+| 6 | Cinco consumidores comparten esa lista |
+
+#### Incógnitas
+
+- Si alguna de las cinco tareas registradas hoy puede lanzar. Ninguna de las leídas lo hace
+  de forma obvia, pero `AreaSystem` toca instancias del mundo, que es donde suelen aparecer
+  estos errores.
+- Si el error de un hilo de `task.spawn` aparece en el registro del servidor o solo en la
+  salida de Studio. Debería aparecer en los dos, pero conviene comprobarlo.
+
+#### Escenario de ejemplo
+
+Alguien registra en `Running` una tarea que anima una GUI. La GUI se destruye al cambiar de
+pantalla. A partir de ese momento la tarea lanza cada fotograma. La consola del cliente se
+llena, el rendimiento cae por el coste de crear un hilo 60 veces por segundo para que muera
+al instante, y en el código hay una rama que dice, negro sobre blanco, que eso no debería
+poder pasar.
+
+**Comportamiento esperado:** una tarea que falla se retira de la lista.
+**Comportamiento posible:** nunca se retira, porque el `pcall` no ve el fallo.
+
+#### Plan de verificación — *Recuperación ante fallos*
+
+1. En un place de pruebas, registra una tarea que lance siempre:
+   `Running:AddFunct(function() error("prueba") end)`. *(Instrumentación para la prueba.)*
+2. Mira la salida: el error debería aparecer repetidamente.
+3. Comprueba `#Running.Functions`: debería seguir siendo el mismo número.
+4. Comprueba que el `warn(ErrorMessage)` del archivo **no** aparece en la salida — ese es el
+   indicador de que el `pcall` no se disparó.
+5. Repite con `cold = 1` y confirma que el error aparece una vez por segundo, no una vez.
+
+**Pasa:** la tarea se retira tras el primer fallo y el error deja de aparecer.
+**Falla:** el error se repite y la lista no encoge.
+
+**Instrumentación sugerida:** mover el `pcall` dentro del hilo. Es un **cambio de código**
+y aquí queda registrado, no aplicado.
+
+
+## BUG-CANDIDATE-042
+
+### El comando de administración se comprueba en el chat y no en el remote
+
+**Sistema:** Comandos / Seguridad · **Clasificación:** Posible bug / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Por determinar · **Confianza:** Alta en la forma, **baja en el impacto**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/Commands.luau`, `SearchCommand` y
+`Works`; `Events/Other/Commands`
+**Documentación relacionada:** [Utilidades compartidas](../systems/shared-utilities.md#commandsluau-los-comandos-de-chat)
+
+#### Comportamiento observado — HECHO
+
+Hay dos caminos hasta el mismo remote, y solo uno comprueba el rol.
+
+**Camino del chat**, con comprobación:
+
+```lua
+if string.sub(message,1,1) == '/' then
+	...
+	if not Commands.IsWihAdmin or self.AdminPanel:IsAdmin(player, Commands.SuperAdmin) then
+		return Commands.typee
+	end
+```
+
+`self.AdminPanel` es el módulo de Karaoke, inyectado por `Data/Main`, y su `IsAdmin` delega
+en `RoleService:IsRole(Player, "KaraokeSuperAdmin" | "KaraokeAdmins")`. Es una comprobación
+de rol de verdad.
+
+**Camino del remote**, sin ella:
+
+```lua
+self.Event.OnServerEvent:Connect(function(Player:Player, number, option)
+	if typeof(number)=="number" then
+		self:Fire(Player, number, option)
+	end
+end)
+```
+
+Comprueba que `number` sea un número y lo devuelve al mismo jugador con `FireClient`.
+`IsAdmin` no aparece.
+
+#### Por qué esto es un problema — HECHO
+
+Los `typee` marcados `IsWihAdmin` son 3 (`/revisarcanciones`), 5 (`/reportes`) y 10
+(`/musicasbaneadas`, además `SuperAdmin`). Un cliente que dispare el remote con `3` recibe
+de vuelta un `3` sin que nadie mire su rol.
+
+Lo mismo con `option`, que atraviesa sin ninguna comprobación de tipo ni de contenido.
+
+Es exactamente la forma de
+[BUG-CANDIDATE-028](#bug-candidate-028) —dos caminos hasta la misma acción, uno con guarda y
+otro sin ella— y de [BUG-CANDIDATE-008](#bug-candidate-008), donde lo que difiere es la ruta
+de persistencia. La regla que estos casos comparten: **una comprobación que vive en un solo
+camino no es una comprobación.**
+
+#### Lo que acota el impacto — HECHO
+
+El remote solo **le responde al que llamó**. No difunde, no escribe nada, no toca datos. Lo
+único que consigue quien lo dispara es que su propio cliente reciba un número.
+
+Lo que ese número abre está en un `LocalScript` dentro de un `.rbxm` —la interfaz de la
+tablet—, y **el código de un `.rbxm` va comprimido**, así que no se ha podido leer. Por eso
+esta entrada se clasifica como *requiere pruebas* y no como *confirmado*: la forma es clara,
+la consecuencia no.
+
+Si el panel que se abre solo pinta, esto es cosmético. Si desde ese panel salen llamadas que
+el servidor atiende, el impacto es el de **esas** llamadas — y ahí conviene leer
+[BUG-CANDIDATE-028](#bug-candidate-028), porque los tres cargadores de moderación de karaoke
+comprueban que **haya** un administrador conectado, no que quien llama lo sea. Las dos
+entradas se componen mal: una abre el panel a cualquiera, la otra no distingue quién lo usa.
+
+#### Teoría — TEORÍA
+
+Un jugador sin rol puede abrir en su propia pantalla el panel de revisar canciones, el de
+reportes o el de canciones baneadas. Lo que pueda hacer desde ahí depende de si el servidor
+valida cada acción por separado. La suma de esta entrada con la 028 sugiere que la validación
+de karaoke se apoya más de lo que debería en que el panel esté cerrado.
+
+Merece la pena mirarlo de una pieza: la 028 y la 042 son la misma pregunta vista desde los
+dos extremos del mismo remote.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `SearchCommand` comprueba `IsAdmin` y devuelve `nil` si falla |
+| 2 | El manejador de `OnServerEvent` no lo comprueba |
+| 3 | La única validación del manejador es `typeof(number)=="number"` |
+| 4 | `option` no se valida en absoluto |
+| 5 | Tres `typee` están marcados `IsWihAdmin`, uno además `SuperAdmin` |
+| 6 | `IsAdmin` delega en `RoleService:IsRole`, así que el camino del chat sí es sólido |
+| 7 | El receptor de `OnClientEvent` no está en ningún `.luau` del repositorio |
+
+#### Incógnitas
+
+- **La principal:** qué hace el cliente con el número. Sin leer la interfaz de la tablet no
+  se puede decir si esto es cosmético o no.
+- Si el panel abierto por esta vía puede disparar acciones que el servidor acepte. Ahí es
+  donde se cruza con la 028.
+- Para qué existe el camino del remote. Si el chat ya traduce el comando, un segundo camino
+  que no comprueba nada parece pensado para que la interfaz se abra sola desde un botón — y
+  entonces la comprobación tendría que estar también aquí.
+
+#### Escenario de ejemplo
+
+Un jugador sin rol abre la consola del cliente y dispara el remote con `10`. Su tablet abre
+el panel de canciones baneadas. Si el panel se limita a pedir la lista y el servidor la
+manda sin comprobar rol, ya ha visto algo que no le tocaba. Si además puede desbanear desde
+ahí, el problema es mucho mayor — y esa pregunta no se puede responder desde este
+repositorio.
+
+**Comportamiento esperado:** los dos caminos hasta el remote comprueban el rol.
+**Comportamiento posible:** solo el del chat.
+
+#### Plan de verificación — *Seguridad*
+
+1. Entra con una cuenta **sin** rol de administrador de karaoke.
+2. Comprueba primero el camino legítimo: escribe `/revisarcanciones` en el chat. No debería
+   pasar nada.
+3. Desde un `LocalScript`, dispara `Events.Other.Commands:FireServer(3)`.
+4. Observa si la tablet abre el panel de revisar canciones.
+5. Si lo abre, intenta **usarlo**: aprobar o rechazar una canción, y comprueba en el servidor
+   si la acción se aplicó.
+6. Repite con `10` (`SuperAdmin`) y con una cuenta que tenga `KaraokeAdmins` pero no
+   `KaraokeSuperAdmin`.
+7. Prueba `FireServer(3, {})`, `FireServer(3, "x")` y `FireServer(999)` para ver qué hace el
+   cliente con un `option` y un `typee` inesperados.
+
+**Pasa:** el paso 4 no abre nada.
+**Falla:** el panel se abre. Si además el paso 5 aplica el cambio, la gravedad sube a Alta y
+la entrada deja de depender de la 028: es independiente.
+
+**Instrumentación sugerida:** ninguna. Todo esto se observa desde el cliente y desde el
+registro del servidor. La corrección —llamar a `IsAdmin` también en el manejador del
+remote— es un **cambio de código** y aquí no se aplica.
+
+
+## BUG-CANDIDATE-043
+
+### El cliente decide si ha ganado el peluche, y aquí sí hay premio
+
+**Sistema:** Máquinas / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/machines/ToyMachine.luau`, el `bind` de
+`Machines.ToyPress` y `_handle`
+**Documentación relacionada:** [Máquinas de arcade](../systems/machines.md#la-máquina-de-peluches)
+
+#### Comportamiento observado — HECHO
+
+```lua
+self._machine:bind(remotes.Machines.ToyPress, function(player, inGreenZone, hookPos)
+	self.model.Hook:PivotTo(CFrame.new(hookPos))
+	if inGreenZone then
+		self._trove:Add(task.spawn(function()
+			self:_handleGreenZone(player)
+		end))
+	else
+		self:stop()
+	end
+end)
+```
+
+Al final de `_handleGreenZone`:
+
+```lua
+if toy then
+	self:_handle(self._machine:getPlayer(), toy.Name)
+end
+```
+
+Y `_handle`:
+
+```lua
+function ToyMachine:_handle(player: Player, toyName: string)
+	InventoryManager.addItem(player, toyName)
+	SoundManager:Play(nil, 13697778590, { Volume = 1 }, self.model)
+end
+```
+
+`inGreenZone` es el segundo argumento del `FireServer`. Lo pone el cliente.
+
+#### Por qué esto es distinto de la 016 — HECHO
+
+[BUG-CANDIDATE-016](#bug-candidate-016) registra que las máquinas aceptan del cliente el
+valor de la recompensa, y se clasificó **latente** porque los manejadores de premio son
+`warn`. Eso sigue siendo cierto para `Stacker`, `PopTheLock`, `Basketball` y `Pong`.
+
+`ToyMachine` **no es un stub**. Es la única de las seis que entrega de verdad, y lo que
+entrega es un objeto de inventario:
+
+| Máquina | `_handle` | ¿Entrega? |
+|---|---|---|
+| `Stacker` | `warn` | No |
+| `PopTheLock` | `warn` | No |
+| `Basketball` | `warn` | No |
+| `Pong` | `warn` | No |
+| **`ToyMachine`** | **`InventoryManager.addItem`** | **Sí** |
+
+Por eso va como entrada aparte: la 016 es una superficie a la espera de un manejador; ésta
+tiene el manejador puesto.
+
+#### Lo que sí sujeta — HECHO
+
+No es una escritura arbitraria, y conviene decirlo con precisión:
+
+| Control | Cómo |
+|---|---|
+| Solo puede llamar quien está en **esta** máquina | `Machine:bind` comprueba `model == self.model and table.find(self._players, player)` |
+| El objeto **no lo elige el cliente** | `_getRandomToy()` sortea entre cinco `ReplicatedStorage.Assets.Tools.Toy1..5` en el servidor |
+| Entrar cuesta | `Machines.Request` descuenta `model:GetAttribute("Price")` antes de dejar jugar |
+| Una partida a la vez | `_maxPlayers = 1`, y `machineByPlayer` bloquea entrar en dos |
+
+Es decir: lo que se salta no es el precio ni el catálogo, sino **la habilidad**. Quien
+explote esto gana un peluche en cada partida en vez de en las que acierte, pagando el precio
+cada vez.
+
+#### Lo que agrava — HECHO
+
+`hookPos` va directo a `CFrame.new(hookPos)` sin comprobar tipo ni rango, y el resultado se
+aplica a una pieza del mundo que ven todos:
+
+```lua
+self.model.Hook:PivotTo(CFrame.new(hookPos))
+```
+
+Si no es un `Vector3`, `CFrame.new` lanza dentro del manejador y la llamada muere ahí —falla
+cerrado—. Si lo es, el gancho de la máquina se teletransporta a donde diga el cliente, para
+todo el servidor. Es vandalismo acotado a esa pieza, de la familia de la
+[BUG-CANDIDATE-023](#bug-candidate-023).
+
+#### Teoría — TEORÍA
+
+Un jugador con un script puede convertir la máquina de peluches en una compra a precio fijo:
+paga, dispara `ToyPress` con `inGreenZone = true`, recibe peluche. Cuánto importa depende
+enteramente de para qué sirven los cinco peluches —si son cosméticos, es poco; si valen algo
+en el juego o se pueden vender, es una fuente de ingreso—, y eso no se puede responder desde
+este repositorio.
+
+Lo que sí se puede afirmar es que **el servidor no tiene con qué comprobarlo**: la posición
+del gancho, el momento de soltar y la zona verde viven todos en el cliente. Cerrar esto
+como está exigiría que el servidor simulara la grúa, que es lo que ya hace `Pong` con su
+pelota. Eso es rediseño, no un parche.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `inGreenZone` es un argumento del `FireServer`, no un cálculo del servidor |
+| 2 | La rama `if inGreenZone` es lo único que separa ganar de perder |
+| 3 | `_handle` llama a `InventoryManager.addItem`, no a un `warn` |
+| 4 | Las otras cuatro máquinas sí tienen `_handle` vacío |
+| 5 | `hookPos` se pasa a `CFrame.new` sin validar |
+| 6 | `Machine:bind` sí comprueba que quien llama esté en esta máquina — lo que acota, no elimina |
+| 7 | El peluche lo sortea el servidor entre cinco fijos |
+
+#### Incógnitas
+
+- **La principal:** qué valen `Toy1` a `Toy5`. Si son herramientas cosméticas sin valor de
+  cambio, la gravedad baja a Baja.
+- Si `InventoryManager.addItem` tiene tope de inventario o deduplicación. `InventoryManager`
+  está leído, pero no se ha comprobado el caso de cinco mil peluches.
+- Cuánto cuesta jugar: `Price` es un atributo del modelo y no está en este repositorio.
+- Si el cliente puede saltarse `Machines.Request` y llegar a `ToyPress` sin pagar. No debería
+  —`Machine:bind` exige estar en `_players`, y solo `join` mete ahí— pero es lo primero que
+  hay que probar.
+
+#### Escenario de ejemplo
+
+Alguien mira el remote, ve dos argumentos, prueba `ToyPress:FireServer(model, true, Vector3.new())`
+y le cae un peluche. Repite en bucle mientras le queden monedas. La máquina sigue cobrando,
+así que en el registro económico no se ve nada raro: solo alguien con mucha suerte en la
+grúa.
+
+**Comportamiento esperado:** el servidor sabe si el gancho estaba en la zona verde.
+**Comportamiento posible:** se lo pregunta al cliente.
+
+#### Plan de verificación — *Seguridad*
+
+1. Averigua primero qué son `Toy1` a `Toy5` y si tienen valor de cambio. Eso fija la gravedad.
+2. Entra a una máquina de peluches por la vía normal y comprueba que se te cobra el `Price`.
+3. Desde la consola del cliente: `Machines.ToyPress:FireServer(model, true, Vector3.new(0,0,0))`.
+4. Comprueba si el peluche llega al inventario.
+5. Repite sin haber pulsado `Machines.Request` antes, para confirmar que `Machine:bind` te
+   rechaza si no estás en `_players`.
+6. Repite apuntando a **otra** máquina de peluches distinta de la tuya, para confirmar que
+   `model == self.model` te rechaza.
+7. Dispara con `hookPos` fuera del mapa —`Vector3.new(0, 10000, 0)`— y mira si el gancho se
+   va y si otros jugadores lo ven.
+8. Dispara con `hookPos` que no sea un `Vector3` y confirma que falla cerrado.
+9. Repite el paso 3 cincuenta veces y comprueba qué hace `InventoryManager` con cincuenta
+   peluches.
+
+**Pasa:** los pasos 3 y 4 no entregan nada.
+**Falla:** llega el peluche. Si además el paso 5 funciona, la gravedad sube a Alta: se ganaría
+sin pagar.
+
+**Instrumentación sugerida:** ninguna. Cerrar esto de verdad exige simular la grúa en el
+servidor —el patrón que ya usa `Pong`—, y eso es un **cambio de código** que aquí no se
+aplica.
+
+
+## BUG-CANDIDATE-044
+
+### La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1
+
+**Sistema:** Máquinas / Economía · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta** en la aritmética, media en el encaje con el modelo
+
+**Código relacionado:** `Core/…/ServerScripts/machines/Roulette.luau`, la función `modulo` y
+`applyPrizeReward`; `Core/ReplicatedStorage/Shared/machines/roulettePrizes.luau`
+**Documentación relacionada:** [Máquinas de arcade → La ruleta](../systems/machines.md#la-ruleta)
+
+Son dos defectos pequeños en la misma función de sorteo. Van juntos porque quien vaya a
+tocar uno va a tocar el otro.
+
+#### Primero: la casilla 11 no entrega nada — HECHO
+
+`roulettePrizes` devuelve 16 premios, y el número 11 es:
+
+```lua
+local FURNITURE = {
+	type = "Mueble",
+	reward = { _Special = "Furniture" }, -- TODO
+}
+```
+
+`applyPrizeReward` sabe hacer exactamente dos cosas: sumar los campos **numéricos** de
+`reward` a `leaderstats`, y el caso `_Special == "Dance"`. Para `Furniture`:
+
+```lua
+if reward._Special == "Furniture" then
+	-- TODO: cuando exista el sistema de construcción, aquí se entrega
+end
+```
+
+Un bloque vacío. Ni premio ni aviso: el jugador ve la rueda pararse en «Mueble» y no recibe
+nada, sin ningún mensaje que lo explique.
+
+**Lo que hace notar que fue un descuido y no una decisión:** el caso `Dance` **sí** tiene
+respaldo. Si el jugador ya tiene todos los bailes, se le dan `+2 Spins` con un aviso —«Ya
+tienes todos los bailes. Te damos +2 Spins»— precisamente *para que el premio no salga
+vacío*. Quien escribió esa red de seguridad estaba pensando en este problema. `Furniture` se
+quedó sin ella.
+
+#### Segundo: el sorteo está sesgado — HECHO
+
+```lua
+local function modulo(a, b)
+	if a < b then
+		return a
+	else
+		return a % b + 1
+	end
+end
+
+function Roulette:_getRandomTurns()
+	return self._parts * math.random(2, 4) + math.random(0, self._parts)
+end
+```
+
+Con `P = self._parts`, los giros son `P·k + r` con `k ∈ {2,3,4}` y **`r ∈ {0, …, P}`**: eso
+son `P+1` valores equiprobables, no `P`.
+
+Como `P·k + r ≥ 2P ≥ P`, siempre se toma la rama `a % b + 1`. Y `(P·k + r) % P = r % P`:
+
+| `r` | `r % P` | Casilla |
+|---|---|---|
+| `0` | 0 | **1** |
+| `1` … `P-1` | 1 … P-1 | 2 … P |
+| **`P`** | **0** | **1** |
+
+`r = 0` y `r = P` caen los dos en la casilla 1. Con 16 casillas:
+
+| Casilla | Probabilidad |
+|---|---|
+| **1** | **2/17 ≈ 11,8 %** |
+| 2 … 16 | 1/17 ≈ 5,9 % cada una |
+
+**Exactamente el doble.** Y la casilla 1 es `EXTRA_SPIN`, `reward = { Spins = 2 }` — el
+premio que te devuelve a la ruleta con más tiradas.
+
+La causa es que `math.random(0, self._parts)` es inclusivo por los dos extremos y devuelve
+`P+1` valores distintos para repartir entre `P` casillas.
+
+**OBSERVACIÓN.** La rama `if a < b then return a end` es **inalcanzable** —los giros nunca
+bajan de `2P`—, y si lo fuera devolvería `0` para `a = 0`, que no es una casilla válida. Es
+otra señal de que la función se escribió con un modelo mental distinto del que acabó
+teniendo.
+
+#### Teoría — TEORÍA
+
+Una de cada dieciséis tiradas no paga nada y el jugador no sabe por qué. Y la casilla de
+tiradas gratis sale al doble de lo previsto, lo que abarata la ruleta frente a lo que diga la
+hoja de balance — si la hay.
+
+Ninguno de los dos hunde el juego. Los dos son de los que nadie reporta porque desde dentro
+son indistinguibles de la mala suerte, y de los que no se detectan sin contar tiradas. Por
+eso quedan aquí: son exactamente el tipo de cosa para la que sirve un plan de verificación.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `roulettePrizes` devuelve una lista de 16, con `FURNITURE` en la posición 11 |
+| 2 | La rama `_Special == "Furniture"` está vacía salvo un comentario `TODO` |
+| 3 | `applyPrizeReward` solo suma campos numéricos y atiende `_Special == "Dance"` |
+| 4 | El caso `Dance` sí tiene respaldo con aviso, lo que prueba que el premio vacío se consideró un problema |
+| 5 | `math.random(0, P)` devuelve `P+1` valores equiprobables |
+| 6 | `(P·k + r) % P` vale 0 tanto para `r = 0` como para `r = P` |
+| 7 | Por tanto la casilla 1 sale con probabilidad `2/(P+1)` y las demás con `1/(P+1)` |
+| 8 | La casilla 1 es `EXTRA_SPIN`, `{ Spins = 2 }` |
+| 9 | La rama `a < b` de `modulo` es inalcanzable con los giros que genera `_getRandomTurns` |
+
+#### Incógnitas
+
+- **`self._parts` es el número de hijos de `model.Parts`, y ese modelo no está en este
+  repositorio.** Toda la aritmética de arriba supone `_parts = 16` para que encaje con
+  `roulettePrizes`. Si no lo fuera, el problema es otro y peor: con `_parts > 16` habría
+  resultados sin premio (`prize missing`, ya avisado con `warn`), y con `_parts < 16` las
+  casillas altas serían inalcanzables. **Esto hay que medirlo en Studio antes que nada.**
+- Si existe una tabla de probabilidades previstas contra la que comparar. Sin ella, «sesgo»
+  significa «distinto de uniforme», que es lo que se afirma aquí.
+- Si el sistema de construcción al que apunta el `TODO` está previsto a corto plazo. Si lo
+  está, la casilla 11 se arregla sola y solo queda decidir qué hacer mientras.
+
+#### Escenario de ejemplo
+
+Un jugador gasta veinte spins. Dos veces cae en «Mueble» y no le llega nada; escribe en el
+Discord que la ruleta está rota y nadie sabe decirle si es un fallo o si el mueble llega más
+tarde. Al mismo tiempo nota que le tocan tiradas gratis «bastante seguido», lo que le gusta y
+no reporta.
+
+**Comportamiento esperado:** las 16 casillas pagan, y todas con la misma probabilidad.
+**Comportamiento posible:** una no paga, y otra sale el doble.
+
+#### Plan de verificación — *Corrección funcional*
+
+1. **Lo primero:** en Studio, cuenta los hijos de `model.Parts` y compáralo con las 16
+   entradas de `roulettePrizes`. Si no coinciden, para y registra eso: es un problema mayor
+   que los dos de esta entrada.
+2. Instrumenta `Roulette:_handle` para registrar `result` en cada tirada. *(Instrumentación
+   para la prueba.)*
+3. Ejecuta 2 000 tiradas y cuenta cuántas veces sale cada casilla.
+4. Comprueba si la casilla 1 sale en torno al 11,8 % y las demás en torno al 5,9 %.
+5. Fuerza una tirada en la casilla 11 y comprueba `leaderstats` y el inventario antes y
+   después.
+6. Comprueba que no aparece ninguna notificación al jugador en ese caso.
+7. Comprueba por contraste que la casilla 7 (`DANCE`) sí entrega, y que su respaldo de
+   `+2 Spins` funciona con una cuenta que ya tenga todos los bailes.
+
+**Pasa:** el reparto es uniforme y las 16 casillas entregan algo.
+**Falla:** la casilla 1 sale al doble, o la 11 no entrega nada.
+
+**Instrumentación sugerida:** solo el registro del paso 2. La corrección —cambiar
+`math.random(0, self._parts)` por `math.random(0, self._parts - 1)`, o el `+1` del `modulo`,
+y decidir qué hacer con `Furniture`— es un **cambio de código** y aquí no se aplica. Ojo al
+tocarlo: los dos extremos interactúan, y cambiar uno sin el otro desplaza el sesgo en vez de
+quitarlo.
+
+
+## BUG-CANDIDATE-045
+
+### El caché de assets pierde el filtro de tipo al reintentar, y puede dejar colgado a quien espera
+
+**Sistema:** Karaoke / Assets · **Clasificación:** Confirmado por análisis estático (el filtro) + Posible bug / Requiere pruebas de concurrencia (el bloqueo)
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja el primero, Media el segundo · **Confianza:** **Muy alta** en el filtro, **baja** en el bloqueo
+
+**Código relacionado:** `Core/ReplicatedStorage/Client/InsertService.luau`, `module.LoadAsset`
+**Documentación relacionada:** [Cliente — interfaz y utilidades](../systems/client-ui.md#insertserviceluau-corre-en-el-servidor)
+
+Dos cosas en la misma función. Van juntas porque quien la toque va a leer las dos.
+
+### Primero: el reintento pierde el `IsA` — HECHO
+
+```lua
+function module.LoadAsset(AssetId, IsA)
+	if typeof(AssetId) ~= "number" then return end
+	local AssetLoaded = Cache[AssetId]
+	if AssetLoaded then
+		if AssetLoaded.Item then
+			AssetLoaded.DateBusqueda = DateTime.now().UnixTimestampMillis
+			return GetIsAModel(AssetLoaded.Item, IsA)
+		elseif GetElapsedTime(AssetLoaded.DateBusqueda) >= HoldToUpdate then
+			Cache[AssetId] = nil
+			return module.LoadAsset(AssetId)   -- ← IsA no se pasa
+		end
+	end
+```
+
+La llamada recursiva **no reenvía `IsA`**. Y `GetIsAModel` es lo único que aplica el filtro:
+
+```lua
+local function GetIsAModel(item : Instance, IsA)
+	return item and (not IsA or item:IsA(IsA)) and item:Clone()
+end
+```
+
+Con `IsA` nulo, `not IsA` es verdadero y **se clona lo que sea**.
+
+#### Por qué importa — HECHO
+
+Los dos consumidores pasan `"Decal"` y **los dos dependen de ello**:
+
+| Consumidor | Qué hace con el resultado | Si no es un `Decal` |
+|---|---|---|
+| `Karaoke/CrearCancion/Attributes.luau` | `NewMiniatura.Parent = Song.Recursos` | Parentea una instancia arbitraria dentro de la canción |
+| `ServerStorage/BusquedaMusicas.luau` | `Data.Miniatura = decal.Texture` | Indexar `.Texture` en algo que no lo tiene lanza, dentro de un `task.spawn` sin `pcall`: el hilo muere y `Data.IsLoaded` no se pone nunca |
+
+Y el `AssetId` **lo elige el jugador**: es la miniatura que pone al crear una canción. Ver
+[Karaoke](../systems/karaoke.md).
+
+#### Cuándo se alcanza — HECHO, y acota mucho
+
+Solo por esta secuencia:
+
+1. El asset **falla** al cargar (`pcall` de `LoadAsset` devuelve falso).
+2. Se cachea el fallo (`Item = nil`) durante `HoldToUpdate` = 10 s.
+3. Pasados esos 10 s, alguien vuelve a pedirlo → rama del reintento, sin `IsA`.
+4. Esta vez **sí** carga, y lo que carga **no** es un `Decal`.
+
+Si el asset sigue fallando, `Item` es `nil` y `GetIsAModel` devuelve falso igual que antes:
+no hay diferencia. El daño necesita un fallo transitorio seguido de un acierto de tipo
+equivocado. Por eso la gravedad es Baja: el mecanismo es seguro, la ocasión es rara y un
+jugador no controla cuándo falla `InsertService`.
+
+Lo que sí es seguro es que **el filtro de tipo no es fiable**, y ese filtro es la única
+comprobación de forma que hay sobre un asset elegido por un jugador. Los scripts ya los quita
+`elimineScrips` —eso está bien hecho—; el tipo, no siempre.
+
+### Segundo: `bin:Destroy()` justo después de `bin:Fire()` — TEORÍA
+
+La deduplicación de peticiones en vuelo:
+
+```lua
+local Process = InProcess[AssetId]
+if Process then
+	Process:Wait()
+	local Cached = Cache[AssetId]
+	return GetIsAModel(Cached and Cached.Item, IsA)
+end
+local bin = Instance.new("BindableEvent")
+InProcess[AssetId] = bin.Event
+...
+bin:Fire()
+bin:Destroy()
+InProcess[AssetId] = nil
+```
+
+**La intención es correcta y buena:** si dos llamadas piden el mismo asset a la vez, la
+segunda espera a la primera en vez de cargarlo dos veces.
+
+**La duda es el `Destroy` inmediato.** `Destroy()` sobre un `BindableEvent` desconecta sus
+conexiones, y `Event:Wait()` es una conexión por debajo. Con el comportamiento de señales
+*Deferred* —el de por defecto en Roblox— `Fire()` **no reanuda al que espera en el acto**:
+lo encola. Queda por saber si una reanudación ya encolada sobrevive al `Destroy` de la línea
+siguiente.
+
+- Si sobrevive, esto funciona y no hay nada que arreglar.
+- Si no, **el que esperaba se queda colgado para siempre**, y con él la corrutina que lo
+  llamó. En `BusquedaMusicas` eso es una entrada de caché que nunca se marca `IsLoaded`.
+
+**No se afirma que falle.** Se afirma que depende de un detalle del motor que no está en este
+repositorio y que el código no documenta. Es la clase de cosa que funciona en las pruebas
+—donde las peticiones no se solapan— y aparece cuando varios jugadores abren el buscador de
+canciones a la vez.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La llamada recursiva es `module.LoadAsset(AssetId)`, sin el segundo argumento |
+| 2 | `GetIsAModel` con `IsA` nulo clona cualquier tipo |
+| 3 | Los dos consumidores pasan `"Decal"` y usan el resultado como tal |
+| 4 | `BusquedaMusicas` lee `.Texture`, que no existe fuera de unos pocos tipos |
+| 5 | `Attributes` parentea el resultado dentro de la canción |
+| 6 | El `AssetId` proviene de la miniatura que elige el jugador |
+| 7 | `bin:Destroy()` está en la línea siguiente a `bin:Fire()` |
+| 8 | `Process:Wait()` no tiene tiempo límite ni salida alternativa |
+
+#### Incógnitas
+
+- **La principal:** si una reanudación encolada por `Fire` sobrevive al `Destroy`. Sin
+  responder esto, el segundo hallazgo no pasa de teoría.
+- Si el place usa `SignalBehavior` *Deferred* o *Immediate*. No está en este repositorio.
+  Con *Immediate* el `Fire` reanuda antes del `Destroy` y el problema no existe.
+- Con qué frecuencia falla `InsertService:LoadAsset` en producción. De eso depende que la
+  primera parte se alcance alguna vez.
+- Qué tipos de asset devuelve Roblox para un id de imagen inválido o moderado. Si siempre es
+  un fallo limpio, la primera parte es inalcanzable en la práctica.
+
+#### Escenario de ejemplo
+
+Diez jugadores abren el buscador de canciones a la vez y varias piden la misma miniatura.
+Nueve entran por `Process:Wait()`. Si el `Destroy` corta la reanudación, esas nueve
+corrutinas no vuelven: sus canciones se quedan sin miniatura y sin `IsLoaded`, y en el
+registro no aparece nada porque nadie ha lanzado un error — simplemente no ha vuelto.
+
+**Comportamiento esperado:** el que espera se reanuda y recibe el asset cacheado, filtrado por tipo.
+**Comportamiento posible:** puede no reanudarse; y si el asset falló y se reintenta, el filtro
+de tipo ya no se aplica.
+
+#### Plan de verificación — *Concurrencia y recuperación ante fallos*
+
+Primero el filtro, que es el determinista:
+
+1. Elige un id de asset que **no** sea un `Decal` —un `Model`, por ejemplo—.
+2. Instrumenta `LoadAsset` para forzar que el primer `pcall` falle. *(Instrumentación para la
+   prueba.)*
+3. Llama a `LoadAsset(id, "Decal")`. Debe devolver `nil`.
+4. Espera más de 10 segundos y vuelve a llamar con `"Decal"`, ya sin forzar el fallo.
+5. Comprueba qué devuelve: si devuelve el `Model`, el filtro se perdió.
+
+Luego el bloqueo:
+
+6. Sin instrumentar nada, lanza veinte corrutinas que pidan el **mismo** id a la vez.
+7. Cuenta cuántas vuelven. Deberían volver las veinte.
+8. Registra el tiempo de cada una: las que esperaron deberían volver justo después de la
+   primera.
+9. Repite con un id que falle al cargar.
+10. Repite con `SignalBehavior` puesto a *Immediate* y compara.
+
+**Pasa:** el paso 5 devuelve `nil` y el paso 7 cuenta veinte.
+**Falla:** el paso 5 devuelve el `Model`, o el paso 7 cuenta menos de veinte.
+
+**Instrumentación sugerida:** solo la del paso 2. Las correcciones —pasar `IsA` en la
+recursión, y mover el `Destroy` a después de que los que esperan hayan vuelto— son **cambios
+de código** y aquí no se aplican.
+
+
+## BUG-CANDIDATE-046
+
+### Cualquiera puede entrar en cualquier canal de walkie, y el objeto en el que escribe el servidor lo elige el cliente
+
+**Sistema:** Walkie-talkie / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/WalkieServer.server.luau`, el manejador de
+`Events/Tools/Walkie` y `joinChannel`;
+`Core/ReplicatedStorage/Assets/Tools/Toys/Walkie/LocalScript.client.luau`
+**Documentación relacionada:** [Servidor — piezas sueltas](../systems/server-misc.md#el-walkie-talkie)
+
+#### Comportamiento observado — HECHO
+
+El manejador completo:
+
+```lua
+RemoteEvent.OnServerEvent:Connect(function(player, channel, tool)
+	if #channel == 3 then
+		leaveChannel(player)
+		joinChannel(player, channel, tool)
+	end
+end)
+```
+
+Y lo que `joinChannel` hace con el segundo argumento:
+
+```lua
+local receiver = tool:FindFirstChild("Receiver") or Instance.new("AudioListener")
+receiver.Name = "Receiver"
+receiver.Parent = tool
+```
+
+El cliente legítimo manda `(CurrentChannel, Tool)`, donde `Tool` es la herramienta en la que
+vive su `LocalScript`.
+
+#### Por qué esto es un problema — HECHO
+
+Son tres cosas distintas, y conviene separarlas:
+
+**1. No se comprueba que el jugador tenga un walkie.** No hay ni un `FindFirstChild`, ni una
+consulta al inventario, ni una comprobación de que `tool` esté equipado por quien llama.
+Cualquiera puede entrar en cualquier canal sin poseer el objeto.
+
+**2. `tool` es una `Instance` elegida por el cliente y el servidor le escribe dentro.** Un
+`AudioListener` llamado `Receiver` se parentea en lo que sea que llegue. No se comprueba que
+sea un `Tool`, ni que sea del jugador, ni que sea suyo siquiera.
+
+**3. El primero que entra en un canal se queda de transmisor.**
+
+```lua
+if not channels[channel] then
+	channels[channel] = {transmitter = player, receivers = {}}
+end
+```
+
+Y el transmisor es **el único que habla**: `connectTransmitterToReceivers` cablea su emisor
+a los oídos de los demás, nunca al revés. Quien ocupe un canal primero es el único con voz en
+él mientras siga dentro.
+
+**4. `#channel == 3` no comprueba que sea una cadena.** `#` sobre una tabla de tres elementos
+también vale 3, y esa tabla sirve como clave de `channels`. Sobre un número, `#` lanza y la
+llamada muere ahí —falla cerrado—. Es más una rareza que un problema, pero significa que
+`channel` no es necesariamente texto.
+
+#### Lo que acota el impacto — HECHO
+
+| Control | Qué cubre |
+|---|---|
+| El espacio de canales es 1 000 | Tres cifras; se pueden recorrer todos, y son pocos |
+| Solo se transmite voz | No hay datos, ni economía, ni escrituras persistentes |
+| `PlayerRemoving` limpia | `leaveChannel` + `cleanWires` destruyen los `Wire` |
+| Roblox exige chat de voz habilitado | Sin él, la cadena de audio no lleva nada |
+
+Y la contraparte: **el walkie es un objeto que se concede** —está en `DefaultTools`—, así que
+esto no da acceso a algo que de otro modo estuviera cerrado; da acceso sin tener el objeto y,
+sobre todo, permite **ocupar** un canal.
+
+#### Teoría — TEORÍA
+
+Dos cosas se pueden hacer con esto:
+
+**Ocupar canales.** Un script que recorra los 1 000 canales y entre en cada uno se queda de
+transmisor en todos los que estén vacíos. Los jugadores que entren después son receptores
+suyos: oyen a quien ocupó el canal y no pueden hablar entre ellos. Con mil canales y un
+bucle, el walkie deja de funcionar para todo el servidor.
+
+**Escuchar sin walkie.** Entrar en un canal ajeno como receptor y oír a su transmisor sin
+tener el objeto. Es escucha de voz sin consentimiento, que es la parte que más importa de esta
+entrada: [BUG-CANDIDATE-001](#bug-candidate-001) y
+[BUG-CANDIDATE-038](#bug-candidate-038) ya señalan que en este repositorio lo relacionado con
+voz tiende a fallar hacia el lado abierto, y ésta es la tercera.
+
+El tercer efecto —parentear un `AudioListener` en una instancia arbitraria— es el menos claro:
+depende de qué acepte Roblox como padre de un `AudioListener` y de qué haga uno colgado de
+algo raro. Va como incógnita, no como afirmación.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El manejador solo comprueba `#channel == 3` |
+| 2 | No hay ninguna comprobación de posesión del walkie |
+| 3 | `tool` llega del cliente y se usa como padre de un `AudioListener` |
+| 4 | El cliente legítimo manda su `Tool`, así que el servidor está diseñado para fiarse |
+| 5 | `channels[channel].transmitter` se fija al primero y solo cambia si se va |
+| 6 | `connectTransmitterToReceivers` cablea en un solo sentido |
+| 7 | El espacio de canales son tres cifras: 1 000 posibilidades |
+| 8 | `#` sobre una tabla también puede valer 3 |
+
+#### Incógnitas
+
+- Si Roblox permite parentear un `AudioListener` en cualquier clase de instancia, y qué pasa
+  entonces. Puede que la asignación falle sola.
+- Si el chat de voz está habilitado en esta experiencia. Sin él nada de esto suena —ver
+  [BUG-CANDIDATE-001](#bug-candidate-001)—, pero la ocupación de canales seguiría dejando el
+  walkie inservible para los demás.
+- Qué oye realmente un receptor cableado a un emisor lejano: si la atenuación por distancia
+  del `AudioEmitter` del walkie lo hace inaudible a distancia, la escucha ajena se acota sola.
+- Si el walkie es de uso extendido en el juego. Si casi nadie lo usa, la gravedad baja.
+
+#### Escenario de ejemplo
+
+Alguien escribe cuatro líneas que disparan el remote con `"000"`, `"001"`, … `"999"`. Se
+queda de transmisor en todos los canales vacíos. Un grupo de amigos entra al canal `"123"`
+para hablar y descubre que se oyen a un desconocido y no entre ellos. Nadie sabe por qué:
+el walkie «no va».
+
+**Comportamiento esperado:** entrar en un canal exige tener el walkie, y el servidor identifica
+la herramienta por su cuenta.
+**Comportamiento posible:** basta con disparar el remote con tres caracteres.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero si el chat de voz está habilitado. Si no, todo lo de sonido queda en
+   teoría y solo aplica la ocupación de canales.
+2. Con una cuenta **sin** walkie en el inventario, dispara
+   `Events.Tools.Walkie:FireServer("123", workspace)`.
+3. Comprueba en el servidor si `channels["123"]` existe y si su `transmitter` eres tú.
+4. Mira si aparece un `AudioListener` llamado `Receiver` dentro de `workspace`.
+5. Repite con `nil` y con `123` (número) como segundo y primer argumento, y comprueba que
+   falla cerrado.
+6. Con dos cuentas más, entra en el mismo canal y comprueba quién oye a quién.
+7. Recorre 50 canales desde una cuenta y comprueba que quedas de transmisor en todos.
+8. Sal de la partida y comprueba que `leaveChannel` deshace los 50.
+9. Prueba con una tabla de tres elementos como `channel` y mira si `channels` acepta esa clave.
+
+**Pasa:** el paso 2 no crea canal y el paso 4 no encuentra nada.
+**Falla:** cualquiera de los dos ocurre.
+
+**Instrumentación sugerida:** ninguna. La corrección —resolver la herramienta desde el
+personaje en el servidor, como ya hace `connectTransmitterToReceivers`, y comprobar posesión—
+es un **cambio de código** y aquí no se aplica. Nótese que la mitad de la solución ya está
+escrita en el mismo archivo: esa función **no** se fía del cliente para encontrar la
+herramienta del receptor.
+
+
+## BUG-CANDIDATE-047
+
+### 46 muebles y todas las herramientas colocables comparten una descripción de relleno
+
+**Sistema:** Tiendas / Construcción · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja (presentación) · **Confianza:** **Muy alta**
+
+**Código relacionado:** `src/ServerStorage/Templates/SettingsTemplate.luau`;
+`Core/…/ServerScripts/ToolModelGenerator/Settings.luau` y `init.server.luau` línea 153;
+`BuildingSystem/…/Main/FurnitureFrame/init.luau` líneas 108–109
+**Documentación relacionada:** [Servidor — piezas sueltas](../systems/server-misc.md#el-generador-de-modelos-de-herramienta)
+
+#### Comportamiento observado — HECHO
+
+La plantilla de ajustes de un objeto colocable trae esto:
+
+```lua
+module.Gui = {
+	Name = script.Parent.Name,
+	Description = [[
+	uawhuduoahwudhouhnasuobd baouwb dawnduoabuyowid aw
+	awdouabwudalw cadbaiybuob3oabouaousnocubo ap3
+	...
+	]],
+	Icon = nil,
+}
+```
+
+Es texto de relleno: alguien pasó la mano por el teclado para tener algo que enseñar mientras
+maquetaba la ficha.
+
+Y la interfaz de construcción lo muestra tal cual:
+
+```lua
+local DescriptionText:TextLabel = infoFrame.Information.DescriptionProduct
+DescriptionText.Text = setting.Gui.Description
+```
+
+#### Por dónde llega a los jugadores — HECHO
+
+Por dos caminos independientes.
+
+**Los muebles.** Cada modelo de decoración lleva su propio `Settings` dentro. Buscando la
+cadena de relleno en el árbol:
+
+```
+grep -rl "uawhuduoahwudhouhnasuobd" src --include=*.rbxm  →  46 archivos
+find src -path '*decoration template*' -name '*.rbxm'     →  51 archivos
+```
+
+**46 de los 51 muebles** conservan el texto de la plantilla. Entre ellos `Bar.rbxm`,
+`Berth.rbxm`, `Interruptor.rbxm`, `Nevera Polo Culinario.rbxm` y ocho camas y cunas con
+nombre propio — es decir, objetos terminados y bautizados, no bocetos.
+
+**Las herramientas colocables.** `ToolModelGenerator` fabrica en el arranque un modelo por
+cada `Tool` con `Colocable = true`, y a todos les mete el mismo `Settings`:
+
+```lua
+script:FindFirstChild("Settings"):Clone().Parent = model
+```
+
+Ese `Settings` es una copia sin modificar de la plantilla. Así que **todas** las herramientas
+colocables comparten descripción — y también precio: `Price = {Coins = 30, Gems = 10}`,
+idéntico para todas, sea lo que sea la herramienta.
+
+#### Por qué está aquí y no en una lista de tareas — HECHO
+
+Porque el precio va en el mismo archivo. Un texto feo es contenido; que todas las herramientas
+colocables cuesten exactamente 30 monedas y 10 gemas **es una decisión económica tomada por
+omisión**, y quien la mire pensando que es intencionada no tiene forma de saber que no lo es.
+
+`Name` sí se resuelve bien —`script.Parent.Name`, y el `Settings` se parentea dentro del
+modelo, así que cada uno toma el suyo—. Lo que no se resuelve es nada de lo demás.
+
+#### Teoría — TEORÍA
+
+Un jugador abre el catálogo de construcción y ve, bajo el nombre de un mueble con nombre
+cuidado, un párrafo de letras al azar. No es un fallo funcional: se compra, se coloca, todo
+va. Es de las cosas que hacen que un juego parezca sin terminar aunque funcione, y de las que
+nadie reporta como bug porque es evidente que nadie lo escribió a propósito.
+
+Y por debajo, todas las herramientas colocables valen lo mismo.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `SettingsTemplate.luau` trae la cadena de relleno como `Gui.Description` |
+| 2 | `ToolModelGenerator/Settings.luau` es una copia sin tocar de esa plantilla |
+| 3 | La línea 153 de `ToolModelGenerator/init.server.luau` la clona en **cada** modelo generado |
+| 4 | `FurnitureFrame` asigna `setting.Gui.Description` a un `TextLabel` visible |
+| 5 | 46 de los 51 `.rbxm` de decoración contienen la cadena |
+| 6 | Los afectados incluyen objetos con nombre propio y terminado, no bocetos |
+| 7 | `Price = {Coins = 30, Gems = 10}` es el mismo para todas las herramientas generadas |
+| 8 | `Name = script.Parent.Name` sí se resuelve por objeto, lo que confirma que el archivo se pensó para personalizarse |
+
+#### Incógnitas
+
+- Si los 5 muebles restantes tienen descripción de verdad o simplemente no llevan `Settings`.
+  Hay que abrirlos en Studio.
+- Si el precio de las herramientas colocables se sobrescribe en otro sitio antes de mostrarse.
+  No se ha encontrado, pero `Compras.luau` está leído solo en parte.
+- Cuántas herramientas tienen `Colocable = true`. El atributo vive en los `.rbxm`, así que el
+  número exacto solo se ve en Studio.
+- Si hay una lista de descripciones escrita en otro sitio esperando a conectarse.
+
+#### Escenario de ejemplo
+
+Se publica el sistema de construcción. El primer vídeo que alguien graba abriendo el catálogo
+muestra doce muebles seguidos con el mismo párrafo de letras al azar en la ficha. La respuesta
+es «es un placeholder, lo cambiamos», y sigue ahí seis meses después porque no está en ninguna
+lista.
+
+**Comportamiento esperado:** cada objeto tiene su descripción y su precio.
+**Comportamiento posible:** 46 muebles comparten un texto de relleno, y todas las herramientas
+colocables comparten además el precio.
+
+#### Plan de verificación — *Contenido y economía*
+
+1. En Studio, abre el catálogo de construcción y recorre las fichas. Cuenta cuántas muestran
+   el texto de relleno.
+2. Compara con los 46 que da el `grep`. Si salen más, es que alguna herramienta generada
+   también aparece ahí.
+3. Comprueba el precio que muestra la ficha de dos herramientas colocables distintas.
+4. Si coinciden en 30 monedas y 10 gemas, confirma que viene del `Settings` clonado y no de
+   otro sitio.
+5. Abre los 5 `.rbxm` que **no** contienen la cadena y comprueba si tienen `Settings` propio.
+6. Comprueba si `Gui.Icon` (nulo en la plantilla) causa algún problema en la ficha, o si la
+   interfaz lo tolera.
+
+**Pasa:** cada objeto muestra su propia descripción y su propio precio.
+**Falla:** aparecen descripciones repetidas de relleno, o precios idénticos entre herramientas
+distintas.
+
+**Instrumentación sugerida:** ninguna. Esto se arregla escribiendo contenido y decidiendo
+precios, no tocando lógica — pero conviene decidir antes si `ToolModelGenerator` debe seguir
+clonando un `Settings` común o si cada herramienta debe traer el suyo, porque eso sí es un
+**cambio de código** y aquí no se aplica.
+
+
+## BUG-CANDIDATE-048
+
+### Cuatro interactuables mueven al personaje a donde diga el cliente
+
+**Sistema:** Interactuables / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/interactable/Bath.server.luau`,
+`Toilet.server.luau`, `Shower.server.luau`, `Washbasin.server.luau`
+**Documentación relacionada:** [Interactuables → La matriz de validación](../systems/interactables.md#la-matriz-de-validación)
+
+#### Comportamiento observado — HECHO
+
+La [matriz de validación](../systems/interactables.md#la-matriz-de-validación) ya registra
+que estos cuatro no comprueban ni tipo, ni etiqueta, ni distancia del `model` que reciben.
+Lo que esta entrada añade es **qué hacen con él**: mover el personaje.
+
+```lua
+-- Bath.server.luau
+local seat = model:FindFirstChildOfClass("Seat")
+if seat.Occupant then return end
+...
+seat:Sit(humanoid)
+```
+
+```lua
+-- Washbasin.server.luau
+local playerPart = model.Player
+...
+character:PivotTo(playerPart:GetPivot())
+```
+
+```lua
+-- Shower.server.luau
+local playerPart = model:FindFirstChild("Player") :: Part
+character:PivotTo(playerPart:GetPivot())
+```
+
+`Toilet` hace lo mismo que `Bath` con `seat:Sit(humanoid)`.
+
+`Seat:Sit(humanoid)` **teletransporta** al personaje al asiento. `PivotTo` lo hace
+explícitamente. En los cuatro casos el destino sale de una `Instance` que eligió el cliente,
+y **el servidor ejecuta el movimiento**, así que ninguna comprobación del lado cliente lo
+para.
+
+#### Por qué esto es más que la 025 — HECHO
+
+[BUG-CANDIDATE-025](#bug-candidate-025) registra que la distancia solo la comprueba el
+cliente, con gravedad **Baja** y consecuencia «vandalismo»: usar un objeto lejano. Correcto
+para la mayoría de los interactuables — encender una lámpara ajena molesta poco.
+
+Aquí la consecuencia es distinta: **no es actuar a distancia, es llegar**. El jugador acaba
+físicamente donde estaba el objeto.
+
+#### Qué acota el destino — HECHO
+
+Un cliente no puede fabricar la `Instance`: lo que crea en su lado no existe para el
+servidor. Solo puede nombrar objetos que el servidor ya conoce. Así que los destinos posibles
+son los objetos reales del place que tengan la forma que cada manejador espera:
+
+| Manejador | Qué exige el modelo | Destinos posibles |
+|---|---|---|
+| `Bath`, `Toilet` | un hijo de clase `Seat` | **Todo lo que tenga un `Seat`**: sillas, camas, bancos, asientos de máquina… |
+| `Shower` | hijos `Occupant` y `Player` | Las duchas etiquetadas |
+| `Washbasin` | hijos `Occupant` y `Player` | Los lavabos |
+
+`Bath` y `Toilet` son los amplios: `Seat` es una de las clases más comunes en un mapa de
+Roblox, y **cualquier modelo que contenga uno vale como destino**.
+
+Un modelo sin la forma esperada hace que el manejador lance —`seat.Occupant` sobre `nil`— y
+la llamada muere ahí. **Falla cerrado**, que es lo único que hoy limita la superficie.
+
+#### El que no devuelve — HECHO
+
+Tres de los cuatro devuelven al personaje a donde estaba:
+
+| Manejador | ¿Vuelve? |
+|---|---|
+| `Toilet` | Sí — `player.Character:PivotTo(playerCFrame)` tras `SEAT_DURATION` |
+| `Shower` | Sí — al cambiar `occupant`, `character:PivotTo(platerCFrame)` |
+| `Bath` | Al levantarse del asiento, la física decide; no hay `PivotTo` de vuelta |
+| **`Washbasin`** | **No.** Guarda el `Occupant`, espera 2 s, concede higiene y lo suelta — sin ningún `PivotTo` de regreso |
+
+`Washbasin` es por tanto el más limpio de usar: llamas, te mueves, te quedas.
+
+#### Teoría — TEORÍA
+
+Un jugador puede llegar a cualquier sitio del place donde haya un asiento, una ducha o un
+lavabo, sin recorrer el camino. Lo que eso valga depende enteramente de si en este juego hay
+sitios a los que **no** se debería poder llegar andando: una sala de karaoke alquilada, el
+interior del night club, una zona de pago, una casa a la que no se ha sido invitado.
+
+Ahí es donde esto deja de ser vandalismo y pasa a ser salto de control de acceso. Las casas
+viven en servidores reservados —ver [Casas](../systems/housing/overview.md)—, así que el
+alcance se queda dentro del place actual; pero **dentro** de él, las puertas y los permisos
+de sala no sirven de nada si se puede aparecer al otro lado sentándose en una silla.
+
+Merece leerse junto a [BUG-CANDIDATE-012](#bug-candidate-012) —lectura de permisos sin
+comprobación— y [BUG-CANDIDATE-021](#bug-candidate-021): la pauta que comparten es que los
+controles de este juego asumen que estar en un sitio significa haber podido llegar.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | Los cuatro manejadores reciben `model` del cliente sin comprobar tipo, etiqueta ni distancia |
+| 2 | `Bath` y `Toilet` llaman a `seat:Sit(humanoid)`, que teletransporta |
+| 3 | `Shower` y `Washbasin` llaman a `character:PivotTo(...)` con una pieza del modelo |
+| 4 | `Washbasin` no tiene ningún `PivotTo` de vuelta |
+| 5 | `Bath` y `Toilet` aceptan cualquier modelo con un hijo `Seat` |
+| 6 | Un modelo sin la forma esperada lanza y la llamada muere: falla cerrado |
+| 7 | Ninguno de los cuatro comprueba que el jugador esté cerca del modelo |
+
+#### Incógnitas
+
+- **La principal:** si en este place hay zonas a las que no se debería poder llegar andando.
+  Sin eso, la gravedad baja a la de la 025.
+- Cuántos modelos del mapa contienen un `Seat`. Vive en los `.rbxm`, así que hay que contarlo
+  en Studio.
+- Si al levantarse de un `Seat` alcanzado así el personaje vuelve solo o se queda. `Bath` no
+  lo fuerza.
+- Si `Seat:Sit` funciona con un asiento ocupado por otro jugador. El código lo comprueba, así
+  que probablemente no, pero conviene confirmarlo.
+- Si algún otro modelo del juego tiene hijos llamados `Occupant` y `Player` sin ser ducha ni
+  lavabo. Eso ampliaría los destinos de esos dos.
+
+#### Escenario de ejemplo
+
+Alguien alquila una sala de karaoke privada. Otro jugador, desde fuera, dispara
+`Interactable.Bath:FireServer(<el sofá de dentro>)` y aparece sentado en él. El alquiler
+sigue registrado, la puerta sigue cerrada, y el sistema de permisos nunca se enteró de nada:
+no se le preguntó.
+
+**Comportamiento esperado:** el servidor comprueba que el objeto es del tipo correcto y que el
+jugador está a su lado antes de moverlo.
+**Comportamiento posible:** mueve al personaje a donde diga el cliente.
+
+#### Plan de verificación — *Seguridad*
+
+1. Enumera primero las zonas del place con acceso restringido. Si no hay ninguna, para: esto
+   es la 025 y nada más.
+2. Desde la consola del cliente, en un extremo del mapa:
+   `Interactable.Bath:FireServer(<un modelo con Seat en el otro extremo>)`.
+3. Comprueba si el personaje aparece sentado allí.
+4. Repite con un sofá dentro de una zona restringida.
+5. Repite con `Interactable.Washbasin`… es decir, `WashHands`, apuntando a un lavabo dentro
+   de una zona restringida, y comprueba que **no** te devuelve.
+6. Repite con `Toilet` y comprueba que sí te devuelve tras `SEAT_DURATION`, y si en ese rato
+   se puede hacer algo desde allí.
+7. Prueba con un modelo sin `Seat` y confirma que falla cerrado.
+8. Prueba con el asiento ya ocupado por otro jugador.
+9. Comprueba si algún sistema —permisos de sala, `AreaSystem`— reacciona a la llegada.
+
+**Pasa:** el paso 3 no mueve al personaje.
+**Falla:** lo mueve. Si además el paso 4 funciona, la gravedad sube a Alta.
+
+**Instrumentación sugerida:** ninguna. La corrección —comprobar etiqueta y distancia, como ya
+hace `Fridge`— es un **cambio de código** y aquí no se aplica. Lo que sí conviene decir es que
+`Fridge` tiene esa comprobación escrita a mano en su propio archivo: el arreglo de fondo es
+ponerla en el framework, que es lo que señala la [025](#bug-candidate-025).
+
+
+## BUG-CANDIDATE-049
+
+### Las estadísticas de supervivencia se rellenan desde cualquier sitio, y una sin objeto siquiera
+
+**Sistema:** Estadísticas / Seguridad · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/ServerScripts/interactable/Weight.server.luau`,
+`Bath`, `Toilet`, `Shower`, `Washbasin`, `Treadmill`;
+`Core/…/ServerScripts/stats/Stats.luau`
+**Documentación relacionada:** [Servidor — piezas sueltas](../systems/server-misc.md#estadísticas-y-animaciones)
+
+#### El sistema — HECHO
+
+`Stats.luau` mantiene seis atributos sobre el jugador, cada uno bajando solo:
+
+| Estadística | Baja | Cada |
+|---|---|---|
+| `hunger` | 0,3 | 10 s |
+| `thirst` | 0,35 | 10 s |
+| `sleepness` | 0,26 | 10 s |
+| `hygiene` | 0,28 | 10 s |
+| `bladder` | **2** | 10 s |
+| `physic` | 0,15 | 10 s |
+
+Y los interactuables las suben: la ducha y el baño dan `hygiene`, el váter pone `bladder` a
+100, las pesas y la cinta dan `physic`.
+
+#### El caso claro: `Weight` no recibe modelo — HECHO
+
+El manejador entero:
+
+```lua
+remotes.Interactable.Weight.OnServerEvent:Connect(function(player)
+	local stats = Stats.fromPlayer(player)
+	if not stats then return end
+
+	local humanoid = getAliveHumanoid(player)
+	if not humanoid then return end
+
+	local animator = humanoid:FindFirstChildOfClass("Animator")
+	local track = animator:LoadAnimation(assets.Interactable.Weight.Animation)
+	track:Play()
+	track.Stopped:Wait()
+
+	stats:increment("physic", 10)
+end)
+```
+
+**No hay segundo parámetro.** No hay pesas, no hay modelo, no hay sitio. Estar vivo es el
+único requisito. `Interactable.Weight:FireServer()` desde cualquier punto del mapa, esperar la
+animación, y `physic` sube 10.
+
+Y **no hay antirrebote**: cada llamada carga una `AnimationTrack` nueva y espera su
+`Stopped`. Llamadas en paralelo se atienden en paralelo.
+
+#### El resto: basta con nombrar un objeto — HECHO
+
+Los otros cinco sí reciben un modelo, pero ninguno comprueba etiqueta ni distancia — ver
+[BUG-CANDIDATE-048](#bug-candidate-048) y la
+[matriz](../systems/interactables.md#la-matriz-de-validación). Cualquier ducha, lavabo o
+váter del place vale, esté donde esté.
+
+| Estadística | Cómo se rellena sin moverse |
+|---|---|
+| `hygiene` | `Bath`, `Shower` o `WashHands` sobre cualquier modelo válido |
+| `bladder` | `Toilet` la pone a **100** de golpe |
+| `physic` | `Weight`, sin objeto siquiera |
+| `hunger`, `thirst`, `sleepness` | No se han visto rutas equivalentes; las llenan cocina y camas |
+
+#### Lo que sí sujeta — HECHO
+
+`Stats:increment` corta en 100:
+
+```lua
+function Stats:increment(name: string, value: number)
+	self:set(name, math.min(100, self:get(name) + value))
+end
+```
+
+Así que **no hay valores absurdos**: el techo es «lleno». Eso descarta que esto rompa nada por
+desbordamiento y es lo que mantiene la gravedad en Media y no más alta.
+
+Y las estadísticas viven en atributos del jugador, no en el perfil: no se persisten. La
+ventaja dura la sesión.
+
+#### Teoría — TEORÍA
+
+Tres de las seis estadísticas se pueden mantener al 100 % con un bucle de una línea. Para
+`physic` no hace falta ni estar cerca de nada.
+
+Lo que se pierde no es moneda: es **el bucle de juego**. Un sistema de supervivencia funciona
+porque obliga a ir a sitios y a gastar tiempo; si tres de sus seis medidores se rellenan
+desde la consola, la mitad de las razones para moverse por el mapa desaparecen para quien lo
+sepa. Y como el techo es 100 y nada se persiste, **no deja rastro**: nadie va a ver una cifra
+rara en ningún sitio.
+
+Es la misma familia que [BUG-CANDIDATE-016](#bug-candidate-016) y
+[BUG-CANDIDATE-043](#bug-candidate-043) —el servidor concede porque el cliente lo pide— con
+la diferencia de que aquí no hay manejador vacío que lo salve: estas concesiones ya están
+puestas.
+
+**OBSERVACIÓN, aparte.** `animator:LoadAnimation` se llama sin comprobar que `animator`
+exista. Si el `Humanoid` no tiene `Animator` todavía —lo normal justo tras aparecer—, el
+manejador lanza. Falla cerrado, pero es un error en el registro cada vez.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `Weight.OnServerEvent` no declara ningún parámetro más allá de `player` |
+| 2 | No comprueba posición, ni proximidad, ni la existencia de unas pesas |
+| 3 | No hay antirrebote ni enfriamiento en ninguno de los seis |
+| 4 | `Toilet` hace `stats:set("bladder", 100)`, no un incremento |
+| 5 | `Bath`, `Shower` y `Washbasin` conceden `hygiene` sobre modelos sin validar |
+| 6 | `Stats:increment` corta en 100, lo que acota el efecto |
+| 7 | Las seis viven en atributos del jugador y no aparecen en `PlayerSchema` |
+| 8 | `Weight` carga una `AnimationTrack` por llamada, sin límite |
+
+#### Incógnitas
+
+- Si las estadísticas hacen algo aparte de mostrarse: si a 0 pasa algo —daño, lentitud, un
+  aviso—, esto importa; si son decorativas, casi nada. No se ha encontrado ningún consumidor
+  fuera de la interfaz, pero `Client/stats.server.luau` está leído solo en parte.
+- Qué pasa con mil `AnimationTrack` cargadas a la vez sobre un `Animator`. Puede que Roblox
+  las descarte, puede que no.
+- Si `hunger`, `thirst` y `sleepness` tienen alguna ruta igual de floja. La cocina está solo
+  barrida.
+- Si existe alguna versión persistida de estas estadísticas que no se haya encontrado.
+
+#### Escenario de ejemplo
+
+Alguien publica en un foro dos líneas: un bucle que dispara `Interactable.Weight` cada
+segundo. Quien lo pegue no vuelve a ver bajar su `physic`. No hay nada que detectar: el valor
+nunca pasa de 100, no se guarda, y desde fuera es indistinguible de un jugador que va mucho al
+gimnasio.
+
+**Comportamiento esperado:** subir una estadística exige estar en el objeto que la sube.
+**Comportamiento posible:** basta con pedirlo, y para `physic` ni eso.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero qué pasa cuando una estadística llega a 0. Eso fija la gravedad de todo
+   lo demás.
+2. Entra y anota el valor del atributo `physic` del jugador.
+3. Desde la consola del cliente, en mitad de la nada: `Interactable.Weight:FireServer()`.
+4. Espera a que acabe la animación y vuelve a mirar `physic`.
+5. Llama veinte veces seguidas sin esperar y comprueba el valor, y si aparece algún error.
+6. Repite el paso 3 recién aparecido, antes de que exista el `Animator`, y comprueba si lanza.
+7. Con `hygiene` a la mitad, dispara `Interactable.Bath` sobre un modelo con `Seat` lejano.
+8. Con `bladder` a la mitad, dispara `Interactable.Toilet` sobre un váter lejano y comprueba
+   que se pone a 100.
+9. Sal y vuelve a entrar: confirma que las estadísticas se reinician a 100 y no se persisten.
+
+**Pasa:** el paso 4 no cambia `physic`.
+**Falla:** sube.
+
+**Instrumentación sugerida:** ninguna. La corrección —recibir el modelo, comprobar etiqueta y
+distancia, y poner un enfriamiento— es un **cambio de código** y aquí no se aplica. Nótese que
+`Weight` es el único que ni siquiera recibe el modelo: arreglarlo cambia la firma del remote,
+y por tanto también el cliente.
+
+
+## BUG-CANDIDATE-050
+
+### Cualquiera puede recoger el plato de cualquier cocina del servidor
+
+**Sistema:** Cocina / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta** en la forma
+
+**Código relacionado:** `Core/…/ServerScripts/cooking/CookingStation.luau`, la rama de
+recogida al principio de `bind`
+**Documentación relacionada:** [Cocina → Recoger el plato](../systems/cooking.md#recoger-el-plato)
+
+#### Comportamiento observado — HECHO
+
+Es lo primero que hace el manejador, antes que cualquier otra comprobación:
+
+```lua
+remote.OnServerEvent:Connect(function(player: Player, model: Model)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not humanoid or humanoid.Health <= 0 then
+		return
+	end
+
+	local resultReady = model:GetAttribute("ResultReady")
+	if resultReady then
+		model:SetAttribute("ResultReady", nil)
+		...
+		InventoryManager.addItem(player, resultReady)
+		InventoryManager.equipTool(player, resultReady)
+		return
+	end
+```
+
+Lo único que se comprueba antes de conceder el objeto es que quien llama esté vivo.
+
+#### Por qué esto es un problema — HECHO
+
+Cuatro cosas que no se comprueban, y una que no se puede:
+
+| No se comprueba | Consecuencia |
+|---|---|
+| Que `model` sea una estación de cocina | Sirve cualquier `Instance` con el atributo |
+| Que `model` esté cerca del jugador | Se recoge desde el otro lado del mapa |
+| **Quién cocinó** | El plato no recuerda de quién es |
+| Que la estación corresponda al remote | `Interactable.Blender:FireServer(<un fogón>)` funciona igual: la rama de recogida está antes de `matchAttribute` y de `validate` |
+
+Y la que no se puede comprobar desde fuera: **el nombre del objeto concedido es el valor del
+atributo**, `InventoryManager.addItem(player, resultReady)`. Si un cliente pudiera poner
+atributos sobre un modelo del servidor, esto sería una concesión arbitraria de objetos. **No
+puede**: los atributos que escribe un cliente no se replican al servidor. Por eso esto es
+robo, no falsificación — y conviene decir la diferencia, porque la forma es la misma que la de
+[BUG-CANDIDATE-022](#bug-candidate-022) y ahí sí llega del cliente.
+
+#### Qué acota — HECHO
+
+| Control | Qué cubre |
+|---|---|
+| Solo hay un `ResultReady` por estación | No se puede recoger dos veces: se pone a `nil` en el acto |
+| El atributo lo escribe siempre el servidor | El objeto concedido es siempre un plato real, cocinado de verdad |
+| Cocinarlo cuesta un ingrediente | El plato existe porque alguien pagó por él — solo que no fue quien lo recoge |
+| Hay que estar vivo | |
+
+Es decir: el objeto no se crea de la nada. Se le quita a otro.
+
+#### Teoría — TEORÍA
+
+Un jugador puede recorrer el servidor recogiendo los platos de todas las cocinas en cuanto
+estén listos, sin acercarse a ninguna. Quien cocinó pierde el ingrediente y el plato, y desde
+su lado se ve como que la comida «desapareció» —la estación queda vacía y sin explicación—.
+
+Dentro de una casa propia no importa: las casas son servidores reservados y ahí solo hay
+invitados. Importa en el place público y en las cocinas compartidas, donde el ciclo de cocinar
+—buscar el ingrediente, ocupar la estación, esperar la duración— se puede saltar entero
+esperando a que lo haga otro.
+
+Y **no deja rastro**: en el registro del servidor, recoger un plato robado y recoger el propio
+son la misma línea.
+
+Es de la familia de [BUG-CANDIDATE-021](#bug-candidate-021) —el dueño de una casa puede vender
+el mueble de un invitado— con la diferencia de que allí hace falta ser el dueño de algo y aquí
+no hace falta ser nada.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | La rama de recogida es lo primero del manejador, antes de `matchAttribute` y de `validate` |
+| 2 | La única comprobación previa es que el `Humanoid` esté vivo |
+| 3 | `model` llega del cliente y no se comprueba etiqueta, tipo ni distancia |
+| 4 | El plato no guarda quién lo cocinó: no hay ningún atributo de propietario |
+| 5 | Las cinco estaciones comparten esta misma función `bind` |
+| 6 | Los cinco remotes son intercambiables para esta rama |
+| 7 | `SetAttribute("ResultReady", nil)` es inmediato, así que dos ladrones no lo cogen los dos |
+| 8 | El atributo solo lo escribe el servidor: el objeto concedido es siempre real |
+
+#### Incógnitas
+
+- Cuánto vale un plato: si se venden, si dan estadísticas, si son ingredientes de otra cosa.
+  De eso depende que esto sea una molestia o un negocio.
+- Si las cocinas públicas existen. Si toda la cocina ocurre dentro de casas —servidores
+  reservados con invitados—, el alcance real es mucho menor.
+- Si `InventoryManager.addItem` tiene tope. Recogiendo platos ajenos en bucle se llena rápido.
+- Si el cliente legítimo manda algo más que el modelo. No se ha leído `Client/cooking/`, así
+  que puede haber una segunda ruta.
+
+#### Escenario de ejemplo
+
+Dos jugadores comparten la cocina de un local. Uno pone algo al horno y se aleja a por otro
+ingrediente. Al volver, el horno está vacío. Cree que se le quemó, o que falló algo. Repite y
+vuelve a pasar. No hay forma de que sepa que el plato se lo está llevando alguien que ni
+siquiera está en la habitación.
+
+**Comportamiento esperado:** recoge el plato quien lo cocinó, estando delante de la estación.
+**Comportamiento posible:** lo recoge quien lo pida primero, desde donde sea.
+
+#### Plan de verificación — *Seguridad*
+
+1. Averigua primero para qué sirven los platos. Eso fija la gravedad.
+2. Con la cuenta A, cocina algo y **no** lo recojas. Confirma que `ResultReady` está puesto en
+   el modelo.
+3. Con la cuenta B, desde el otro extremo del mapa:
+   `Interactable.Oven:FireServer(<el modelo del horno de A>)`.
+4. Comprueba el inventario de B.
+5. Comprueba qué ve A: si la estación queda vacía y si recibe algún aviso.
+6. Repite el paso 3 usando un remote **distinto** al de la estación —`Blender` sobre un
+   horno— y confirma que también funciona.
+7. Repite estando B muerto y confirma que falla.
+8. Con dos cuentas ladronas disparando a la vez, confirma que solo una lo consigue.
+9. Comprueba si `addItem` acepta cien platos.
+
+**Pasa:** el paso 4 no encuentra nada en el inventario de B.
+**Falla:** el plato aparece.
+
+**Instrumentación sugerida:** ninguna. La corrección —guardar quién cocinó en un atributo y
+comprobarlo, más etiqueta y distancia— es un **cambio de código** y aquí no se aplica. La
+buena noticia es que el sitio donde ponerla es **uno solo**: las cinco estaciones comparten
+`bind`, así que a diferencia de la [025](#bug-candidate-025) aquí no hay que tocar veinticinco
+archivos.
+
+
+## BUG-CANDIDATE-051
+
+### El nivel del jugador no sube nunca, y el requisito de nivel solo existe en el cliente
+
+**Sistema:** Construcción / Progresión · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta**
+
+**Código relacionado:** `BuildingSystem/…/Main/FurnitureFrame/init.luau` líneas 13 y 168–169;
+`Core/ServerStorage/WorldSystem/PlayerSchema.luau` línea 51;
+`Core/…/ServerScripts/NametagServer.server.luau`
+**Documentación relacionada:** [Interfaz de construcción → El precio y el nivel](../systems/building-ui.md#el-precio-y-el-nivel)
+
+Son dos hallazgos que se sostienen el uno al otro, y por eso van juntos.
+
+### Primero: nada incrementa `Level` — HECHO
+
+`Level` está declarado en el perfil:
+
+```lua
+{ Name = "Level", Value = "0" },   -- PlayerSchema.luau, dentro de leaderstats
+```
+
+Se busca en los 552 `.luau` del repositorio quién lo escribe. Los únicos sitios que lo tocan
+son:
+
+| Sitio | Qué hace |
+|---|---|
+| `PlayerSchema.luau` | Lo declara con valor inicial `"0"`, justo al lado de `Xp` |
+| `NametagServer.server.luau` | Lo **lee** para pintarlo en la etiqueta, y escucha sus cambios |
+| `BuildingSystem/…/FurnitureFrame` | Lo **lee** para decidir si pinta un candado |
+
+**Ninguno lo escribe.** `Level` se queda en `"0"` toda la vida de la cuenta.
+
+**Y sí hay concesión de experiencia — solo que no llega.** Al leer Misiones apareció la mitad
+que faltaba de esta cadena:
+
+```lua
+-- QuestService:ClaimQuest
+if reward.Xp and reward.Xp > 0 then
+	Collections.Give(player, { Xp = reward.Xp }, true)
+end
+```
+
+`Xp` está declarado en `PlayerSchema` junto a `Level`, se persiste, y las misiones lo
+conceden de verdad, por una ruta validada (ver
+[Misiones](../systems/quests.md#reclamar-una-misión)). Lo que no existe en ningún sitio es
+el paso de `Xp` a `Level`:
+
+| Eslabón | ¿Existe? |
+|---|---|
+| Las misiones dan `Xp` | **Sí** — `QuestService:ClaimQuest` |
+| `Xp` se guarda en el perfil | **Sí** — `PlayerSchema` |
+| Algo lee `Xp` para subir el nivel | **No.** Fuera de `QuestService`, el único sitio que menciona `Xp` es el cliente de misiones, y solo para pintar «120XP» en la ficha |
+| `Level` se muestra | **Sí** — en el nametag y en el catálogo de muebles |
+
+Así que la cadena está construida por los dos extremos y **le falta el eslabón del medio**.
+Los jugadores llevan acumulando `Xp` desde el primer día; ese número no hace nada.
+
+Y `NametagServer` está preparado para reaccionar —`connectLevelValue`, un `ChildAdded` que
+espera a que aparezca— así que el sistema de presentación existe entero, esperando a un
+productor que no está.
+
+### Segundo: el requisito solo lo comprueba el cliente — HECHO
+
+```lua
+data.GUI.Button.Lock.Visible = data.setting.Price.Level
+	and data.setting.Price.Level>tonumber(self.LevelPlayer.Value)
+```
+
+`Price.Level` aparece **una sola vez en toda la base de código**: aquí. Ningún manejador de
+servidor lo lee.
+
+La compra de decoración sí se cobra en el servidor —`self.Cobros.charge(Player, Data.Price, true)`
+en `Shared/Stores/init.luau`, con el precio que lee el propio servidor—, así que **el dinero
+está bien sujeto**. Lo que no se comprueba en ninguna parte del servidor es el nivel.
+
+### Por qué juntos son peor que por separado — TEORÍA
+
+Por separado, cada uno tendría un final feliz:
+
+- Si el nivel subiera pero el requisito fuera solo de cliente, sería una puerta de interfaz
+  más, de la familia de [BUG-CANDIDATE-042](#bug-candidate-042).
+- Si el requisito se comprobara en el servidor pero el nivel no subiera, los muebles con
+  requisito serían simplemente inalcanzables — visiblemente roto, y por tanto arreglado
+  pronto.
+
+Juntos se tapan. Todo mueble con `Price.Level > 0` sale con candado **para todo el mundo,
+siempre**, así que en el juego nunca se ve a nadie desbloquearlo y nadie nota que la
+progresión no avanza. Y quien se salte la interfaz lo compra igual, pagando su precio en
+monedas, sin que nada lo pare.
+
+El resultado es una función de progresión que está declarada, se persiste, se pinta en la
+etiqueta de cada jugador y filtra un catálogo — y que **no hace nada**.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `PlayerSchema` declara `Level` con `Value = "0"` |
+| 2 | Una búsqueda de `Level` en los 552 `.luau` no encuentra ninguna escritura |
+| 3 | `NametagServer` tiene `connectLevelValue` y un `ChildAdded` esperando un `Level` |
+| 4 | `Price.Level` aparece exactamente una vez, en el cliente |
+| 5 | Ningún manejador de servidor de `Shared/Stores` lo consulta |
+| 6 | El precio en monedas **sí** se cobra en el servidor, con su propio dato |
+| 7 | El candado es un `Lock.Visible`, es decir, pura presentación |
+| 8 | `QuestService:ClaimQuest` sí concede `Xp`, y `PlayerSchema` lo persiste |
+| 9 | Nada lee `Xp` fuera del cliente de misiones, que solo lo pinta |
+
+#### Incógnitas
+
+- **La principal:** si algún mueble tiene de verdad `Price.Level` puesto. Los `Settings` viven
+  dentro de los `.rbxm`, así que hay que abrirlos en Studio. Si ninguno lo usa, el segundo
+  hallazgo es teórico y solo queda el primero.
+- Cuánto `Xp` lleva acumulado un jugador veterano. Si son miles, conectar el eslabón que falta
+  subiría a mucha gente de golpe, y eso hay que decidirlo antes de hacerlo.
+- Si la progresión por nivel está planeada y sin conectar, o si se abandonó. El `TODO` de
+  `Furniture` en la ruleta ([044](#bug-candidate-044)) y el stub de `Rewards` en los tutoriales
+  ([039](#bug-candidate-039)) sugieren que hay varias funciones en ese estado.
+- Qué muestra hoy la etiqueta: si `Level 0` sale escrito en el nametag de todo el mundo, es
+  visible para los jugadores y merece decidirse antes.
+- Si hay un sistema de nivel en un `.rbxm` que `grep` no ve. Poco probable —la escritura
+  tendría que ser de servidor y los scripts de servidor están en `.luau`— pero no imposible.
+
+#### Escenario de ejemplo
+
+Un jugador ve tres muebles con candado en el catálogo y pregunta cómo subir de nivel. Nadie
+sabe responderle, porque no se puede. Mientras tanto su nametag dice «Nivel 0», igual que el
+de un jugador con quinientas horas.
+
+**Comportamiento esperado:** el nivel sube con el juego y el servidor comprueba el requisito.
+**Comportamiento posible:** el nivel es constante y el requisito es un icono.
+
+#### Plan de verificación — *Corrección funcional*
+
+1. En Studio, abre varios `.rbxm` de decoración y comprueba si alguno tiene `Price.Level`. Si
+   ninguno lo tiene, el segundo hallazgo queda en teoría; sigue con el primero.
+2. Entra con una cuenta nueva y anota `leaderstats.Level`.
+3. Juega una sesión larga: compra, cocina, haz misiones, gana monedas. Vuelve a mirar `Level`.
+4. Mira el nametag: comprueba qué nivel muestra.
+5. Si algún mueble tiene requisito, pon `Level` a mano por encima y confirma que el candado
+   desaparece — eso prueba que el filtro funciona y que el problema es el productor.
+6. Con `Level` de nuevo en 0, salta la interfaz y compra ese mueble por la vía del servidor.
+7. Comprueba si la compra se completa y si se cobra el precio en monedas.
+
+**Pasa:** el paso 3 ve subir el nivel, y el paso 6 se rechaza.
+**Falla:** el nivel no se mueve, o la compra pasa.
+
+**Instrumentación sugerida:** ninguna para observarlo. Arreglarlo son dos decisiones
+distintas —qué hace subir de nivel, y si el requisito debe comprobarse en el servidor— y las
+dos son **cambios de código** que aquí no se aplican. Conviene decidirlas juntas: comprobar el
+requisito en el servidor sin conectar antes la subida de nivel dejaría esos muebles
+definitivamente fuera del alcance de todos.
+
+
+## BUG-CANDIDATE-052
+
+### La búsqueda de canciones borra las letras acentuadas en vez de normalizarlas
+
+**Sistema:** Karaoke / Búsqueda · **Clasificación:** Confirmado por análisis estático — el orden; Requiere pruebas — el efecto
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** **Muy alta** en el orden, media en el alcance
+
+**Código relacionado:** `Core/…/Shared/Karaoke/RevisarCanciones/Script.server.luau`,
+`BuscarKeysPorJugador`; `Core/ReplicatedStorage/Client/BusquedaSettings.luau`,
+`quitarAcentos` y `VerificarTexto`
+**Documentación relacionada:** [Karaoke](../systems/karaoke.md)
+
+#### Comportamiento observado — HECHO
+
+En el buscador del servidor, cada palabra de la consulta pasa por dos funciones **en este
+orden**:
+
+```lua
+palabra = quitarSimbolos(palabra):lower()
+table.insert(indices, quitarAcentos(palabra))
+```
+
+Y `quitarSimbolos` es:
+
+```lua
+function quitarSimbolos(str)
+	return str:gsub("[^%w%s]", "")
+end
+```
+
+#### Por qué el orden importa — HECHO
+
+`%w` en Lua es alfanumérico **ASCII**. Una vocal acentuada en UTF-8 son dos bytes —`ó` es
+`0xC3 0xB3`— y ninguno de los dos es `%w` ni `%s`. Así que `quitarSimbolos` **no los
+convierte: los borra**.
+
+| Entrada | Tras `quitarSimbolos` | Tras `quitarAcentos` |
+|---|---|---|
+| `canción` | `cancin` | `cancin` — no queda nada que convertir |
+| `corazón` | `corazn` | `corazn` |
+| `mañana` | `maana` | `maana` |
+
+`quitarAcentos` está escrito para hacer justo esto bien —tiene su tabla de `á`→`a`, `ñ`→`n`,
+y un patrón que recorre UTF-8 carácter a carácter— pero cuando le llega el texto ya no hay
+acentos que quitar. **La función correcta se ejecuta después de que su trabajo se haya vuelto
+imposible.**
+
+#### La otra mitad: los dos caminos no coinciden — HECHO
+
+Hay una segunda normalización, en el cliente, y **no hace lo mismo**:
+
+```lua
+-- BusquedaSettings.luau
+function module.VerificarTexto(Text: string, noAcent)
+	local EliminarEspacios = Text:match("^%s*(.-)%s*$")
+	return #EliminarEspacios > 0 and (noAcent and EliminarEspacios or module.quitarAcentos(EliminarEspacios))
+end
+```
+
+Aquí `quitarAcentos` se aplica **sola**, sin `quitarSimbolos` delante, así que funciona:
+`canción` → `cancion`.
+
+| Camino | Qué hace con `canción` |
+|---|---|
+| `BusquedaSettings.VerificarTexto` (cliente) | `cancion` |
+| `BuscarKeysPorJugador` (servidor) | `cancin` |
+
+Dos normalizaciones distintas para el mismo idioma, en el mismo sistema.
+
+#### Teoría — TEORÍA
+
+Si las claves del índice se construyen por el camino del cliente y las consultas por el del
+servidor, **ninguna palabra con acento o con `ñ` encuentra nada**: se busca `cancin` contra
+una clave `cancion`, y `string.match` no las une.
+
+Si los dos lados usan el camino del servidor, la búsqueda funciona —mal, pero
+consistentemente— porque las dos partes degradan igual.
+
+**No se afirma cuál de los dos casos es.** El índice lo construye `BusquedaMusicas`, que está
+leído solo en parte, y la respuesta está ahí. Lo que sí es seguro es que **las dos rutas de
+normalización de este repositorio no dan el mismo resultado**, y eso en un juego en español no
+es un detalle: afecta a una fracción grande de los títulos.
+
+**Registrado como correcto, en el mismo sitio.** `quitarSimbolos` tiene un efecto secundario
+que sí conviene: el texto del jugador se usa después como **patrón de Lua** en
+`string.match(index, coincidencia)`, y quitar todo lo que no sea alfanumérico elimina de paso
+los caracteres mágicos (`%`, `(`, `[`, `-`, `+`, `*`, `?`, `.`). Sin eso, una búsqueda con un
+`%` podría lanzar o casar de forma inesperada. Así que la función hace falta — solo que en el
+otro orden.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `quitarSimbolos` se aplica antes que `quitarAcentos` en `BuscarKeysPorJugador` |
+| 2 | `[^%w%s]` borra los bytes de una vocal acentuada UTF-8 |
+| 3 | `quitarAcentos` está escrito para UTF-8 y funciona si se le da el texto sin tocar |
+| 4 | `BusquedaSettings.VerificarTexto` aplica `quitarAcentos` sola, sin `quitarSimbolos` |
+| 5 | Las dos rutas dan resultados distintos para la misma palabra |
+| 6 | `quitarAcentos`, `quitarSimbolos` y `BuscarKeysPorJugador` están declaradas **globales**, sin `local` |
+| 7 | El texto normalizado se usa como patrón en `string.match`, así que el filtro de símbolos sí hace falta |
+
+#### Incógnitas
+
+- **La principal:** por qué camino se construyen las claves del índice. Está en
+  `BusquedaMusicas`, leído solo en parte. De eso depende que esto sea «la búsqueda con acentos
+  no encuentra nada» o «encuentra, pero por una clave rara».
+- Cuántos títulos del catálogo llevan acento o `ñ`. En español, muchos.
+- Si el `#palabra <= 2` que descarta palabras cortas agrava el efecto: `cancin` sigue teniendo
+  seis caracteres, así que no.
+
+#### Escenario de ejemplo
+
+Alguien busca «corazón» en el karaoke y no le sale nada. Prueba «corazon», sin tilde, y
+tampoco —porque el servidor busca `corazon` y la clave dice otra cosa, o al revés—. Acaba
+buscando «cora» y encontrándola por casualidad. Nadie reporta «la búsqueda no entiende los
+acentos», reportan «el buscador va mal».
+
+**Comportamiento esperado:** `canción` y `cancion` encuentran lo mismo.
+**Comportamiento posible:** `canción` se convierte en `cancin` y no encuentra nada.
+
+#### Plan de verificación — *Corrección funcional*
+
+1. Averigua primero por qué camino se normalizan las claves del índice, en `BusquedaMusicas`.
+2. Publica una canción con acento en el título, por ejemplo «Corazón Partío».
+3. Búscala escribiendo `corazón`. Anota el resultado.
+4. Búscala escribiendo `corazon`. Anota el resultado.
+5. Búscala escribiendo `coraz`. Debería salir en los tres casos si la búsqueda es por
+   subcadena.
+6. Repite con una `ñ`: «Mañana».
+7. Instrumenta `BuscarKeysPorJugador` para registrar `indices` y compáralo con las claves
+   reales del índice. *(Instrumentación para la prueba.)*
+8. Prueba una búsqueda con `%` y con `-` y confirma que no lanza — eso comprueba la parte que
+   sí está bien.
+
+**Pasa:** los pasos 3 y 4 encuentran la canción.
+**Falla:** alguno de los dos no la encuentra.
+
+**Instrumentación sugerida:** solo el registro del paso 7. La corrección —intercambiar las dos
+llamadas, `quitarAcentos` primero y `quitarSimbolos` después— es un **cambio de código** y aquí
+no se aplica. Ojo: hay que cambiar **las dos** rutas a la vez, o se cambia un desajuste por
+otro.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -4268,6 +6852,8 @@ completa.
 | `ShopServerSystem` | En parte | Solo `ProcessPurchase`; la rotación de tienda y la sincronización por `MessagingService` no |
 | `playerManager`, `Client/PlayerManager` | Sí | |
 | `EventService`, `ReferralService` | Sí | |
+| Invitaciones: `ReferralConfig`, `ReferralMain` | Sí | La configuración razonada y los tres remotes |
+| Invitaciones: `ReferralCommands`, `ReferralShared`, `ReferralClient` | **No** | En cola |
 | `PlayerDataService`, `WorldSystem/PlayerDataReplicator.luau` | Sí | |
 | `Data/Main/init.server.luau` | Sí | El orquestador de sesión; ver [Data.Main](../systems/session-orchestrator.md) |
 | `AddValues`, `BreakDown` | En parte | Solo el camino de materialización de atributos, para cerrar la duda del tope de donación |
@@ -4285,7 +6871,7 @@ completa.
 | `GamePassService/GamePassRewards` | En parte | Solo `ensure` |
 | `ShopInfo`, `inventory/InventoryManager` | **No** | En cola; alimentan a `GamePassService` |
 | Interactuables: registrador, clase base, `bindToTag` | Sí | |
-| Interactuables: los 25 scripts de servidor | En parte | Solo su validación de entrada, para la matriz |
+| Interactuables: los 25 scripts de servidor | **Sí, enteros** | La matriz de validación y, sobre todo, qué hace cada uno con el modelo que recibe: los candidatos 048 y 049 salieron de esta segunda pasada |
 | Interactuables: los 36 módulos de cliente por tipo | **No** | Decisión deliberada: la pregunta era la estructura, no el catálogo |
 | Inventario: `init.server`, `InventoryManager`, `DefaultTools` | Sí | |
 | `ToolsServer.server.luau` | En parte | Los ocho manejadores y su validación; no la mecánica del cañón ni del guante |
@@ -4296,14 +6882,40 @@ completa.
 | `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
 | `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
 | `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
-| Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
+| Misiones, Animación | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
+| Cocina: `CookingStation`, `Blender`, `Oven`, `Stove` | **Sí, enteros** | El ciclo, el consumo del ingrediente y la rama de recogida |
+| Cocina: `Microwave`, `CuttingBoard` | En parte | Su `validate` y su superficie de red |
 | `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
+| `JobSystem`: `Bartender`, `LimpiarPiso`, `CajasTransport` | Sí | Sus listas blancas y **dónde sale el dinero**: ninguno de los pagos lo pide el cliente |
+| `Referrals/ReferralCommands.server.luau` | Sí | El despacho de los siete comandos y su comprobación de rol |
+| `BuildingSystem` — `init.luau`, `ColorFormat` | Sí | Y confirmado que el módulo entero no tiene ni un remote |
 | `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
 | `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
-| `BuildingSystem` | Su papel, sí | Es interfaz de cliente sin remotes propios; su UI no se ha leído |
+| `BuildingSystem` (8 archivos, 2 749 líneas) | En parte | Confirmado que no tiene ni un remote; leídos `init.luau`, `ColorFormat` y la ficha del catálogo. Los otros cinco, en superficie a propósito |
 | `GiftHandler.server.luau` | Sí | La ruta de regalos y `ProcessReceipt` |
 | `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
-| Sistemas de juego (~420 archivos) | **No** | En cola |
+| `LootBoxService`, `PlaytimeRewardSystem`, `FavoriteService`, `DancesInfo` | Sí | Sistemas que no estaban ni en la lista |
+| `ServerScripts/stats/` | En parte | Su papel y sus constantes |
+| `MicManagerServer` | Sí | |
+| `NametagServer` | En parte | Superficie, fuentes de datos y orden de etiquetas |
+| `Shared/BartenderSystem/init.luau` | Sí | El registro y el despacho por acción fija |
+| `BartenderSystem/Instance`, `NPC_Custom/` (5), `DialogModule` | En parte | La superficie de red y sus guardas; no la coreografía ni la interfaz |
+| `Shared/GuideService/` (6 archivos), `Shared/Tutorials/` (2) | Sí | Salvo `InterfaceController`, que es montaje de GUI |
+| Los 44 módulos de tipo de `Client/interactable/` | Sí, en superficie | Acciones y remotes de cada uno; la coreografía interna no |
+| Máquinas: `Machine`, `MachineFactory`, `init.server`, `Roulette`, `ToyMachine`, `Stacker`, `PopTheLock`, `Basketball` | Sí | Las dos rutas de entrada y los seis manejadores de premio |
+| `machines/Pong.luau`, `Shared/pong/` | En parte | Quién simula y quién cuenta; la física no |
+| `Client/machines/` (16 archivos) | **Superficie** | Animación e interfaz, sin autoridad |
+| `Client/InsertService.luau` | Sí | El caché, la deduplicación y el borrado de scripts |
+| `Client/topbar.server.luau`, `Event`, `Disconnects` | Sí | |
+| `Client/` — los otros 15 archivos sueltos y 13 carpetas pequeñas | **Superficie** | Su papel y a qué sistema pertenecen |
+| `WalkieServer`, `collisions`, `fireExcept`, `ToolModelGenerator` | Sí | |
+| `ServerScripts/Ragdoll/`, `stats/`, `AnimationSystem/` | En parte | Su papel y sus fuentes de datos |
+| `Shared/Nametag/` (3) | En parte | Qué son; las tablas no se transcriben |
+| `Assets/**/*.luau` (10) | En parte | El del walkie entero; los otros nueve en superficie |
+| `Shared/ComprasTablero/` (2 archivos) | Sí | El teletipo entre servidores y la tabla global |
+| `ReplicatedStorage/ShopInfo.luau` | Sí | Las 18 entradas y sus tres consumidores |
+| `Shared/Nametag/`, `NametagMicClient` | **No** | En cola |
+| Sistemas de juego (~413 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
