@@ -60,7 +60,7 @@ o en un place de pruebas.
 | [005](#bug-candidate-005) | Teleport con un código de acceso cuya instancia ya se apagó | Casas | Requiere pruebas de teleport | Media | Baja |
 | [006](#bug-candidate-006) | Una sesión de Studio puede publicar un código de acceso falso en el registro real | Casas | Bug probable / Requiere pruebas de integración | Alta | Media |
 | [007](#bug-candidate-007) | El cargador de scripts del cliente no está en este repositorio | Cliente | Observación / Requiere verificación en ejecución | — | Alta |
-| [008](#bug-candidate-008) | Una compra concede el artículo antes de cobrarlo | Casas / Economía | Posible bug / Requiere inyección de fallos | Media | Media |
+| [008](#bug-candidate-008) | Una compra concede el artículo antes de cobrarlo, y por una ruta de persistencia distinta | Casas / Economía | Bug probable / Requiere pruebas de persistencia | Media | **Alta** |
 | [009](#bug-candidate-009) | Un fallo al resolver el nombre en el primer arranque bautiza la casa para siempre | Casas | Posible bug / Requiere inyección de fallos | Baja | Alta |
 | [010](#bug-candidate-010) | `WorldDataReplicator` se pierde un servidor que ya está `ready` | Casas | Bug probable / Requiere pruebas de ciclo de vida | Media | Media |
 | [011](#bug-candidate-011) | El rol `moderator` no puede moderar | Casas | Bug probable / Confirmado por análisis estático | Media | Alta |
@@ -676,8 +676,17 @@ entonces los scripts de cliente no correrían nunca, y necesitaría su propia en
 
 ### Una compra concede el artículo antes de cobrarlo
 
-**Sistema:** Casas / Economía · **Clasificación:** Posible bug / Requiere inyección de fallos
-**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Media
+**Sistema:** Casas / Economía · **Clasificación:** Bug probable / Requiere pruebas de persistencia
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+:::note Actualizado tras leer `Collections` y `PlayerDataReplicator`
+
+La primera versión de esta entrada dependía de que `collections.SetAmount` fallara, y por
+eso su confianza era Media. Leer la capa de datos del jugador ha resuelto esa incógnita —y
+la ha empeorado: la concesión y el cobro **no comparten ruta de persistencia**, así que no
+hace falta ningún error para abrir la ventana. Basta con el reloj.
+
+:::
 
 **Código relacionado:** `Core/…/ServerScripts/ShopServerSystem.server.luau`, `ProcessPurchase`;
 `Core/…/ServerScripts/PlayerDataReplicator.server.luau`, `buySlot`
@@ -704,16 +713,34 @@ end
 
 `buySlot` tiene la misma forma: `store:update(...)` y luego `collections.SetAmount(...)`.
 
-#### Por qué puede ser un problema
+#### El hecho que lo cambia todo — HECHO
 
-Las dos escrituras no son atómicas ni están ordenadas defensivamente. Cualquier cosa que
-impida completar la segunda deja al jugador con un artículo por el que no se le cobró.
+La concesión y el cobro llegan al perfil por **rutas distintas y con tiempos distintos**:
+
+| | Concesión (`rooms`) | Cobro (moneda) |
+|---|---|---|
+| Qué se escribe | `store:update` sobre el perfil | `value.Value` de un `ValueBase` bajo el `Player` |
+| Cuándo entra en el perfil | **De inmediato** | Solo cuando `PlayerDataReplicator.flush` serializa las `Instance` — **cada 60 s** (`FLUSH_INTERVAL`) o al salir |
+| Cuándo llega al DataStore | En el siguiente autoguardado del `Store` (300 s por defecto) o al cerrar | Igual, pero solo si ya pasó por un `flush` |
+
+`rooms` **no** está en la tabla `SPEC` de `PlayerDataReplicator`, así que no se materializa
+como `Instance`: se escribe directo al perfil. `stats` sí está en `SPEC`, mapeado a
+`leaderstats`, y es donde vive la moneda. Ver [Datos del jugador](../systems/player-data.md).
+
+#### Por qué es un problema
+
+Las dos escrituras no son atómicas, no están ordenadas defensivamente, y —esto es lo
+nuevo— **ni siquiera viajan juntas**. Existe una ventana de hasta 60 segundos en la que el
+perfil contiene la casa concedida y todavía no el descuento.
 
 #### Teoría — TEORÍA
 
-Si `collections.SetAmount` lanza error, cede el hilo más allá de un apagado del servidor, o
-escribe en un store que falla, la room se queda en `rooms` —que `DataKit` persistirá en su
-siguiente autoguardado— mientras la moneda queda intacta.
+Si el autoguardado del `Store` cae dentro de esa ventana y el servidor muere antes del
+siguiente `flush`, el DataStore queda con la room añadida y la moneda intacta. No hace
+falta que nada falle: basta con que los dos relojes —autoguardado a 300 s, volcado a 60 s—
+se crucen en el orden desfavorable.
+
+El mismo razonamiento aplica a `buySlot`, donde `slots` tampoco está en `SPEC`.
 
 #### Evidencia
 
@@ -723,22 +750,32 @@ siguiente autoguardado— mientras la moneda queda intacta.
   llamada que cede el hilo — **HECHO**.
 - `buySlot` lleva un comentario explícito que muestra que el autor razonó sobre invocaciones
   concurrentes (*«dos invokes simultáneos leerían el mismo `slots` y cobrarían dos veces»*)
-  y añadió una guarda por jugador, pero no reordenó la concesión y el cobro — **HECHO**. Por
-  eso la confianza es Media y no Alta: el ángulo de concurrencia sí se consideró, así que el
-  orden podría ser una decisión deliberada de «conceder primero, nunca perder una compra».
+  y añadió una guarda por jugador, pero no reordenó la concesión y el cobro — **HECHO**.
+- `rooms` y `slots` no aparecen en la tabla `SPEC`; `stats` sí, como carpeta `leaderstats` —
+  **HECHO**. Esta es la evidencia que sube la confianza a Alta: la separación de rutas es
+  estructural, no accidental.
+- `FLUSH_INTERVAL = 60` y el autoguardado por defecto de `Store` de 300 s son constantes
+  explícitas — **HECHO**.
 
 #### Incógnitas
 
-- Si `collections.SetAmount` puede fallar. `Collections` no se ha leído.
-- Si la moneda vive en el mismo store de `DataKit` que `rooms`. Si es así, ambas escrituras
-  caen en un mismo guardado y la ventana es mucho menor de lo que parece.
+- Con qué frecuencia el autoguardado del `Store` cae realmente dentro de la ventana. Depende
+  de la deriva entre dos temporizadores independientes y de cuándo se compre.
+- Si el equipo prefiere «conceder primero y no perder nunca una compra» como política
+  consciente. Sería defendible, pero entonces conviene decirlo, porque el coste es
+  regalar artículos de vez en cuando.
+- ~~Si `collections.SetAmount` puede fallar~~ — ya no hace falta: la ventana existe sin
+  ningún fallo.
 
 #### Escenario de ejemplo
 
 1. Un jugador con exactamente 4 000 Coins compra `playaRoom` por 4 000.
-2. `store:update` inserta la room; se le dice al cliente que ya la posee.
-3. `SetAmount` falla.
-4. El jugador posee la casa y sigue teniendo 4 000 Coins.
+2. `store:update` inserta la room en el perfil, de inmediato.
+3. `SetAmount` descuenta la moneda **solo en el `ValueBase`**; el perfil sigue sin saberlo.
+4. Segundos después, el autoguardado del `Store` escribe el perfil al DataStore: con la
+   casa, y con la moneda antigua.
+5. El servidor se cae antes del siguiente `flush` de 60 s.
+6. El jugador vuelve a entrar con la casa y con sus 4 000 Coins.
 
 #### Esperado frente a posible real
 
@@ -746,22 +783,29 @@ siguiente autoguardado— mientras la moneda queda intacta.
 |---|---|
 | O ocurren la concesión y el cobro, o no ocurre ninguno | El artículo se concede y no se paga |
 
-#### Plan de verificación — *Recuperación ante fallos*, *Persistencia*, *Funcional*
+#### Plan de verificación — *Persistencia*, *Recuperación ante fallos*, *Funcional*
 
-1. Lee primero `Client/EconomySystem/Collections.luau` y establece dónde se guarda la
-   moneda. **Si está en el mismo store de `DataKit` que `rooms`, reevalúa: la ventana puede
-   ser despreciable.**
-2. En un place de borrador, sustituye `collections.SetAmount` por un stub que lance error.
-3. Compra una casa. Confirma si la room aparece en `rooms` y si la moneda cambió.
-4. Vuelve a entrar para confirmar qué persistió.
+El paso de lectura previa ya está hecho, y confirmó la separación de rutas. Lo que queda es
+medir la ventana:
+
+1. En un place de pruebas, baja `FLUSH_INTERVAL` a un valor alto (por ejemplo 600 s) para
+   ensanchar la ventana a propósito y hacerla observable.
+2. Compra una casa.
+3. Fuerza un guardado del `Store` sin esperar (o baja su `autosaveInterval`), y luego cierra
+   el servidor de golpe, sin apagado ordenado.
+4. Vuelve a entrar. Comprueba si tienes la casa **y** el dinero.
 5. Repite con `buySlot`.
+6. Repite con los valores por defecto (60 s / 300 s) varias veces para estimar con qué
+   frecuencia ocurre en condiciones reales.
 
-**Pasa:** la concesión no persiste sin el cobro.
-**Falla:** el jugador se queda el artículo y la moneda.
+**Pasa:** tras el paso 4 el jugador tiene la casa y **no** el dinero, o no tiene ninguna de
+las dos cosas.
+**Falla:** tiene ambas.
 
 **Instrumentación sugerida:** registrar un único apunte de compra —jugador, artículo,
-precio, saldo antes, saldo después— escrito después de ambas operaciones, para poder
-detectar descuadres de forma agregada.
+precio, saldo antes, saldo después— escrito **dentro del mismo `store:update` que concede
+el artículo**, para que el apunte y la concesión compartan destino y se puedan cuadrar
+después. Un apunte escrito por fuera tendría el mismo problema que el cobro.
 
 ---
 

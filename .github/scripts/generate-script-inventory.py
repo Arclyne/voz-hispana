@@ -47,11 +47,18 @@ ANALYSED |= {
     t("PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau"),
     t("PlayerHouses/ServerScriptService/ModeratorManager.server.luau"),
     t("PlayerHouses/ReplicatedStorage/RolesInfo.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerDataService.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau"),
+    t("Core/ServerScriptService/ServerScripts/PlayerDataInit.server.luau"),
+    t("Core/ReplicatedStorage/Client/EconomySystem/Collections.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
     t("Core/ServerStorage/DataKit/BaseStore.luau"),
     t("Core/ServerScriptService/ServerScripts/ShopServerSystem.server.luau"),
+    t("Core/ServerStorage/RoleService/init.luau"),
+    t("Core/ServerScriptService/ServerScripts/machines/Machine.luau"),
+    t("Core/ServerScriptService/ServerScripts/machines/PopTheLock.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",

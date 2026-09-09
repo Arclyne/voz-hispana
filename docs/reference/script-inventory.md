@@ -26,15 +26,15 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 27 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 3 |
-| Pendiente | Aún sin leer | 520 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 31 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 6 |
+| Pendiente | Aún sin leer | 513 |
 
-**Total: 552 archivos, 80,441 líneas.**
+**Total: 552 archivos, 80,447 líneas.**
 
 ## Fuera de las plantillas
 
-8 archivos, 583 líneas, 5 leídos.
+8 archivos, 584 líneas, 5 leídos.
 
 <details>
 <summary><code>src/ReplicatedStorage/</code> — 2 archivo(s) — 2/2 leídos</summary>
@@ -42,7 +42,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `InitAfterTemplates.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.InitAfterTemplates` | Analizado |
-| `PlayerInit.luau` | ModuleScript | — | — | 122 | `ReplicatedStorage.PlayerInit` | **Documentado** |
+| `PlayerInit.luau` | ModuleScript | — | — | 123 | `ReplicatedStorage.PlayerInit` | **Documentado** |
 
 </details>
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,176 líneas, 21 leídos.
+530 archivos, 76,181 líneas, 28 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -232,11 +232,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/EconomySystem/</code> — 1 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Client/EconomySystem/</code> — 1 archivo(s) — 1/1 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Collections.luau` | ModuleScript | — | — | 176 | `ReplicatedStorage.Client.EconomySystem.Collections` | Pendiente |
+| `Collections.luau` | ModuleScript | — | — | 176 | `ReplicatedStorage.Client.EconomySystem.Collections` | Analizado |
 
 </details>
 
@@ -1347,7 +1347,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 6/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 7/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -1358,7 +1358,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Pendiente |
 | `MicManagerServer.server.luau` | Script | Server | yes | 197 | `ServerScriptService.ServerScripts.MicManagerServer.server` | Pendiente |
 | `NametagServer.server.luau` | Script | Server | yes | 513 | `ServerScriptService.ServerScripts.NametagServer.server` | Pendiente |
-| `PlayerDataInit.server.luau` | Script | Server | yes | 42 | `ServerScriptService.ServerScripts.PlayerDataInit.server` | Pendiente |
+| `PlayerDataInit.server.luau` | Script | Server | yes | 42 | `ServerScriptService.ServerScripts.PlayerDataInit.server` | Analizado |
 | `PlayerDataReplicator.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.PlayerDataReplicator.server` | Analizado |
 | `PlaytimeRewardSystem.server.luau` | Script | — | yes | 107 | `ServerScriptService.ServerScripts.PlaytimeRewardSystem.server` | Pendiente |
 | `ServerDirectory.server.luau` | Script | Server | yes | 432 | `ServerScriptService.ServerScripts.ServerDirectory.server` | Analizado |
@@ -1524,15 +1524,15 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/machines/</code> — 10 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/machines/</code> — 10 archivo(s) — 2/10 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Basketball.luau` | ModuleScript | — | — | 92 | `ServerScriptService.ServerScripts.machines.Basketball` | Pendiente |
-| `Machine.luau` | ModuleScript | — | — | 86 | `ServerScriptService.ServerScripts.machines.Machine` | Pendiente |
+| `Machine.luau` | ModuleScript | — | — | 86 | `ServerScriptService.ServerScripts.machines.Machine` | Analizado (en parte) |
 | `MachineFactory.luau` | ModuleScript | — | — | 26 | `ServerScriptService.ServerScripts.machines.MachineFactory` | Pendiente |
 | `Pong.luau` | ModuleScript | — | — | 388 | `ServerScriptService.ServerScripts.machines.Pong` | Pendiente |
-| `PopTheLock.luau` | ModuleScript | — | — | 55 | `ServerScriptService.ServerScripts.machines.PopTheLock` | Pendiente |
+| `PopTheLock.luau` | ModuleScript | — | — | 55 | `ServerScriptService.ServerScripts.machines.PopTheLock` | Analizado (en parte) |
 | `Roulette.luau` | ModuleScript | — | — | 177 | `ServerScriptService.ServerScripts.machines.Roulette` | Pendiente |
 | `Stacker.luau` | ModuleScript | — | — | 50 | `ServerScriptService.ServerScripts.machines.Stacker` | Pendiente |
 | `ToyMachine.luau` | ModuleScript | — | — | 158 | `ServerScriptService.ServerScripts.machines.ToyMachine` | Pendiente |
@@ -1614,28 +1614,28 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/RoleService/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/RoleService/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `RolesGroup.luau` | ModuleScript | — | — | 16 | `ServerStorage.RoleService.RolesGroup` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 117 | `ServerStorage.RoleService.init` | Pendiente |
+| `init.luau` | ModuleScript | — | — | 117 | `ServerStorage.RoleService.init` | Analizado (en parte) |
 
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 3/8 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/</code> — 8 archivo(s) — 5/8 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `EventService.luau` | ModuleScript | — | — | 456 | `ServerStorage.WorldSystem.EventService` | Pendiente |
 | `GiftInbox.luau` | ModuleScript | — | — | 89 | `ServerStorage.WorldSystem.GiftInbox` | Pendiente |
-| `PlayerDataReplicator.luau` | ModuleScript | — | — | 555 | `ServerStorage.WorldSystem.PlayerDataReplicator` | Pendiente |
-| `PlayerDataService.luau` | ModuleScript | — | — | 90 | `ServerStorage.WorldSystem.PlayerDataService` | Pendiente |
+| `PlayerDataReplicator.luau` | ModuleScript | — | — | 555 | `ServerStorage.WorldSystem.PlayerDataReplicator` | Analizado |
+| `PlayerDataService.luau` | ModuleScript | — | — | 90 | `ServerStorage.WorldSystem.PlayerDataService` | Analizado |
 | `PlayerSchema.luau` | ModuleScript | — | — | 126 | `ServerStorage.WorldSystem.PlayerSchema` | Analizado |
 | `Profiles.luau` | ModuleScript | — | — | 296 | `ServerStorage.WorldSystem.Profiles` | Analizado |
 | `ReferralService.luau` | ModuleScript | — | — | 1244 | `ServerStorage.WorldSystem.ReferralService` | Pendiente |
-| `ServerPresence.luau` | ModuleScript | — | — | 361 | `ServerStorage.WorldSystem.ServerPresence` | **Documentado** |
+| `ServerPresence.luau` | ModuleScript | — | — | 366 | `ServerStorage.WorldSystem.ServerPresence` | **Documentado** |
 
 </details>
 
