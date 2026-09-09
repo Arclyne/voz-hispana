@@ -39,11 +39,28 @@ Profiles.World = DataKit.Profile.define("World", {
 | `settings` | `{ OwnerId: number, Name: string, ServerType: "public" \| "private" }` | `WorldService.start` (primer arranque), `WorldDataReplicator` (`SetWorldName`, `togglePrivacity`) |
 | `roles` | `{ [userIdString]: number }` | `WorldDataReplicator` (`SetUserRole`) |
 | `bans` | `{ [userIdString]: true }` | `WorldDataReplicator` (`SetBan`) |
-| `content` | `{}` en la plantilla | **DESCONOCIDO** — no se ha encontrado ningún escritor en el código revisado |
+| `content` | `{}` en la plantilla | `Shared/Stores` — `SetDecorPlayer` escribe `content.Objects`, `HouseAdded.ChangeDesing` escribe `content.Desing` |
 
-**DESCONOCIDO.** `content` está declarado y ningún script leído hasta ahora lo toca. La
-plantilla `BuildingSystem` es la candidata obvia —tiene UI de construcción y colocación de
-muebles—, pero no está analizada, así que aquí no se afirma nada.
+**HECHO.** `content` guarda dos cosas, y las dos las escribe el sistema de mobiliario:
+
+| Sub-clave | Qué contiene | Escritor |
+|---|---|---|
+| `Objects` | Un registro por mueble colocado, con su `UnniqueKey` y el `OwnerPlace` de quien lo puso | `Stores/init.luau`, `SetDecorPlayer` → `UpdateData` |
+| `Desing` | Color y material por `[carpeta][modelo]` de la estructura de la casa | `Stores/HouseAdded.luau`, `module:ChangeDesing` |
+
+Lo lee de vuelta `Stores/init.luau`, en `SetStore`, cuando el servidor de la casa arranca
+y `DataBaseLoaded` dispara: reconstruye cada mueble y vuelve a aplicar cada color.
+
+:::note Una hipótesis anterior, corregida
+
+Una versión previa de esta página apuntaba a la plantilla `BuildingSystem` como escritor
+probable, por eliminación, y lo etiquetaba como **DESCONOCIDO**. Al leer `Shared/Stores`
+resultó ser otro sistema. Se deja anotado porque es exactamente para lo que sirve marcar
+una hipótesis como tal.
+
+:::
+
+Ver [Tiendas y decoración](../stores.md).
 
 ## Cuatro ubicaciones de almacenamiento
 

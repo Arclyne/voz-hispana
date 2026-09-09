@@ -72,6 +72,8 @@ o en un place de pruebas.
 | [017](#bug-candidate-017) | Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto | Administración / Seguridad | Observación / Requiere verificación en ejecución | Baja | Alta |
 | [018](#bug-candidate-018) | Salir durante la carga deja el registro sucio y rompe la reconexión al mismo servidor | Datos del jugador / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
 | [019](#bug-candidate-019) | Donar a un jugador que aún no ha cargado destruye la moneda | Economía / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
+| [020](#bug-candidate-020) | El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual | Tiendas / Casas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Media |
+| [021](#bug-candidate-021) | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
 
 ### Entradas de seguridad
 
@@ -80,11 +82,12 @@ formato que el resto: teoría con justificación, no acusaciones.
 
 | ID | Vector | Estado hoy |
 |---|---|---|
-| [012](#bug-candidate-012) | Lectura de roles y baneos de una casa sin comprobación de permisos | **Explotable hoy**, impacto bajo |
+| [012](#bug-candidate-012) | Lectura de roles y baneos de una casa sin comprobación de permisos, por dos sistemas distintos | **Explotable hoy**, impacto bajo |
 | [014](#bug-candidate-014) | Secreto compartido versionado, proxy en HTTP plano, remote sin límite de frecuencia | **Expuesto hoy**, impacto por determinar |
 | [015](#bug-candidate-015) | Escritura arbitraria de moneda desde el cliente | **Latente** — desactivado por un booleano |
 | [016](#bug-candidate-016) | Valor de recompensa suministrado por el cliente | **Latente** — el manejador de premio es un stub |
 | [017](#bug-candidate-017) | Ventana de revocación de privilegios de administrador | **Presente hoy**, impacto bajo |
+| [020](#bug-candidate-020) | Dato de tamaño arbitrario, controlado por el cliente, persistido en el perfil de una casa ajena | **Presente hoy**, impacto por determinar |
 
 #### Lo que se revisó y salió limpio
 
@@ -101,6 +104,11 @@ engañosa:
 | `Machine:bind` | **Correcto.** Exige que el modelo coincida y que el jugador esté en la lista de participantes de esa máquina. |
 | `SetWorldName` | **Correcto en el saneado**, con la salvedad de que el filtrado de texto falla abierto (ver [Permisos](../systems/housing/permissions.md)). |
 | Apertura de casa ajena | **Correcto.** `hasRoom` se comprueba en el destino contra el perfil del dueño; una clave falsificada no crea ni abre una casa. |
+| Precios de mobiliario y materiales | **Correcto.** `BuyStore`, `BuyDecors` y `ComprarMaterial` resuelven el precio en el servidor desde `StoreTemplates`, `verificarExistencia` y `DesingData`. El cliente solo manda un nombre. |
+| Precio vacío como compra gratis | **Correcto, y deliberado.** `Collections.requirements` devuelve la bandera `vacio`, que solo se activa dentro del bucle: una tabla de precio vacía devuelve `false` y el cobro no se da por bueno. |
+| Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
+| Amueblar la casa de otro como vía de transferencia de moneda | **Correcto.** Pasa por `donacion.GetState` y `donacion.Quitar`: consume el mismo tope diario de 1 000 que una donación directa. |
+| Importe de las compras en Robux | **Correcto.** `Compras.Comprar` usa `self.ProductActive`, estado de servidor, y lee el precio de `GetProduct`. |
 
 ---
 
@@ -1202,6 +1210,39 @@ Nótese el `_player`: el llamante se ignora explícitamente. `GetWorldSettingRF`
 tienen la misma forma. `GetUserRolRF` acepta un `userId` arbitrario y devuelve el rol de ese
 usuario.
 
+:::note Un quinto camino, hallado al leer `Shared/Stores`
+
+La tabla de roles sale también por un remote que no está en la lista de arriba y que
+pertenece a otro sistema. `HouseAdded:init` conecta `GetInfoHouse` en las dos direcciones:
+
+```lua
+local GetInfoHouse = Events:WaitForChild("GetInfoHouse")
+GetInfoHouse = Client and GetInfoHouse.OnClientEvent or GetInfoHouse.OnServerEvent
+GetInfoHouse:Connect(function(...) self:GetData(...) end)
+```
+
+Cualquier cliente puede dispararlo, y el servidor responde con la tabla completa:
+
+```lua
+local DataClient = {
+	Permisos = self.DataBaseHouse:GetStoreData("WorldRolesStore") or {},
+	Owner = tonumber(self.DataBaseHouse.OwnerId),
+	Desing = self:GetColorAndTexture(not ClientData),
+}
+Events:FindFirstChild("GetInfoHouse"):FireClient(ClientData, DataClient)
+```
+
+Además, cada cambio de roles se difunde con `FireAllClients`, sin filtrar por destinatario.
+
+Esto **eleva la confianza** de esta entrada —hay dos sistemas independientes que exponen lo
+mismo, así que no es un descuido aislado— y **amplía el trabajo de una eventual corrección**:
+cerrar los cuatro remotes de `WorldDataReplicator` no bastaría.
+
+No cambia la gravedad. Sigue siendo una fuga de metadatos de una casa hacia quien ya está
+dentro de ella.
+
+:::
+
 Mientras tanto, la ruta de **envío** sí está restringida:
 
 ```lua
@@ -2081,6 +2122,247 @@ los de su forma, en algo detectable — pero es un **cambio de código**, así q
 registrado aquí y no aplicado.
 
 
+## BUG-CANDIDATE-020
+
+### El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual
+
+**Sistema:** Tiendas / Casas / Seguridad · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Media
+
+**Código relacionado:** `Core/…/Shared/Stores/init.luau`, `fn:ChangeDesing`;
+`Core/…/Shared/Stores/HouseAdded.luau`, `module:ChangeDesing`;
+`Core/…/Shared/BreakDown.luau`, `Set`
+**Documentación relacionada:** [Tiendas y decoración](../systems/stores.md#quién-escribe-content-la-incógnita-cerrada)
+
+#### Comportamiento observado — HECHO
+
+El manejador del servidor filtra las claves con cuidado, pero solo una de ellas por valor:
+
+```lua
+for index, value in Valores do
+	if index ~= "Material" then
+		NewValores[index] = value            -- copiado tal cual
+	else
+		local material = DataDesing.FindMaterial(value)
+		if material then ... end             -- validado contra el catálogo
+	end
+end
+store:ChangeDesing(Data, NewValores)
+```
+
+`Material` se resuelve contra el catálogo y además exige haberlo comprado o tener el
+gamepass. **`Color` no se valida en absoluto**: se copia y llega hasta la escritura:
+
+```lua
+Data.Desing[ListRuta[1]][ListRuta[2]][index] = breackdownValues.Set(value)
+```
+
+Y `BreakDown.Set` deja pasar las cadenas sin tocarlas:
+
+```lua
+module.DataNormal = { ['boolean'] = true, ['string'] = true, ['number'] = true }
+
+function module.Set(Option)
+	if module.DataNormal[typeof(Option)] then return Option end
+	...
+```
+
+#### Por qué esto puede ser un problema — HECHO
+
+Lo que se escribe es la sección `content` del perfil `World` de esa casa, a través de
+`WorldService.UpdateStore("WorldContentStore", …)`. Es decir: **datos que el cliente
+controla en tamaño y contenido acaban en el DataStore de una casa que puede no ser suya.**
+
+El permiso necesario es bajo. `fn:GetStore` concede a cualquiera con un rol distinto de
+`46`, no solo al dueño. Un invitado con permiso de construcción cumple.
+
+Las validaciones que sí existen acotan la **forma** pero no el **tamaño**:
+
+| Validación | Qué acota | Qué no |
+|---|---|---|
+| `ListRuta` de dos partes, ambas resueltas contra `Estructura` | Dónde se escribe | Cuánto |
+| `if not Changes[index] then continue end` | Qué claves (`Color`, `Material`) | El valor de `Color` |
+| `BreakDown.Set` | Que no sean tablas arbitrarias | Que las cadenas sean cortas |
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede disparar `ChangeDesing` con
+`{ Color = string.rep("A", 200000) }` y hacer crecer el perfil `World` de la casa hasta
+acercarse o superar el límite de 4 MB por clave de DataStore. A partir de ahí los guardados
+de esa casa fallarían, y con suficientes fallos seguidos el cortacircuitos `Health` de
+DataKit abriría el circuito para ese store.
+
+El daño no lo sufre quien ataca: lo sufre **la casa**, y por tanto su dueño.
+
+Hay una segunda vía, más lenta y con el mismo efecto: cada `(carpeta, modelo)` es una
+ranura distinta, así que aunque hubiera un tope por valor, el número de ranuras multiplica
+lo acumulable.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `NewValores[index] = value` sin ninguna comprobación para toda clave que no sea `Material` |
+| 2 | `BreakDown.Set` devuelve las cadenas sin modificar ni medir |
+| 3 | La escritura va a `WorldContentStore`, que `WorldService` mapea a la sección `content` del perfil `World` |
+| 4 | El permiso lo concede `GetStore`, que acepta cualquier rol distinto de `46` |
+| 5 | No hay límite de frecuencia en el remote `ChangeDesing` |
+| 6 | El lado que renderiza **sí** es robusto: `ColorTexture.Color` sustituye cualquier valor que no sea `Color3` por blanco. El problema es de almacenamiento, no de renderizado |
+
+#### Incógnitas
+
+- Qué hace DataKit ante una escritura que supera el límite del DataStore: si rechaza
+  limpiamente y deja el perfil anterior intacto, la gravedad baja mucho.
+- Si `UpdateStore` valida el tamaño de la sección antes de escribir. `WorldService.UpdateStore`
+  no se ha releído con esta pregunta en mente.
+- Cuántas ranuras `(carpeta, modelo)` tiene una casa real. Determina el techo acumulable.
+
+#### Escenario de ejemplo
+
+Un jugador con rol de constructor en la casa de un amigo abre la consola y manda un color
+de 200 000 caracteres para un suelo. Repite con cada superficie. La casa deja de guardar;
+la siguiente sesión pierde el mobiliario colocado desde ese momento.
+
+**Comportamiento esperado:** un color que no es un color se rechaza.
+**Comportamiento posible:** se guarda, y el perfil de la casa se degrada.
+
+#### Plan de verificación — *Seguridad*, *Persistencia*
+
+1. En un place de pruebas, entra en una casa con una cuenta que tenga un rol distinto de
+   `46` pero no sea la dueña.
+2. Desde la consola del cliente, dispara `ChangeDesing` con
+   `("Floors.Color1", { Color = string.rep("A", 1000) })`.
+3. Lee la sección `content` del perfil de esa casa y comprueba si la cadena está ahí.
+4. Si está, repite subiendo el tamaño y anota en qué punto empieza a fallar el guardado.
+5. Comprueba si el fallo se reporta o pasa en silencio.
+
+**Pasa:** el valor se rechaza por no ser un `Color3`, o `UpdateStore` corta por tamaño.
+**Falla:** la cadena aparece íntegra en el perfil.
+
+**Instrumentación sugerida:** registrar el tamaño serializado de cada sección al guardar.
+Es información útil mucho más allá de esta entrada.
+
+---
+
+## BUG-CANDIDATE-021
+
+### El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso
+
+**Sistema:** Tiendas / Economía · **Clasificación:** Posible bug / Requiere pruebas multijugador
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Media
+
+:::note Esto puede ser el diseño querido
+
+«Es mi casa, puedo quitar lo que haya» es una regla perfectamente razonable. Lo que esta
+entrada cuestiona no es que el dueño pueda **quitar** el mueble, sino **a quién se le paga**
+cuando lo hace. Se registra como pregunta de diseño con evidencia, no como acusación.
+
+:::
+
+**Código relacionado:** `Core/…/Shared/Stores/init.luau`, `fn:SellDecors` y `fn:GetDecorPlayer`
+**Documentación relacionada:** [Tiendas y decoración](../systems/stores.md#el-modelo-de-permisos)
+
+#### Comportamiento observado — HECHO
+
+`GetDecorPlayer`, en el servidor, busca primero en el índice del jugador que pregunta y
+**luego en todo el mobiliario de la casa**, sin filtrar por dueño:
+
+```lua
+local list = Client and self.DecorsPlayer:Get() or Player and self.DecorsPlayer[Player.UserId]
+if list then ... end
+
+if self.Added and self.Added:IsA("House") then
+	for i, v in self.Added.DecorChild do
+		...
+		for _, data in v do
+			if IsValue and data.Boolean == decor then return data end
+```
+
+`SellDecors` acepta tres caminos, y el tercero solo mira quién es el dueño de la casa:
+
+```lua
+if Decor2.Boolean:IsDescendantOf(Player)
+	or (self.Added:IsA("House") and Decor2.Owner == Player.UserId and (...)
+	or (self.Added.DataBaseHouse and tonumber(self.Added.DataBaseHouse.OwnerId) == Player.UserId)) then
+
+	local PriceDevolver = not Decor2.Boolean.Value and Decor2.Data.Price
+	                       or self.Cobros.Lerp(Decor2.Data.Price, .7)
+	debris:AddItem(Decor2.Boolean, 0)
+	self.Cobros.Give(Player, PriceDevolver, true)
+```
+
+`Player` es siempre quien disparó el remote. El reembolso va a esa cuenta, sea o no quien
+compró el mueble.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El sistema **sí sabe** quién colocó cada mueble: `Object.OwnerPlace` viaja en el perfil y
+`fn:SetStore` lo restaura al arrancar el servidor. `ExitModeConstruccion` lo usa para fijar
+solo lo de cada jugador:
+
+```lua
+if data.Boolean:GetAttribute("OwnerPlace") == Player.UserId then
+	data.Boolean.Value = true
+end
+```
+
+La información de propiedad existe y se usa en otro sitio. En el reembolso no se consulta.
+
+#### Teoría — TEORÍA
+
+Un jugador invita a otro a su casa, el invitado compra y coloca mobiliario —pagándolo de su
+bolsillo y consumiendo su tope diario de donación, que es justo lo que el código hace para
+tratar eso como un regalo—, y después el dueño lo vende y cobra el 70 % del precio.
+
+Lo que convierte esto en una vía de extracción, y no solo en una asimetría, es
+precisamente ese tope: el juego reconoce que amueblar una casa ajena **es** transferir
+valor, y le aplica el límite diario de 1 000. La venta por parte del dueño no tiene tope
+equivalente.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `GetDecorPlayer` cae a `DecorChild` —todo el mobiliario de la casa— sin filtrar por dueño |
+| 2 | El tercer disyuntor de `SellDecors` solo comprueba `OwnerId == Player.UserId` |
+| 3 | `Cobros.Give(Player, …)` paga a quien llamó, no a `Decor2.Owner` |
+| 4 | `Decor2.Owner` y el atributo `OwnerPlace` existen y se usan en `ExitModeConstruccion` y en la restauración |
+| 5 | `BuyDecors` tiene la misma forma para «recoger»: el dueño se lleva el mueble a **su** inventario (`addInventory(Inventory, true)`) |
+| 6 | Colocar en casa ajena consume el tope diario de donación; retirarlo no devuelve nada a ese tope |
+
+#### Incógnitas
+
+- Si la interfaz de la casa ofrece «vender» sobre muebles ajenos, o solo «devolver al
+  inventario». Si solo ofrece lo segundo, hace falta un cliente modificado, lo que reduce
+  la exposición pero no cierra el caso.
+- Si `Decor2.Data.Price` de un mueble ajeno es el precio real pagado o el de catálogo.
+- Si el equipo considera que retirar mobiliario ajeno debe reembolsar a alguien.
+
+#### Escenario de ejemplo
+
+Dos jugadores. A invita a B con rol de constructor. B compra mobiliario por 900 Coins y lo
+coloca. A lo vende todo y recibe 630 Coins. B pierde 900 y ha gastado además su tope diario.
+Repetible cada día, con cada invitado.
+
+**Comportamiento esperado:** o el reembolso va a quien compró, o retirar mobiliario ajeno no
+reembolsa a nadie.
+**Comportamiento posible:** el reembolso va a quien pulsa el botón.
+
+#### Plan de verificación — *Multijugador*, *Funcional*
+
+1. Dos cuentas. A dueña de una casa, B con un rol distinto de `46`.
+2. B compra un mueble y lo coloca dentro de la casa. Anota los Coins de ambos.
+3. A dispara `SellDecor` sobre ese mueble.
+4. Anota los Coins de ambos otra vez y comprueba si el mueble desapareció.
+5. Repite con `BuyDecor` en modo «recoger» y mira en qué inventario acaba.
+
+**Pasa:** B recibe el reembolso, o no lo recibe nadie.
+**Falla:** A recibe el reembolso de un mueble que pagó B.
+
+**Instrumentación sugerida:** registrar `Decor2.Owner` junto a quien llama en cada venta.
+Un solo `warn` bastaría para saber si esto ocurre en producción.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -2105,7 +2387,10 @@ completa.
 | `RoleService`, `EventCommands`, `ReferralCommands` | **En parte** | Solo la ruta de autorización, para la pasada de seguridad |
 | `machines/Machine`, `machines/PopTheLock` | **En parte** | Solo las rutas de enlace y de premio |
 | `GlobalDataStore`, `GiftInbox` | **No** | Ambos usan DataStoreService fuera de DataKit |
-| Sistemas de juego (~480 archivos) | **No** | En cola |
+| `Shared/Stores`: `init`, `HouseAdded`, `ColorTexture` | Sí | Los trece manejadores de remotes y el ciclo de `content` |
+| `Shared/Stores`: `Compras` | En parte | Solo `Comprar` y la forma general |
+| `Shared/Stores`: `Added`, `DecorFuncs/`, `DecorsPlayer` | **No** | En cola |
+| Sistemas de juego (~470 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que

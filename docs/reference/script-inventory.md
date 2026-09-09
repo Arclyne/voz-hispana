@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 35 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 8 |
-| Pendiente | Aún sin leer | 507 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 39 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 9 |
+| Pendiente | Aún sin leer | 502 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 34 leídos.
+530 archivos, 76,181 líneas, 39 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -640,7 +640,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/</code> — 44 archivo(s) — 1/44 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/</code> — 44 archivo(s) — 2/44 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -649,7 +649,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `AnimationButtons.luau` | ModuleScript | — | — | 299 | `ReplicatedStorage.Shared.AnimationButtons` | Pendiente |
 | `AreaSystem.luau` | ModuleScript | — | — | 148 | `ReplicatedStorage.Shared.AreaSystem` | Pendiente |
 | `AssetsToPreload.luau` | ModuleScript | — | — | 14 | `ReplicatedStorage.Shared.AssetsToPreload` | Pendiente |
-| `BreakDown.luau` | ModuleScript | — | — | 86 | `ReplicatedStorage.Shared.BreakDown` | Pendiente |
+| `BreakDown.luau` | ModuleScript | — | — | 86 | `ReplicatedStorage.Shared.BreakDown` | Analizado |
 | `ButtonMotion.luau` | ModuleScript | — | — | 420 | `ReplicatedStorage.Shared.ButtonMotion` | Pendiente |
 | `CardSlots.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.CardSlots` | Pendiente |
 | `Carousel.luau` | ModuleScript | — | — | 354 | `ReplicatedStorage.Shared.Carousel` | Pendiente |
@@ -1272,16 +1272,16 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Stores/</code> — 6 archivo(s) — 4/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Added.luau` | ModuleScript | — | — | 205 | `ReplicatedStorage.Shared.Stores.Added` | Pendiente |
-| `ColorTexture.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Stores.ColorTexture` | Pendiente |
-| `Compras.luau` | ModuleScript | — | — | 487 | `ReplicatedStorage.Shared.Stores.Compras` | Pendiente |
+| `ColorTexture.luau` | ModuleScript | — | — | 26 | `ReplicatedStorage.Shared.Stores.ColorTexture` | Analizado |
+| `Compras.luau` | ModuleScript | — | — | 487 | `ReplicatedStorage.Shared.Stores.Compras` | Analizado (en parte) |
 | `DecorsPlayer.luau` | ModuleScript | — | — | 92 | `ReplicatedStorage.Shared.Stores.DecorsPlayer` | Pendiente |
-| `HouseAdded.luau` | ModuleScript | — | — | 297 | `ReplicatedStorage.Shared.Stores.HouseAdded` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 992 | `ReplicatedStorage.Shared.Stores.init` | Pendiente |
+| `HouseAdded.luau` | ModuleScript | — | — | 297 | `ReplicatedStorage.Shared.Stores.HouseAdded` | Analizado |
+| `init.luau` | ModuleScript | — | — | 992 | `ReplicatedStorage.Shared.Stores.init` | Analizado |
 
 </details>
 
