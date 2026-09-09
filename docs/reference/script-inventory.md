@@ -27,8 +27,8 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
 | Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 28 |
-| Pendiente | Aún sin leer | 455 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 33 |
+| Pendiente | Aún sin leer | 450 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,15 +78,15 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 86 leídos.
+530 archivos, 76,305 líneas, 91 leídos.
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 3/6 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `BannersConfig.luau` | ModuleScript | — | — | 51 | `ReplicatedStorage.BannersConfig` | Pendiente |
-| `DancesInfo.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.DancesInfo` | Pendiente |
+| `DancesInfo.luau` | ModuleScript | — | — | 192 | `ReplicatedStorage.DancesInfo` | Analizado (en parte) |
 | `GeneralConfiguration.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.GeneralConfiguration` | Analizado |
 | `HousesInfo.luau` | ModuleScript | — | — | 54 | `ReplicatedStorage.HousesInfo` | Analizado |
 | `ShopInfo.luau` | ModuleScript | — | — | 228 | `ReplicatedStorage.ShopInfo` | Pendiente |
@@ -1347,20 +1347,20 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 12/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 15/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `EventBootstrap.server.luau` | Script | — | yes | 34 | `ServerScriptService.ServerScripts.EventBootstrap.server` | Analizado |
 | `EventCommands.server.luau` | Script | — | yes | 180 | `ServerScriptService.ServerScripts.EventCommands.server` | Analizado (en parte) |
-| `FavoriteService.server.luau` | Script | Server | yes | 55 | `ServerScriptService.ServerScripts.FavoriteService.server` | Pendiente |
+| `FavoriteService.server.luau` | Script | Server | yes | 55 | `ServerScriptService.ServerScripts.FavoriteService.server` | Analizado (en parte) |
 | `GiftHandler.server.luau` | Script | Server | yes | 355 | `ServerScriptService.ServerScripts.GiftHandler.server` | Analizado (en parte) |
-| `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Pendiente |
+| `LootBoxService.server.luau` | Script | — | yes | 104 | `ServerScriptService.ServerScripts.LootBoxService.server` | Analizado (en parte) |
 | `MicManagerServer.server.luau` | Script | Server | yes | 197 | `ServerScriptService.ServerScripts.MicManagerServer.server` | Pendiente |
 | `NametagServer.server.luau` | Script | Server | yes | 513 | `ServerScriptService.ServerScripts.NametagServer.server` | Pendiente |
 | `PlayerDataInit.server.luau` | Script | Server | yes | 42 | `ServerScriptService.ServerScripts.PlayerDataInit.server` | Analizado |
 | `PlayerDataReplicator.server.luau` | Script | Server | yes | 116 | `ServerScriptService.ServerScripts.PlayerDataReplicator.server` | Analizado |
-| `PlaytimeRewardSystem.server.luau` | Script | — | yes | 107 | `ServerScriptService.ServerScripts.PlaytimeRewardSystem.server` | Pendiente |
+| `PlaytimeRewardSystem.server.luau` | Script | — | yes | 107 | `ServerScriptService.ServerScripts.PlaytimeRewardSystem.server` | Analizado (en parte) |
 | `ServerDirectory.server.luau` | Script | Server | yes | 432 | `ServerScriptService.ServerScripts.ServerDirectory.server` | Analizado |
 | `ShopServerSystem.server.luau` | Script | Server | yes | 310 | `ServerScriptService.ServerScripts.ShopServerSystem.server` | Analizado (en parte) |
 | `ToolPlacementServer.server.luau` | Script | Server | yes | 881 | `ServerScriptService.ServerScripts.ToolPlacementServer.server` | Analizado (en parte) |
@@ -1542,13 +1542,13 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/stats/</code> — 3 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/stats/</code> — 3 archivo(s) — 1/3 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `Stats.luau` | ModuleScript | — | — | 71 | `ServerScriptService.ServerScripts.stats.Stats` | Pendiente |
 | `Timer.luau` | ModuleScript | — | — | 56 | `ServerScriptService.ServerScripts.stats.Timer` | Pendiente |
-| `init.server.luau` | Script | Server | yes | 84 | `ServerScriptService.ServerScripts.stats.init.server` | Pendiente |
+| `init.server.luau` | Script | Server | yes | 84 | `ServerScriptService.ServerScripts.stats.init.server` | Analizado (en parte) |
 
 </details>
 

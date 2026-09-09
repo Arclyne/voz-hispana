@@ -88,6 +88,8 @@ o en un place de pruebas.
 | [033](#bug-candidate-033) | Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva | Persistencia | Posible bug / Requiere pruebas de concurrencia | Media | Alta |
 | [034](#bug-candidate-034) | Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado | Karaoke | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
 | [035](#bug-candidate-035) | El limitador de ritmo de la búsqueda de canciones está invertido | Karaoke / Persistencia | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
+| [036](#bug-candidate-036) | La lista de favoritos crece sin tope, con cadenas que elige el cliente | Casas / Persistencia | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [037](#bug-candidate-037) | La caja de botín es estrictamente mejor que la tienda de bailes | Economía | Observación / Pregunta de diseño | Media | Alta |
 
 ### Entradas de seguridad
 
@@ -142,6 +144,8 @@ engañosa:
 | Despacho de métodos por nombre en Trabajos | **Correcto, y es el mejor patrón del repositorio para esto.** El cliente manda el nombre del método, pero hay una lista blanca **por instancia** —cuatro o cinco nombres declarados junto al objeto— y quien la burla recibe `Player:Kick("Exploiter detected.")`. `LimpiarPiso` incluso deja la lista vacía para las instancias que no deben aceptar nada. |
 | Acumular trabajos | **Correcto.** `UsosPlayer` es uno por jugador y empezar otro renuncia al anterior; la limpieza compara `== getMetatable` antes de borrar, para que una señal tardía no pise el trabajo nuevo. |
 | Pago del botón VIP | **Correcto.** Solo se paga si `state == "Success"`, y `Proccess[Player]` más `MarkPrompt` impiden compras solapadas. |
+| Precio de una caja de botín | **Correcto.** El cliente elige moneda, no importe, y `LOOTBOX_PRICES` actúa como lista blanca; se cobra antes de conceder y se rechaza antes de cobrar si no queda nada por dar. |
+| Reconectar para cobrar el sueldo antes de tiempo | **Correcto.** `PlaytimeRewardSystem` compara `GetJoinData().SourceGameId` con `game.GameId`: un teleport interno respeta el temporizador, un inicio de sesión nuevo lo reinicia. |
 | Reclamar una misión | **Correcto, y de lo más completo del repositorio.** Lista blanca de grupos, tipo del hueco, la misión existe, no está reclamada, el progreso llega al objetivo, y la recompensa sale de la configuración del servidor. |
 | Doble reclamación de una misión | **Correcto hoy, por una propiedad frágil.** `Claimed = true` se escribe después de conceder, pero en todo el recorrido no hay un solo punto de suspensión, así que dos llamadas no se entrelazan. Añadir cualquier espera a `Collections.Give` o a `saveData` abriría la ventana. |
 | Giro de la ruleta | **Correcto.** `requestSpinRF` valida en cadena con un motivo por rechazo, comprueba el recurso **antes** de cobrarlo, y usa `CooldownManager` para el giro gratuito. |
@@ -4251,6 +4255,225 @@ que sí conviene, al corregirlo, es extraer esa división a una función con nom
 número doce.
 
 
+## BUG-CANDIDATE-036
+
+### La lista de favoritos crece sin tope, con cadenas que elige el cliente
+
+**Sistema:** Casas / Persistencia · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/FavoriteService.server.luau`, `onGiveFavorite`
+**Documentación relacionada:** [Recompensas → Favoritos](../systems/rewards.md#favoritos)
+
+#### Comportamiento observado — HECHO
+
+El manejador comprueba el **tipo** de lo que llega y que no esté repetido, y nada más:
+
+```lua
+local function onGiveFavorite(player: Player, serverKey: string)
+	if typeof(serverKey) ~= "string" then return false end
+
+	local store = PlayerDataService.get(player)
+	if not store or not store:isReady() then return false end
+
+	local data = store:get()
+	if table.find(data.favorites, serverKey) then return false end
+
+	store:update(function(current)
+		if not table.find(current.favorites, serverKey) then
+			table.insert(current.favorites, serverKey)
+		end
+		return current
+	end)
+```
+
+No comprueba que `serverKey` corresponda a una casa que exista, ni cuánto mide, ni cuántos
+favoritos lleva ya el jugador.
+
+#### Por qué esto puede ser un problema — HECHO
+
+`favorites` es una clave del perfil `WorldsPlayer`, es decir **se persiste**. Un cliente
+puede añadir cadenas arbitrarias, de longitud arbitraria, hasta llenar el perfil.
+
+El contraste está en el propio repositorio, que sí acota en todas las estructuras
+equivalentes:
+
+| Estructura | Tope | Dónde |
+|---|---|---|
+| Cuadros por jugador | `maxSlots = 9` | `Paint/ServerClient` |
+| Buzón de regalos | `MAX_ENTRIES = 50` | `GiftInbox` |
+| Mensajes del perfil | `maxMessages = 2000` | `Profiles.WorldsPlayer` |
+| Huecos de la rueda | `WHEEL_SLOTS = 8` | `InventoryManager` |
+| Construcciones por invitado | `MaxBuildPlace = 5` | `Stores` |
+| **Favoritos** | **ninguno** | `FavoriteService` |
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede llamar a `GiveFavorite` en bucle con cadenas distintas y hacer
+crecer su propio perfil hasta acercarse al límite de 4 MB por clave de DataStore. A partir
+de ahí, **los guardados de ese jugador empezarían a fallar** — y con ellos su moneda, su
+inventario y sus casas, porque van todos en el mismo perfil.
+
+Es el mismo patrón que [BUG-CANDIDATE-020](#bug-candidate-020), con dos diferencias que lo
+hacen menos grave: aquí el daño es al perfil **de quien lo hace**, no al de un tercero, y no
+hace falta ningún permiso.
+
+Que el daño sea autoinfligido no lo vuelve inofensivo: un jugador que se rompa el perfil se
+convierte en una incidencia de soporte, y no hay nada en el código que lo impida ni que lo
+detecte.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | No hay comprobación de longitud de `serverKey` |
+| 2 | No hay tope en el número de elementos de `favorites` |
+| 3 | No se valida que la clave corresponda a una casa existente |
+| 4 | `favorites` va en el perfil persistido, no en memoria de sesión |
+| 5 | Cinco estructuras equivalentes del mismo repositorio **sí** llevan tope |
+| 6 | `RemoveFavorite` existe, así que el jugador puede deshacerlo — pero solo si sabe qué claves metió |
+
+#### Incógnitas
+
+- Qué hace DataKit ante un perfil que supera el límite del DataStore. La misma incógnita que
+  BUG-CANDIDATE-020, y responderla vale para las dos.
+- Si la interfaz limita cuántos favoritos se pueden marcar. Aunque lo hiciera, el remote es
+  invocable directamente.
+- Cuál sería un tope razonable. Es una decisión de producto: en el repositorio conviven
+  topes de 5, 8, 9, 50 y 2 000.
+
+#### Escenario de ejemplo
+
+Un jugador con un cliente modificado llama a `GiveFavorite` diez mil veces con cadenas
+generadas. Su perfil crece hasta que DataKit no puede guardarlo. A partir de ese momento
+pierde monedas, objetos y progreso en cada sesión, y desde fuera parece un fallo del juego.
+
+**Comportamiento esperado:** el remote rechaza pasado un tope, o valida que la clave exista.
+**Comportamiento posible:** acepta indefinidamente.
+
+#### Plan de verificación — *Seguridad*, *Persistencia*
+
+1. En un place de pruebas, invoca `GiveFavorite` en bucle con cadenas aleatorias.
+2. Vuelca `PlayerDataService.getData(player).favorites` y comprueba que crecen.
+3. Sigue hasta que el guardado falle, y anota en cuántos elementos ocurre.
+4. Comprueba si el fallo se reporta o pasa en silencio.
+5. Comprueba si el jugador puede recuperarse: ¿se le carga el perfil la siguiente vez?
+
+**Pasa:** hay un tope, o las claves inexistentes se rechazan.
+**Falla:** la lista crece sin límite hasta romper el guardado.
+
+**Instrumentación sugerida:** registrar el tamaño de `favorites` al guardar, junto al del
+resto de secciones. Es la misma instrumentación que pide BUG-CANDIDATE-020 y cubre las dos.
+
+---
+
+## BUG-CANDIDATE-037
+
+### La caja de botín es estrictamente mejor que la tienda de bailes
+
+**Sistema:** Economía · **Clasificación:** Observación / Pregunta de diseño
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+:::note Esto puede ser exactamente lo que se quiere
+
+Una caja de botín **debe** ser atractiva. Lo que esta entrada señala no es que sea buena
+compra, sino que hace la tienda de bailes **inútil por completo**, y que eso puede no
+haberse calculado. Es una pregunta de diseño con los números delante, no una acusación.
+
+:::
+
+**Código relacionado:** `Core/…/ServerScripts/LootBoxService.server.luau`, `LOOTBOX_PRICES`
+y `getUnownedLoot`; `Core/ReplicatedStorage/DancesInfo.luau`
+**Documentación relacionada:** [Recompensas → La caja de botín](../systems/rewards.md#la-caja-de-botín)
+
+#### Comportamiento observado — HECHO
+
+Los números están todos en el código, y no hace falta interpretarlos:
+
+| | Valor | Dónde |
+|---|---|---|
+| Precio de la caja | **500 Coins** (o 1 ChestKey) | `LOOTBOX_PRICES` |
+| Precio de un baile en la tienda | **1 000 Coins**, los 14 | `DancesInfo` |
+| Bailes a la venta | 14 de 14 (`IsForSale = true`) | `DancesInfo` |
+| ¿La caja puede dar repetidos? | **No** | `getUnownedLoot` filtra lo ya poseído |
+| ¿La caja puede fallar? | No, si queda algo por conseguir | Rechaza **antes** de cobrar si el catálogo está agotado |
+
+#### Por qué esto puede ser un problema — HECHO
+
+La caja cuesta **la mitad** que el artículo más barato que puede entregar, **nunca repite**,
+y además puede dar juguetes. Como el catálogo se filtra contra lo que el jugador ya tiene,
+cada compra es un artículo nuevo garantizado.
+
+De ahí se sigue algo aritmético: **no existe ninguna situación en la que comprar un baile en
+la tienda sea mejor que comprar una caja.** La tienda solo aporta elegir *cuál*, y esa
+ventaja se agota sola: comprando cajas se acaban teniendo todos.
+
+Conseguir los 14 bailes cuesta 14 000 Coins en la tienda. Por cajas cuesta **7 000 como
+máximo**, y de camino salen todos los juguetes.
+
+#### Teoría — TEORÍA
+
+Con el sueldo por tiempo jugado a 150 Coins/hora, la diferencia es de unas 46 horas de juego
+frente a unas 93. No es un matiz de balance: es un factor de dos sobre el precio de todo el
+contenido cosmético.
+
+Lo que hace pensar que no está calculado —y no que sea una promoción deliberada— es que
+`DancesInfo` declara `rarityWeight` para cada baile, y la caja **no lo usa**: reparte
+uniforme con `math.random(1, #lootList)`. Ese campo sí lo honra `ShopServerSystem` para
+ponderar su rotación. Alguien previó que las cajas tuvieran rarezas; el código que las
+reparte no llegó a leerlas.
+
+Con pesos aplicados, un baile raro podría costar muchas cajas y el equilibrio sería otro.
+Sin ellos, todo vale lo mismo y la caja es simplemente un descuento del 50 %.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `LOOTBOX_PRICES.Coins = 500`; los 14 bailes valen 1 000 |
+| 2 | `getUnownedLoot` garantiza que nunca se repite |
+| 3 | Se rechaza antes de cobrar si no queda nada por conseguir, así que tampoco se puede desperdiciar |
+| 4 | `getRandomReward` es uniforme: no consulta `rarityWeight` |
+| 5 | `rarityWeight` **sí** lo usa `ShopServerSystem` para su rotación, así que el campo funciona: es este consumidor el que lo ignora |
+| 6 | Los 14 bailes tienen `rarityWeight = 100`, de modo que hoy aplicarlo no cambiaría nada — el problema aparece al añadir uno raro |
+
+#### Incógnitas
+
+- Si `ChestKey` se consigue de alguna forma que cambie el cálculo. No se ha encontrado dónde
+  se concede.
+- Cuántos juguetes hay en `Assets/Tools/Toys`, que es lo que determina el tamaño real del
+  catálogo y por tanto cuántas cajas hacen falta.
+- Si la tienda de bailes tiene alguna ventaja que no se vea en el código —una rotación
+  limitada, por ejemplo— que justifique el doble de precio.
+
+#### Escenario de ejemplo
+
+Un jugador quiere el baile del robot. En la tienda son 1 000 Coins. Compra dos cajas por el
+mismo dinero, se lleva dos cosmética distintos, y una de ellas puede ser justo ese baile. La
+tienda nunca es la opción razonable.
+
+**Comportamiento esperado:** la caja compensa el azar con precio, no lo contrario.
+**Comportamiento posible:** la caja es mejor en todos los ejes a la vez.
+
+#### Plan de verificación — *Funcional*
+
+Esto no se verifica ejecutando, se verifica decidiendo. Aun así conviene medirlo:
+
+1. Cuenta los juguetes de `Assets/Tools/Toys` para conocer el tamaño del catálogo.
+2. Calcula el coste medio de completarlo por cajas y compáralo con comprarlo suelto.
+3. Comprueba cómo se consigue `ChestKey` y qué vale en Coins equivalentes.
+4. Decide si `rarityWeight` debe aplicarse en la caja; si sí, es un cambio de una línea en
+   `getRandomReward`.
+5. Decide precios con esos números delante.
+
+**Pasa:** los números salen de una decisión consciente.
+**Falla:** nadie los había puesto uno al lado del otro.
+
+**Instrumentación sugerida:** registrar cuántas cajas se abren y cuántos bailes se compran
+en la tienda. Si la segunda cifra es cerca de cero, la pregunta está respondida sin
+necesidad de discutir el balance.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -4303,7 +4526,9 @@ completa.
 | `BuildingSystem` | Su papel, sí | Es interfaz de cliente sin remotes propios; su UI no se ha leído |
 | `GiftHandler.server.luau` | Sí | La ruta de regalos y `ProcessReceipt` |
 | `BusquedaMusicas` | En parte | Las colas, su ritmo y la búsqueda por palabra clave; no el guardado de palabras ni la caché por sección |
-| Sistemas de juego (~420 archivos) | **No** | En cola |
+| `LootBoxService`, `PlaytimeRewardSystem`, `FavoriteService`, `DancesInfo` | Sí | Sistemas que no estaban ni en la lista |
+| `ServerScripts/stats/` | En parte | Su papel y sus constantes |
+| Sistemas de juego (~416 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
