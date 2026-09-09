@@ -57,6 +57,11 @@ jobs:
           # checkout used fetch-depth: 0, so every remote branch is already local.
           python3 .github/scripts/check-luau-code-unchanged.py "$BASE"
 
+      # Same class of failure the Docusaurus build would raise (moonwave.toml sets
+      # onBrokenLinks = "throw"), but caught in seconds and with a precise message.
+      - name: Check internal documentation links
+        run: python3 .github/scripts/check-docs-links.py
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
