@@ -87,6 +87,18 @@ ANALYSED |= {
     t("Core/ServerStorage/WorldSystem/GiftInbox.luau"),
     t("Core/ServerStorage/GlobalDataStore/ReadMe.server.luau"),
     t("Core/ReplicatedStorage/Shared/BartenderSystem/init.luau"),
+    t("Core/ReplicatedStorage/ShopInfo.luau"),
+    t("Core/ReplicatedStorage/Shared/ComprasTablero/init.luau"),
+    t("Core/ReplicatedStorage/Shared/ComprasTablero/Settings.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/init.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/Server/init.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/Server/Rewards.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/Disconnects.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/QuitarEspacios.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/PageController/init.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/PageController/VerificacionPages/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Tutorials/ParametrosGuideClaim.luau"),
+    t("Core/ReplicatedStorage/Shared/Tutorials/ParametrosTutorialBienvenida.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -135,6 +147,7 @@ PARTIAL = {
     t("Core/ReplicatedStorage/Shared/NPC_Custom/Instance/CustomizeSettings.luau"),
     t("Core/ReplicatedStorage/Shared/NPC_Custom/Instance/FormatPathNpc.luau"),
     t("Core/ReplicatedStorage/Shared/DialogModule/init.luau"),
+    t("Core/ReplicatedStorage/Shared/GuideService/PageController/VerificacionPages/Changed.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",

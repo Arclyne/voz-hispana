@@ -91,6 +91,8 @@ o en un place de pruebas.
 | [036](#bug-candidate-036) | La lista de favoritos crece sin tope, con cadenas que elige el cliente | Casas / Persistencia | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [037](#bug-candidate-037) | La caja de botín es estrictamente mejor que la tienda de bailes | Economía | Observación / Pregunta de diseño | Media | Alta |
 | [038](#bug-candidate-038) | El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado | Chat de voz | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
+| [039](#bug-candidate-039) | El servidor marca un tutorial como terminado porque el cliente se lo dice | Tutoriales / Seguridad | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
+| [040](#bug-candidate-040) | Las dos tablas globales del place de donaciones llaman a un método que no existe | Donaciones / Persistencia | Confirmado por análisis estático | Media | **Muy alta** |
 
 ### Entradas de seguridad
 
@@ -108,6 +110,7 @@ formato que el resto: teoría con justificación, no acusaciones.
 | [022](#bug-candidate-022) | Id de asset suministrado por el cliente, sin comprobación de propiedad | **Explotable hoy** si un `EnumItem` viaja por el remote |
 | [023](#bug-candidate-023) | Colocación con autoridad de cliente en casa ajena | **Explotable hoy**, impacto de vandalismo |
 | [024](#bug-candidate-024) | `SoundId` y modelo suministrados por el cliente, sin moderación | **Explotable hoy**, acotado por las restricciones de audio de Roblox |
+| [039](#bug-candidate-039) | Clave y estado de tutorial suministrados por el cliente, persistidos en el perfil | **Latente** — la tabla de recompensas es un stub |
 | [025](#bug-candidate-025) | Reglas de interacción solo en el cliente en 21 de 25 manejadores | **Explotable hoy**, impacto bajo |
 | [027](#bug-candidate-027) | Reparentado arbitrario de `Instance` desde un remote | **Explotable hoy**, control sobre el mundo compartido |
 | [028](#bug-candidate-028) | Guarda de autorización que mira al servidor en vez de al llamante | **Explotable hoy**, pero sin fuga de datos: el llamante acaba expulsado |
@@ -4640,6 +4643,343 @@ la corrección es de un carácter y el resto del archivo ya está bien construid
 aprovecharla.
 
 
+## BUG-CANDIDATE-039
+
+### El servidor marca un tutorial como terminado porque el cliente se lo dice
+
+**Sistema:** Tutoriales / Seguridad · **Clasificación:** Confirmado por análisis estático — **latente**
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja hoy, Alta el día que haya recompensas · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/GuideService/Server/init.luau`,
+`CloseGuide`; `Core/ReplicatedStorage/Shared/GuideService/Server/Rewards.luau`
+**Documentación relacionada:** [Tutoriales y guías](../systems/tutorials.md#lo-que-el-servidor-no-comprueba)
+
+#### Comportamiento observado — HECHO
+
+El único remote del sistema se conecta así, sin envoltorio:
+
+```lua
+if not IsClient then
+	event:WaitForChild('EndAction').OnServerEvent:Connect(module.CloseGuide)
+end
+```
+
+Y el manejador, en su rama de servidor:
+
+```lua
+local parametro = {...}
+local Guide:BoolValue = module.GetGuide(parametro[1])
+local Key:string = quitarEspacios(parametro[2])
+local IsDone = parametro[3] or "pending"
+if Guide and typeof(Key)=='string' then
+	if module.GetState(parametro[1], Key) ~= UserInputState.End then
+		Guide:SetAttribute(Key,IsDone)
+		if IsDone == "ended" then
+			Rewards[Key](parametro[1])
+		end
+	end
+end
+```
+
+`OnServerEvent` antepone el `Player`, así que `parametro[2]` es la **clave** y
+`parametro[3]` el **estado**, y los dos vienen del cliente tal cual.
+
+#### Por qué esto es un problema — HECHO
+
+El recorrido del tutorial —`Bind`, `AddPage`, `Start`, pasar páginas, llegar al final— vive
+**entero en el cliente**. El servidor no ve ni una página. Lo único que le llega es el
+aviso final, y ese aviso es el que decide qué se escribe.
+
+| Lo que el servidor comprueba | Lo que no |
+|---|---|
+| Que la clave sea una cadena | Que el tutorial exista |
+| Que el estado guardado no sea ya `"ended"` | Que el jugador lo haya empezado |
+| | Que lo haya recorrido |
+| | Que el estado enviado sea uno de los tres válidos |
+
+Es decir: `EndAction:FireServer("LoQueSea", "ended")` escribe el atributo `LoQueSea = "ended"`
+y llama a la entrada `"LoQueSea"` de `Rewards` con el jugador como argumento.
+
+#### Lo que hoy lo mantiene inofensivo — HECHO
+
+`Rewards.luau` completo:
+
+```lua
+local module = {}
+setmetatable(module, {__index = function() return print end})
+return module
+```
+
+Cualquier índice devuelve `print`. Ningún tutorial concede nada, así que la escritura
+falsificada no vale moneda ni objetos. Es exactamente la misma forma que
+[BUG-CANDIDATE-016](#bug-candidate-016): superficie abierta, manejador vacío.
+
+El metatable también explica por qué una clave inventada **no lanza error**: si `Rewards`
+fuera una tabla normal, `Rewards["LoQueSea"]` sería `nil` y llamarlo reventaría el hilo del
+remote. El `__index` convierte lo que sería un fallo ruidoso en un `print` silencioso.
+
+#### Lo que agrava la consecuencia — HECHO
+
+Lo escrito **se persiste**. `PlayerSchema` declara `guide = { Name = "GuideService", Value = false }`
+y `PlayerDataReplicator` lo trata como `kind = "record"`, cuyo serializador recorre
+`GetAttributes()` y guarda todos. El atributo falsificado entra en el perfil del jugador y
+vuelve en la siguiente sesión.
+
+Y como la clave es libre, el número de atributos distintos que un cliente puede sembrar en
+su propio perfil **no tiene tope declarado en este código**. El límite real lo pone el
+tamaño máximo del perfil en DataKit; ver [Persistencia](../architecture/persistence.md).
+Es la misma familia que
+[BUG-CANDIDATE-036](#bug-candidate-036) —lista sin tope con cadenas elegidas por el
+cliente— y que [BUG-CANDIDATE-020](#bug-candidate-020).
+
+#### Teoría — TEORÍA
+
+Hoy: un jugador puede saltarse el tutorial de bienvenida, o marcarse como «ya lo vi» sin
+verlo, o llenar su propio perfil de atributos basura. Nada de eso le da ventaja.
+
+El día que alguien rellene `Rewards` —que es evidentemente para lo que está— cada entrada
+se convierte en un concesor de recompensa invocable desde el cliente, una vez por clave y
+por jugador. Y la persona que rellene esa tabla estará mirando `Rewards.luau`, no
+`CloseGuide`, así que no hay razón para que se dé cuenta.
+
+Lo que hace esta entrada distinta de las demás de su familia es que la guarda que falta no
+se puede añadir en el sitio obvio: el servidor **no dispone del dato** con el que
+comprobarlo. Cerrarlo bien exige que el recorrido —o al menos su inicio y su avance— pase
+por el servidor. Eso es rediseño, no un parche, y por eso queda registrado y no propuesto.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `OnServerEvent:Connect(module.CloseGuide)` conecta el manejador sin ninguna capa intermedia |
+| 2 | `parametro[2]` (clave) y `parametro[3]` (estado) vienen del cliente |
+| 3 | La única guarda de estado es `~= UserInputState.End`: limita a una escritura por clave, no a claves legítimas |
+| 4 | No existe ninguna lista de tutoriales válidos en el lado servidor |
+| 5 | `Bind`, `AddPage` y `Start` son código de cliente; el servidor no ve el recorrido |
+| 6 | `Rewards` devuelve `print` para cualquier índice, lo que hoy anula el impacto y silencia el error |
+| 7 | `PlayerSchema` y `PlayerDataReplicator` persisten el `BoolValue` y sus atributos |
+| 8 | `IsDone` no se valida contra `{"pending","cancel","ended"}`: cualquier cadena se guarda |
+
+#### Incógnitas
+
+- Si `Rewards` está pensado para rellenarse o si el diseño es que los tutoriales nunca den
+  nada. El `READ ME` del autor dice que el recorrido «se guardará en el dataStore», pero no
+  menciona recompensas.
+- El tope real de tamaño de un perfil de DataKit, y qué ocurre al superarlo: si el guardado
+  falla entero o si se trunca. `Store.luau` está leído solo en parte.
+- Si algún otro sistema lee estos atributos para decidir algo. La única lectura encontrada
+  es la del propio `GuideService`.
+
+#### Escenario de ejemplo
+
+Meses después alguien añade al tutorial de bienvenida una recompensa de 500 monedas
+rellenando `Rewards.Bienvenida = function(p) Collections.Give(p, "Coins", 500) end`. La
+prueba pasa: se hace el tutorial, llegan las monedas. Lo que no se prueba es que
+`EndAction:FireServer("Bienvenida", "ended")` desde la consola del cliente hace lo mismo sin
+ver una sola página, y que si se añaden diez tutoriales con recompensa son diez cobros de
+una línea cada uno.
+
+**Comportamiento esperado:** el servidor concede porque le consta que el tutorial se recorrió.
+**Comportamiento posible:** el servidor concede porque el cliente afirma que se recorrió.
+
+#### Plan de verificación — *Seguridad*
+
+1. En un place de pruebas, añade a `Rewards` una entrada con un `print` distinguible para la
+   clave `Bienvenida`. *(Instrumentación para la prueba.)*
+2. Entra y **no** hagas el tutorial. Desde un `LocalScript`, dispara
+   `EndAction:FireServer("Bienvenida", "ended")`.
+3. Comprueba el registro del servidor: ¿aparece la entrada instrumentada?
+4. Comprueba el atributo `Bienvenida` sobre el `BoolValue` `GuideService` del jugador.
+5. Dispara con una clave inventada (`"NoExiste"`) y confirma que se escribe el atributo y que
+   no se lanza ningún error.
+6. Repite el paso 2 y confirma que la segunda vez **no** vuelve a conceder.
+7. Sal y vuelve a entrar: comprueba si el atributo falsificado ha sobrevivido al perfil.
+
+**Pasa:** el paso 3 no registra nada y el paso 4 no encuentra el atributo.
+**Falla:** cualquiera de los dos ocurre.
+
+**Instrumentación sugerida:** ninguna que sea un parche. Lo mínimo honesto sería una lista
+blanca de claves en el lado servidor y validar `IsDone` contra los tres valores; eso corta
+las claves inventadas, pero **no** cierra el problema de fondo, que es que el servidor no
+presencia el recorrido. Es un **cambio de código** y aquí no se aplica.
+
+
+## BUG-CANDIDATE-040
+
+### Las dos tablas globales del place de donaciones llaman a un método que no existe
+
+**Sistema:** Donaciones / Persistencia · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/ComprasTablero/init.luau`,
+`SaveChangePlayer` (línea 248) y el bucle de `UpdateLeaderboards`;
+`Core/ServerStorage/WorldSystem/PlayerDataReplicator.luau`
+**Documentación relacionada:** [Place de donaciones](../systems/donations-place.md#las-tablas-globales)
+
+#### Comportamiento observado — HECHO
+
+```lua
+function module:SaveChangePlayer(Player:Player, Data)
+	if Client or not Player then return end
+	if not self.UpdateUpdatePlayer[Player] or tick()-self.UpdateUpdatePlayer[Player] >= 40 then
+		self.UpdateUpdatePlayer[Player] = Player:IsDescendantOf(game) and tick() or nil
+		Data = typeof(Data)=='table' and Data or (self.DataBase.Bye(Player) or {SaveAllStats = function() return {} end}):SaveAllStats()
+		self.GlobalData:SetData("TopSellers", tostring(Player.UserId), self:GetStat(Data,"Sell"))
+		self.GlobalData:SetData("TopBuyers",  tostring(Player.UserId), self:GetStat(Data,"Buy"))
+```
+
+`self.DataBase` lo inyecta `Data/Main/init.server.luau`:
+
+```lua
+Tablero.DataBase = PlayerDataReplicator
+```
+
+#### Por qué esto es un problema — HECHO
+
+`PlayerDataReplicator` no tiene `Bye`. Su superficie pública, entera:
+
+| Miembro | |
+|---|---|
+| `PlayerDataReplicator.hydrate(player)` | |
+| `PlayerDataReplicator.markReady(player)` | |
+| `PlayerDataReplicator.setExitSequence(fn)` | |
+| `PlayerDataReplicator.flush(player)` | |
+| `PlayerDataReplicator.finalize(player)` | |
+| `PlayerDataReplicator.DataComplete` | tabla |
+| `PlayerDataReplicator.KaraokeFactory` | inyectada |
+
+`Bye` no está. Y `SaveAllStats` tampoco existe en ningún archivo del repositorio, salvo en
+el respaldo escrito en esa misma línea.
+
+**El respaldo no protege de esto.** En `A.Bye(Player) or B`, Lua evalúa la llamada primero;
+llamar a `nil` lanza `attempt to call a nil value` antes de que el `or` mire la alternativa.
+El `or` cubre el caso «`Bye` devolvió `nil`», no el caso «`Bye` no existe».
+
+`SaveChangePlayer` solo se llama desde un sitio, y siempre sin `Data`:
+
+```lua
+if self.DataBase.DataComplete[Player.UserId] then
+	self:SaveChangePlayer(Player)
+end
+```
+
+Con `Data` nulo, la rama del `or` es la única que se evalúa. Siempre.
+
+#### Lo que agrava la consecuencia — HECHO
+
+El bucle que lo llama vive en un `task.spawn` **sin `pcall`**:
+
+```lua
+self.SpawnUpdateLeaderboard = self.SpawnUpdateLeaderboard or task.spawn(function()
+	while true do
+		for _,Player:Player in Players:GetPlayers() do
+			if self.DataBase.DataComplete[Player.UserId] then
+				self:SaveChangePlayer(Player)
+			end
+		end
+		local list = {}
+		for index,value in {Buyings = "TopBuyers",Sellers ="TopSellers"} do
+			list[index] = self:GetLeaderboard(value)
+		end
+		self.LeaderActual = list
+		self.LeaderSignal:FireAllClients(self.LeaderActual)
+		task.wait(60 * 3)
+	end
+end)
+```
+
+El error mata el hilo en la primera vuelta en que haya un jugador con datos cargados, que en
+la práctica es la primera vuelta. Y **la guarda perezosa impide que se reintente**:
+`self.SpawnUpdateLeaderboard` sigue siendo verdadera —apunta a un hilo muerto— así que
+ningún `UpdateLeaderboards` posterior vuelve a arrancarlo.
+
+Cadena completa:
+
+| Efecto | |
+|---|---|
+| `GetLeaderboard` | no llega a ejecutarse nunca |
+| `self.LeaderActual` | se queda en `nil` para siempre |
+| `LeaderSignal:FireClient(Player, self.LeaderActual or {})` | manda `{}` a cada cliente que lo pide |
+| El cliente | ve `NoPlayers.Visible = true` en las dos tablas |
+| `RatingBuyers` / `RatingSellers` en `GlobalDataStore` | no las escribe **nadie más** en el repositorio |
+
+#### Teoría — TEORÍA
+
+Las dos tablas globales del place de donaciones —mayores compradores y mayores
+vendedores— están vacías desde siempre y no se van a llenar solas. No es que muestren datos
+viejos: es que no hay datos, porque el único escritor es el mismo bucle que muere antes de
+escribir.
+
+Desde fuera se ve como «las tablas no funcionan», sin ningún síntoma más. El teletipo de
+compras, que es la parte visible del mismo módulo, **sí funciona**: va por otra ruta
+(`AddCompras` ← `MessagingService`) que no toca `SaveChangePlayer`. Eso hace fácil creer que
+`ComprasTablero` está bien.
+
+Lo más probable es que `ComprasTablero` se escribiera contra una versión anterior de la capa
+de datos, con un `Bye(Player)` que devolvía un objeto de sesión, y que la reescritura de
+`PlayerDataReplicator` a `hydrate` / `flush` / `finalize` no arrastrara esta llamada. Es la
+misma familia que [BUG-CANDIDATE-034](#bug-candidate-034) —código correcto en su día que
+quedó colgando de un nombre que ya no está— pero aquí el efecto **no es latente: es hoy**.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `grep -rn "Bye" --include=*.luau src` devuelve exactamente una línea: la llamada |
+| 2 | `grep -rn "SaveAllStats"` devuelve la misma línea y ninguna más |
+| 3 | `PlayerDataReplicator` declara cinco funciones, ninguna llamada `Bye` |
+| 4 | `Tablero.DataBase = PlayerDataReplicator` es la única asignación de `DataBase` en el módulo |
+| 5 | `SaveChangePlayer` se llama desde un solo sitio y siempre sin el segundo argumento |
+| 6 | El `or` no protege: la llamada se evalúa antes que la alternativa |
+| 7 | El bucle no tiene `pcall` |
+| 8 | La guarda `self.SpawnUpdateLeaderboard or task.spawn(...)` no distingue un hilo vivo de uno muerto |
+| 9 | `SaveChangePlayer` es el único escritor de `TopBuyers` y `TopSellers` en todo el repositorio |
+
+#### Incógnitas
+
+- Si el place de donaciones está publicado y en uso. Si nunca se abrió al público, esto no ha
+  afectado a nadie todavía.
+- Si `GlobalDataStore` contiene datos de `RatingBuyers` / `RatingSellers` escritos por una
+  versión anterior del código. Solo se puede saber leyendo el DataStore real.
+- Si el error aparece en el registro del servidor. Un error en un `task.spawn` sí se imprime
+  en Roblox, así que debería haber un rastro — pero solo uno, en el arranque, y luego
+  silencio.
+
+#### Escenario de ejemplo
+
+Se abre el place de donaciones. El teletipo de compras funciona: las tarjetas aparecen,
+cambian de color según el importe y se van. Las dos tablas de la pared dicen «no hay
+jugadores» y siguen diciéndolo al día siguiente, y al mes. En el registro del servidor hay
+un `attempt to call a nil value` de hace semanas, perdido entre el ruido del arranque.
+
+**Comportamiento esperado:** las tablas se refrescan cada 3 minutos con los totales del perfil.
+**Comportamiento posible:** el bucle muere en la primera vuelta y las tablas nunca se llenan.
+
+#### Plan de verificación — *Ciclo de vida*
+
+1. Abre el place de donaciones (`PlaceId` 82871403803520) en Studio con **Enable Studio
+   Access to API Services** activado.
+2. Entra con una cuenta y espera a que `DataComplete[UserId]` deje de ser `'no complete'`.
+3. Mira la salida: debería aparecer un error de `attempt to call a nil value` procedente de
+   `ComprasTablero`, línea 248.
+4. Comprueba `Tablero.SpawnUpdateLeaderboard`: debería seguir siendo un `thread` cuyo estado
+   es `dead`.
+5. Espera más de 3 minutos y comprueba que `Tablero.LeaderActual` sigue siendo `nil`.
+6. Comprueba las dos GUI etiquetadas `TopBuyersGUI` y `TopSellersGUI`: `NoPlayers` visible.
+7. Comprueba en `GlobalDataStore` si `RatingBuyers` tiene alguna entrada.
+8. Confirma por contraste que el **teletipo sí funciona**: haz una compra y comprueba que la
+   tarjeta aparece. Eso separa este fallo del resto del módulo.
+
+**Pasa:** las tablas se pueblan y `LeaderActual` deja de ser `nil`.
+**Falla:** el error del paso 3 aparece y el paso 5 sigue en `nil`.
+
+**Instrumentación sugerida:** ninguna hace falta para observarlo — basta mirar la salida. La
+corrección exige decidir de dónde salen los totales ahora que `Bye` no existe, y eso es un
+**cambio de código** que aquí no se aplica. Cuando se haga, conviene envolver el bucle en un
+`pcall` y comprobar `coroutine.status` en la guarda perezosa, porque las dos cosas que lo
+hicieron invisible siguen ahí.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -4698,6 +5038,11 @@ completa.
 | `ServerScripts/stats/` | En parte | Su papel y sus constantes |
 | `MicManagerServer` | Sí | |
 | `NametagServer` | En parte | Superficie, fuentes de datos y orden de etiquetas |
+| `Shared/BartenderSystem/init.luau` | Sí | El registro y el despacho por acción fija |
+| `BartenderSystem/Instance`, `NPC_Custom/` (5), `DialogModule` | En parte | La superficie de red y sus guardas; no la coreografía ni la interfaz |
+| `Shared/GuideService/` (6 archivos), `Shared/Tutorials/` (2) | Sí | Salvo `InterfaceController`, que es montaje de GUI |
+| `Shared/ComprasTablero/` (2 archivos) | Sí | El teletipo entre servidores y la tabla global |
+| `ReplicatedStorage/ShopInfo.luau` | Sí | Las 18 entradas y sus tres consumidores |
 | `Shared/Nametag/`, `NametagMicClient` | **No** | En cola |
 | Sistemas de juego (~413 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |

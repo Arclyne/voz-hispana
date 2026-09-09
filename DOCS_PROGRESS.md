@@ -40,7 +40,7 @@ empaquetadas.
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
 del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 13 de sistemas +
-3 de referencia + 38 candidatos a bug con evidencia, frente a un plan que aún necesita
+3 de referencia + 40 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -228,6 +228,8 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Sistema de construcción | `BuildingSystem/ReplicatedStorage/BuildInterface` | **Papel establecido** — `docs/systems/survey.md`: es interfaz de cliente sin remotes propios; conduce a `Stores`. Su lógica de UI sigue sin leer |
 | Cocina / Comida | `ServerScripts/cooking`, `Shared/cooking`, `Client/cooking` | **Barrido** — `docs/systems/survey.md`; solo los `bind` |
 | Bar y NPCs | `Shared/BartenderSystem`, `Shared/NPC_Custom`, `Shared/DialogModule` | **Documentado** — `docs/systems/bar-npcs.md`, 1 diagrama. **No estaba en esta tabla hasta ahora** |
+| Tutoriales y guías | `Shared/GuideService`, `Shared/Tutorials` | **Documentado** — `docs/systems/tutorials.md`, 1 diagrama, 1 candidato de seguridad (039). **No estaba en esta tabla hasta ahora** |
+| Place de donaciones (teletipo y tablas) | `Shared/ComprasTablero`, `ReplicatedStorage/ShopInfo` | **Documentado** — `docs/systems/donations-place.md`, 1 diagrama, 1 candidato confirmado (040). **No estaba en esta tabla hasta ahora** |
 | Framework de UI (`Icon`, `Kinetic`) | `Shared/Icon`, `Kinetic` | Pendiente (con toda probabilidad, de terceros) |
 | Librerías de terceros | `Shared/Promise`, `Shared/Signal`, `Shared/Trove`, `Shared/Sift`, `Shared/FastCastRedux`, `Shared/Observers`, `Shared/PartCache` | Pendiente (marcar como terceros, documentar solo la frontera) |
 
@@ -318,9 +320,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
-| Analizado (leído entero, descrito en el sitio) | 62 |
-| Analizado (en parte) | 44 |
-| Pendiente | 438 |
+| Analizado (leído entero, descrito en el sitio) | 74 |
+| Analizado (en parte) | 45 |
+| Pendiente | 425 |
 
 Las lecturas parciales y por qué:
 
@@ -507,7 +509,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 38 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 40 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -544,8 +546,8 @@ y razonado está en la propia página; el resumen es:
 - **Archivos anotados con Moonwave (solo comentarios, demostrado por la guarda de CI):**
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
-- **Diagramas:** 42 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 38 redactados al completo, incluida una pasada de seguridad
+- **Diagramas:** 44 diagramas Mermaid (flowchart, sequence, state)
+- **Candidatos a bug:** 40 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 106 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
