@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 74 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 45 |
-| Pendiente | Aún sin leer | 425 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 89 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 71 |
+| Pendiente | Aún sin leer | 384 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 116 leídos.
+530 archivos, 76,305 líneas, 157 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 4/6 leídos</summary>
@@ -640,54 +640,54 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/</code> — 44 archivo(s) — 3/44 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/</code> — 44 archivo(s) — 44/44 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `AddValues.luau` | ModuleScript | — | — | 59 | `ReplicatedStorage.Shared.AddValues` | Analizado (en parte) |
-| `AdjustBoxFrame.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Shared.AdjustBoxFrame` | Pendiente |
-| `AnimationButtons.luau` | ModuleScript | — | — | 299 | `ReplicatedStorage.Shared.AnimationButtons` | Pendiente |
-| `AreaSystem.luau` | ModuleScript | — | — | 148 | `ReplicatedStorage.Shared.AreaSystem` | Pendiente |
-| `AssetsToPreload.luau` | ModuleScript | — | — | 14 | `ReplicatedStorage.Shared.AssetsToPreload` | Pendiente |
+| `AdjustBoxFrame.luau` | ModuleScript | — | — | 131 | `ReplicatedStorage.Shared.AdjustBoxFrame` | Analizado (en parte) |
+| `AnimationButtons.luau` | ModuleScript | — | — | 299 | `ReplicatedStorage.Shared.AnimationButtons` | Analizado (en parte) |
+| `AreaSystem.luau` | ModuleScript | — | — | 148 | `ReplicatedStorage.Shared.AreaSystem` | Analizado (en parte) |
+| `AssetsToPreload.luau` | ModuleScript | — | — | 14 | `ReplicatedStorage.Shared.AssetsToPreload` | Analizado |
 | `BreakDown.luau` | ModuleScript | — | — | 86 | `ReplicatedStorage.Shared.BreakDown` | Analizado |
-| `ButtonMotion.luau` | ModuleScript | — | — | 420 | `ReplicatedStorage.Shared.ButtonMotion` | Pendiente |
-| `CardSlots.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.CardSlots` | Pendiente |
-| `Carousel.luau` | ModuleScript | — | — | 354 | `ReplicatedStorage.Shared.Carousel` | Pendiente |
-| `CircularBuffer.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.CircularBuffer` | Pendiente |
-| `Clock.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Clock` | Pendiente |
-| `CollisionModule.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.CollisionModule` | Pendiente |
-| `Commands.luau` | ModuleScript | — | — | 127 | `ReplicatedStorage.Shared.Commands` | Pendiente |
-| `GuiScaleManager.luau` | ModuleScript | — | — | 106 | `ReplicatedStorage.Shared.GuiScaleManager` | Pendiente |
-| `InfoCoins.luau` | ModuleScript | — | — | 10 | `ReplicatedStorage.Shared.InfoCoins` | Pendiente |
-| `InputPlayer.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Shared.InputPlayer` | Pendiente |
-| `KeyGenerator.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Shared.KeyGenerator` | Pendiente |
-| `MovedScrollButton.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.MovedScrollButton` | Pendiente |
-| `MovingPlayers.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Shared.MovingPlayers` | Pendiente |
-| `NetworkTimer.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.NetworkTimer` | Pendiente |
-| `ObjectCache.luau` | ModuleScript | — | — | 174 | `ReplicatedStorage.Shared.ObjectCache` | Pendiente |
-| `PrettyPrint.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.PrettyPrint` | Pendiente |
-| `Running.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Running` | Pendiente |
-| `RutaCreate.luau` | ModuleScript | — | — | 135 | `ReplicatedStorage.Shared.RutaCreate` | Pendiente |
-| `SellHousePrompt.luau` | ModuleScript | — | — | 289 | `ReplicatedStorage.Shared.SellHousePrompt` | Pendiente |
-| `ShopHighlight.luau` | ModuleScript | — | — | 377 | `ReplicatedStorage.Shared.ShopHighlight` | Pendiente |
-| `Signal.luau` | ModuleScript | — | — | 432 | `ReplicatedStorage.Shared.Signal` | Pendiente |
-| `SignalsGame.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.SignalsGame` | Pendiente |
-| `SizeManager.luau` | ModuleScript | — | — | 165 | `ReplicatedStorage.Shared.SizeManager` | Pendiente |
-| `SmoothShiftLock.luau` | ModuleScript | — | — | 232 | `ReplicatedStorage.Shared.SmoothShiftLock` | Pendiente |
-| `SoundManager.luau` | ModuleScript | — | — | 230 | `ReplicatedStorage.Shared.SoundManager` | Pendiente |
-| `Spring.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Spring` | Pendiente |
-| `ToolUseManagge.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.ToolUseManagge` | Pendiente |
-| `Trove.luau` | ModuleScript | — | — | 612 | `ReplicatedStorage.Shared.Trove` | Pendiente |
-| `UpdatingCountText.luau` | ModuleScript | — | — | 136 | `ReplicatedStorage.Shared.UpdatingCountText` | Pendiente |
-| `VoiceModulator.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Shared.VoiceModulator` | Pendiente |
-| `attach.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.attach` | Pendiente |
-| `basketUtil.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.basketUtil` | Pendiente |
+| `ButtonMotion.luau` | ModuleScript | — | — | 420 | `ReplicatedStorage.Shared.ButtonMotion` | Analizado (en parte) |
+| `CardSlots.luau` | ModuleScript | — | — | 477 | `ReplicatedStorage.Shared.CardSlots` | Analizado (en parte) |
+| `Carousel.luau` | ModuleScript | — | — | 354 | `ReplicatedStorage.Shared.Carousel` | Analizado (en parte) |
+| `CircularBuffer.luau` | ModuleScript | — | — | 27 | `ReplicatedStorage.Shared.CircularBuffer` | Analizado |
+| `Clock.luau` | ModuleScript | — | — | 30 | `ReplicatedStorage.Shared.Clock` | Analizado |
+| `CollisionModule.luau` | ModuleScript | — | — | 63 | `ReplicatedStorage.Shared.CollisionModule` | Analizado |
+| `Commands.luau` | ModuleScript | — | — | 127 | `ReplicatedStorage.Shared.Commands` | Analizado |
+| `GuiScaleManager.luau` | ModuleScript | — | — | 106 | `ReplicatedStorage.Shared.GuiScaleManager` | Analizado (en parte) |
+| `InfoCoins.luau` | ModuleScript | — | — | 10 | `ReplicatedStorage.Shared.InfoCoins` | Analizado |
+| `InputPlayer.luau` | ModuleScript | — | — | 85 | `ReplicatedStorage.Shared.InputPlayer` | Analizado (en parte) |
+| `KeyGenerator.luau` | ModuleScript | — | — | 28 | `ReplicatedStorage.Shared.KeyGenerator` | Analizado |
+| `MovedScrollButton.luau` | ModuleScript | — | — | 222 | `ReplicatedStorage.Shared.MovedScrollButton` | Analizado (en parte) |
+| `MovingPlayers.luau` | ModuleScript | — | — | 98 | `ReplicatedStorage.Shared.MovingPlayers` | Analizado (en parte) |
+| `NetworkTimer.luau` | ModuleScript | — | — | 41 | `ReplicatedStorage.Shared.NetworkTimer` | Analizado |
+| `ObjectCache.luau` | ModuleScript | — | — | 174 | `ReplicatedStorage.Shared.ObjectCache` | Analizado (en parte) |
+| `PrettyPrint.luau` | ModuleScript | — | — | 35 | `ReplicatedStorage.Shared.PrettyPrint` | Analizado (en parte) |
+| `Running.luau` | ModuleScript | — | — | 52 | `ReplicatedStorage.Shared.Running` | Analizado |
+| `RutaCreate.luau` | ModuleScript | — | — | 135 | `ReplicatedStorage.Shared.RutaCreate` | Analizado (en parte) |
+| `SellHousePrompt.luau` | ModuleScript | — | — | 289 | `ReplicatedStorage.Shared.SellHousePrompt` | Analizado (en parte) |
+| `ShopHighlight.luau` | ModuleScript | — | — | 377 | `ReplicatedStorage.Shared.ShopHighlight` | Analizado (en parte) |
+| `Signal.luau` | ModuleScript | — | — | 432 | `ReplicatedStorage.Shared.Signal` | Analizado (en parte) |
+| `SignalsGame.luau` | ModuleScript | — | — | 56 | `ReplicatedStorage.Shared.SignalsGame` | Analizado |
+| `SizeManager.luau` | ModuleScript | — | — | 165 | `ReplicatedStorage.Shared.SizeManager` | Analizado (en parte) |
+| `SmoothShiftLock.luau` | ModuleScript | — | — | 232 | `ReplicatedStorage.Shared.SmoothShiftLock` | Analizado (en parte) |
+| `SoundManager.luau` | ModuleScript | — | — | 230 | `ReplicatedStorage.Shared.SoundManager` | Analizado (en parte) |
+| `Spring.luau` | ModuleScript | — | — | 31 | `ReplicatedStorage.Shared.Spring` | Analizado |
+| `ToolUseManagge.luau` | ModuleScript | — | — | 109 | `ReplicatedStorage.Shared.ToolUseManagge` | Analizado (en parte) |
+| `Trove.luau` | ModuleScript | — | — | 612 | `ReplicatedStorage.Shared.Trove` | Analizado (en parte) |
+| `UpdatingCountText.luau` | ModuleScript | — | — | 136 | `ReplicatedStorage.Shared.UpdatingCountText` | Analizado (en parte) |
+| `VoiceModulator.luau` | ModuleScript | — | — | 71 | `ReplicatedStorage.Shared.VoiceModulator` | Analizado |
+| `attach.luau` | ModuleScript | — | — | 7 | `ReplicatedStorage.Shared.attach` | Analizado |
+| `basketUtil.luau` | ModuleScript | — | — | 67 | `ReplicatedStorage.Shared.basketUtil` | Analizado (en parte) |
 | `bindToTag.luau` | ModuleScript | — | — | 24 | `ReplicatedStorage.Shared.bindToTag` | Analizado |
-| `lerp.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.lerp` | Pendiente |
-| `makeClientPart.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.makeClientPart` | Pendiente |
-| `promptText.luau` | ModuleScript | — | — | 53 | `ReplicatedStorage.Shared.promptText` | Pendiente |
-| `showExitButton.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.showExitButton` | Pendiente |
-| `textScaler.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.textScaler` | Pendiente |
+| `lerp.luau` | ModuleScript | — | — | 5 | `ReplicatedStorage.Shared.lerp` | Analizado |
+| `makeClientPart.luau` | ModuleScript | — | — | 37 | `ReplicatedStorage.Shared.makeClientPart` | Analizado |
+| `promptText.luau` | ModuleScript | — | — | 53 | `ReplicatedStorage.Shared.promptText` | Analizado (en parte) |
+| `showExitButton.luau` | ModuleScript | — | — | 33 | `ReplicatedStorage.Shared.showExitButton` | Analizado (en parte) |
+| `textScaler.luau` | ModuleScript | — | — | 34 | `ReplicatedStorage.Shared.textScaler` | Analizado (en parte) |
 
 </details>
 

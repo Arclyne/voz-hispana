@@ -92,7 +92,10 @@ o en un place de pruebas.
 | [037](#bug-candidate-037) | La caja de botín es estrictamente mejor que la tienda de bailes | Economía | Observación / Pregunta de diseño | Media | Alta |
 | [038](#bug-candidate-038) | El filtro de errores del micrófono está invertido: solo se avisa del fallo esperado | Chat de voz | Bug probable / Confirmado por análisis estático | Media | **Muy alta** |
 | [039](#bug-candidate-039) | El servidor marca un tutorial como terminado porque el cliente se lo dice | Tutoriales / Seguridad | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
+| [042](#bug-candidate-042) | `typee` de comando suministrado por el cliente, sin la comprobación de rol que sí hace el camino del chat | **Explotable hoy**, impacto por determinar |
 | [040](#bug-candidate-040) | Las dos tablas globales del place de donaciones llaman a un método que no existe | Donaciones / Persistencia | Confirmado por análisis estático | Media | **Muy alta** |
+| [041](#bug-candidate-041) | El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno | Utilidades compartidas | Confirmado por análisis estático | Media | **Muy alta** |
+| [042](#bug-candidate-042) | El comando de administración se comprueba en el chat y no en el remote | Comandos / Seguridad | Posible bug / Requiere pruebas de seguridad | Por determinar | Alta en la forma |
 
 ### Entradas de seguridad
 
@@ -4978,6 +4981,267 @@ corrección exige decidir de dónde salen los totales ahora que `Bye` no existe,
 **cambio de código** que aquí no se aplica. Cuando se haga, conviene envolver el bucle en un
 `pcall` y comprobar `coroutine.status` en la guarda perezosa, porque las dos cosas que lo
 hicieron invisible siguen ahí.
+
+
+## BUG-CANDIDATE-041
+
+### El bucle compartido cree que atrapa los errores de sus tareas, y no atrapa ninguno
+
+**Sistema:** Utilidades compartidas · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/Running.luau`, la función `Running`
+**Documentación relacionada:** [Utilidades compartidas](../systems/shared-utilities.md#runningluau-el-bucle-compartido)
+
+#### Comportamiento observado — HECHO
+
+```lua
+for _,v in module.Functions do
+	if not v.aviable or (now - v.startTime) < v.cold then continue end
+	v.startTime = now
+	local nice, ErrorMessage = pcall(task.spawn, v.fun, delta)
+	if not nice then
+		warn(ErrorMessage)
+		module:ElimineFunct(v)
+	end
+end
+```
+
+La intención se lee sola: si una tarea del bucle falla, se avisa y se saca de la lista para
+que no siga fallando cada fotograma.
+
+#### Por qué esto es un problema — HECHO
+
+`pcall(task.spawn, v.fun, delta)` protege la llamada a **`task.spawn`**, no la ejecución de
+`v.fun`. `task.spawn` arranca un hilo nuevo; un error dentro de ese hilo se reporta a la
+salida de Roblox pero **no vuelve** al llamante, así que el `pcall` no lo ve.
+
+| Qué falla | ¿Lo ve el `pcall`? |
+|---|---|
+| `v.fun` lanza un error | **No** — está en otro hilo |
+| `v.fun` lanza tras un `task.wait` | **No** |
+| `task.spawn` recibe algo que no es función ni hilo | Sí — pero `AddFunct` ya lo filtra con `typeof(fun) ~= 'function'` |
+
+El único caso que el `pcall` puede atrapar es justo el que `AddFunct` ya hizo imposible. La
+rama `if not nice` es **código muerto**: nunca se entra en ella.
+
+#### Lo que agrava la consecuencia — HECHO
+
+`Running` es compartido. Lo usan `ComprasTablero`, `AreaSystem` y tres consumidores más, y
+es **una sola lista y una sola conexión** por contexto: `Heartbeat` en el servidor,
+`RenderStepped` en el cliente.
+
+Una tarea que empiece a lanzar sigue en la lista para siempre, se relanza cada fotograma —o
+cada `cold` segundos— y llena la salida. Nada la retira. En el cliente eso es 60 errores por
+segundo si su `cold` es cero.
+
+**OBSERVACIÓN, dentro de lo mismo.** `ElimineFunct` hace `table.remove` sobre
+`module.Functions`, y algunas tareas se retiran a sí mismas desde dentro de su propia
+ejecución —`ComprasTablero:CreateRunning` lo hace—. Como `task.spawn` ejecuta el cuerpo de
+forma síncrona hasta el primer `yield`, esa retirada ocurre **durante** el `for` que recorre
+la lista, y el elemento siguiente se salta ese fotograma. Con `aviable` y el enfriamiento por
+medio el efecto es un fotograma de retraso, no una pérdida. Se anota, no se eleva.
+
+#### Teoría — TEORÍA
+
+Cuando una tarea del bucle empiece a fallar —un `Gui` destruido que se sigue indexando, un
+jugador que se fue— el juego no se cae, pero la salida se inunda y no hay nada que corte la
+sangría. Y como la rama de retirada existe y está escrita, quien lea el archivo buscando por
+qué no se retiró va a concluir que la tarea no falló, cuando lo que pasa es que el bucle
+nunca se enteró.
+
+La forma correcta sería `task.spawn(function() ... pcall(v.fun, delta) ... end)` o
+`local ok, err = pcall(v.fun, delta)` sin `task.spawn`, según se quiera que la tarea pueda
+ceder o no. Las dos son **cambios de código**, y aquí no se aplican.
+
+Es la misma familia que [BUG-CANDIDATE-038](#bug-candidate-038): una guarda escrita al
+revés que convierte un fallo ruidoso en uno invisible — con el matiz de que aquí el fallo
+**sí** se imprime (lo imprime Roblox, no el `warn` del archivo) y lo que se pierde es la
+retirada.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `pcall(task.spawn, v.fun, delta)` pasa `v.fun` como argumento de `task.spawn`, no lo llama dentro del `pcall` |
+| 2 | `task.spawn` no repropaga los errores del hilo que crea |
+| 3 | `AddFunct` ya rechaza lo que no sea función, así que el único fallo posible de `task.spawn` no puede darse |
+| 4 | La rama `if not nice then warn(...); ElimineFunct(v) end` es por tanto inalcanzable |
+| 5 | `module.Functions` y `active` son de módulo: una sola lista y una sola conexión por contexto |
+| 6 | Cinco consumidores comparten esa lista |
+
+#### Incógnitas
+
+- Si alguna de las cinco tareas registradas hoy puede lanzar. Ninguna de las leídas lo hace
+  de forma obvia, pero `AreaSystem` toca instancias del mundo, que es donde suelen aparecer
+  estos errores.
+- Si el error de un hilo de `task.spawn` aparece en el registro del servidor o solo en la
+  salida de Studio. Debería aparecer en los dos, pero conviene comprobarlo.
+
+#### Escenario de ejemplo
+
+Alguien registra en `Running` una tarea que anima una GUI. La GUI se destruye al cambiar de
+pantalla. A partir de ese momento la tarea lanza cada fotograma. La consola del cliente se
+llena, el rendimiento cae por el coste de crear un hilo 60 veces por segundo para que muera
+al instante, y en el código hay una rama que dice, negro sobre blanco, que eso no debería
+poder pasar.
+
+**Comportamiento esperado:** una tarea que falla se retira de la lista.
+**Comportamiento posible:** nunca se retira, porque el `pcall` no ve el fallo.
+
+#### Plan de verificación — *Recuperación ante fallos*
+
+1. En un place de pruebas, registra una tarea que lance siempre:
+   `Running:AddFunct(function() error("prueba") end)`. *(Instrumentación para la prueba.)*
+2. Mira la salida: el error debería aparecer repetidamente.
+3. Comprueba `#Running.Functions`: debería seguir siendo el mismo número.
+4. Comprueba que el `warn(ErrorMessage)` del archivo **no** aparece en la salida — ese es el
+   indicador de que el `pcall` no se disparó.
+5. Repite con `cold = 1` y confirma que el error aparece una vez por segundo, no una vez.
+
+**Pasa:** la tarea se retira tras el primer fallo y el error deja de aparecer.
+**Falla:** el error se repite y la lista no encoge.
+
+**Instrumentación sugerida:** mover el `pcall` dentro del hilo. Es un **cambio de código**
+y aquí queda registrado, no aplicado.
+
+
+## BUG-CANDIDATE-042
+
+### El comando de administración se comprueba en el chat y no en el remote
+
+**Sistema:** Comandos / Seguridad · **Clasificación:** Posible bug / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Por determinar · **Confianza:** Alta en la forma, **baja en el impacto**
+
+**Código relacionado:** `Core/ReplicatedStorage/Shared/Commands.luau`, `SearchCommand` y
+`Works`; `Events/Other/Commands`
+**Documentación relacionada:** [Utilidades compartidas](../systems/shared-utilities.md#commandsluau-los-comandos-de-chat)
+
+#### Comportamiento observado — HECHO
+
+Hay dos caminos hasta el mismo remote, y solo uno comprueba el rol.
+
+**Camino del chat**, con comprobación:
+
+```lua
+if string.sub(message,1,1) == '/' then
+	...
+	if not Commands.IsWihAdmin or self.AdminPanel:IsAdmin(player, Commands.SuperAdmin) then
+		return Commands.typee
+	end
+```
+
+`self.AdminPanel` es el módulo de Karaoke, inyectado por `Data/Main`, y su `IsAdmin` delega
+en `RoleService:IsRole(Player, "KaraokeSuperAdmin" | "KaraokeAdmins")`. Es una comprobación
+de rol de verdad.
+
+**Camino del remote**, sin ella:
+
+```lua
+self.Event.OnServerEvent:Connect(function(Player:Player, number, option)
+	if typeof(number)=="number" then
+		self:Fire(Player, number, option)
+	end
+end)
+```
+
+Comprueba que `number` sea un número y lo devuelve al mismo jugador con `FireClient`.
+`IsAdmin` no aparece.
+
+#### Por qué esto es un problema — HECHO
+
+Los `typee` marcados `IsWihAdmin` son 3 (`/revisarcanciones`), 5 (`/reportes`) y 10
+(`/musicasbaneadas`, además `SuperAdmin`). Un cliente que dispare el remote con `3` recibe
+de vuelta un `3` sin que nadie mire su rol.
+
+Lo mismo con `option`, que atraviesa sin ninguna comprobación de tipo ni de contenido.
+
+Es exactamente la forma de
+[BUG-CANDIDATE-028](#bug-candidate-028) —dos caminos hasta la misma acción, uno con guarda y
+otro sin ella— y de [BUG-CANDIDATE-008](#bug-candidate-008), donde lo que difiere es la ruta
+de persistencia. La regla que estos casos comparten: **una comprobación que vive en un solo
+camino no es una comprobación.**
+
+#### Lo que acota el impacto — HECHO
+
+El remote solo **le responde al que llamó**. No difunde, no escribe nada, no toca datos. Lo
+único que consigue quien lo dispara es que su propio cliente reciba un número.
+
+Lo que ese número abre está en un `LocalScript` dentro de un `.rbxm` —la interfaz de la
+tablet—, y **el código de un `.rbxm` va comprimido**, así que no se ha podido leer. Por eso
+esta entrada se clasifica como *requiere pruebas* y no como *confirmado*: la forma es clara,
+la consecuencia no.
+
+Si el panel que se abre solo pinta, esto es cosmético. Si desde ese panel salen llamadas que
+el servidor atiende, el impacto es el de **esas** llamadas — y ahí conviene leer
+[BUG-CANDIDATE-028](#bug-candidate-028), porque los tres cargadores de moderación de karaoke
+comprueban que **haya** un administrador conectado, no que quien llama lo sea. Las dos
+entradas se componen mal: una abre el panel a cualquiera, la otra no distingue quién lo usa.
+
+#### Teoría — TEORÍA
+
+Un jugador sin rol puede abrir en su propia pantalla el panel de revisar canciones, el de
+reportes o el de canciones baneadas. Lo que pueda hacer desde ahí depende de si el servidor
+valida cada acción por separado. La suma de esta entrada con la 028 sugiere que la validación
+de karaoke se apoya más de lo que debería en que el panel esté cerrado.
+
+Merece la pena mirarlo de una pieza: la 028 y la 042 son la misma pregunta vista desde los
+dos extremos del mismo remote.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `SearchCommand` comprueba `IsAdmin` y devuelve `nil` si falla |
+| 2 | El manejador de `OnServerEvent` no lo comprueba |
+| 3 | La única validación del manejador es `typeof(number)=="number"` |
+| 4 | `option` no se valida en absoluto |
+| 5 | Tres `typee` están marcados `IsWihAdmin`, uno además `SuperAdmin` |
+| 6 | `IsAdmin` delega en `RoleService:IsRole`, así que el camino del chat sí es sólido |
+| 7 | El receptor de `OnClientEvent` no está en ningún `.luau` del repositorio |
+
+#### Incógnitas
+
+- **La principal:** qué hace el cliente con el número. Sin leer la interfaz de la tablet no
+  se puede decir si esto es cosmético o no.
+- Si el panel abierto por esta vía puede disparar acciones que el servidor acepte. Ahí es
+  donde se cruza con la 028.
+- Para qué existe el camino del remote. Si el chat ya traduce el comando, un segundo camino
+  que no comprueba nada parece pensado para que la interfaz se abra sola desde un botón — y
+  entonces la comprobación tendría que estar también aquí.
+
+#### Escenario de ejemplo
+
+Un jugador sin rol abre la consola del cliente y dispara el remote con `10`. Su tablet abre
+el panel de canciones baneadas. Si el panel se limita a pedir la lista y el servidor la
+manda sin comprobar rol, ya ha visto algo que no le tocaba. Si además puede desbanear desde
+ahí, el problema es mucho mayor — y esa pregunta no se puede responder desde este
+repositorio.
+
+**Comportamiento esperado:** los dos caminos hasta el remote comprueban el rol.
+**Comportamiento posible:** solo el del chat.
+
+#### Plan de verificación — *Seguridad*
+
+1. Entra con una cuenta **sin** rol de administrador de karaoke.
+2. Comprueba primero el camino legítimo: escribe `/revisarcanciones` en el chat. No debería
+   pasar nada.
+3. Desde un `LocalScript`, dispara `Events.Other.Commands:FireServer(3)`.
+4. Observa si la tablet abre el panel de revisar canciones.
+5. Si lo abre, intenta **usarlo**: aprobar o rechazar una canción, y comprueba en el servidor
+   si la acción se aplicó.
+6. Repite con `10` (`SuperAdmin`) y con una cuenta que tenga `KaraokeAdmins` pero no
+   `KaraokeSuperAdmin`.
+7. Prueba `FireServer(3, {})`, `FireServer(3, "x")` y `FireServer(999)` para ver qué hace el
+   cliente con un `option` y un `typee` inesperados.
+
+**Pasa:** el paso 4 no abre nada.
+**Falla:** el panel se abre. Si además el paso 5 aplica el cambio, la gravedad sube a Alta y
+la entrada deja de depender de la 028: es independiente.
+
+**Instrumentación sugerida:** ninguna. Todo esto se observa desde el cliente y desde el
+registro del servidor. La corrección —llamar a `IsAdmin` también en el manejador del
+remote— es un **cambio de código** y aquí no se aplica.
 
 
 ## Cobertura
