@@ -87,6 +87,16 @@ jobs:
       - name: Check internal documentation links
         run: python3 .github/scripts/check-docs-links.py docs $DOC_CODE_PATHS
 
+      # Los numeros que la documentacion afirma sobre el repositorio —cuantos
+      # archivos, cuantos remotes, cuantos candidatos, cuantas clases anotadas—
+      # envejecen en silencio. Este comprobador los vuelve a contar contra el
+      # arbol real y falla si no cuadran. Valida ademas que classOrder de
+      # moonwave.toml nombre clases que existen, que es la unica forma de que
+      # ese archivo rompa el build, y que cada entrada BUG-CANDIDATE traiga el
+      # formato completo que el encargo fijo.
+      - name: Check documented facts still hold
+        run: python3 .github/scripts/check-docs-facts.py
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
