@@ -75,7 +75,7 @@ o en un place de pruebas.
 | [020](#bug-candidate-020) | El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual | Tiendas / Casas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Media |
 | [021](#bug-candidate-021) | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
 | [022](#bug-candidate-022) | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
-| [023](#bug-candidate-023) | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [023](#bug-candidate-023) | La posición de lo que se coloca la decide el cliente y el servidor no la comprueba | Tiendas / Casas / Herramientas | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [024](#bug-candidate-024) | `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
 | [025](#bug-candidate-025) | La distancia de interacción la comprueba solo el cliente | Interactuables | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [026](#bug-candidate-026) | El globo está implementado entero y ningún jugador lo recibe nunca | Inventario | Bug probable / Confirmado por análisis estático | Baja | **Muy alta** |
@@ -148,6 +148,9 @@ engañosa:
 | Re-conceder objetos que el jugador gastó | **Correcto, y razonado en el propio código.** La bandera `defaultsInitialised` es explícitamente preferida a «¿está vacío el inventario?», con el comentario que lo justifica. |
 | Uso de la herramienta de otro jugador | **Correcto en `Cannon` y `GloveGun`.** Ambos exigen `IsA("Tool")` y `tool.Parent == character`, y el cañón añade un cooldown de 5 s. |
 | Validación de entrada en `Fridge` | **Correcto, y es el modelo a imitar.** Comprueba que el modelo sea una `Model`, que tenga la etiqueta `Fridge` y la distancia al jugador, las tres cosas antes de actuar. |
+| Recoger o usar un objeto colocado en el mundo | **Correcto, y es la mejor validación del repositorio.** `canUsePlacedModel` comprueba tipo, contenedor esperado, etiqueta, propiedad, personaje vivo y distancia (30 studs), y los cuatro remotes de `ToolPlacementServer` empiezan llamándola. |
+| Doble consumo de una ración de comida | **Correcto.** `modelLocks[model]` es un cerrojo por objeto, y se libera en **cada** camino de salida, no solo en el feliz. |
+| Colocar una herramienta que no llevas | **Correcto.** `character:FindFirstChild(toolName)` más `IsA("Tool")` y el atributo `Colocable`. |
 | `Bin` como interactuable sin modelo | **Correcto.** No acepta ninguna `Instance` del cliente: actúa sobre la `Tool` equipada, y solo si tiene el atributo `Kitchen`. |
 | Bloqueo permanente de duchas y lavabos al morir dentro | **Correcto.** `humanoid.Died:Once` libera el `Occupant`. |
 | Recolorear partes arbitrarias de un mueble | **Correcto.** Solo se aceptan partes llamadas `LightColor` o terminadas en dígito, y un valor que no sea `Color3` se sustituye por blanco. |
@@ -2611,7 +2614,7 @@ ids.
 
 ## BUG-CANDIDATE-023
 
-### La posición de un mueble la decide el cliente y el servidor no la comprueba
+### La posición de lo que se coloca la decide el cliente y el servidor no la comprueba
 
 **Sistema:** Tiendas / Casas · **Clasificación:** Observación / Requiere pruebas de seguridad
 **Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
@@ -2682,6 +2685,34 @@ colocación son sugerencias**, porque quien las aplica es la parte que no manda.
 | 3 | `Posicionamientos`, `RayParams` y `Collitions` viven en el lado cliente o solo producen datos para él |
 | 4 | `UpdateData` persiste `Position` como atributo, y de ahí va a `content.Objects` |
 | 5 | El único punto donde se exige un `CFrame` es la primera colocación (`typeof(Data.Position)=="CFrame"`); en las actualizaciones posteriores un valor de otro tipo simplemente conserva la posición actual |
+
+:::note Un segundo camino, y una asimetría que lo hace más claro
+
+Colocar **herramientas** tiene el mismo hueco, en otro archivo.
+`ToolPlacementServer.server.luau` valida los cuatro argumentos de `PlaceTool` por tipo, que
+el jugador lleve puesta la herramienta y que sea `Colocable` — y después aplica la posición
+tal cual:
+
+```lua
+local finalPosition = position + Vector3.new(0, size.Y / 2, 0)
+local finalCFrame = CFrame.new(finalPosition) * CFrame.Angles(0, math.rad(rotY + 180), 0)
+...
+newModel:PivotTo(finalCFrame)
+```
+
+Lo llamativo es que **ese mismo archivo sí comprueba distancia para recoger**:
+`canUsePlacedModel` rechaza a más de `MAX_PICKUP_DISTANCE = 30` studs, además de comprobar
+contenedor, etiqueta y propiedad.
+
+Es decir: recoger un objeto exige estar cerca; **colocarlo, no**. Un cliente modificado puede
+dejar objetos a cualquier distancia, y después no poder recogerlos él mismo. La comprobación
+que falta está escrita quince líneas más arriba, en el mismo archivo, para la operación
+inversa.
+
+Eso refuerza que es un olvido y no una decisión, y acota bastante la corrección: reutilizar
+`canUsePlacedModel` —o solo su tramo de distancia— en `PlaceTool`.
+
+:::
 
 #### Incógnitas
 
@@ -2886,9 +2917,9 @@ propia, `Fridge` la resta de posiciones.
 |---|---|
 | 1 | Las tres constantes de interacción están en un módulo que solo el cliente carga |
 | 2 | 4 de 25 manejadores comprueban distancia; 8 de 25 comprueban la etiqueta |
-| 3 | Los cuatro que la comprueban usan tres formas distintas y dos umbrales distintos (18 en el cliente, 20 en `Bed`) |
+| 3 | Los que la comprueban usan formas y umbrales distintos: 18 en el cliente, 20 en `Bed` y `DoubleBed`, 30 en `ToolPlacementServer` |
 | 4 | `Washbasin` indexa `model.Occupant` y `model.Player` sin comprobar nada |
-| 5 | No existe ninguna función auxiliar compartida de validación en `ServerScripts/interactable/` |
+| 5 | No existe ninguna función auxiliar compartida de validación en `ServerScripts/interactable/` — aunque sí una equivalente, privada, en `ToolPlacementServer.server.luau` |
 
 #### Incógnitas
 
@@ -2918,9 +2949,22 @@ podido iniciar por distancia.
 **Pasa:** todos los manejadores rechazan por distancia, como hace `Fridge`.
 **Falla:** cualquiera de ellos actúa.
 
-**Instrumentación sugerida:** en vez de parchear 21 archivos, una función compartida
-—`assertNear(player, model, maxDistance)`— y una pasada añadiéndola al principio de cada
-manejador. Es un **cambio de código**, así que queda registrado aquí y no aplicado; se
+:::tip Esa función ya existe en el repositorio
+
+`ToolPlacementServer.server.luau` tiene `canUsePlacedModel(player, model)`, que comprueba
+tipo, contenedor esperado, etiqueta de `CollectionService`, propiedad, personaje vivo **y
+distancia**, y con la que empiezan sus cuatro manejadores.
+
+Es exactamente la forma de la solución que este plan propone. Está escrita, funciona, y es
+privada a ese archivo. Extraerla a un módulo compartido es bastante menos trabajo que
+escribirla desde cero, y da además un criterio único de umbral —hoy conviven 18 en el
+cliente, 20 en `Bed` y 30 aquí.
+
+:::
+
+**Instrumentación sugerida:** en vez de parchear 21 archivos, extraer la función que ya
+existe —`canUsePlacedModel`— a un módulo compartido, y una pasada añadiéndola al principio de
+cada manejador. Es un **cambio de código**, así que queda registrado aquí y no aplicado; se
 menciona porque la forma de la solución explica por qué el problema existe: hoy no hay
 dónde ponerla.
 
@@ -4022,7 +4066,8 @@ completa.
 | Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
 | `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
 | `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
-| `ToolPlacementServer`, `BuildingSystem`, `KaraokeTV` | **No** | En cola, por ese orden |
+| `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
+| `BuildingSystem`, `KaraokeTV`, `BusquedaMusicas`, `GiftHandler` | **No** | En cola, por ese orden |
 | Sistemas de juego (~420 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 

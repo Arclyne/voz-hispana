@@ -27,8 +27,8 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
 | Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 61 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 22 |
-| Pendiente | Aún sin leer | 461 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 23 |
+| Pendiente | Aún sin leer | 460 |
 
 **Total: 552 archivos, 80,608 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,305 líneas, 80 leídos.
+530 archivos, 76,305 líneas, 81 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1347,7 +1347,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 10/20 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/ServerScripts/</code> — 20 archivo(s) — 11/20 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
@@ -1363,7 +1363,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `PlaytimeRewardSystem.server.luau` | Script | — | yes | 107 | `ServerScriptService.ServerScripts.PlaytimeRewardSystem.server` | Pendiente |
 | `ServerDirectory.server.luau` | Script | Server | yes | 432 | `ServerScriptService.ServerScripts.ServerDirectory.server` | Analizado |
 | `ShopServerSystem.server.luau` | Script | Server | yes | 310 | `ServerScriptService.ServerScripts.ShopServerSystem.server` | Analizado (en parte) |
-| `ToolPlacementServer.server.luau` | Script | Server | yes | 881 | `ServerScriptService.ServerScripts.ToolPlacementServer.server` | Pendiente |
+| `ToolPlacementServer.server.luau` | Script | Server | yes | 881 | `ServerScriptService.ServerScripts.ToolPlacementServer.server` | Analizado (en parte) |
 | `ToolsServer.server.luau` | Script | — | yes | 989 | `ServerScriptService.ServerScripts.ToolsServer.server` | Analizado (en parte) |
 | `WalkieServer.server.luau` | Script | Server | yes | 148 | `ServerScriptService.ServerScripts.WalkieServer.server` | Pendiente |
 | `WorldManager.server.luau` | Script | Server | yes | 228 | `ServerScriptService.ServerScripts.WorldManager.server` | Analizado |
