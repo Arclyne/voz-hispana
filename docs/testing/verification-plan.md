@@ -76,6 +76,8 @@ o en un place de pruebas.
 | [021](#bug-candidate-021) | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
 | [022](#bug-candidate-022) | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
 | [023](#bug-candidate-023) | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [024](#bug-candidate-024) | `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
+| [025](#bug-candidate-025) | La distancia de interacción la comprueba solo el cliente | Interactuables | Observación / Requiere pruebas de seguridad | Baja | Alta |
 
 ### Entradas de seguridad
 
@@ -92,6 +94,8 @@ formato que el resto: teoría con justificación, no acusaciones.
 | [020](#bug-candidate-020) | Dato de tamaño arbitrario, controlado por el cliente, persistido en el perfil de una casa ajena | **Presente hoy**, impacto por determinar |
 | [022](#bug-candidate-022) | Id de asset suministrado por el cliente, sin comprobación de propiedad | **Explotable hoy** si un `EnumItem` viaja por el remote |
 | [023](#bug-candidate-023) | Colocación con autoridad de cliente en casa ajena | **Explotable hoy**, impacto de vandalismo |
+| [024](#bug-candidate-024) | `SoundId` y modelo suministrados por el cliente, sin moderación | **Explotable hoy**, acotado por las restricciones de audio de Roblox |
+| [025](#bug-candidate-025) | Reglas de interacción solo en el cliente en 21 de 25 manejadores | **Explotable hoy**, impacto bajo |
 
 #### Lo que se revisó y salió limpio
 
@@ -113,6 +117,9 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Escala de un mueble | **Correcto.** `Posicionamientos.GetScale` pasa el valor del cliente por `math.clamp` contra el rango que declara el `Settings` de ese modelo. |
 | Qué mueble se coloca | **Correcto.** `verificarExistencia` resuelve el nombre contra `decoration template` y `Assets/ToolsModels` en el servidor; un nombre inventado no produce nada. |
+| Validación de entrada en `Fridge` | **Correcto, y es el modelo a imitar.** Comprueba que el modelo sea una `Model`, que tenga la etiqueta `Fridge` y la distancia al jugador, las tres cosas antes de actuar. |
+| `Bin` como interactuable sin modelo | **Correcto.** No acepta ninguna `Instance` del cliente: actúa sobre la `Tool` equipada, y solo si tiene el atributo `Kitchen`. |
+| Bloqueo permanente de duchas y lavabos al morir dentro | **Correcto.** `humanoid.Died:Once` libera el `Occupant`. |
 | Recolorear partes arbitrarias de un mueble | **Correcto.** Solo se aceptan partes llamadas `LightColor` o terminadas en dígito, y un valor que no sea `Color3` se sustituye por blanco. |
 | Amueblar la casa de otro como vía de transferencia de moneda | **Correcto.** Pasa por `donacion.GetState` y `donacion.Quitar`: consume el mismo tope diario de 1 000 que una donación directa. |
 | Importe de las compras en Robux | **Correcto.** `Compras.Comprar` usa `self.ProductActive`, estado de servidor, y lee el precio de `GetProduct`. |
@@ -2682,6 +2689,212 @@ casa en cada actualización. Un umbral generoso bastaría para detectar el abuso
 que reimplementar las reglas de colocación en el servidor.
 
 
+## BUG-CANDIDATE-024
+
+### `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente
+
+**Sistema:** Interactuables / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/ServerScripts/interactable/MusicPlayer.server.luau` — el
+archivo entero son 17 líneas
+**Documentación relacionada:** [Interactuables](../systems/interactables.md#el-caso-peor-musicplayer)
+
+#### Comportamiento observado — HECHO
+
+```lua
+remotes.Interactable.MusicPlayer.OnServerEvent:Connect(function(player, model, id)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if not humanoid then
+		return
+	end
+
+	local emitter = model.Emitter.Sound
+	emitter.SoundId = id
+	emitter:Play()
+	print("aaa", id)
+end)
+```
+
+La única comprobación —que el jugador tenga un `Humanoid`— no dice nada sobre `model` ni
+sobre `id`. No hay comprobación de tipo, de etiqueta, de distancia, de propiedad, de lista
+blanca de audios ni de frecuencia.
+
+#### Por qué esto puede ser un problema — HECHO
+
+El juego tiene un sistema entero dedicado a **moderar el audio**: `Karaoke/RevisarCanciones`
+mantiene una cola de revisión, tiene métodos `AdminAdded` / `AdminRemoved`, y `Data.Main` lo
+conecta al sistema de comandos de administración. `BusquedaMusicas` busca y cachea
+canciones. Existe una decisión explícita de que no cualquier audio suene en el juego.
+
+Esta ruta no pasa por nada de eso. Un `SoundId` va directo de un `RemoteEvent` a
+`Sound.SoundId` y a `:Play()`.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede reproducir **cualquier asset de audio de Roblox** en cualquier
+modelo que tenga la ruta `Emitter.Sound`, y lo oye todo el que esté cerca de ese modelo. Ni
+el `model` tiene que ser un tocadiscos ni el jugador tiene que estar cerca de él.
+
+Es el vector clásico de vandalismo por audio, y además **elude la moderación de canciones
+que el juego ya implementa** para el karaoke.
+
+Segundo efecto, menor: `emitter:Play()` sin límite de frecuencia. Un bucle de llamadas
+reinicia el sonido continuamente, lo que a los demás jugadores les llega como un chasquido
+sostenido.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | El archivo completo son 17 líneas; no hay más validación en ninguna parte |
+| 2 | `model.Emitter.Sound` se indexa directamente: no hay `HasTag("MusicPlayer")` ni `IsA("Model")` |
+| 3 | `id` se asigna a `SoundId` sin comparar contra ninguna lista |
+| 4 | Otros manejadores del mismo directorio **sí** comprueban etiqueta y distancia: `Fridge` hace las dos. La comprobación existe en el proyecto, no aquí |
+| 5 | `Karaoke/RevisarCanciones` y `BusquedaMusicas` demuestran que la moderación de audio es un requisito reconocido del juego |
+| 6 | Queda un `print("aaa", id)` de depuración, lo que sugiere que el archivo no llegó a revisarse |
+
+#### Incógnitas
+
+- Cuántos modelos del juego tienen la ruta `Emitter.Sound`. Determina el alcance: si solo la
+  tienen los tocadiscos, el vandalismo se limita a esos puntos.
+- Si el `Sound` es 3D con `RollOffMaxDistance` corto, lo que acotaría quién lo oye.
+- Si Roblox filtra el audio al reproducirlo. Los assets de audio subidos por terceros están
+  restringidos desde 2022, lo que **reduce mucho** la gravedad: la mayoría de ids ajenos no
+  sonarían. Es lo primero que hay que comprobar, y puede rebajar esta entrada a molestia.
+
+#### Escenario de ejemplo
+
+Un jugador dispara el remote en bucle con el id de un audio desagradable, apuntando al
+tocadiscos de una casa llena de gente. Nadie más puede pararlo desde la interfaz, porque la
+interfaz no es la que lo está mandando.
+
+**Comportamiento esperado:** solo suenan audios aprobados, en tocadiscos reales, para quien
+esté cerca.
+**Comportamiento posible:** suena cualquier audio, en cualquier emisor, desde cualquier
+distancia.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero si Roblox permite reproducir un audio ajeno en esta experiencia. Si no,
+   la gravedad baja a «puede reiniciar el sonido en bucle».
+2. Desde la consola del cliente, dispara `Interactable.MusicPlayer` con un tocadiscos
+   legítimo y un id arbitrario.
+3. Repite estando al otro lado del mapa.
+4. Repite apuntando a un modelo que no sea un tocadiscos pero tenga `Emitter.Sound`.
+5. Llama en bucle y observa el efecto para el resto de jugadores.
+
+**Pasa:** el servidor rechaza el modelo, la distancia o el id.
+**Falla:** cualquiera de los cuatro pasos produce sonido.
+
+**Instrumentación sugerida:** el `print` que ya está ahí, convertido en `warn` con el nombre
+del jugador y la distancia al modelo, diría de inmediato si esto ya ocurre en producción.
+
+---
+
+## BUG-CANDIDATE-025
+
+### La distancia de interacción la comprueba solo el cliente
+
+**Sistema:** Interactuables · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Client/interactable/Interactable/init.luau`, constantes de
+distancia y línea de visión; los 25 scripts de `Core/…/ServerScripts/interactable/`
+**Documentación relacionada:** [Interactuables → La matriz de validación](../systems/interactables.md#la-matriz-de-validación)
+
+#### Comportamiento observado — HECHO
+
+La clase base declara las reglas de interacción:
+
+```lua
+local MAX_INTERACTION_DISTANCE = 18
+local LINE_OF_SIGHT_INTERVAL = .05
+local LINE_OF_SIGHT_MARGIN = 5
+```
+
+y las aplica sobre `players.LocalPlayer`. Es un módulo de cliente: el servidor no lo carga.
+
+De los 25 manejadores de servidor, **cuatro** vuelven a comprobar la distancia: `Fridge`,
+`Tijeras`, `Bed` y `DoubleBed`. Los otros veintiuno operan sobre la `Instance` que reciben.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Varios de esos veintiuno tienen efectos reales:
+
+| Manejador | Efecto sin comprobar distancia |
+|---|---|
+| `Shower`, `Washbasin`, `Toilet`, `Bath` | `character:PivotTo(...)` — **teletransportan al jugador** al objeto, esté donde esté |
+| `Shower`, `Washbasin` | Escriben `Occupant.Value = player` sobre el modelo recibido |
+| `ClassicDoor` | Abre y cierra una puerta desde cualquier distancia |
+| `Display` | Escribe el atributo `Video` de un modelo cualquiera |
+| `DiscoBall`, `SmokeMachine`, `Lamp` | Activan efectos a distancia |
+| `Treadmill`, `Weight` | Conceden progreso de estadísticas |
+
+`Washbasin` es el más ilustrativo porque indexa `model.Occupant` y `model.Player`
+directamente: cualquier modelo con esos dos hijos sirve como destino de teletransporte y
+puede quedar «ocupado» por quien lo pida.
+
+#### Teoría — TEORÍA
+
+La consecuencia no es un exploit de economía: es que **las reglas de interacción son
+decorativas**. Un cliente modificado puede usar cualquier interactuable del mapa sin
+acercarse, ocupar objetos que no está usando para que otros no puedan, y teletransportarse
+a cualquier lavabo o ducha del place.
+
+Lo que hace de esto una observación de arquitectura y no un fallo puntual es que **el
+framework no ofrece la comprobación**. `Interactable` monta el `ProximityPrompt` y aplica la
+distancia en el cliente, pero no expone nada que un script de servidor pueda invocar para
+comprobar lo mismo. Los cuatro que lo hacen bien lo escriben a mano, cada uno a su manera:
+`Bed` y `DoubleBed` usan `player:DistanceFromCharacter(...) > 20`, `Tijeras` una constante
+propia, `Fridge` la resta de posiciones.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | Las tres constantes de interacción están en un módulo que solo el cliente carga |
+| 2 | 4 de 25 manejadores comprueban distancia; 8 de 25 comprueban la etiqueta |
+| 3 | Los cuatro que la comprueban usan tres formas distintas y dos umbrales distintos (18 en el cliente, 20 en `Bed`) |
+| 4 | `Washbasin` indexa `model.Occupant` y `model.Player` sin comprobar nada |
+| 5 | No existe ninguna función auxiliar compartida de validación en `ServerScripts/interactable/` |
+
+#### Incógnitas
+
+- Si alguna capa anterior filtra estos remotes. No se ha encontrado ninguna, pero
+  `StarterPlayerScripts.rbxm` es binario (ver **U-001**) y podría contener algo, aunque el
+  cliente no puede imponer nada al servidor.
+- Cuál es el umbral correcto. El cliente usa 18, `Bed` usa 20. Elegir uno es una decisión de
+  producto, no de lectura de código.
+
+#### Escenario de ejemplo
+
+Un jugador se sienta en un rincón del mapa y va marcando estadísticas de higiene en todas
+las duchas del place sin moverse, mientras deja «ocupados» los lavabos de una casa ajena.
+
+**Comportamiento esperado:** el servidor rechaza una interacción que el cliente no habría
+podido iniciar por distancia.
+**Comportamiento posible:** la acepta.
+
+#### Plan de verificación — *Seguridad*
+
+1. Colócate lejos de una ducha y dispara `Interactable.Shower` con su modelo.
+2. Comprueba si tu personaje se teletransporta.
+3. Repite con `WashHands` sobre un lavabo de otra casa y mira si su `Occupant` queda fijado.
+4. Repite con `Treadmill` y comprueba si las estadísticas suben.
+5. Contrasta con `Fridge`, que debería rechazarte.
+
+**Pasa:** todos los manejadores rechazan por distancia, como hace `Fridge`.
+**Falla:** cualquiera de ellos actúa.
+
+**Instrumentación sugerida:** en vez de parchear 21 archivos, una función compartida
+—`assertNear(player, model, maxDistance)`— y una pasada añadiéndola al principio de cada
+manejador. Es un **cambio de código**, así que queda registrado aquí y no aplicado; se
+menciona porque la forma de la solución explica por qué el problema existe: hoy no hay
+dónde ponerla.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -2714,7 +2927,10 @@ completa.
 | `Shared/Monetization` (4 archivos), `WorldSystem/GamePassService/init` | Sí | |
 | `GamePassService/GamePassRewards` | En parte | Solo `ensure` |
 | `ShopInfo`, `inventory/InventoryManager` | **No** | En cola; alimentan a `GamePassService` |
-| Sistemas de juego (~465 archivos) | **No** | En cola |
+| Interactuables: registrador, clase base, `bindToTag` | Sí | |
+| Interactuables: los 25 scripts de servidor | En parte | Solo su validación de entrada, para la matriz |
+| Interactuables: los 36 módulos de cliente por tipo | **No** | Decisión deliberada: la pregunta era la estructura, no el catálogo |
+| Sistemas de juego (~440 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
@@ -2735,6 +2951,10 @@ superficie ya leída:
 Tras la segunda pasada, ya **sí** están revisados los trece remotes de `Stores` y los cinco
 de `Monetization`, con los resultados de las entradas 020, 021 y 022.
 
-**Siguen sin revisar:** los ~180 remotes de `Interactable`, `Karaoke`, `Tools` y `Paint`, y
+Los 43 remotes de `Interactable` están revisados **en cuanto a validación de entrada** —esa
+es la matriz de la página de Interactuables y las entradas 024 y 025—, no en cuanto a la
+lógica interna de cada uno.
+
+**Siguen sin revisar:** los remotes de `Karaoke`, `Tools`, `Paint` y la cocina, y
 el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
 hallazgos, así que esta sección debe leerse como un barrido en curso, no como una garantía.

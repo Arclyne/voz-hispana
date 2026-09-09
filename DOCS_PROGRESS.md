@@ -20,26 +20,26 @@ ya lo estaban.
 
 ## Progreso general
 
-**53 %**
+**58 %**
 
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **64 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **71 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
-Eso es un 11 % por número de archivos, pero una porción mucho mayor del código que sostiene
+Eso es un 13 % por número de archivos, pero una porción mucho mayor del código que sostiene
 todo lo demás: el arranque completo, el sistema de mundos/casas entero, las capas de
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
 invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
-mobiliario, y toda la ruta de monetización. Los ~488 archivos restantes son sistemas de juego (interactuables, karaoke,
+mobiliario, y toda la ruta de monetización, y la estructura de los interactuables. Los ~481 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
-del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 6 de sistemas +
-3 de referencia + 23 candidatos a bug con evidencia, frente a un plan que aún necesita
+del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 7 de sistemas +
+3 de referencia + 25 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -210,7 +210,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Eventos programados | `Core/ServerStorage/WorldSystem/EventService.luau`, `EventBootstrap`, `EventCommands` | **Documentado** — `docs/systems/events.md`, 2 diagramas |
 | Invitaciones (referidos) | `Core/ServerStorage/WorldSystem/ReferralService.luau`, `Shared/Referrals` | **Documentado** — `docs/systems/referrals.md`, 1 diagrama |
 | Inventario / Herramientas | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | Pendiente |
-| Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | Pendiente |
+| Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | **Documentado en su estructura** — `docs/systems/interactables.md`, 1 diagrama. Los 36 módulos de tipo, sin leer a propósito |
 | Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | Leído en parte (pasada de seguridad → BUG-CANDIDATE-016) |
 | Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | Pendiente |
 | Paint | `Shared/Paint`, `interactable/Paint`, `ServerStorage/Paint` | Pendiente |
@@ -313,9 +313,9 @@ Resumen a día de hoy:
 | Estado | Cantidad |
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 2 |
-| Analizado (leído entero, descrito en el sitio) | 49 |
-| Analizado (en parte) | 13 |
-| Pendiente | 488 |
+| Analizado (leído entero, descrito en el sitio) | 55 |
+| Analizado (en parte) | 14 |
+| Pendiente | 481 |
 
 Las lecturas parciales y por qué:
 
@@ -402,7 +402,7 @@ Los cinco que de verdad bloquean documentación:
 
 ## Problemas encontrados
 
-Veintitrés entradas, todas redactadas al completo en
+Veinticinco entradas, todas redactadas al completo en
 `docs/testing/verification-plan.md`. **Ninguna se afirma como bug confirmado.** Dos están
 clasificadas como *Confirmado por análisis estático*, y aun esas solo afirman lo que el
 código demostrablemente hace: la 011 confirma una inconsistencia, no qué lado de ella está
@@ -441,6 +441,8 @@ proyecto, que no cambia código, pero no debería quedarse en una lista de pendi
 | BUG-CANDIDATE-021 | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
 | BUG-CANDIDATE-022 | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
 | BUG-CANDIDATE-023 | La posición de un mueble la decide el cliente y el servidor no la comprueba | Tiendas / Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| BUG-CANDIDATE-024 | `MusicPlayer` reproduce el audio que le diga el cliente, en el modelo que le diga el cliente | Interactuables / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
+| BUG-CANDIDATE-025 | La distancia de interacción la comprueba solo el cliente | Interactuables | Observación / Requiere pruebas de seguridad | Baja | Alta |
 
 ### La pasada de seguridad
 
@@ -484,7 +486,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 23 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 25 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -516,14 +518,14 @@ y razonado está en la propia página; el resumen es:
 - **Fase:** 3 — Sistemas (Casas, Datos del jugador, Eventos, Invitaciones) y **Fase 5**
   cerrada con el grafo de dependencias.
 - **Idioma:** todo el sitio, los comentarios Moonwave y los generadores están en español.
-- **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 6 de sistemas,
+- **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 7 de sistemas,
   1 de verificación, 3 de referencia generada.
 - **Archivos anotados (solo comentarios, demostrado por la guarda de CI):**
   - `src/ReplicatedStorage/PlayerInit.luau`
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
-- **Diagramas:** 35 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 23 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 64 de 552
+- **Diagramas:** 36 diagramas Mermaid (flowchart, sequence, state)
+- **Candidatos a bug:** 25 redactados al completo, incluida una pasada de seguridad
+- **Scripts leídos:** 71 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.
@@ -609,12 +611,14 @@ Junto a ello, `ShopInfo.luau` e `inventory/InventoryManager`, que son de quienes
 Llaman a `DataStoreService` fuera de `DataKit`. Cierra U-008 y termina la pregunta abierta
 de `docs/architecture/persistence.md`.
 
-### 3. Los sistemas de juego
+### 3. Los sistemas de juego que quedan
 
-Inventario/Herramientas, Interactuables (44 remotes; `Interactable` es el módulo con más
-consumidores del repositorio, 37), Máquinas, Karaoke (25 remotes), Paint, Tiendas,
-Misiones, Trabajos, Animación, Construcción. Unos 480 archivos. De uno en uno, y un commit
-por sistema.
+Inventario/Herramientas, Máquinas, Karaoke (25 remotes), Paint, Misiones, Trabajos,
+Animación, Cocina, Construcción. Unos 440 archivos. De uno en uno, y un commit por sistema.
+
+De Interactuables ya está la estructura; lo que falta ahí son los 36 módulos de tipo, y
+eso es un catálogo, no una explicación: hacerlo solo merece la pena si alguien necesita
+extender un tipo concreto.
 
 ### 4. Fase 4 y Fase 6
 

@@ -69,6 +69,12 @@ ANALYSED |= {
     t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/init.luau"),
     t("Core/ReplicatedStorage/Shared/Stores/DecorFuncs/AddedDecor/Collitions.luau"),
     t("Core/ReplicatedStorage/Shared/Stores/Added.luau"),
+    t("Core/ReplicatedStorage/Client/interactable/init.server.luau"),
+    t("Core/ReplicatedStorage/Shared/bindToTag.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/MusicPlayer.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/Bin.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/CuadrosPaint.server.luau"),
+    t("Core/ServerScriptService/ServerScripts/interactable/Display.server.luau"),
 }
 PARTIAL = {
     t("Core/ServerStorage/DataKit/Store.luau"),
@@ -84,6 +90,7 @@ PARTIAL = {
     t("Core/ServerScriptService/Data/Main/PlayerGamesFetcher.luau"),
     t("Core/ServerStorage/SoundInfo.luau"),
     t("Core/ReplicatedStorage/Client/Posicionamientos.luau"),
+    t("Core/ReplicatedStorage/Client/interactable/Interactable/init.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
