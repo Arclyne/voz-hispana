@@ -20,12 +20,12 @@ ya lo estaban.
 
 ## Progreso general
 
-**83 %**
+**86 %**
 
 Justificación del número (deliberadamente conservadora): el repositorio tiene
 **552 archivos `.luau` inspeccionables / ~80 450 líneas** más **320 binarios `.rbxm` no
 inspeccionables**. Las fases 0, 1, 2 y 5 están completas, y de la 3 hay cuatro sistemas
-documentados a fondo. **92 de 552 archivos leídos** (estado por archivo en
+documentados a fondo. **95 de 552 archivos leídos** (estado por archivo en
 `docs/reference/script-inventory.md`).
 
 Eso es un 15 % por número de archivos, pero una porción mucho mayor del código que sostiene
@@ -33,14 +33,14 @@ todo lo demás: el arranque completo, el sistema de mundos/casas entero, las cap
 reserva y presencia, el paquete de persistencia, la capa de datos del jugador, eventos e
 invitaciones, `Data.Main` —el archivo que ata todo lo demás— y el sistema de tiendas y
 mobiliario, y toda la ruta de monetización, y la estructura de los interactuables, el inventario, la moderación de karaoke, los cuadros, los trabajos, la persistencia de fuera de DataKit, y un barrido de la superficie de red
-del resto. Los ~460 archivos restantes son sistemas de juego (interactuables, karaoke,
+del resto. Los ~457 archivos restantes son sistemas de juego (interactuables, karaoke,
 máquinas, herramientas, tiendas, misiones, trabajos) más librerías de terceros
 empaquetadas.
 
 El porcentaje **no** está ponderado por número de archivos a propósito: la mayor parte de
 lo que queda son hojas de gameplay cuyo valor documental por archivo es mucho menor que el
 del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 13 de sistemas +
-3 de referencia + 33 candidatos a bug con evidencia, frente a un plan que aún necesita
+3 de referencia + 34 candidatos a bug con evidencia, frente a un plan que aún necesita
 ~8 sistemas más y la pasada Moonwave por script.
 
 ---
@@ -215,7 +215,7 @@ Lista de sistemas derivada de los límites reales de directorio/namespace del re
 | Inventario / Herramientas | `Core/…/ServerScripts/inventory`, `ToolsServer`, `ToolPlacementServer`, `Client/inventory` | **Documentado** — `docs/systems/inventory.md`, 1 diagrama. Falta la interfaz de cliente |
 | Interactuables | `Core/…/ServerScripts/interactable`, `Client/interactable` | **Documentado en su estructura** — `docs/systems/interactables.md`, 1 diagrama. Los 36 módulos de tipo, sin leer a propósito |
 | Máquinas de arcade | `Core/…/ServerScripts/machines`, `Shared/machines`, `Shared/pong` | **Barrido** — `docs/systems/survey.md`; `requestSpinRF` y la ruta de premio |
-| Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | **Documentado** — `docs/systems/karaoke.md`, 1 diagrama. Faltan `KaraokeTV/` y `BusquedaMusicas` |
+| Karaoke | `Shared/Karaoke`, `ServerStorage/BusquedaMusicas.luau` | **Documentado** — `docs/systems/karaoke.md`, 1 diagrama. Falta `BusquedaMusicas` |
 | Cuadros (Paint) | `Shared/Paint`, `interactable/Paint` | **Documentado** — `docs/systems/paint.md`. Faltan el editor y la cola de carga, que son de cliente |
 | Tiendas y decoración | `Shared/Stores`, `ShopServerSystem`, `Shared/ComprasTablero`, `ShopInfo` | **Documentado** — `docs/systems/stores.md`, 1 diagrama. Falta parte de `Compras.luau` |
 | Monetización | `Shared/Monetization`, `Events/Monetization`, `WorldSystem/GamePassService` | **Documentado** — `docs/systems/monetization.md`, 1 diagrama. Faltan `ShopInfo` e `InventoryManager` |
@@ -317,8 +317,8 @@ Resumen a día de hoy:
 |---|---|
 | **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
 | Analizado (leído entero, descrito en el sitio) | 61 |
-| Analizado (en parte) | 23 |
-| Pendiente | 460 |
+| Analizado (en parte) | 26 |
+| Pendiente | 457 |
 
 Las lecturas parciales y por qué:
 
@@ -408,7 +408,7 @@ Los cinco que de verdad bloquean documentación:
 
 ## Problemas encontrados
 
-Treinta y tres entradas, todas redactadas al completo en
+Treinta y cuatro entradas, todas redactadas al completo en
 `docs/testing/verification-plan.md`. **Ninguna se afirma como bug confirmado.** Dos están
 clasificadas como *Confirmado por análisis estático*, y aun esas solo afirman lo que el
 código demostrablemente hace: la 011 confirma una inconsistencia, no qué lado de ella está
@@ -457,6 +457,7 @@ proyecto, que no cambia código, pero no debería quedarse en una lista de pendi
 | BUG-CANDIDATE-031 | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
 | BUG-CANDIDATE-032 | Una condición de trabajo mal escrita permite la acción en silencio | Trabajos | Observación / Requiere verificación en ejecución | Baja | Alta |
 | BUG-CANDIDATE-033 | Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva | Persistencia | Posible bug / Requiere pruebas de concurrencia | Media | Alta |
+| BUG-CANDIDATE-034 | Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado | Karaoke | Confirmado por análisis estático — latente | Baja hoy | **Muy alta** |
 
 ### La pasada de seguridad
 
@@ -500,7 +501,7 @@ Anotadas para que una ejecución futura no las reabra:
 
 ## Verificación y plan de pruebas
 
-`docs/testing/verification-plan.md` — **creado**, 33 entradas, cada una con condiciones de
+`docs/testing/verification-plan.md` — **creado**, 34 entradas, cada una con condiciones de
 paso/fallo e instrumentación sugerida. Todas están `Sin verificar`.
 
 Roblox Studio **no está disponible en este entorno**, así que no se ha ejecutado ningún
@@ -538,8 +539,8 @@ y razonado está en la propia página; el resumen es:
   `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
   `PlayerSchema`, `RoleService`, `GamePassService`
 - **Diagramas:** 40 diagramas Mermaid (flowchart, sequence, state)
-- **Candidatos a bug:** 33 redactados al completo, incluida una pasada de seguridad
-- **Scripts leídos:** 92 de 552
+- **Candidatos a bug:** 34 redactados al completo, incluida una pasada de seguridad
+- **Scripts leídos:** 95 de 552
 - **Estado en GitHub:** la PR #1 se fusionó en `main`; la rama se reinició desde el `main`
   fusionado y el trabajo posterior va encima. El workflow de documentación pasa en verde y
   GitHub Pages está configurado con `Source: GitHub Actions`.

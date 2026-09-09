@@ -86,6 +86,7 @@ o en un place de pruebas.
 | [031](#bug-candidate-031) | Se puede hacer bailar al personaje de otro jugador | Animación | Posible bug / Requiere pruebas multijugador | Baja | Alta |
 | [032](#bug-candidate-032) | Una condición de trabajo mal escrita permite la acción en silencio | Trabajos | Observación / Requiere verificación en ejecución | Baja | Alta |
 | [033](#bug-candidate-033) | Las cuatro operaciones de `GlobalDataStore` comparten una señal y no coinciden en qué lleva | Persistencia | Posible bug / Requiere pruebas de concurrencia | Media | Alta |
+| [034](#bug-candidate-034) | Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado | Karaoke | Confirmado por análisis estático — **latente** | Baja hoy | **Muy alta** |
 
 ### Entradas de seguridad
 
@@ -116,6 +117,8 @@ engañosa:
 | Superficie | Resultado |
 |---|---|
 | Remotes de moderación de Karaoke | **Correcto, y es la postura más dura del proyecto.** Cinco de los ocho manejadores comprueban al llamante lo primero y, si no cumple, `IntenteSerAdmin` lo **expulsa** con un aviso explícito. Los baneos exigen además el rango `KaraokeSuperAdmin`. |
+| Saltar una canción en un televisor | **Correcto.** Es una votación: hay que estar escuchando para votar, el voto se puede retirar, y salta con el dueño o con la mayoría de oyentes descontando al dueño. |
+| Registrar cualquier modelo como televisor | **Correcto.** `TV.new` exige un hijo `Screen` que contenga un `SurfaceGui`. |
 | Difusión de datos de moderación | **Correcto.** `FireOnlyAdmins` recorre `AdminsActive` y `ObtenerMusica` revalida por página: la página de baneos exige superadministrador incluso en la ruta de difusión. |
 | Comandos de administración (`EventCommands`, `ReferralCommands`) | **Correcto.** Ambos comprueban `Admins:IsRole(player, "Admins")` contra un grupo de Roblox, y rechazan en silencio para no revelar la existencia del comando. |
 | `RoleService` ante fallo de `GroupService` | **Falla cerrado.** Un `pcall` fallido produce una tabla de roles vacía, no un pase libre. |
@@ -4019,6 +4022,109 @@ hacen `SetData` y `UpdateData`. Es un **cambio de código**, así que queda regi
 no aplicado; se menciona porque la simetría es la explicación más corta de qué falta.
 
 
+## BUG-CANDIDATE-034
+
+### Un `RemoteFunction` en la carpeta de televisores nunca quedaría atado
+
+**Sistema:** Karaoke · **Clasificación:** Confirmado por análisis estático — **latente**
+**Estado:** Sin verificar · **Gravedad si se confirma:** Baja hoy · **Confianza:** **Muy alta**
+
+**Código relacionado:** `Core/…/Shared/Karaoke/KaraokeTV/init.luau`, el bucle final de
+`module:Works`
+**Documentación relacionada:** [Karaoke → Despacho por nombre de remote](../systems/karaoke.md#despacho-por-nombre-de-remote)
+
+#### Comportamiento observado — HECHO
+
+El bucle que ata los remotes de `Televisiones/Instance` tiene dos ramas. La de
+`RemoteEvent` conecta bien. La de `RemoteFunction` no ata nada:
+
+```lua
+if Remotes:IsA('RemoteEvent') then
+	local EventActive = IsClient and Remotes.OnClientEvent or Remotes.OnServerEvent
+	table.insert(self.actives, EventActive:Connect(function(...) FuncionesTV[Remotes.Name](self, ...) end))
+elseif Remotes:IsA('RemoteFunction') then
+	local EventActive = IsClient and Remotes.OnClientInvoke or Remotes.OnServerInvoke
+	EventActive = function(...) return FuncionesTV[Remotes.Name](self, ...) end
+end
+```
+
+La segunda rama declara una **variable local** con el valor actual de `OnServerInvoke` —que
+es `nil`— y acto seguido **reasigna esa variable local**. La propiedad del `RemoteFunction`
+no se toca en ningún momento.
+
+Compárese con la rama de arriba, que sí funciona porque `Connect` es un **método** del
+objeto que devuelve `OnServerEvent`: la referencia local basta. Con `OnServerInvoke`, que es
+una **propiedad que hay que escribir**, la referencia local no sirve de nada.
+
+La forma correcta sería `Remotes.OnServerInvoke = function(...) ... end`.
+
+#### Por qué esto puede ser un problema — HECHO
+
+Hoy **no rompe nada**, y conviene decirlo con claridad: los siete remotes de
+`Televisiones/Instance` son `RemoteEvent`. Se ha comprobado uno por uno en sus
+`.model.json`:
+
+| Remote | `className` |
+|---|---|
+| `AddedSong`, `RemovedSong`, `SetOwner`, `Skip`, `init`, `listening`, `reproducir` | `RemoteEvent` |
+
+La rama muerta no se ejecuta nunca. Es un fallo **latente**, del mismo tipo que
+[BUG-CANDIDATE-015](#bug-candidate-015) —desactivado por un booleano— y
+[BUG-CANDIDATE-016](#bug-candidate-016) —el manejador es un stub—.
+
+Lo que lo hace digno de registrarse es **cómo va a fallar**. Este sistema está construido
+para que añadir una función sea añadir un remote con el nombre del método: no hay lista que
+tocar, el bucle lo recoge solo. Quien añada un `RemoteFunction` seguirá esa convención,
+comprobará que el nombre coincide con su función en `FunctActionsTV`, y verá que el cliente
+se queda colgado esperando —o recibe *«OnServerInvoke has not been set»`*— sin ningún indicio
+de por qué. El bucle que debería atarlo está ahí, se ejecuta, y no hace nada.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `EventActive` se declara `local` y se reasigna; la propiedad del remote no se escribe |
+| 2 | La rama de `RemoteEvent` funciona porque `Connect` es un método, no una propiedad |
+| 3 | El valor inicial que se asigna a la local es `Remotes.OnServerInvoke`, que en ese momento es `nil` — leerlo no tiene ningún propósito |
+| 4 | Los siete `.model.json` de esa carpeta declaran `RemoteEvent`, así que la rama está muerta hoy |
+| 5 | La convención del sistema —añade un remote con el nombre del método y listo— es justo lo que llevará a alguien a caer en esto |
+
+#### Incógnitas
+
+- Si alguna vez hubo un `RemoteFunction` ahí y se quitó por «no funcionaba». No hay forma de
+  saberlo desde el árbol actual.
+- Si el cliente se queda colgado indefinidamente o recibe error. Roblox lanza
+  *«OnServerInvoke has not been set»* al invocar, pero conviene confirmarlo.
+
+#### Escenario de ejemplo
+
+Alguien añade `GetQueue` como `RemoteFunction` para que el cliente consulte la cola de
+canciones, y escribe `module:GetQueue(Player, Model)` en `FunctActionsTV`. Todo sigue la
+convención del sistema. Al invocarlo desde el cliente no pasa nada. El nombre coincide, la
+función existe, el bucle recorre la carpeta y encuentra el remote — y aun así no está atado.
+
+**Comportamiento esperado:** el `RemoteFunction` queda atado a su método, igual que los
+eventos.
+**Comportamiento posible:** se queda sin `OnServerInvoke`, en silencio.
+
+#### Plan de verificación — *Funcional*
+
+1. En un place de pruebas, añade un `RemoteFunction` llamado `Prueba` bajo
+   `Events/Karaoke/Televisiones/Instance`.
+2. Añade `function module:Prueba() return true end` a `FunctActionsTV`.
+3. Invócalo desde el cliente.
+4. Observa si devuelve, se cuelga o lanza error.
+5. Cambia la línea a `Remotes.OnServerInvoke = function(...) ... end` y repite, para confirmar
+   que ese es el arreglo.
+
+**Pasa:** el paso 3 devuelve `true`.
+**Falla:** se cuelga o lanza *«OnServerInvoke has not been set»*.
+
+**Instrumentación sugerida:** ninguna. El diagnóstico está cerrado y el arreglo es una línea.
+Lo único que hay que decidir es si se corrige ahora o cuando alguien lo necesite — y el
+argumento para hacerlo ahora es que la persona que lo necesite no tendrá ninguna pista.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -4060,14 +4166,16 @@ completa.
 | `ToolPlacementServer`, `Client/inventory/`, `ToolUseManagge` | **No** | En cola |
 | `Karaoke/init.luau` | Sí | |
 | `RevisarCanciones`, `CrearCancion` | En parte | El modelo de administración, los manejadores y sus guardas; no la paginación ni el editor |
-| `KaraokeTV/`, `BusquedaMusicas` | **No** | En cola |
+| `KaraokeTV/` (3 archivos) | En parte | Registro de televisores, despacho de remotes y sus guardas |
+| `BusquedaMusicas` | **No** | En cola |
 | `Paint/ServerClient`, `Paint/FormatPinturaData` | En parte | Red, guardado, borrado, actualización y venta; no `like`, `MarkPaint` ni los marcos |
 | `Paint/Paint/`, `Paint/Load/` | **No** | En cola — el editor es de cliente |
 | Misiones, Máquinas, Animación, Cocina | **Barrido** | Solo su superficie de red y sus guardas; ver [Barrido](../systems/survey.md) |
 | `JobSystem/init`, `ConditionsUses` | Sí | El despacho, la lista blanca y las condiciones |
 | `JobSystem`: los cuatro módulos de trabajo | **En parte** | Solo su `WhiteList` y dónde pagan |
 | `ToolPlacementServer` | En parte | Los cuatro remotes, la validación y los cerrojos; no las animaciones de apertura |
-| `BuildingSystem`, `KaraokeTV`, `BusquedaMusicas`, `GiftHandler` | **No** | En cola, por ese orden |
+| `BuildingSystem` | Su papel, sí | Es interfaz de cliente sin remotes propios; su UI no se ha leído |
+| `BusquedaMusicas`, `GiftHandler` | **No** | En cola |
 | Sistemas de juego (~420 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 

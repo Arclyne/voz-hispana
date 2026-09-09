@@ -115,6 +115,79 @@ que son binarios.
 
 **DESCONOCIDO**, y se deja anotado en vez de rellenarlo.
 
+## Los televisores
+
+`KaraokeTV/` (950 líneas) es la otra mitad del sistema: los televisores del mundo donde
+suena lo que la moderación aprobó. Un jugador **reclama** un televisor, encola canciones, y
+quien esté cerca las escucha.
+
+### Despacho por nombre de remote
+
+**HECHO.** Los siete remotes de `Televisiones/Instance` se conectan en bucle, y **el nombre
+del remote es la clave del método**:
+
+```lua
+for _, Remotes in Events:WaitForChild('Instance'):GetChildren() do
+	if Remotes:IsA('RemoteEvent') then
+		local EventActive = IsClient and Remotes.OnClientEvent or Remotes.OnServerEvent
+		table.insert(self.actives, EventActive:Connect(function(...) FuncionesTV[Remotes.Name](self, ...) end))
+```
+
+Se parece al despacho por nombre de [Trabajos](./jobs.md), pero es **seguro por
+construcción y no por lista blanca**: aquí la clave es el nombre de la `Instance` que recibió
+el evento, no una cadena que mande el cliente. El cliente elige a qué remote dispara, y cada
+remote está atado a un método fijo.
+
+**OBSERVACIÓN.** El precio es que añadir un remote a esa carpeta sin escribir el método del
+mismo nombre en `FunctActionsTV` produce un error al dispararlo, no al arrancar.
+
+Y hay un segundo precio, más caro:
+[BUG-CANDIDATE-034](../testing/verification-plan.md#bug-candidate-034).
+
+### El salto de canción está bien resuelto
+
+**Registrado como correcto.** `Skip` no lo decide quien lo pulsa:
+
+```lua
+local IsListening = table.find(Television.listening, Player)
+if IsListening and typeof(Player) == 'Instance' and Player:IsA('Player') then
+	local indexSkip = table.find(Television.skips, Player)
+	if indexSkip then
+		table.remove(Television.skips, indexSkip)
+	else
+		table.insert(Television.skips, Player)
+		if Player == Television.Owner or #Television.skips >= #Television.listening - (Television.Owner and 1 or 0) then
+			Television:Reproducir()
+		end
+	end
+end
+```
+
+Hay que **estar escuchando** para votar, el voto se puede retirar, y la canción salta si el
+dueño lo pide o si vota la mayoría de los oyentes descontando al dueño. Es una votación, no
+un botón.
+
+### Qué puede registrarse como televisor
+
+**HECHO.** `TV.new` exige estructura, no etiqueta:
+
+```lua
+local Screen = typeof(Model) == 'Instance' and Model:IsA('Model')
+	and Model:FindFirstChild('Screen')
+	and Model:FindFirstChild('Screen'):FindFirstChildOfClass('SurfaceGui')
+if Screen then
+```
+
+**OBSERVACIÓN.** Todos los manejadores hacen `if not Television then Television = self:Added(Model) end`
+**antes** de comprobar el lado, así que un cliente que dispare `listening` con un modelo
+suyo puede provocar que el servidor lo registre como televisor — siempre que tenga esa
+estructura `Screen`/`SurfaceGui`. El efecto es un `TVAdded` a todos los clientes. La
+estructura exigida lo acota bastante; se registra por completitud.
+
+**OBSERVACIÓN.** `maxDistance = 50` y el método `TV:Distance` existen y están bien escritos
+—incluso contemplan zonas con `listening` propio—, pero **ninguno de los manejadores de
+remote leídos los consulta**. Reclamar un televisor con `SetOwner` no comprueba distancia.
+
 ## Controles que sí sujetan
 
 | Control | Cómo |
@@ -125,6 +198,9 @@ que son binarios.
 | **`ObtenerMusica` revalida por página** | La página 2 (baneos) exige superadministrador, incluso en la ruta de difusión |
 | **`ViewLyric` está cerrada** | Comprueba `IsAdmin` antes de leer la letra del DataStore, y expulsa si no |
 | **El rol se resuelve contra un grupo de Roblox** | No hay lista de UserIds en el código; `RoleService` consulta `GroupService` y falla cerrado |
+| **Saltar una canción es una votación** | Hay que estar escuchando para votar, el voto se retira, y salta con el dueño o con la mayoría de oyentes |
+| **No cualquier modelo es un televisor** | `TV.new` exige un hijo `Screen` con un `SurfaceGui` dentro |
+| **El despacho por nombre no lo elige el cliente** | La clave es el nombre de la `Instance` que recibió el evento, no una cadena de la carga útil |
 
 ## Puntos de verificación
 
@@ -132,6 +208,7 @@ que son binarios.
 |---|---|
 | Tres cargadores comprueban que haya un admin conectado, no que quien llama lo sea | [BUG-CANDIDATE-028](../testing/verification-plan.md#bug-candidate-028) |
 | El rol de administrador se cachea 50 segundos | [BUG-CANDIDATE-017](../testing/verification-plan.md#bug-candidate-017) |
+| Un `RemoteFunction` en la carpeta de televisores nunca se ataría | [BUG-CANDIDATE-034](../testing/verification-plan.md#bug-candidate-034) |
 
 ## Observaciones registradas, que no son defectos
 
@@ -149,7 +226,7 @@ que son binarios.
 | `Karaoke/init.luau` | 177 | Leído |
 | `RevisarCanciones/init.luau` | 1 111 | **En parte** — el modelo de administración, los manejadores de remote y sus guardas; no la mecánica de paginación ni el buzón |
 | `CrearCancion/init.luau` | 869 | **En parte** — la superficie pública y la ausencia de filtrado de texto |
-| `KaraokeTV/` (3 archivos) | 950 | **Pendiente** |
+| `KaraokeTV/` (3 archivos) | 950 | **En parte** — el registro de televisores, el despacho de remotes y sus guardas; no la sincronización de letra ni la cola |
 | `ServerStorage/BusquedaMusicas.luau` | — | **Pendiente** — la búsqueda y su caché |
 
 ## Implementación relacionada
@@ -162,3 +239,5 @@ que son binarios.
 | Sincronía entre servidores | `RevisarCanciones/init.luau`, `SuscribeAsync`, `PublishAsync`, `ReciveAsync` |
 | Almacenamiento | `ServerStorage/GlobalDataStore` — fuera de DataKit |
 | Editor de canciones | `CrearCancion/init.luau` |
+| Televisores | `KaraokeTV/init.luau`, `Works`, `Added`; `KaraokeTV/FunctActionsTV.luau` |
+| Un televisor concreto | `KaraokeTV/TV/init.luau`, `module.new`, `Distance` |

@@ -113,6 +113,9 @@ PARTIAL = {
     t("Core/ReplicatedStorage/Shared/JobSystem/ButtonMoney/init.luau"),
     t("Core/ServerStorage/GlobalDataStore/init.luau"),
     t("Core/ServerScriptService/ServerScripts/ToolPlacementServer.server.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/init.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/FunctActionsTV.luau"),
+    t("Core/ReplicatedStorage/Shared/Karaoke/KaraokeTV/TV/init.luau"),
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
