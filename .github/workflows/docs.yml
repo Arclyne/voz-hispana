@@ -40,6 +40,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history so the guard below can diff against the base branch.
+          fetch-depth: 0
+
+      # This project documents the game; it must never change it. Moonwave
+      # annotations and comments in .luau files are allowed, executable code is
+      # not. The guard strips comments from both versions with a small Luau lexer
+      # and fails if anything else moved.
+      - name: Guard — no executable Luau changed
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event_name == 'pull_request'
+                    && format('origin/{0}', github.event.pull_request.base.ref)
+                    || 'origin/main' }}"
+          # checkout used fetch-depth: 0, so every remote branch is already local.
+          python3 .github/scripts/check-luau-code-unchanged.py "$BASE"
 
       - name: Set up Node
         uses: actions/setup-node@v4
