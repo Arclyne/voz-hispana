@@ -25,23 +25,23 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 | Estado | Significado | Cantidad |
 |---|---|---|
-| **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 62 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 21 |
+| **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 8 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 57 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 20 |
 | Pendiente | Aún sin leer | 467 |
 
-**Total: 552 archivos, 80,447 líneas.**
+**Total: 552 archivos, 80,608 líneas.**
 
 ## Fuera de las plantillas
 
-8 archivos, 584 líneas, 5 leídos.
+8 archivos, 621 líneas, 5 leídos.
 
 <details>
 <summary><code>src/ReplicatedStorage/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `InitAfterTemplates.luau` | ModuleScript | — | — | 43 | `ReplicatedStorage.InitAfterTemplates` | Analizado |
+| `InitAfterTemplates.luau` | ModuleScript | — | — | 80 | `ReplicatedStorage.InitAfterTemplates` | **Documentado** |
 | `PlayerInit.luau` | ModuleScript | — | — | 123 | `ReplicatedStorage.PlayerInit` | **Documentado** |
 
 </details>
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 74 leídos.
+530 archivos, 76,305 líneas, 74 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -1619,7 +1619,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `RolesGroup.luau` | ModuleScript | — | — | 16 | `ServerStorage.RoleService.RolesGroup` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 117 | `ServerStorage.RoleService.init` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 135 | `ServerStorage.RoleService.init` | **Documentado** |
 
 </details>
 
@@ -1631,9 +1631,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | `EventService.luau` | ModuleScript | — | — | 456 | `ServerStorage.WorldSystem.EventService` | Analizado |
 | `GiftInbox.luau` | ModuleScript | — | — | 89 | `ServerStorage.WorldSystem.GiftInbox` | Pendiente |
 | `PlayerDataReplicator.luau` | ModuleScript | — | — | 555 | `ServerStorage.WorldSystem.PlayerDataReplicator` | Analizado |
-| `PlayerDataService.luau` | ModuleScript | — | — | 90 | `ServerStorage.WorldSystem.PlayerDataService` | Analizado |
-| `PlayerSchema.luau` | ModuleScript | — | — | 126 | `ServerStorage.WorldSystem.PlayerSchema` | Analizado |
-| `Profiles.luau` | ModuleScript | — | — | 296 | `ServerStorage.WorldSystem.Profiles` | Analizado |
+| `PlayerDataService.luau` | ModuleScript | — | — | 116 | `ServerStorage.WorldSystem.PlayerDataService` | **Documentado** |
+| `PlayerSchema.luau` | ModuleScript | — | — | 151 | `ServerStorage.WorldSystem.PlayerSchema` | **Documentado** |
+| `Profiles.luau` | ModuleScript | — | — | 320 | `ServerStorage.WorldSystem.Profiles` | **Documentado** |
 | `ReferralService.luau` | ModuleScript | — | — | 1244 | `ServerStorage.WorldSystem.ReferralService` | Analizado |
 | `ServerPresence.luau` | ModuleScript | — | — | 366 | `ServerStorage.WorldSystem.ServerPresence` | **Documentado** |
 
@@ -1645,7 +1645,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `GamePassRewards.luau` | ModuleScript | — | — | 60 | `ServerStorage.WorldSystem.GamePassService.GamePassRewards` | Analizado (en parte) |
-| `init.luau` | ModuleScript | — | — | 131 | `ServerStorage.WorldSystem.GamePassService.init` | Analizado |
+| `init.luau` | ModuleScript | — | — | 162 | `ServerStorage.WorldSystem.GamePassService.init` | **Documentado** |
 
 </details>
 

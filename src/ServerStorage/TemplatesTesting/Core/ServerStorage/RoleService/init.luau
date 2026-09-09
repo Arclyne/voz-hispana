@@ -1,3 +1,21 @@
+--[=[
+	Resuelve los roles de un jugador contra un grupo de Roblox, con caché.
+
+	Es la única fuente de autorización del juego: no hay ninguna lista de `UserId` en el
+	código. Los comandos de eventos, la moderación de karaoke y las tiendas preguntan aquí.
+
+	Dos propiedades que conviene tener presentes:
+
+	* **Falla cerrado.** Si la consulta a `GroupService` falla, el resultado es una tabla de
+	  roles vacía, no un pase libre. Es lo contrario de lo que hacen el control de chat de
+	  voz y el filtrado de texto, que fallan abiertos.
+	* **Cachea 50 segundos** (`TimeHold`). Conceder un rango se nota casi al momento;
+	  **retirarlo tarda hasta ese tiempo en surtir efecto**. Está registrado como
+	  BUG-CANDIDATE-017 en el plan de verificación.
+
+	@class RoleService
+	@server
+]=]
 local module = {}
 module.__index = module
 

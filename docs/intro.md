@@ -32,8 +32,16 @@ Usa la barra lateral para navegar; las secciones aparecen ahí a medida que se e
 
 Moonwave la extrae de los comentarios `--[=[ ]=]` del código Luau, pero **no de todos**.
 Está acotada a `ReplicatedStorage` y a
-`ServerStorage/TemplatesTesting/Core/ServerStorage` — las rutas que hoy tienen clases
-anotadas: `PlayerInit`, `ServerPresence` y el paquete `DataKit`.
+`ServerStorage/TemplatesTesting/Core/ServerStorage`. Ahí hay hoy **21 clases anotadas**,
+agrupadas por sistema en la barra lateral:
+
+| Sección | Clases |
+|---|---|
+| Arranque | `InitAfterTemplates`, `PlayerInit` |
+| Datos del jugador | `PlayerDataService`, `PlayerSchema`, `Profiles` |
+| Mundos y casas | `ServerPresence` |
+| Roles y monetización | `RoleService`, `GamePassService` |
+| DataKit (paquete externo) | Sus trece clases |
 
 `DataKit` es un caso aparte: es un paquete externo instalado con wally que **ya viene
 documentado por sus autores**. Sus once clases aparecen en la referencia sin que este

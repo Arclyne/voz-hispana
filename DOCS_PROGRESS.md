@@ -51,7 +51,7 @@ del arranque. Refleja: 10 páginas de arquitectura + 7 de casas + 11 de sistemas
 - [x] Fase 2 — Arquitectura
 - [ ] Fase 3 — Sistemas *(Casas, Datos del jugador, `Data.Main`, Tiendas y decoración,
       Monetización, Eventos, Invitaciones hechos)*
-- [ ] Fase 4 — Referencia por script y Moonwave
+- [ ] Fase 4 — Referencia por script y Moonwave *(anotaciones y `classOrder` hechos)*
 - [x] Fase 5 — Análisis transversal
 - [ ] Fase 6 — Validación y planificación de pruebas
 
@@ -312,9 +312,9 @@ Resumen a día de hoy:
 
 | Estado | Cantidad |
 |---|---|
-| **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 2 |
-| Analizado (leído entero, descrito en el sitio) | 62 |
-| Analizado (en parte) | 21 |
+| **Documentado** (leído entero + anotado con Moonwave por este proyecto) | 8 |
+| Analizado (leído entero, descrito en el sitio) | 57 |
+| Analizado (en parte) | 20 |
 | Pendiente | 467 |
 
 Las lecturas parciales y por qué:
@@ -521,14 +521,14 @@ y razonado está en la propia página; el resumen es:
 
 ## Último trabajo completado
 
-- **Fase:** 3 — Sistemas (Casas, Datos del jugador, Eventos, Invitaciones) y **Fase 5**
-  cerrada con el grafo de dependencias.
+- **Fase:** 3 — Sistemas, con once páginas. **Fase 4** hecha (anotaciones Moonwave y
+  `classOrder`) y **Fase 5** cerrada con el grafo de dependencias.
 - **Idioma:** todo el sitio, los comentarios Moonwave y los generadores están en español.
 - **Páginas del sitio:** `docs/intro.md`, 10 de arquitectura, 7 de casas, 11 de sistemas,
   1 de verificación, 3 de referencia generada.
-- **Archivos anotados (solo comentarios, demostrado por la guarda de CI):**
-  - `src/ReplicatedStorage/PlayerInit.luau`
-  - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
+- **Archivos anotados con Moonwave (solo comentarios, demostrado por la guarda de CI):**
+  `PlayerInit`, `InitAfterTemplates`, `ServerPresence`, `Profiles`, `PlayerDataService`,
+  `PlayerSchema`, `RoleService`, `GamePassService`
 - **Diagramas:** 38 diagramas Mermaid (flowchart, sequence, state)
 - **Candidatos a bug:** 31 redactados al completo, incluida una pasada de seguridad
 - **Scripts leídos:** 85 de 552
@@ -628,18 +628,32 @@ De Interactuables ya está la estructura; lo que falta ahí son los 36 módulos 
 eso es un catálogo, no una explicación: hacerlo solo merece la pena si alguien necesita
 extender un tipo concreto.
 
-### 4. Fase 4 y Fase 6
+### 4. Fase 6 — validación
 
-Pasada Moonwave por script, `classOrder` en `moonwave.toml` una vez exista el conjunto
-completo de `@class`, y la validación final.
+La Fase 4 está hecha en lo que importaba: **siete clases anotadas por este proyecto** más
+las trece de DataKit, y `classOrder` agrupando la barra lateral por sistema.
+
+:::danger Antes de tocar `classOrder`
+
+Nombrar ahí una clase que no exista **rompe el build para todo el mundo**. La lista y las
+anotaciones reales tienen que coincidir exactamente. Para comprobarlo:
+
+```
+grep -rh '@class ' src/ReplicatedStorage \
+    src/ServerStorage/TemplatesTesting/Core/ServerStorage --include='*.luau'
+```
+
+:::
+
+Lo que queda de Fase 6 es ejecutar los planes de `verification-plan.md`, y eso necesita
+Roblox Studio.
 
 ### Diferido a propósito, con motivos
 
 | Diferido | Por qué |
 |---|---|
 | `docs/architecture/data-flow.md` | Persistencia y Red ya cubren los flujos encontrados. Añadirla solo si un sistema posterior enseña uno que no cubran. |
-| `classOrder` en `moonwave.toml` | Fase 4, cuando exista el conjunto completo de anotaciones `@class`. Nombrar una clase que no existe rompería el build. |
-| Pasada Moonwave por script | Fase 4. Van dos módulos anotados por este proyecto; ~16 más ya venían anotados por sus autores. |
+| Pasada Moonwave archivo por archivo | Solo merece la pena para módulos con API pública real. Los siete anotados la tienen; la mayoría de lo que queda son scripts sin superficie que documentar. |
 
 ### Antes de terminar cualquier ejecución futura
 

@@ -24,10 +24,54 @@ gitSourceBranch = "main"
 # preexistentes en otras zonas del árbol. El motivo y las rutas actuales están en
 # .github/workflows/docs.yml (DOC_CODE_PATHS).
 
-# `classOrder` no está puesto todavía a propósito. Se añadirá cuando exista el
-# conjunto completo de anotaciones `@class` (Fase 4), para que la barra lateral
-# agrupe las clases por sistema en vez de alfabéticamente. Ponerlo antes rompería
-# el build en cuanto nombrase una clase que no existe.
+# `classOrder` agrupa la barra lateral por sistema en vez de alfabéticamente.
+#
+# CUIDADO: nombrar aquí una clase que no exista rompe el build. Cada nombre de
+# esta lista tiene que corresponder a una anotación `@class` real dentro de las
+# rutas DOC_CODE_PATHS del workflow. Si añades o quitas una clase, actualiza esto
+# a la vez.
+#
+# Para comprobarlo antes de subir nada:
+#   grep -rh '@class ' src/ReplicatedStorage \
+#       src/ServerStorage/TemplatesTesting/Core/ServerStorage --include='*.luau'
+#
+# El bloque de DataKit es aparte a propósito: es un paquete externo instalado con
+# wally que trae su propia documentación, escrita por sus autores. Este proyecto
+# no la toca. Ver docs/architecture/persistence.md.
+
+[[classOrder]]
+section = "Arranque"
+classes = ["InitAfterTemplates", "PlayerInit"]
+
+[[classOrder]]
+section = "Datos del jugador"
+classes = ["PlayerDataService", "PlayerSchema", "Profiles"]
+
+[[classOrder]]
+section = "Mundos y casas"
+classes = ["ServerPresence"]
+
+[[classOrder]]
+section = "Roles y monetización"
+classes = ["RoleService", "GamePassService"]
+
+[[classOrder]]
+section = "DataKit (paquete externo)"
+classes = [
+    "DataKit",
+    "Profile",
+    "Store",
+    "BaseStore",
+    "Lease",
+    "Mutex",
+    "Health",
+    "Inbox",
+    "Signal",
+    "Adapters",
+    "Types",
+    "Util",
+    "capitalize",
+]
 
 [home]
 enabled = true

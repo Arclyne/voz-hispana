@@ -109,7 +109,13 @@ PARTIAL = {
 }
 DOCUMENTED = {
     "src/ReplicatedStorage/PlayerInit.luau",
+    "src/ReplicatedStorage/InitAfterTemplates.luau",
     t("Core/ServerStorage/WorldSystem/ServerPresence.luau"),
+    t("Core/ServerStorage/WorldSystem/Profiles.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerDataService.luau"),
+    t("Core/ServerStorage/WorldSystem/PlayerSchema.luau"),
+    t("Core/ServerStorage/RoleService/init.luau"),
+    t("Core/ServerStorage/WorldSystem/GamePassService/init.luau"),
 }
 
 def meta_for(p):

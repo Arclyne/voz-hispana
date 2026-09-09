@@ -17,6 +17,31 @@
 	en el replicador (ver SPEC).
 ]]
 
+--[=[
+	La forma por defecto del perfil `WorldsPlayer`.
+
+	Vive aparte de [Profiles] y del replicador porque los dos lo necesitan, y por motivos
+	distintos: `Profiles` lo pasa a DataKit como plantilla —que lo reconcilia sobre lo que
+	ya hubiera guardado— y el replicador lo usa como red de seguridad cuando una clave
+	llega en `nil`.
+
+	Las claves replicadas guardan `ValueBase` serializados con esta forma:
+
+	```lua
+	{ Name = "Coins", Value = "0", Childs = { ... }, --[[ atributos ]] }
+	```
+
+	:::caution `reconcile` solo rellena claves de tipo cadena
+
+	Una **lista** que ya existe en el perfil no recibe entradas nuevas al reconciliar. Por
+	eso las estadísticas se mezclan por nombre en el replicador, con `merge = "byName"` en
+	`SPEC`, en vez de confiar en la reconciliación de DataKit. Una stat nueva no llegaría
+	nunca a alguien que ya jugó.
+
+	:::
+
+	@class PlayerSchema
+]=]
 local PlayerSchema = {}
 
 -- El orden de esta lista es el orden en el que aparecen en leaderstats.
