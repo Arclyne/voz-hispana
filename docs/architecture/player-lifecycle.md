@@ -125,7 +125,7 @@ end
 
 Voz Hispana is voice-chat-only by design. Note the third branch: when the Roblox call
 *errors*, the player is not kicked. The source comment marks this as an open decision.
-Recorded as **BUG-CANDIDATE-001** in **Verification**.
+Recorded as [BUG-CANDIDATE-001](../testing/verification-plan.md#bug-candidate-001).
 
 ## Character request handshake
 

@@ -314,8 +314,8 @@ inside a `pcall`:
 
 The source comment on the failure branch reads *"quizas conviene que le hagamos kick
 tambien"* ("maybe we should kick them too"), so the third branch is a known open
-decision rather than an oversight. Recorded as **BUG-CANDIDATE-001** in
-**Verification**.
+decision rather than an oversight. Recorded as
+[BUG-CANDIDATE-001](../testing/verification-plan.md#bug-candidate-001).
 
 ## What is not knowable from this repository
 

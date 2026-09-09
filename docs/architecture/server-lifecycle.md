@@ -195,7 +195,7 @@ by design — the registry entry survives until its 120 s TTL expires.
 The TTL is what bounds the damage: a stale entry cannot outlive it. Whether a stale
 entry inside that window causes a user-visible failure depends on how the consumer
 handles a teleport to a dead `jobId`, which is a runtime property.
-Recorded as **BUG-CANDIDATE-002** in **Verification**.
+Recorded as [BUG-CANDIDATE-002](../testing/verification-plan.md#bug-candidate-002).
 
 ## Periodic and long-lived work
 

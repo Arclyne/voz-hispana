@@ -187,7 +187,8 @@ afterwards is forwarded too.
 project brief *is* addressed. The atomic staging claim prevents the common case, and the
 deny-and-converge path absorbs the narrow residual window. What static reading cannot
 establish is whether the *convergence* itself always succeeds under load — that is a
-runtime question, recorded as **BUG-CANDIDATE-004** in **Verification**, with a
+runtime question, recorded as
+[BUG-CANDIDATE-004](../testing/verification-plan.md#bug-candidate-004), with a
 multiplayer test plan.
 
 ### The per-server memo
@@ -231,9 +232,15 @@ Roblox's documented behaviour is that teleporting with a reserved access code wh
 instance has shut down **starts a new instance** with that same code, which would make
 this benign — the new instance boots, finds the lease expired or expiring, and claims it.
 That behaviour is not established by this repository's source, so it is recorded rather
-than asserted: **BUG-CANDIDATE-005** in **Verification**.
+than asserted: [BUG-CANDIDATE-005](../testing/verification-plan.md#bug-candidate-005).
 
 ## Teleport handling
+
+**OBSERVATION.** In Studio, `reserveAccessCode` returns a fabricated
+`HttpService:GenerateGUID` instead of reserving, and `safeTeleport` skips the teleport —
+but the staging write between them is *not* Studio-aware and still reaches the shared
+MemoryStore. Recorded as
+[BUG-CANDIDATE-006](../testing/verification-plan.md#bug-candidate-006).
 
 **FACT.** `WorldManager.safeTeleport` retries `TeleportService:TeleportAsync` up to
 `ATTEMPT_LIMIT = 3` times with `RETRY_DELAY = 0.5` s between attempts, each inside a

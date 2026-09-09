@@ -72,7 +72,7 @@ and `InitScriptsRequest` is very likely its handshake with the server. The most 
 home is `StarterPlayerScripts.rbxm`.
 
 **This inference is not a fact and is not treated as one anywhere else on this site.**
-Recorded as **UNKNOWN U-006** in `DOCS_PROGRESS.md`; see also **Verification**, which
+Recorded as [BUG-CANDIDATE-007](../testing/verification-plan.md#bug-candidate-007), which
 carries a plan to settle it in Studio in about two minutes.
 
 ```mermaid

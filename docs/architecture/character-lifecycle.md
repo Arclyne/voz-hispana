@@ -68,7 +68,7 @@ irrelevant to respawning and stays set. The two paths are independent by constru
 warned and `respawning[player]` is cleared, but nothing retries. The player is left
 without a character until something else spawns one. `Humanoid.Died` has already fired
 and was connected with `:Once`, so it will not fire again for that character.
-Recorded as **BUG-CANDIDATE-003** in **Verification**.
+Recorded as [BUG-CANDIDATE-003](../testing/verification-plan.md#bug-candidate-003).
 
 ## Client side
 
