@@ -183,7 +183,7 @@ And one client-context script: `src/ReplicatedStorage/Client/visualsManager.serv
 | Data Flow | — | **Not written.** Folded into Persistence and Networking; a separate page is only worth adding if Phase 3 shows flows those two do not cover. |
 | Dependencies | — | **Not written.** Deferred to Phase 5, where it can be built from real evidence across systems rather than from the bootstrap alone. |
 
-Diagram count so far: **16 Mermaid diagrams** across the architecture layer.
+Diagram count: **17 Mermaid diagrams** across the architecture layer.
 
 ---
 
@@ -195,7 +195,7 @@ repository. Not yet validated — Phase 3 confirms or merges these.
 | System | Primary location | Status |
 |---|---|---|
 | Bootstrap / Template Loading | `src/ServerScriptService`, `src/ReplicatedStorage` | **Documented** (architecture layer) |
-| World & Housing (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documented** — 7 pages, 14 diagrams, 8 bug candidates. Not `Verified`: that needs Studio. |
+| World & Housing (`WorldSystem`) | `Core/ServerStorage/WorldSystem`, `Core/…/WorldManager.server.luau`, `PlayerHouses/*`, `GameWorlds/*` | **Documented** — 7 pages, 9 diagrams (plus 3 on the reserved-servers page), 10 bug candidates. Not `Verified`: that needs Studio. |
 | Persistence (`DataKit`) | `Core/ServerStorage/DataKit` | **Documented** (architecture layer); `Store.transfer` and `Inbox` still unread |
 | Player Data | `Core/ServerStorage/WorldSystem/PlayerData*`, `Core/…/PlayerDataInit.server.luau`, `Core/ServerScriptService/Data` | Pending |
 | Referrals | `Core/ServerStorage/WorldSystem/ReferralService.luau`, `Core/…/Referrals`, `Shared/Referrals` | Pending |
@@ -241,7 +241,7 @@ Conceptual documentation:
 - [x] Cleanup / shutdown ordering
 - [x] Error handling — full failure matrix
 
-Diagrams (14 across the housing and reserved-server pages):
+Diagrams (9 on the housing pages, plus 3 on the reserved-servers architecture page):
 
 - [x] Housing architecture
 - [x] House persistent lifecycle (state)
@@ -452,7 +452,7 @@ Housing entries, in the same spirit — cheapest first:
 - **Files annotated (comments only, proven by the CI guard):**
   - `src/ReplicatedStorage/PlayerInit.luau`
   - `…/Core/ServerStorage/WorldSystem/ServerPresence.luau`
-- **Diagrams:** 30 Mermaid diagrams (flowchart, sequence, state)
+- **Diagrams:** 26 Mermaid diagrams (flowchart, sequence, state)
 - **Bug candidates:** 14 written up in full; 2 Phase-0 leads closed as not-defects
 - **Scripts read:** 32 of 552
 - **Last commit:** `docs: add generated reference inventories`
