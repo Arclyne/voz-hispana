@@ -26,9 +26,9 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 | Estado | Significado | Cantidad |
 |---|---|---|
 | **Documentado** | Leído entero y anotado con Moonwave por este proyecto | 2 |
-| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 39 |
-| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 9 |
-| Pendiente | Aún sin leer | 502 |
+| Analizado | Leído entero; su comportamiento se describe en alguna página del sitio | 44 |
+| Analizado (en parte) | Leído solo en las partes relevantes para una pregunta concreta | 12 |
+| Pendiente | Aún sin leer | 494 |
 
 **Total: 552 archivos, 80,447 líneas.**
 
@@ -78,7 +78,7 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 
 ## Plantilla `Core`
 
-530 archivos, 76,181 líneas, 39 leídos.
+530 archivos, 76,181 líneas, 47 leídos.
 
 <details>
 <summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/</code> — 6 archivo(s) — 2/6 leídos</summary>
@@ -955,14 +955,14 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Monetization/</code> — 4 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ReplicatedStorage/Shared/Monetization/</code> — 4 archivo(s) — 4/4 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `Beneficios.luau` | ModuleScript | — | — | 18 | `ReplicatedStorage.Shared.Monetization.Beneficios` | Pendiente |
-| `MainModule.luau` | ModuleScript | — | — | 73 | `ReplicatedStorage.Shared.Monetization.MainModule` | Pendiente |
-| `MarkAdded.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Monetization.MarkAdded` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 335 | `ReplicatedStorage.Shared.Monetization.init` | Pendiente |
+| `Beneficios.luau` | ModuleScript | — | — | 18 | `ReplicatedStorage.Shared.Monetization.Beneficios` | Analizado |
+| `MainModule.luau` | ModuleScript | — | — | 73 | `ReplicatedStorage.Shared.Monetization.MainModule` | Analizado |
+| `MarkAdded.luau` | ModuleScript | — | — | 40 | `ReplicatedStorage.Shared.Monetization.MarkAdded` | Analizado |
+| `init.luau` | ModuleScript | — | — | 335 | `ReplicatedStorage.Shared.Monetization.init` | Analizado |
 
 </details>
 
@@ -1337,11 +1337,11 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/Data/Main/</code> — 2 archivo(s) — 1/2 leídos</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerScriptService/Data/Main/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `PlayerGamesFetcher.luau` | ModuleScript | — | — | 112 | `ServerScriptService.Data.Main.PlayerGamesFetcher` | Pendiente |
+| `PlayerGamesFetcher.luau` | ModuleScript | — | — | 112 | `ServerScriptService.Data.Main.PlayerGamesFetcher` | Analizado (en parte) |
 | `init.server.luau` | Script | — | yes | 393 | `ServerScriptService.Data.Main.init.server` | Analizado |
 
 </details>
@@ -1553,12 +1553,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/</code> — 2 archivo(s) — 1/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
 | `BusquedaMusicas.luau` | ModuleScript | — | — | 455 | `ServerStorage.BusquedaMusicas` | Pendiente |
-| `SoundInfo.luau` | ModuleScript | — | — | 37 | `ServerStorage.SoundInfo` | Pendiente |
+| `SoundInfo.luau` | ModuleScript | — | — | 37 | `ServerStorage.SoundInfo` | Analizado (en parte) |
 
 </details>
 
@@ -1640,12 +1640,12 @@ Hay dos columnas porque el nombre del archivo miente sobre ambas cosas:
 </details>
 
 <details>
-<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/GamePassService/</code> — 2 archivo(s)</summary>
+<summary><code>src/ServerStorage/TemplatesTesting/Core/ServerStorage/WorldSystem/GamePassService/</code> — 2 archivo(s) — 2/2 leídos</summary>
 
 | Archivo | Tipo | Contexto | Desactivado | Líneas | Ruta en ejecución | Estado |
 |---|---|---|---|---|---|---|
-| `GamePassRewards.luau` | ModuleScript | — | — | 60 | `ServerStorage.WorldSystem.GamePassService.GamePassRewards` | Pendiente |
-| `init.luau` | ModuleScript | — | — | 131 | `ServerStorage.WorldSystem.GamePassService.init` | Pendiente |
+| `GamePassRewards.luau` | ModuleScript | — | — | 60 | `ServerStorage.WorldSystem.GamePassService.GamePassRewards` | Analizado (en parte) |
+| `init.luau` | ModuleScript | — | — | 131 | `ServerStorage.WorldSystem.GamePassService.init` | Analizado |
 
 </details>
 

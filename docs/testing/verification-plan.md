@@ -66,7 +66,7 @@ o en un place de pruebas.
 | [011](#bug-candidate-011) | El rol `moderator` no puede moderar | Casas | Bug probable / Confirmado por análisis estático | Media | Alta |
 | [012](#bug-candidate-012) | Roles, ajustes y baneos de una casa los puede leer cualquier ocupante | Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
 | [013](#bug-candidate-013) | Un servidor de casa sin `TeleportData` deja tirado a su jugador en silencio | Casas | Posible bug / Requiere verificación en ejecución | Media | Media |
-| [014](#bug-candidate-014) | Un secreto compartido y un host proxy están escritos a fuego en un archivo versionado | Casas / Seguridad | Confirmado por análisis estático | Alta | Alta |
+| [014](#bug-candidate-014) | Un secreto compartido y un host proxy están escritos a fuego en cuatro archivos, uno de ellos replicado al cliente | Infraestructura / Seguridad | Confirmado por análisis estático | **Crítica** | Alta |
 | [015](#bug-candidate-015) | Un solo booleano separa la economía de escrituras arbitrarias del cliente | Economía / Seguridad | Observación / Requiere pruebas de seguridad | Crítica | Alta |
 | [016](#bug-candidate-016) | Las máquinas aceptan del cliente el valor de la recompensa sin validarlo | Máquinas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Alta |
 | [017](#bug-candidate-017) | Revocar un rol de administrador tarda hasta 50 segundos en surtir efecto | Administración / Seguridad | Observación / Requiere verificación en ejecución | Baja | Alta |
@@ -74,6 +74,7 @@ o en un place de pruebas.
 | [019](#bug-candidate-019) | Donar a un jugador que aún no ha cargado destruye la moneda | Economía / Sesión | Bug probable / Requiere pruebas de ciclo de vida | Media | Alta |
 | [020](#bug-candidate-020) | El color de una superficie llega del cliente sin límite de tamaño y se guarda tal cual | Tiendas / Casas / Seguridad | Observación / Requiere pruebas de seguridad | Alta | Media |
 | [021](#bug-candidate-021) | El dueño de una casa puede vender el mueble de un invitado y quedarse el reembolso | Tiendas / Economía | Posible bug / Requiere pruebas multijugador | Media | Media |
+| [022](#bug-candidate-022) | Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no | Monetización / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | Alta |
 
 ### Entradas de seguridad
 
@@ -83,11 +84,12 @@ formato que el resto: teoría con justificación, no acusaciones.
 | ID | Vector | Estado hoy |
 |---|---|---|
 | [012](#bug-candidate-012) | Lectura de roles y baneos de una casa sin comprobación de permisos, por dos sistemas distintos | **Explotable hoy**, impacto bajo |
-| [014](#bug-candidate-014) | Secreto compartido versionado, proxy en HTTP plano, remote sin límite de frecuencia | **Expuesto hoy**, impacto por determinar |
+| [014](#bug-candidate-014) | Secreto compartido en cuatro archivos —uno replicado al cliente—, proxy en HTTP plano, remote sin límite de frecuencia | **Expuesto hoy**, recuperable desde el cliente |
 | [015](#bug-candidate-015) | Escritura arbitraria de moneda desde el cliente | **Latente** — desactivado por un booleano |
 | [016](#bug-candidate-016) | Valor de recompensa suministrado por el cliente | **Latente** — el manejador de premio es un stub |
 | [017](#bug-candidate-017) | Ventana de revocación de privilegios de administrador | **Presente hoy**, impacto bajo |
 | [020](#bug-candidate-020) | Dato de tamaño arbitrario, controlado por el cliente, persistido en el perfil de una casa ajena | **Presente hoy**, impacto por determinar |
+| [022](#bug-candidate-022) | Id de asset suministrado por el cliente, sin comprobación de propiedad | **Explotable hoy** si un `EnumItem` viaja por el remote |
 
 #### Lo que se revisó y salió limpio
 
@@ -109,6 +111,8 @@ engañosa:
 | Inyección de tablas arbitrarias en el perfil de una casa | **Correcto.** `BreakDown.Set` devuelve `nil` para cualquier tipo que no sea booleano, cadena, número o uno de los seis con descomposición declarada. |
 | Amueblar la casa de otro como vía de transferencia de moneda | **Correcto.** Pasa por `donacion.GetState` y `donacion.Quitar`: consume el mismo tope diario de 1 000 que una donación directa. |
 | Importe de las compras en Robux | **Correcto.** `Compras.Comprar` usa `self.ProductActive`, estado de servidor, y lee el precio de `GetProduct`. |
+| Concesión de gamepasses persistidos | **Correcto.** `GamePassService` no tiene remotes. `syncFromRoblox` verifica con `UserOwnsGamePassAsync`, y la ruta de compra exige `wasPurchased` y que el id esté declarado en `ShopInfo`. |
+| Prompts de compra entrelazados | **Correcto, y deliberado.** `MarkAdded:decition` compara id e `InfoType` del prompt que se cierra contra el que se abrió, y reporta `"Closed"` si no coinciden. Los seis eventos `Prompt*Finished` están conectados, no solo los dos que el juego usa. |
 
 ---
 
@@ -1399,15 +1403,20 @@ reservada para todos los que vengan detrás, sin ninguna línea de log que lo ex
 
 ## BUG-CANDIDATE-014
 
-### Un secreto compartido y un host proxy están escritos a fuego en un archivo versionado
+### Un secreto compartido y un host proxy están escritos a fuego en cuatro archivos, uno de ellos replicado al cliente
 
-**Sistema:** Casas / Seguridad · **Clasificación:** Confirmado por análisis estático
+**Sistema:** Infraestructura / Seguridad · **Clasificación:** Confirmado por análisis estático
 **Estado:** Sin verificar (la *exposición* es segura; el *impacto* no)
 **Gravedad si se confirma:** Alta · **Confianza:** Alta
 
-**Código relacionado:** `Core/…/ServerScripts/WorldsBrowser.server.luau`, principio del
-archivo — las constantes `MY_PROXY_URL` y `MY_SECRET_KEY`, usadas por `searchPlayer`
-**Documentación relacionada:** [Casas → Identidad y propiedad](../systems/housing/identity.md)
+**Código relacionado:** las constantes `MY_PROXY_URL` / `PROXY_URL` y `MY_SECRET_KEY` /
+`SECRET_KEY`, al principio de cuatro archivos:
+`Core/…/ServerScripts/WorldsBrowser.server.luau`,
+`Core/…/Data/Main/PlayerGamesFetcher.luau`,
+`Core/ServerStorage/SoundInfo.luau` y
+**`Core/ReplicatedStorage/Shared/Monetization/MainModule.luau`**
+**Documentación relacionada:** [Casas → Identidad y propiedad](../systems/housing/identity.md),
+[Monetización](../systems/monetization.md)
 
 :::note El secreto no se reproduce aquí
 
@@ -1417,27 +1426,54 @@ precisamente el motivo de esta entrada.
 
 :::
 
+:::danger Ampliado tras leer Monetización — la exposición es mayor de lo registrado
+
+La primera versión de esta entrada nombraba **un** archivo, en `ServerScriptService`. Al
+leer el sistema de monetización aparecieron **tres más**, con la misma IP y el mismo
+secreto literal, y uno de ellos está bajo `ReplicatedStorage`.
+
+Eso cambia la naturaleza del problema. Ya no es solo «un secreto en el repositorio»: es un
+secreto que **se envía a la máquina de cada jugador** con el resto del contenido replicado.
+
+:::
+
 #### Comportamiento observado — HECHO
 
-`WorldsBrowser.server.luau` declara, como literales de cadena al principio de un archivo
-versionado:
+Cuatro archivos declaran, como literales de cadena al principio del archivo:
 
 - una URL `http://` con IP desnuda hacia un proxy autoalojado, descrito en un comentario
-  como *«Nuestro servidor VPS privado (Puerto 80)»*;
-- un secreto compartido, enviado como cabecera `My-Secret` de la petición.
+  como *«Nuestro servidor VPS privado (Puerto 80)»* / *«Nuestro Proxy Privado»*;
+- un secreto compartido, enviado como cabecera `My-Secret` de cada petición.
 
-`searchPlayer` llama entonces a `HttpService:GetAsync(url, true, headers)` contra ese host
-para resolver una búsqueda por nombre de jugador.
+| Archivo | Servicio en ejecución | Para qué usa el proxy |
+|---|---|---|
+| `ServerScripts/WorldsBrowser.server.luau` | `ServerScriptService` | Buscar jugadores por nombre |
+| `Data/Main/PlayerGamesFetcher.luau` | `ServerScriptService` | Juegos y grupos de un usuario, y sus miniaturas |
+| `ServerStorage/SoundInfo.luau` | `ServerStorage` | Metadatos de audio del toolbox |
+| **`Shared/Monetization/MainModule.luau`** | **`ReplicatedStorage`** | Catálogo de artículos creados por un jugador |
+
+Los cuatro valores son **idénticos**, carácter por carácter. Rotar el secreto obliga a tocar
+los cuatro sitios; cambiar tres y olvidar uno deja el sistema roto o el secreto vivo.
 
 #### Por qué es un problema
 
 Tres cuestiones distintas, en orden decreciente de certeza:
 
-1. **El secreto está versionado.** Cualquiera con acceso de lectura al repositorio —ahora, o
+1. **Uno de los cuatro archivos se replica al cliente.**
+   `Shared/Monetization/MainModule.luau` vive bajo `ReplicatedStorage`, así que la
+   `Instance` del `ModuleScript` —y su código— llega a la máquina de cada jugador. Solo lo
+   requiere el servidor (`RecolectarInfo = not client and require(...)`), pero eso decide
+   quién lo *ejecuta*, no quién lo *recibe*.
+
+   Un `LocalScript` normal no puede leer `.Source`: Roblox lo bloquea por identidad. Un
+   ejecutor de exploits sí puede, y volcar los módulos replicados es una de sus capacidades
+   básicas. **INFERENCIA:** el secreto es recuperable por cualquier jugador con esas
+   herramientas, sin acceso al repositorio.
+2. **El secreto está versionado.** Cualquiera con acceso de lectura al repositorio —ahora, o
    en cualquier punto de su historial— lo tiene. Rotar el archivo no rota el historial.
-2. **El transporte es HTTP plano contra una IP desnuda.** La cabecera viaja sin cifrar y el
+3. **El transporte es HTTP plano contra una IP desnuda.** La cabecera viaja sin cifrar y el
    host no está autenticado, así que es interceptable y suplantable en tránsito.
-3. **El remote que llega hasta ahí no tiene límite de frecuencia.**
+4. **El remote que llega hasta ahí no tiene límite de frecuencia.**
    `SearchPlayerRF.OnServerInvoke` llama a `searchPlayer` con la palabra clave del cliente
    directamente, sin límite de frecuencia, sin tope de longitud y sin cooldown — a
    diferencia de `LoadCharacterRequest`, que tiene un cooldown de 2 segundos. Cada
@@ -1456,7 +1492,12 @@ denegación de servicio contra infraestructura de la que el juego depende.
 
 #### Evidencia
 
-- Los literales están en el archivo — **HECHO**.
+- Los literales están en los cuatro archivos, idénticos — **HECHO**.
+- `Shared/Monetization/MainModule.luau` está bajo `Core/ReplicatedStorage/` y su
+  `.meta.json` no cambia su destino: solo fija un `SourceAssetId` — **HECHO**.
+- Cuatro superficies distintas del proxy están en uso (`/users`, `/games`, `/groups`,
+  `/thumbnails`, `/catalog`, `/apis/toolbox-service`), así que el secreto no abre un solo
+  endpoint — **HECHO**.
 - `SearchPlayerRF.OnServerInvoke` no tiene guarda de ningún tipo — **HECHO**:
 
   ```lua
@@ -2363,6 +2404,143 @@ reembolsa a nadie.
 Un solo `warn` bastaría para saber si esto ocurre en producción.
 
 
+## BUG-CANDIDATE-022
+
+### Un jugador puede añadir a su escaparate cualquier artículo del catálogo, sea suyo o no
+
+**Sistema:** Monetización / Seguridad · **Clasificación:** Bug probable / Requiere pruebas de seguridad
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Alta
+
+**Código relacionado:** `Core/…/Shared/Monetization/init.luau`, `AddedProductPlayer` y su
+conexión en `Works`; `Core/…/Shared/Monetization/MainModule.luau`, `LoadProductInfo`
+**Documentación relacionada:** [Monetización](../systems/monetization.md#sharedmonetization-el-camino-abierto)
+
+#### Comportamiento observado — HECHO
+
+El remote está conectado sin filtro, y el manejador toma dos argumentos del cliente:
+
+```lua
+self.Events.AddedProductPlayer.OnServerEvent:Connect(function(...) self:AddedProductPlayer(...) end)
+```
+
+```lua
+function module:AddedProductPlayer(Player, ProductId, InfoType)
+	if client then ...
+	elseif typeof(ProductId) == 'number' and typeof(InfoType) == 'EnumItem' then
+
+		local InventoryItems = Player and Player:FindFirstChild('InventoryItemsProucts')
+
+		if InventoryItems and not InventoryItems:FindFirstChild(tostring(ProductId)) then
+			...
+			local product = self.RecolectarInfo.LoadProductInfo(ProductId, InfoType)
+
+			if product and self.listItems[tostring(product.assetType)] then
+				self.AddItem(tostring(ProductId), InfoType.Name).Parent = InventoryItems
+```
+
+Las comprobaciones que hace, en orden: que `ProductId` sea un número, que `InfoType` sea un
+`EnumItem`, que el jugador tenga la carpeta, que no esté ya, y que el **tipo de asset** esté
+en una lista de cuatro.
+
+#### Por qué esto puede ser un problema — HECHO
+
+`LoadProductInfo` es una consulta de **metadatos**, no de propiedad:
+
+```lua
+module.LoadProductInfo = function(ID, tipo)
+	if not tonumber(ID) then return end
+	local nice, product = pcall(function()
+		return MPS:GetProductInfo(ID, tipo)
+	end)
+```
+
+`GetProductInfo` devuelve nombre, precio y tipo de **cualquier** asset público de Roblox.
+No dice nada sobre quién lo creó ni sobre quién lo posee. **En toda la ruta no hay ninguna
+llamada a `UserOwnsGamePassAsync`, `PlayerOwnsAsset` ni equivalente.**
+
+El contraste es directo dentro del mismo repositorio: `GamePassService.syncFromRoblox`, para
+conceder un pase, sí llama a `UserOwnsGamePassAsync`. La comprobación existe y se usa a
+cincuenta metros de aquí.
+
+El destino tampoco es efímero: `InventoryItemsProucts` es una carpeta de `SPEC`, es decir
+**se persiste en el perfil del jugador** y sobrevive a la sesión.
+
+#### Teoría — TEORÍA
+
+Un cliente modificado puede disparar `AddedProductPlayer` con el id de una camiseta, un
+pantalón, una imagen o un gamepass creados por otra persona, y quedárselo listado en su
+escaparate. Después, `GetProductPlayer` lo devuelve a todos los clientes junto a los
+artículos que sí creó, sin distinguirlos.
+
+Lo que **no** es: robo de Robux. Si otro jugador compra ese artículo, Roblox paga a su
+creador real; el juego no interviene en el cobro. El daño es de atribución —un jugador
+aparece vendiendo trabajo ajeno— y de contenido: `assetType` `0` es una imagen, así que la
+lista blanca permite meter imágenes arbitrarias de Roblox en un escaparate del juego.
+
+Hay una limpieza posterior, pero comprueba lo mismo:
+
+```lua
+if productSearched and self.listItems[tostring(productSearched.assetType)] then
+	table.insert(newAdded.Data, productSearched)
+else
+	product:Destroy()
+end
+```
+
+Filtra por tipo, no por autoría. Un artículo inyectado del tipo correcto sobrevive a la
+limpieza indefinidamente.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `AddedProductPlayer.OnServerEvent` se conecta sin envoltorio ni validación previa |
+| 2 | `ProductId` e `InfoType` vienen del cliente; solo se comprueba su **tipo de dato** |
+| 3 | `LoadProductInfo` usa `GetProductInfo`, que es metadatos públicos |
+| 4 | No hay ninguna llamada de propiedad en la ruta — `grep` sobre el módulo lo confirma |
+| 5 | `GamePassService` sí verifica propiedad, en el mismo repositorio, para el caso análogo |
+| 6 | `InventoryItemsProucts` está en `SPEC`, así que lo inyectado se persiste |
+| 7 | La revalidación de `GetProductPlayer` filtra por `assetType`, no por autoría |
+
+#### Incógnitas
+
+- Si un `EnumItem` se puede enviar tal cual por un `RemoteEvent`. **INFERENCIA:** sí, Roblox
+  los serializa; es lo primero que hay que confirmar y se comprueba en un minuto. Si no se
+  pudiera, la guarda `typeof(InfoType) == 'EnumItem'` cerraría la entrada entera.
+- Qué hace la interfaz con `ProductsPlayer`: si solo lo enseña, el daño es de imagen; si
+  además abre un prompt de compra, la suplantación es más visible.
+- Si `loadItems`, que consulta el proxy por `CreatorName`, se usa como fuente autoritativa
+  en algún otro punto. Ahí la autoría **sí** está garantizada por la consulta.
+
+#### Escenario de ejemplo
+
+Un jugador copia el id de la camiseta más vendida de otro usuario y la añade a su
+escaparate. Aparece listada como suya, junto a sus propias creaciones, y sigue ahí en las
+siguientes sesiones porque está en su perfil.
+
+**Comportamiento esperado:** solo se listan artículos que el jugador creó, que es lo que
+`loadItems` obtiene del proxy.
+**Comportamiento posible:** se lista cualquier asset público de los cuatro tipos admitidos.
+
+#### Plan de verificación — *Seguridad*
+
+1. Comprueba primero que un `EnumItem` viaja por un `RemoteEvent`: dispara
+   `AddedProductPlayer` con `(1234567, Enum.InfoType.Asset)` y mira si el manejador entra en
+   la rama del `elseif`. Si no entra, la entrada queda cerrada.
+2. Con una cuenta que no haya creado nada, dispara el remote con el id de una camiseta
+   pública de otro creador.
+3. Mira si aparece un `StringValue` con ese id bajo `InventoryItemsProucts`.
+4. Sal y vuelve a entrar; comprueba si sigue ahí.
+5. Repite con un asset de tipo imagen (`assetType` `0`) y observa dónde se muestra.
+
+**Pasa:** el remote rechaza el artículo por no pertenecer al jugador.
+**Falla:** el artículo se añade, se persiste y se lista.
+
+**Instrumentación sugerida:** un `warn` con el llamante y el id en cada
+`AddedProductPlayer` aceptado. Diría de inmediato si esto ocurre ya en producción, y con qué
+ids.
+
+
 ## Cobertura
 
 Qué se ha examinado y qué no, para que esta página no se confunda con una auditoría
@@ -2390,7 +2568,10 @@ completa.
 | `Shared/Stores`: `init`, `HouseAdded`, `ColorTexture` | Sí | Los trece manejadores de remotes y el ciclo de `content` |
 | `Shared/Stores`: `Compras` | En parte | Solo `Comprar` y la forma general |
 | `Shared/Stores`: `Added`, `DecorFuncs/`, `DecorsPlayer` | **No** | En cola |
-| Sistemas de juego (~470 archivos) | **No** | En cola |
+| `Shared/Monetization` (4 archivos), `WorldSystem/GamePassService/init` | Sí | |
+| `GamePassService/GamePassRewards` | En parte | Solo `ensure` |
+| `ShopInfo`, `inventory/InventoryManager` | **No** | En cola; alimentan a `GamePassService` |
+| Sistemas de juego (~465 archivos) | **No** | En cola |
 | 320 binarios `.rbxm` | **No inspeccionables** | |
 
 Que un área no tenga entrada en esta página significa que **no se ha examinado**, no que
@@ -2408,7 +2589,9 @@ superficie ya leída:
 - límites de frecuencia en remotes que provocan trabajo caro;
 - comprobaciones de propiedad antes de actuar sobre datos de otro jugador.
 
-**No** se han revisado: los ~200 remotes de `Interactable`, `Karaoke`, `Stores`, `Tools` y
-`Paint`; la ruta de `Monetization` y compras con Robux; ni el sistema de construcción. Son
-exactamente el tipo de superficie donde suelen aparecer más hallazgos, así que esta sección
-debe leerse como un primer barrido, no como una garantía.
+Tras la segunda pasada, ya **sí** están revisados los trece remotes de `Stores` y los cinco
+de `Monetization`, con los resultados de las entradas 020, 021 y 022.
+
+**Siguen sin revisar:** los ~180 remotes de `Interactable`, `Karaoke`, `Tools` y `Paint`, y
+el sistema de construcción. Son exactamente el tipo de superficie donde suelen aparecer más
+hallazgos, así que esta sección debe leerse como un barrido en curso, no como una garantía.
