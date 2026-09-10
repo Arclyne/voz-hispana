@@ -51,20 +51,25 @@ o en un place de pruebas.
 
 ## Índice
 
+Las entradas marcadas *(revisada)* o *(reclasificada)* pasaron por una segunda pasada
+centrada en la gravedad: ver
+[Sistema de mundos — revisión de gravedad](./world-system-severity.md).
+
 | ID | Título | Sistema | Clasificación | Gravedad si se confirma | Confianza |
 |---|---|---|---|---|---|
 | [001](#bug-candidate-001) | El control de chat de voz falla abierto cuando la comprobación de Roblox da error | Arranque | Observación / Requiere inyección de fallos | Baja | Alta |
 | [002](#bug-candidate-002) | Una entrada de presencia puede sobrevivir a su servidor hasta el TTL | World System | Posible bug / Requiere pruebas de ciclo de vida | Media | Media |
 | [003](#bug-candidate-003) | Un respawn fallido deja al jugador sin personaje y nada reintenta | Character | Posible bug / Requiere inyección de fallos | Media | Media |
 | [004](#bug-candidate-004) | La convergencia tras un anfitrión denegado puede dejar tirados a los jugadores | Casas | Posible bug / Requiere pruebas multijugador | Alta | Baja |
-| [005](#bug-candidate-005) | Teleport con un código de acceso cuya instancia ya se apagó | Casas | Requiere pruebas de teleport | Media | Baja |
-| [006](#bug-candidate-006) | Una sesión de Studio puede publicar un código de acceso falso en el registro real | Casas | Bug probable / Requiere pruebas de integración | Alta | Media |
+| [005](#bug-candidate-005) | Teleport con un código de acceso cuya instancia ya se apagó | Casas | Requiere pruebas de teleport | Baja *(revisada)* | Baja |
+| [006](#bug-candidate-006) | Una sesión de Studio puede publicar un código de acceso falso en el registro real | Casas | Bug probable / Requiere pruebas de integración | Media *(revisada)* | Media |
 | [007](#bug-candidate-007) | El cargador de scripts del cliente no está en este repositorio | Cliente | Observación / Requiere verificación en ejecución | — | Alta |
 | [008](#bug-candidate-008) | Una compra concede el artículo antes de cobrarlo, y por una ruta de persistencia distinta | Casas / Economía | Bug probable / Requiere pruebas de persistencia | Media | **Alta** |
 | [009](#bug-candidate-009) | Un fallo al resolver el nombre en el primer arranque bautiza la casa para siempre | Casas | Posible bug / Requiere inyección de fallos | Baja | Alta |
 | [010](#bug-candidate-010) | `WorldDataReplicator` se pierde un servidor que ya está `ready` | Casas | Bug probable / Requiere pruebas de ciclo de vida | Media | Media |
 | [011](#bug-candidate-011) | El rol `moderator` no puede moderar | Casas | Bug probable / Confirmado por análisis estático | Media | Alta |
-| [012](#bug-candidate-012) | Roles, ajustes y baneos de una casa los puede leer cualquier ocupante | Casas | Observación / Requiere pruebas de seguridad | Baja | Alta |
+| [012](#bug-candidate-012) | Roles, ajustes y baneos de una casa los puede leer cualquier ocupante | Casas | **Bug probable** *(reclasificada)* / Requiere pruebas de seguridad | Baja | Alta |
+| [053](#bug-candidate-053) | Concesión y retirada de roles sin comparar con el rol del llamante | **Explotable hoy** por cualquiera con `admin`; acotado porque la propiedad no es alcanzable |
 | [013](#bug-candidate-013) | Un servidor de casa sin `TeleportData` deja tirado a su jugador en silencio | Casas | Posible bug / Requiere verificación en ejecución | Media | Media |
 | [014](#bug-candidate-014) | Un secreto compartido y un host proxy están escritos a fuego en cuatro archivos, uno de ellos replicado al cliente | Infraestructura / Seguridad | Confirmado por análisis estático | **Crítica** | Alta |
 | [015](#bug-candidate-015) | Un solo booleano separa la economía de escrituras arbitrarias del cliente | Economía / Seguridad | Observación / Requiere pruebas de seguridad | Crítica | Alta |
@@ -100,6 +105,7 @@ o en un place de pruebas.
 | [050](#bug-candidate-050) | Modelo de estación suministrado por el cliente, sin propietario ni distancia | **Explotable hoy**, es robo y no falsificación |
 | [051](#bug-candidate-051) | El nivel del jugador no sube nunca, y el requisito de nivel solo existe en el cliente | Construcción / Progresión | Confirmado por análisis estático | Baja | **Muy alta** |
 | [052](#bug-candidate-052) | La búsqueda de canciones borra las letras acentuadas en vez de normalizarlas | Karaoke / Búsqueda | Confirmado (el orden) / Requiere pruebas (el efecto) | Baja | **Muy alta** / media |
+| [053](#bug-candidate-053) | La escala de roles de una casa no tiene peldaños: quien puede moderar puede degradar a cualquiera menos al dueño | Casas / Seguridad | Confirmado por análisis estático | Media | **Muy alta** |
 | [050](#bug-candidate-050) | Cualquiera puede recoger el plato de cualquier cocina del servidor | Cocina / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [043](#bug-candidate-043) | El cliente decide si ha ganado el peluche, y aquí sí hay premio | Máquinas / Seguridad | Bug probable / Requiere pruebas de seguridad | Media | **Muy alta** en la forma |
 | [044](#bug-candidate-044) | La ruleta tiene una casilla que no paga y un sesgo del doble hacia la casilla 1 | Máquinas / Economía | Confirmado por análisis estático | Baja | **Muy alta** en la aritmética |
@@ -541,11 +547,26 @@ ejecuciones entre servidores.
 ### Teleport con un código de acceso cuya instancia ya se apagó
 
 **Sistema:** Casas · **Clasificación:** Requiere pruebas de teleport
-**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** Baja
+**Estado:** Sin verificar · **Gravedad si se confirma:** ~~Media~~ → **Baja** · **Confianza:** Baja
 
 **Código relacionado:** `WorldManager.server.luau` — `teleportToHost`; `DataKit/Lease.luau`
 **Documentación relacionada:** [Arquitectura → Servidores reservados](../architecture/reserved-servers.md)
 
+
+
+:::info Revisado en la segunda pasada
+
+**La gravedad baja de Media a Baja.** Mirada como cadena junto a la
+[002](#bug-candidate-002), **los dos desenlaces posibles son benignos**: o Roblox arranca una
+instancia nueva con ese código y toma el relevo, o el teleport falla y el jugador se queda
+donde estaba con un error. En ninguno se pierde nada ni se queda nadie tirado.
+
+Lo que sí aporta la cadena es la **duración de la ventana**: los 120 s de `ACTIVE_TTL`, que
+son la unidad de medida de casi todo el resto del sistema de mundos.
+
+Ver [Sistema de mundos — revisión de gravedad](./world-system-severity.md).
+
+:::
 #### Comportamiento observado — HECHO
 
 La alcanzabilidad de una casa es la entrada de `DataKitLeases` para `World/{key}`, con TTL
@@ -608,12 +629,35 @@ MemoryStore) en cada `hostWorld`.
 ### Una sesión de Studio puede publicar un código de acceso falso en el registro real
 
 **Sistema:** Casas · **Clasificación:** Bug probable / Requiere pruebas de integración
-**Estado:** Sin verificar · **Gravedad si se confirma:** Alta · **Confianza:** Media
+**Estado:** Sin verificar · **Gravedad si se confirma:** ~~Alta~~ → **Media** · **Confianza:** Media
 
 **Código relacionado:** `WorldManager.server.luau` — `reserveAccessCode`, `safeTeleport`,
 `hostWorld`
 **Documentación relacionada:** [Arquitectura → Servidores reservados](../architecture/reserved-servers.md)
 
+
+
+:::info Revisado en la segunda pasada
+
+**La gravedad baja de Alta a Media, y la entrada gana importancia.**
+
+El síntoma es menor de lo que se estimó: el teleport a un código nunca reservado **falla**
+—`safeTeleport` reintenta y devuelve error—, así que el jugador no acaba en ningún sitio
+raro. Y el envenenamiento dura lo que dure el lease, porque ninguna instancia lo refresca:
+≤120 s. Una casa inalcanzable dos minutos mientras alguien prueba en Studio es Media.
+
+**Pero lo que la entrada demuestra no es ese fallo de dos minutos.** Demuestra que
+**MemoryStore y DataStore no están aislados por entorno en este proyecto**. Las dos guardas
+de Studio que existen protegen los extremos y el tramo del medio escribe en producción sin
+saberlo — y lo mismo vale para `WorldService.start` → `Profiles.World.load`, que carga y
+**guarda** el perfil de la casa sin comprobar `IsStudio`.
+
+Lo que hay que decidir, por tanto, no es cómo arreglar `hostWorld`: es si Studio debe poder
+escribir en los almacenes de producción en absoluto.
+
+Ver [Sistema de mundos — revisión de gravedad](./world-system-severity.md).
+
+:::
 #### Comportamiento observado — HECHO
 
 `reserveAccessCode` devuelve un **GUID fabricado** en Studio en vez de reservar:
@@ -1224,19 +1268,16 @@ Se clasifica como **Confirmado por análisis estático** para la *inconsistencia
 segura, y como **Bug probable** para la *intención*, que no lo es: el arreglo podría ser
 tanto renombrar la función como mover el umbral. Eso es una decisión de producto.
 
-#### Un segundo hallazgo relacionado
+#### Un segundo hallazgo relacionado — ahora entrada propia
 
-`SetUserRole` comprueba que el llamante pueda moderar y que el objetivo no sea el dueño.
-**No** comprueba que el llamante supere al rol que se está concediendo:
+La nota que estaba aquí sobre `SetUserRole` se ha separado en
+[BUG-CANDIDATE-053](#bug-candidate-053), porque es **otro defecto**: ésta es un operador
+equivocado y aquélla una comprobación que no existe. Tienen arreglos distintos, y dejarla
+enterrada bajo un título que habla del rol `moderator` hacía probable que quien triara por
+título no la viera.
 
-```lua
-if targetUserId == data.settings.OwnerId then return false, "CannotEditOwner" end
-if roleName ~= "none" and RolesInfo[roleName] == nil then return false, "InvalidRole" end
-```
-
-Así que un `admin` (49) puede conceder `coOwner` (50), a otro jugador o a sí mismo. Si es
-intencionado es una cuestión de producto; se registra aquí porque pertenece a la misma
-revisión del modelo de roles.
+Las dos se arreglan juntas de todas formas: son la misma pregunta —qué significa cada peldaño
+de la escala—, y hoy la escala tiene seis niveles y el código distingue dos.
 
 #### Incógnitas
 
@@ -1275,13 +1316,39 @@ llamante y el umbral — eso haría aflorar el descuadre de inmediato en producc
 
 ### Roles, ajustes y baneos de una casa los puede leer cualquier ocupante
 
-**Sistema:** Casas · **Clasificación:** Observación / Requiere pruebas de seguridad
+**Sistema:** Casas · **Clasificación:** ~~Observación~~ → **Bug probable** / Requiere pruebas de seguridad
 **Estado:** Sin verificar · **Gravedad si se confirma:** Baja · **Confianza:** Alta
 
 **Código relacionado:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau` —
 `GetRolesRf`, `GetWorldSettingRF`, `GetBansRF`, `GetUserRolRF`
 **Documentación relacionada:** [Casas → Permisos](../systems/housing/permissions.md)
 
+
+
+:::info Revisado en la segunda pasada
+
+**Cambia de clase, no de gravedad.** Se escribió como *Observación* —el tono de «esto es
+así, y quizá se quiso así»—. Al leer `WorldDataReplicator` entero eso ya no se sostiene:
+
+- Los tres remotes de lectura declaran el parámetro como **`_player`**, el guion bajo de Luau
+  para «lo recibo y no lo uso».
+- En el **mismo archivo**, `pushStore` —que empuja **esos mismos datos**— sí filtra:
+  `if role >= RolesInfo["moderator"] or data.settings.OwnerId == plr.UserId then`.
+
+**Existe una puerta y solo está en uno de los dos caminos**, lo que descarta que la
+exposición sea deliberada. Es la misma forma que la [042](#bug-candidate-042).
+
+La gravedad se queda en **Baja** —son ids y números de rol de una casa, no credenciales— pero
+una observación se archiva y un bug probable se corrige, y aquí el arreglo son tres líneas
+reusando `roleFor`, que ya está escrita en ese archivo.
+
+**Un cuarto remote de la misma familia**, no anotado antes: `GetUserRolRF` acepta un `userId`
+**arbitrario**. No es una fuga nueva —`GetRoles` ya devuelve el mapa entero— pero es el mismo
+descuido una cuarta vez.
+
+Ver [Sistema de mundos — revisión de gravedad](./world-system-severity.md).
+
+:::
 #### Comportamiento observado — HECHO
 
 Los cuatro remotes de lectura no tienen comprobación de permisos:
@@ -1397,6 +1464,47 @@ durante un tiempo, para ver si en la práctica hay llamantes sin rol.
 `extractPayload`, `onPlayerAdded`
 **Documentación relacionada:** [Casas → Manejo de errores](../systems/housing/error-handling.md)
 
+
+
+:::info Revisado en la segunda pasada
+
+**La nota se queda en Media, pero por una razón distinta de la que estaba escrita.**
+
+Faltaba explicar **por qué llegarían más jugadores a una instancia rota**: si un teleport por
+`ReservedServerAccessCode` va a la instancia que ya está viva con ese código, entonces
+mientras el lease apunte ahí la instancia inservible **sigue recibiendo víctimas**.
+
+:::warning Ese «si» es una suposición sobre Roblox, no un hecho de este repositorio
+
+El enrutado de un `ReservedServerAccessCode` hacia una instancia ya viva es **comportamiento
+de la plataforma**, y este código no lo establece. Se marca igual que la
+[005](#bug-candidate-005) marca el suyo, y por la misma razón.
+
+**Si la suposición es falsa** —si cada teleport crea una instancia nueva— entonces la
+instancia rota atrapa a **un solo jugador** y el resto va a instancias sanas: la gravedad
+bajaría a Baja. Todo el razonamiento de abajo cuelga de esto, así que es lo primero del plan
+de verificación.
+
+:::
+
+Lo que la salva de ser Alta es que esa instancia nunca escribió un lease —nunca llegó a
+`ServerPresence.new`—, así que el que la señala es el de la instancia anterior y **expira en
+≤120 s**. No es que afecte a poca gente: es que **se agota sola**.
+
+**Y su probabilidad es mayor de lo que sugería la entrada.** Se leía como «hace falta un
+fallo raro para que falte el `TeleportData`». Hay un camino que no es raro: **entrar a una
+casa siguiendo a un amigo** en vez de por el flujo del juego. Solo hace daño si ese amigo es
+**el primero en llegar** a una instancia recién creada — que es justo lo que deja la
+[cadena de la 002](#bug-candidate-002) al morir la instancia anterior.
+
+**DESCONOCIDO:** si Roblox permite seguir a un amigo hasta un servidor reservado depende de
+la configuración del universo, que no está en este repositorio. Es lo primero que habría que
+comprobar, porque de ello depende que esto sea un caso de laboratorio o una incidencia
+semanal.
+
+Ver [Sistema de mundos — revisión de gravedad](./world-system-severity.md).
+
+:::
 #### Comportamiento observado — HECHO
 
 ```lua
@@ -1475,9 +1583,22 @@ reservada para todos los que vengan detrás, sin ninguna línea de log que lo ex
 4. Anota si el servidor llega a inicializarse alguna vez.
 5. Repite desconectando a un jugador a mitad del teleport y dejando que Roblox lo
    reintroduzca.
+6. **La pregunta que fija la gravedad:** con la instancia ya inservible, teletransporta a un
+   tercer jugador a **ese mismo `accessCode`** y mira dónde aterriza.
+   - Si entra en la instancia rota → la ventana atrapa a todo el que llegue, y la nota es
+     Media.
+   - Si Roblox le crea una instancia nueva → la rota atrapó a uno solo, y la nota baja a
+     Baja.
+7. Comprueba cuánto tarda la casa en volver a ser alcanzable: debería ser al expirar el lease
+   de la instancia anterior, ≤120 s.
+8. Comprueba si se puede llegar a un servidor reservado **siguiendo a un amigo**. De eso
+   depende que el paso 1 sea un caso de laboratorio o algo que pasa solo.
 
 **Pasa:** el caso es inalcanzable, o un jugador válido posterior sí inicializa el servidor.
 **Falla:** la instancia sigue inerte tras una llegada válida.
+
+**Los pasos 6 y 8 son los que deciden la gravedad**, no los que la confirman: el mecanismo
+del defecto ya está establecido por lectura; lo que no lo está es a cuánta gente alcanza.
 
 **Instrumentación sugerida:** un aviso en la rama nil que nombre al jugador y vuelque
 `GetJoinData()`, lo que haría visible el caso en producción incluso antes de reproducirlo.
@@ -6833,6 +6954,187 @@ acentos», reportan «el buscador va mal».
 llamadas, `quitarAcentos` primero y `quitarSimbolos` después— es un **cambio de código** y aquí
 no se aplica. Ojo: hay que cambiar **las dos** rutas a la vez, o se cambia un desajuste por
 otro.
+
+
+## BUG-CANDIDATE-053
+
+### La escala de roles de una casa no tiene peldaños: quien puede moderar puede degradar a cualquiera menos al dueño
+
+**Sistema:** Casas / Seguridad · **Clasificación:** Confirmado por análisis estático
+**Estado:** Sin verificar · **Gravedad si se confirma:** Media · **Confianza:** **Muy alta**
+
+**Código relacionado:** `PlayerHouses/ServerScriptService/WorldDataReplicator.server.luau`,
+`SetUserRoleRF.OnServerInvoke` y `canModerate`;
+`PlayerHouses/ReplicatedStorage/RolesInfo.luau`
+**Documentación relacionada:** [Casas → Permisos](../systems/housing/permissions.md)
+
+Esta entrada estaba hasta ahora como nota al pie de
+[BUG-CANDIDATE-011](#bug-candidate-011). Se separa porque es **otro defecto**: la 011 es un
+operador equivocado (`>` donde el resto usa `>=`), y ésta es una comprobación que no existe.
+Tienen arreglos distintos, y dejarla enterrada bajo un título que habla del rol `moderator`
+hacía probable que quien triara por título no la viera.
+
+#### La escala — HECHO
+
+```lua
+local RolesInfo = {
+	owner     = 51,
+	coOwner   = 50,
+	admin     = 49,
+	moderator = 48,
+	designer  = 47,
+	guest     = 46,
+}
+```
+
+#### Lo que comprueba `SetUserRole`, y lo que no — HECHO
+
+```lua
+SetUserRoleRF.OnServerInvoke = function(player, targetUserId, roleName)
+	if typeof(roleName) ~= "string" or typeof(targetUserId) ~= "number" then
+		return false, "InvalidArguments"
+	end
+	local data = WorldService.get()
+	if not data then return false, "NoWorldData" end
+	if not canModerate(data, player) then return false, "Forbidden" end
+	if targetUserId == data.settings.OwnerId then return false, "CannotEditOwner" end
+	if roleName ~= "none" and RolesInfo[roleName] == nil then
+		return false, "InvalidRole"
+	end
+	...
+```
+
+| Comprobación | Presente |
+|---|---|
+| Los argumentos son del tipo correcto | **Sí** |
+| Quien llama puede moderar | **Sí** |
+| El objetivo no es el dueño | **Sí** |
+| El rol existe en la tabla | **Sí** |
+| **Quien llama supera al rol que concede** | **No** |
+| **Quien llama supera al rol que quita** | **No** |
+
+Las dos que faltan son las que convierten una lista de números en una jerarquía.
+
+#### Qué se puede hacer con eso — HECHO
+
+`canModerate` es `roleFor(...) > RolesInfo["moderator"]`, es decir, `>= 49`. Así que
+**`admin`, `coOwner` y cualquier rol 51 concedido a mano** pasan la única puerta que hay. Y
+una vez dentro:
+
+| Acción | ¿Permitida? | Por qué |
+|---|---|---|
+| Concederse `coOwner` (50) a uno mismo | **Sí** | El objetivo no es el dueño |
+| Concederse `owner` (51) a uno mismo | **Sí** | `RolesInfo["owner"]` existe, así que pasa el filtro de nombre |
+| Degradar a otro `admin` a `none` | **Sí** | |
+| Degradar a un `coOwner` a `none` | **Sí** | |
+| Banear a otro `admin` | **Sí** | `SetBan` solo protege al dueño |
+| Tocar al dueño | **No** | `targetUserId == data.settings.OwnerId` corta las dos |
+
+Es decir: **entre los roles que no son el dueño no hay jerarquía ninguna.** Un `admin` y un
+`coOwner` pueden borrarse mutuamente, y los dos pueden concederse el número que quieran.
+
+#### Lo que sí sujeta, y es lo que acota la gravedad — HECHO
+
+**Registrado como correcto.** La propiedad de la casa **no** vive en la tabla de roles: vive
+en `data.settings.OwnerId`, y **ningún remote la escribe**. Las siete apariciones de
+`settings.OwnerId` en `WorldDataReplicator` son comparaciones (`==`), ni una es asignación:
+`SetWorldName` solo toca `Name`, `togglePrivacity` solo toca `ServerType`, `SetUserRole` solo
+toca `roles`. No hay un `SetOwner`.
+
+En todo `PlayerHouses/` **se escribe en un solo sitio**, y está guardado:
+
+```lua
+-- WorldService.start
+store:update(function(data)
+	if data.settings.OwnerId == 0 then
+		data.settings.OwnerId = config.ownerId
+		data.settings.Name = config.displayName
+	end
+	return data
+end)
+```
+
+Solo en la primera inicialización (`== 0`), y con un `ownerId` que sale de `parseRoomKey`
+—el `UserId` embebido en la clave del servidor—, no de ningún remote. Es decir: **la
+propiedad se fija una vez, desde el nombre de la casa, y después es inalcanzable.**
+
+*(Ese mismo bloque guardado es, literalmente, el de la
+[BUG-CANDIDATE-009](#bug-candidate-009): el nombre se bautiza ahí y no se rehace porque
+`OwnerId` ya no vuelve a ser 0. Las dos entradas miran el mismo `if`.)*
+
+Consecuencia: un rol 51 concedido a mano **no convierte a nadie en dueño**. Sigue sin poder
+hostear como dueño (`canHostWorld` compara contra `settings.OwnerId`), sigue sin poder banear
+al dueño, y sigue sin poder quitarle el rol. El dueño puede deshacerlo todo cuando vuelva.
+
+Eso es lo que mantiene esta entrada en **Media** y no más arriba: el daño es reversible y
+tiene un techo.
+
+#### Teoría — TEORÍA
+
+El dueño de una casa concede `admin` a un amigo. Ese amigo —o alguien que le tome la
+cuenta— puede, en un minuto: degradar a todos los demás administradores, banear a los
+invitados, poner la casa en privada y renombrarla. El dueño lo deshace cuando entra, pero
+mientras tanto su casa es de otro.
+
+En un juego social donde el rol de administrador se reparte entre amigos, el reparto de
+`admin` es frecuente y poco meditado. Eso es lo que hace que esta entrada importe más de lo
+que su gravedad sugiere: no hace falta un atacante, basta con un amigo enfadado.
+
+**Y hay una asimetría que conviene ver:** la 011 hace que un `moderator` no pueda hacer
+**nada**, y ésta hace que un `admin` pueda hacerlo **todo**. Entre 48 y 49 no hay un escalón:
+hay un acantilado. La escala tiene seis peldaños y el código solo distingue dos estados.
+
+#### Evidencia
+
+| # | Evidencia |
+|---|---|
+| 1 | `SetUserRole` no compara el rol del llamante con el rol concedido |
+| 2 | Tampoco lo compara con el rol del objetivo, así que la degradación es libre |
+| 3 | `RolesInfo["owner"]` existe, luego `roleName = "owner"` pasa el filtro |
+| 4 | `canModerate` es la única puerta, y es un umbral único (`> 48`) |
+| 5 | `SetBan` protege al dueño y a nadie más |
+| 6 | Las siete apariciones de `settings.OwnerId` en `WorldDataReplicator` son comparaciones; ninguna asignación |
+| 6b | La única escritura en todo `PlayerHouses/` está en `WorldService.start`, guardada por `== 0` y alimentada por la clave del servidor |
+| 7 | `canHostWorld` compara contra `settings.OwnerId`, no contra el rol |
+
+#### Incógnitas
+
+- Si la interfaz ofrece conceder `owner` o `coOwner`. Vive en un `.rbxm`, así que no se
+  puede leer. Aunque no lo ofrezca, el remote lo acepta.
+- Con qué frecuencia se reparte `admin` en la práctica. De eso depende todo el impacto real.
+- Si hay algún registro de quién cambió un rol. No se ha encontrado ninguno, lo que
+  significa que el dueño no tiene forma de saber quién le vació la lista.
+
+#### Escenario de ejemplo
+
+Dos amigos comparten la administración de una casa; los dos son `admin`. Discuten. El
+primero entra, pone al segundo en `none` y lo banea. El segundo no puede volver a entrar y no
+hay nada que le diga por qué ni quién. El dueño lo arregla al día siguiente, si se entera.
+
+**Comportamiento esperado:** un rol solo puede conceder o quitar roles por debajo del suyo.
+**Comportamiento posible:** cualquiera que pase el umbral puede conceder y quitar cualquier
+rol que no sea el del dueño.
+
+#### Plan de verificación — *Seguridad*
+
+1. En una casa de pruebas, concede `admin` a la cuenta B y `admin` a la cuenta C.
+2. Desde B: `SetUserRole:InvokeServer(<UserId de C>, "none")`. Comprueba si C pierde el rol.
+3. Desde B: `SetUserRole:InvokeServer(<UserId de B>, "coOwner")`. Comprueba si se autoasciende.
+4. Desde B: `SetUserRole:InvokeServer(<UserId de B>, "owner")`. Comprueba si acepta el 51.
+5. Con el 51 puesto, comprueba qué **no** puede hacer B: banear al dueño, quitarle el rol,
+   hostear la casa como dueño. Las tres deberían fallar — eso confirma el techo.
+6. Desde B: `SetBan:InvokeServer(<UserId de C>, true)`. Comprueba si C queda baneado.
+7. Comprueba si en algún sitio queda constancia de que fue B quien lo hizo.
+8. Entra como dueño y confirma que puedes deshacerlo todo.
+
+**Pasa:** los pasos 2, 3, 4 y 6 se rechazan.
+**Falla:** cualquiera de ellos funciona.
+
+**Instrumentación sugerida:** ninguna para observarlo. La corrección son dos comparaciones en
+`SetUserRole` —el rol concedido y el del objetivo, los dos por debajo del llamante— y decidir
+si `owner` debe ser concedible en absoluto. Es un **cambio de código** y aquí no se aplica.
+Conviene resolverlo junto con la [011](#bug-candidate-011), porque las dos son la misma
+pregunta: qué significa cada peldaño de la escala.
 
 
 ## Cobertura
